@@ -21,6 +21,7 @@ environment:
   sdk: ">=2.7.0 <3.0.0"
 
 dependencies:
+  flutter_platform_widgets: ^0.70.2
   event_bus: ^1.0.1
   path_provider: ^1.1.0
   shared_preferences: ^0.5.2
