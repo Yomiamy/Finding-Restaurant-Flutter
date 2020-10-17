@@ -1,37 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:flutter_restaruant/component/RestaurantItemCell.dart';
+import 'package:flutter_restaruant/utils/Dimens.dart';
+import 'package:flutter_restaruant/utils/AppColors.dart';
 
 class MainPage extends StatefulWidget {
+
   final String title;
-  final List<String> _words = [
-    '1 abacus',
-    '2 abdomen',
-    '3 abdominal',
-    '4 abide',
-    '5 abiding',
-    '6 ability',
-    '7 ablaze',
-    '8 able',
-    '9 abnormal',
-    '10 abrasion',
-    '11 abrasive',
-    '12 abreast',
-    '13 abridge',
-    '14 abroad',
-    '15 abruptly',
-    '16 absence',
-    '17 absentee',
-    '18 absently',
-    '19 absinthe',
-    '20 absolute',
-    '21 absolve',
-    '22 abstain',
-    '23 abstract',
-    '24 absurd',
-    '25 accent',
-    '26 acclaim',
-    '27 acclimate'
+
+  final List<String> storeInfos = [
+    "餐廳1::https://image.cache.storm.mg/styles/smg-800x533-fp/s3/media/image/2018/10/19/20181019-122810_U9180_M464177_c0e4.jpg?itok=S8YLNR-e",
+    "餐廳2::https://cc.tvbs.com.tw/img/upload/2017/09/25/20170925181718-1e31b17d.jpg",
+    "餐廳3::https://maiimage.com/wp-content/uploads/pixnet/ee2eca4d39d2ed559661c32ba972b56f.jpg",
+    "餐廳4::https://d1ralsognjng37.cloudfront.net/08d41588-3cae-400b-87d2-9cebbd8831f3.jpeg",
+    "餐廳5::https://img.letsplay.tw/uploads/20190320221450_55.jpg",
+    "餐廳6::https://www.beautimode.com/upload/media/acf26f51e2c55fe379c2e2790db0c029.jpg"
   ];
 
   MainPage({Key key, this.title}) : super(key: key);
@@ -45,15 +29,16 @@ class MainPageState extends State<MainPage> {
   Widget build(BuildContext context) => PlatformScaffold(
         appBar: PlatformAppBar(
             title: PlatformText(this.widget.title,
-                style: TextStyle(color: Colors.white, fontSize: 20.0)),
-            backgroundColor: Color(0xffd84a20)),
-        body: ListView(
+                style: TextStyle(color: Colors.white, fontSize: Dimens.xxhFontSize)),
+            backgroundColor: Color(AppColors.AppBarColor)),
+        body: ListView (
           children: this
               .widget
-              ._words
-              .map((text) =>
-                  Container(padding: EdgeInsets.all(16), child: Text(text)))
-              .toList(),
+              .storeInfos
+              .map((storeInfo) {
+                List<String> infos = storeInfo.split("::");
+                return RestaurantItemCell(storeName: infos[0], imgUrl: infos[1]);
+          }).toList()
         ),
       );
 }
