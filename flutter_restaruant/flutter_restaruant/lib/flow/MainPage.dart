@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -6,7 +7,6 @@ import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/AppColors.dart';
 
 class MainPage extends StatefulWidget {
-
   final String title;
 
   final List<String> storeInfos = [
@@ -26,26 +26,22 @@ class MainPage extends StatefulWidget {
 
 class MainPageState extends State<MainPage> {
   @override
-  Widget build(BuildContext context) => PlatformScaffold(
-        appBar: PlatformAppBar(
-            title: PlatformText(this.widget.title,
-                style: TextStyle(color: Colors.white, fontSize: Dimens.xxhFontSize)),
-            backgroundColor: Color(AppColors.AppBarColor)),
-        body: ListView (
-          children: this
-              .widget
-              .storeInfos
-              .map((storeInfo) {
-                List<String> infos = storeInfo.split("::");
-                return RestaurantItemCell(storeName: infos[0], imgUrl: infos[1]);
-          }).toList()
-        ),
-      );
+  Widget build(BuildContext context) {
+    Widget title = Text(this.widget.title,
+        style: TextStyle(color: Colors.white, fontSize: Dimens.xxxxhFontSize));
+    return PlatformScaffold(
       body: NestedScrollView(
+          headerSliverBuilder: (BuildContext context, bool isBoxIsScrolled) =>
+              <Widget>[
+                CupertinoSliverNavigationBar(
+                    largeTitle: title,
+                    backgroundColor: Color(AppColors.AppBarColor))
+              ],
           body: ListView(
               children: this.widget.storeInfos.map((storeInfo) {
             List<String> infos = storeInfo.split("::");
             return RestaurantItemCell(storeName: infos[0], imgUrl: infos[1]);
           }).toList())),
     );
+  }
 }
