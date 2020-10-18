@@ -41,4 +41,11 @@ class MainPageState extends State<MainPage> {
           }).toList()
         ),
       );
+      body: NestedScrollView(
+          body: ListView(
+              children: this.widget.storeInfos.map((storeInfo) {
+            List<String> infos = storeInfo.split("::");
+            return RestaurantItemCell(storeName: infos[0], imgUrl: infos[1]);
+          }).toList())),
+    );
 }
