@@ -3,7 +3,6 @@ import 'package:flutter_restaruant/utils/Constants.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 
 class RestaurantItemCell extends StatelessWidget {
-
   static const int IMAGE_H = 100;
   static const int IMAGE_W = 100;
 
@@ -14,8 +13,7 @@ class RestaurantItemCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      padding:
-      EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 5),
+      padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 5),
       child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
         FadeInImage.assetNetwork(
             placeholder: Constants.NO_IMAGE,
@@ -25,7 +23,7 @@ class RestaurantItemCell extends StatelessWidget {
             placeholderCacheHeight: RestaurantItemCell.IMAGE_H,
             placeholderCacheWidth: RestaurantItemCell.IMAGE_W,
             fit: BoxFit.fill,
-            width:  RestaurantItemCell.IMAGE_W.toDouble(),
+            width: RestaurantItemCell.IMAGE_W.toDouble(),
             height: RestaurantItemCell.IMAGE_H.toDouble()),
         Expanded(
             child: Container(
@@ -33,19 +31,49 @@ class RestaurantItemCell extends StatelessWidget {
                 child: SizedBox(
                     height: 100,
                     child: Column(
-                        mainAxisAlignment:
-                        MainAxisAlignment.spaceEvenly,
-                        crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                        mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: <Widget>[
-                          Flex(direction: Axis.horizontal, children: <Widget>[Expanded(child: Text(this.storeName, overflow: TextOverflow.ellipsis)), Text("250.1m", style: TextStyle(fontSize: Dimens.mFontSize, color: Colors.grey))]),
-                          Flex(direction: Axis.horizontal, children: <Widget>[Expanded(child: Image(image: AssetImage("images/Star_rating_2_of_5.png"), height: 20), flex: 1),
-                            Expanded(child: Align(child: Text("1則評論", style: TextStyle(fontSize: Dimens.mFontSize,color: Colors.grey)), alignment: Alignment.centerRight) , flex: 1),
-                            Expanded(child: Align(child: Text("\$\$", style: TextStyle(fontSize: Dimens.mFontSize, color: Colors.grey)), alignment: Alignment.centerRight) , flex: 1)
+                          Flex(direction: Axis.horizontal, children: <Widget>[
+                            Expanded(
+                                child: Text(this.storeName,
+                                    overflow: TextOverflow.ellipsis)),
+                            Text("250.1m",
+                                style: TextStyle(
+                                    fontSize: Dimens.mFontSize,
+                                    color: Colors.grey))
                           ]),
-                          Text("235 新北市中和區中和路248號", overflow: TextOverflow.ellipsis),
-                          Text("餐廳", overflow: TextOverflow.ellipsis, style: TextStyle(fontSize: Dimens.mFontSize, color: Colors.grey))
+                          Flex(direction: Axis.horizontal, children: <Widget>[
+                            Expanded(
+                                child: Image(
+                                    image: AssetImage(
+                                        "images/Star_rating_2_of_5.png"),
+                                    height: 20),
+                                flex: 1),
+                            Expanded(
+                                child: Align(
+                                    child: Text("1則評論",
+                                        style: TextStyle(
+                                            fontSize: Dimens.mFontSize,
+                                            color: Colors.grey)),
+                                    alignment: Alignment.centerRight),
+                                flex: 1),
+                            Expanded(
+                                child: Align(
+                                    child: Text("\$\$",
+                                        style: TextStyle(
+                                            fontSize: Dimens.mFontSize,
+                                            color: Colors.grey)),
+                                    alignment: Alignment.centerRight),
+                                flex: 1)
+                          ]),
+                          Text("235 新北市中和區中和路248號",
+                              overflow: TextOverflow.ellipsis),
+                          Text("餐廳",
+                              overflow: TextOverflow.ellipsis,
+                              style: TextStyle(
+                                  fontSize: Dimens.mFontSize,
+                                  color: Colors.grey))
                         ]))))
       ]));
-
 }

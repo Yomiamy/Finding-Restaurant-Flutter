@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -9,6 +11,7 @@ import 'package:flutter_restaruant/utils/AppColors.dart';
 class MainPage extends StatefulWidget {
   final String title;
 
+  // FIXME: Fake Data
   final List<String> storeInfos = [
     "餐廳1::https://image.cache.storm.mg/styles/smg-800x533-fp/s3/media/image/2018/10/19/20181019-122810_U9180_M464177_c0e4.jpg?itok=S8YLNR-e",
     "餐廳2::https://cc.tvbs.com.tw/img/upload/2017/09/25/20170925181718-1e31b17d.jpg",
@@ -33,7 +36,7 @@ class MainPageState extends State<MainPage> {
       body: NestedScrollView(
           headerSliverBuilder: (BuildContext context, bool isBoxIsScrolled) =>
               <Widget>[
-                CupertinoSliverNavigationBar(
+                 CupertinoSliverNavigationBar(
                     largeTitle: title,
                     backgroundColor: Color(AppColors.AppBarColor))
               ],

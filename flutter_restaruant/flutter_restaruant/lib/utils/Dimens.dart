@@ -7,4 +7,6 @@ class Dimens {
   static const double xxhFontSize = 20;
   static const double xxxhFontSize = 22;
   static const double xxxxhFontSize = 24;
+  static const double xxxxxhFontSize = 26;
+  static const double xxxxxxhFontSize = 28;
 }
