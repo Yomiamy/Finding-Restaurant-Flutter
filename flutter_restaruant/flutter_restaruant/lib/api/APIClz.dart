@@ -14,6 +14,8 @@ abstract class APIClz {
   Future<ResultVo> login(@Field() String account,@Field() String password);
 }
 
-final dioClient = DioClient("https://www.test.com"); // Provide a dio instance
-final client = APIClz(dioClient.dio);
+final dioClient = DioClient(
+    connectionTimeout: Constants.CONNECTION_TIEMOUT,
+    receiveTimeout: Constants.RECEIVE_TIEMOUT);
+final apiInstance = APIClz(dioClient.dio);
 final logger = Logger();

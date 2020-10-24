@@ -4,14 +4,12 @@ class DioClient {
 
    Dio dio;
 
-   DioClient(String baseUrl,
-       {int connectionTimeout = 60000,
+   DioClient({int connectionTimeout = 60000,
          int receiveTimeout = 60000,
          bool isLogEnabled = true,
          List<InterceptorsWrapper> interceptWraps}) {
      BaseOptions options = () {
       BaseOptions options = BaseOptions();
-      options.baseUrl = baseUrl;
       options.connectTimeout = connectionTimeout;
       options.receiveTimeout = receiveTimeout;
 
