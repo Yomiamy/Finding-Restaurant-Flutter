@@ -21,7 +21,7 @@ class MainPage extends StatefulWidget {
     "餐廳6::https://www.beautimode.com/upload/media/acf26f51e2c55fe379c2e2790db0c029.jpg"
   ];
 
-  MainPage({Key key, this.title}) : super(key: key);
+  MainPage({Key key = const Key("MainPage"),  this.title = ""}) : super(key: key);
 
   @override
   MainPageState createState() => MainPageState();
@@ -32,19 +32,29 @@ class MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     Widget title = Text(this.widget.title,
         style: TextStyle(color: Colors.white, fontSize: Dimens.xxxxhFontSize));
+
     return PlatformScaffold(
-      body: NestedScrollView(
-          headerSliverBuilder: (BuildContext context, bool isBoxIsScrolled) =>
-              <Widget>[
-                 CupertinoSliverNavigationBar(
-                    largeTitle: title,
-                    backgroundColor: Color(AppColors.AppBarColor))
-              ],
-          body: ListView(
-              children: this.widget.storeInfos.map((storeInfo) {
+        body: NestedScrollView(
+      headerSliverBuilder: (BuildContext context, bool isBoxIsScrolled) =>
+          <Widget>[
+        CupertinoSliverNavigationBar(
+            largeTitle: title, backgroundColor: Color(AppColors.AppBarColor))
+      ],
+      body: ListView.builder(
+          padding: EdgeInsets.only(top: 0, bottom: 0),
+          itemExtent: RestaurantItemCell.IMAGE_H.toDouble(),
+          cacheExtent: RestaurantItemCell.IMAGE_H.toDouble(),
+          itemCount: this.widget.storeInfos.length,
+          itemBuilder: (context, index) {
+            String storeInfo = this.widget.storeInfos[index];
             List<String> infos = storeInfo.split("::");
-            return RestaurantItemCell(storeName: infos[0], imgUrl: infos[1]);
-          }).toList())),
-    );
+
+            return GestureDetector(
+                child: RestaurantItemCell(storeName: infos[0], imgUrl: infos[1]),
+                onTap: () {
+                  debugPrint("item $index Clicked");
+                });
+          }),
+    ));
   }
 }

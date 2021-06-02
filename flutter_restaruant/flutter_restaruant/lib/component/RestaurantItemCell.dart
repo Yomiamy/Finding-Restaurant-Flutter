@@ -9,11 +9,11 @@ class RestaurantItemCell extends StatelessWidget {
   final String storeName;
   final String imgUrl;
 
-  RestaurantItemCell({this.storeName, this.imgUrl});
+  RestaurantItemCell({this.storeName = "", this.imgUrl = ""});
 
   @override
   Widget build(BuildContext context) => Container(
-      padding: EdgeInsets.only(left: 10, right: 10, top: 10, bottom: 5),
+      padding: EdgeInsets.only(left: 10, right: 5, top: 10, bottom: 0),
       child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
         FadeInImage.assetNetwork(
             placeholder: Constants.NO_IMAGE,

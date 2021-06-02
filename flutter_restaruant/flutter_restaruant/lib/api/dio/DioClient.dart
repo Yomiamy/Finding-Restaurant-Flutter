@@ -2,12 +2,12 @@ import 'package:dio/dio.dart';
 
 class DioClient {
 
-   Dio dio;
+   late Dio dio;
 
    DioClient({int connectionTimeout = 60000,
          int receiveTimeout = 60000,
          bool isLogEnabled = true,
-         List<InterceptorsWrapper> interceptWraps}) {
+         List<InterceptorsWrapper>? interceptWraps}) {
      BaseOptions options = () {
       BaseOptions options = BaseOptions();
       options.connectTimeout = connectionTimeout;
