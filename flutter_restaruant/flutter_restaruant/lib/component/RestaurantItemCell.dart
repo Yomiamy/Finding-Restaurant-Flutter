@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 
@@ -16,7 +17,7 @@ class RestaurantItemCell extends StatelessWidget {
       padding: EdgeInsets.only(left: 10, right: 5, top: 10, bottom: 0),
       child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
         FadeInImage.assetNetwork(
-            placeholder: Constants.NO_IMAGE,
+            placeholder: UIConstants.NO_IMAGE,
             image: this.imgUrl,
             imageCacheHeight: RestaurantItemCell.IMAGE_H,
             imageCacheWidth: RestaurantItemCell.IMAGE_W,

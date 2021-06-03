@@ -6,7 +6,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/RestaurantItemCell.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
-import 'package:flutter_restaruant/utils/AppColors.dart';
+import 'package:flutter_restaruant/utils/UIConstants.dart';
 
 class MainPage extends StatefulWidget {
   final String title;
@@ -38,7 +38,7 @@ class MainPageState extends State<MainPage> {
       headerSliverBuilder: (BuildContext context, bool isBoxIsScrolled) =>
           <Widget>[
         CupertinoSliverNavigationBar(
-            largeTitle: title, backgroundColor: Color(AppColors.AppBarColor))
+            largeTitle: title, backgroundColor: Color(UIConstants.AppBarColor))
       ],
       body: ListView.builder(
           padding: EdgeInsets.only(top: 0, bottom: 0),
