@@ -8,7 +8,7 @@ class ResultVo {
   String msg;
   dynamic obj;
 
-  ResultVo({this.code, this.msg, this.obj});
+  ResultVo({this.code = -1, this.msg = "N/A", this.obj});
 
   factory ResultVo.fromJson(Map<String, dynamic> json) =>
       _$ResultVoFromJson(json);
