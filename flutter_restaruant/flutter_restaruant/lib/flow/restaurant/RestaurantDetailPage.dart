@@ -22,6 +22,7 @@ class RestaurantDetailState extends State<RestaurantDetailPage> {
   Widget build(BuildContext context) => PlatformScaffold(
       appBar: PlatformAppBar(
           leading: PlatformIconButton(
+              padding: EdgeInsets.all(0),
               onPressed: () => Navigator.of(context).pop(),
               materialIcon: Icon(Icons.arrow_back, color: Color(UIConstants.BackBtnColor)),
               cupertinoIcon: Icon(CupertinoIcons.back, color: Color(UIConstants.BackBtnColor))),
