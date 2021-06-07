@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantDetailInfo.dart';
+import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
 
@@ -46,7 +47,7 @@ class RestaurantDetailState extends State<RestaurantDetailPage> {
             width: MediaQuery.of(context).size.width,
             height: RestaurantDetailPage.HEAD_IMAGE_H.toDouble()),
         Container(
-            padding: EdgeInsets.only(left: 10, right: 5, top: 10, bottom: 0),
+            padding: EdgeInsets.only(left: 5, right: 5, top: 10, bottom: 0),
             child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
               SizedBox(
                   width: RestaurantDetailPage.MAP_IMAGE_H.toDouble(),
@@ -84,16 +85,16 @@ class RestaurantDetailState extends State<RestaurantDetailPage> {
                             Image.asset("images/Star_rating_2_of_5.png", height: 20),
                             Text("1則評論", style: TextStyle(color: Colors.grey)),
                             DecoratedBox(
-                                decoration: BoxDecoration(color: Colors.red, shape: BoxShape.rectangle, borderRadius: BorderRadius.all(Radius.circular(15.0))),
-
-                                child: Padding(padding: EdgeInsets.all(3), child: Text("close", style: TextStyle(color: Colors.white)))
+                                decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.all(Radius.circular(15.0))),
+                                child: Padding(padding: EdgeInsets.all(3), child: Text("close", style: TextStyle(color: Colors.white, fontSize: Dimens.mFontSize)))
                             )
                           ]
                       )
                   )
-               )
+               ),
               ]
             )
+          ),
         Container(
           padding: EdgeInsets.only(left: 5, right: 5, top: 10, bottom: 0),
           height: MediaQuery.of(context).size.width / 3,
