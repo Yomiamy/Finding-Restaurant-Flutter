@@ -43,7 +43,7 @@ class RestaurantDetailState extends State<RestaurantDetailPage> {
             placeholderCacheHeight: RestaurantDetailPage.HEAD_IMAGE_H,
             placeholderCacheWidth: MediaQuery.of(context).size.width.toInt(),
             fit: BoxFit.fill,
-            width: double.infinity,
+            width: MediaQuery.of(context).size.width,
             height: RestaurantDetailPage.HEAD_IMAGE_H.toDouble()),
         Container(
             padding: EdgeInsets.only(left: 10, right: 5, top: 10, bottom: 0),
