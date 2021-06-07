@@ -10,9 +10,8 @@ class RestaurantCommentCell extends StatelessWidget {
 
   const RestaurantCommentCell({Key? key = const Key("RestaurantCommentCell")}): super(key: key);
 
-  @override
-  Widget build(BuildContext context) => Padding(
-      padding: EdgeInsets.only(left: 5, right: 5, top: 10),
+  Widget createComment() => Padding(
+      padding: EdgeInsets.only(bottom: 10),
       child: Row(
           mainAxisSize: MainAxisSize.max,
           crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
@@ -31,27 +30,46 @@ class RestaurantCommentCell extends StatelessWidget {
         ),
         Expanded(
             child: ConstrainedBox(
-              constraints: BoxConstraints(maxHeight: RestaurantCommentCell.IMAGE_H.toDouble()),
-              child: Container(
-                  padding: EdgeInsets.only(left: 10),
-                  child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget>[
-                        Text("User 1",
-                            style: TextStyle(fontWeight: FontWeight.w700, fontSize: Dimens.hFontSize),
-                            overflow: TextOverflow.ellipsis),
-                        Image.asset("images/Star_rating_2_of_5.png",
-                            height: RestaurantCommentCell.RATING_IMAGE_H),
-                        Text("食材新鮮好吃食材新鮮好吃食材新鮮好吃食材新鮮好吃食材新鮮好吃食材新鮮好吃",
-                            maxLines: 2,
-                            overflow: TextOverflow.ellipsis)
-                      ]
-                  )
-              )
+                constraints: BoxConstraints(maxHeight: RestaurantCommentCell.IMAGE_H.toDouble()),
+                child: Container(
+                    padding: EdgeInsets.only(left: 10),
+                    child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        mainAxisSize: MainAxisSize.min,
+                        children: <Widget>[
+                          Text("User 1",
+                              style: TextStyle(fontWeight: FontWeight.w700, fontSize: Dimens.hFontSize),
+                              overflow: TextOverflow.ellipsis),
+                          Image.asset("images/Star_rating_2_of_5.png",
+                              height: RestaurantCommentCell.RATING_IMAGE_H),
+                          Text("食材新鮮好吃食材新鮮好吃食材新鮮好吃食材新鮮好吃食材新鮮好吃食材新鮮好吃",
+                              maxLines: 2,
+                              overflow: TextOverflow.ellipsis)
+                        ]
+                    )
+                )
             )
         )
-       ]
+      ]
       )
+  );
+
+  Widget createCommentList() {
+    List<Widget> commentList = List.empty(growable: true);
+
+    for(int i = 0 ; i < 3 ; i++) {
+      commentList.add(this.createComment());
+    }
+    
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: commentList,
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) => Padding(
+      padding: EdgeInsets.only(left: 5, right: 5, top: 10),
+      child: this.createCommentList()
   );
 }
