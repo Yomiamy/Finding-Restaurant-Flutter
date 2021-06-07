@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'flow/MainPage.dart';
+import 'flow/main/MainPage.dart';
 
 void main() {
   runApp(FindingRestaruantApp());

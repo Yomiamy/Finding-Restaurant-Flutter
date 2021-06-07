@@ -7,9 +7,9 @@ part of 'APIClz.dart';
 // **************************************************************************
 
 class _APIClz implements APIClz {
-  _APIClz(this._dio, {this.baseUrl}) {
+  _APIClz(this._dio, {this.baseUrl = ""}) {
     ArgumentError.checkNotNull(_dio, '_dio');
-    baseUrl ??= 'https://api.yelp.com';
+    this.baseUrl ??= 'https://api.yelp.com';
   }
 
   final Dio _dio;
@@ -17,7 +17,7 @@ class _APIClz implements APIClz {
   String baseUrl;
 
   @override
-  Future<String> fetchToken(grantType, clientId, clientSecret) async {
+  fetchToken(grantType, clientId, clientSecret) async {
     ArgumentError.checkNotNull(grantType, 'grantType');
     ArgumentError.checkNotNull(clientId, 'clientId');
     ArgumentError.checkNotNull(clientSecret, 'clientSecret');
@@ -28,8 +28,7 @@ class _APIClz implements APIClz {
       'client_id': clientId,
       'client_secret': clientSecret
     };
-    _data.removeWhere((k, v) => v == null);
-    final _result = await _dio.request<String>('/oauth2/token',
+    final Response<String> _result = await _dio.request('/oauth2/token',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST',
@@ -39,12 +38,12 @@ class _APIClz implements APIClz {
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;
-    return value;
+    return Future.value(value);
   }
 
   @override
-  Future<String> businessesSearch(term, latitude, longitude, locale, limit,
-      {openAt, sortBy, price}) async {
+  businessesSearch(term, latitude, longitude, locale, limit,
+      {openAt = "", sortBy = "", price = ""}) async {
     ArgumentError.checkNotNull(term, 'term');
     ArgumentError.checkNotNull(latitude, 'latitude');
     ArgumentError.checkNotNull(longitude, 'longitude');
@@ -52,7 +51,6 @@ class _APIClz implements APIClz {
     ArgumentError.checkNotNull(limit, 'limit');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
-    queryParameters.removeWhere((k, v) => v == null);
     final _data = {
       'term': term,
       'latitude': latitude,
@@ -63,71 +61,67 @@ class _APIClz implements APIClz {
       'sortBy': sortBy,
       'price': price
     };
-    _data.removeWhere((k, v) => v == null);
-    final _result = await _dio.request<String>('/v3/businesses/search',
+    final Response<String> _result = await _dio.request('/v3/businesses/search',
         queryParameters: queryParameters,
         options: RequestOptions(
             method: 'POST',
             headers: <String, dynamic>{
-              r'Content-Type': 'application/json',
-              r'Authorization':
+              'Content-Type': 'application/json',
+              'Authorization':
                   'Bearer 4htbz9nLozJ_-Xw-13LpeVWrEIRWZt4IrgTOQXstx7M1DCVeUIoxIZkQ0XVLVEtD2Gy2Vp1FjA2WRz5DOpZMSxHfXVBLR3gi0DeMXIV3X1bCHYoMoJ-_TZLfBn0ZWnYx'
             },
             extra: _extra,
-            contentType: 'application/json',
             baseUrl: baseUrl),
         data: _data);
     final value = _result.data;
-    return value;
+    return Future.value(value);
   }
 
   @override
-  Future<String> business(locationName, locale) async {
+  business(locationName, locale) async {
     ArgumentError.checkNotNull(locationName, 'locationName');
     ArgumentError.checkNotNull(locale, 'locale');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = {'locale': locale};
-    _data.removeWhere((k, v) => v == null);
-    final _result = await _dio.request<String>('/v3/businesses/$locationName',
-        queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'GET',
-            headers: <String, dynamic>{
-              r'Content-Type': 'application/json',
-              r'Authorization':
-                  'Bearer 4htbz9nLozJ_-Xw-13LpeVWrEIRWZt4IrgTOQXstx7M1DCVeUIoxIZkQ0XVLVEtD2Gy2Vp1FjA2WRz5DOpZMSxHfXVBLR3gi0DeMXIV3X1bCHYoMoJ-_TZLfBn0ZWnYx'
-            },
-            extra: _extra,
-            contentType: 'application/json',
-            baseUrl: baseUrl),
-        data: _data);
+    final Response<String> _result =
+        await _dio.request('/v3/businesses/$locationName',
+            queryParameters: queryParameters,
+            options: RequestOptions(
+                method: 'GET',
+                headers: <String, dynamic>{
+                  'Content-Type': 'application/json',
+                  'Authorization':
+                      'Bearer 4htbz9nLozJ_-Xw-13LpeVWrEIRWZt4IrgTOQXstx7M1DCVeUIoxIZkQ0XVLVEtD2Gy2Vp1FjA2WRz5DOpZMSxHfXVBLR3gi0DeMXIV3X1bCHYoMoJ-_TZLfBn0ZWnYx'
+                },
+                extra: _extra,
+                baseUrl: baseUrl),
+            data: _data);
     final value = _result.data;
-    return value;
+    return Future.value(value);
   }
 
   @override
-  Future<String> review(id, locale) async {
+  review(id, locale) async {
     ArgumentError.checkNotNull(id, 'id');
     ArgumentError.checkNotNull(locale, 'locale');
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     final _data = {'locale': locale};
-    _data.removeWhere((k, v) => v == null);
-    final _result = await _dio.request<String>('/v3/businesses/$id/reviews',
-        queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'GET',
-            headers: <String, dynamic>{
-              r'Content-Type': 'application/json',
-              r'Authorization':
-                  'Bearer 4htbz9nLozJ_-Xw-13LpeVWrEIRWZt4IrgTOQXstx7M1DCVeUIoxIZkQ0XVLVEtD2Gy2Vp1FjA2WRz5DOpZMSxHfXVBLR3gi0DeMXIV3X1bCHYoMoJ-_TZLfBn0ZWnYx'
-            },
-            extra: _extra,
-            contentType: 'application/json',
-            baseUrl: baseUrl),
-        data: _data);
+    final Response<String> _result =
+        await _dio.request('/v3/businesses/$id/reviews',
+            queryParameters: queryParameters,
+            options: RequestOptions(
+                method: 'GET',
+                headers: <String, dynamic>{
+                  'Content-Type': 'application/json',
+                  'Authorization':
+                      'Bearer 4htbz9nLozJ_-Xw-13LpeVWrEIRWZt4IrgTOQXstx7M1DCVeUIoxIZkQ0XVLVEtD2Gy2Vp1FjA2WRz5DOpZMSxHfXVBLR3gi0DeMXIV3X1bCHYoMoJ-_TZLfBn0ZWnYx'
+                },
+                extra: _extra,
+                baseUrl: baseUrl),
+            data: _data);
     final value = _result.data;
-    return value;
+    return Future.value(value);
   }
 }

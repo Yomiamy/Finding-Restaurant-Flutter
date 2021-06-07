@@ -6,6 +6,5 @@ class Constants {
   static const int RECEIVE_TIEMOUT = 30000;
   static const int PAGE_ITEM_COUNT = 50;
 
-  /// [UI]
-  static const String NO_IMAGE = "images/empty.png";
+
 }
