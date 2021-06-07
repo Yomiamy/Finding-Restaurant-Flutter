@@ -94,8 +94,30 @@ class RestaurantDetailState extends State<RestaurantDetailPage> {
                )
               ]
             )
+        Container(
+          padding: EdgeInsets.only(left: 5, right: 5, top: 10, bottom: 0),
+          height: MediaQuery.of(context).size.width / 3,
+          child: ListView.builder(
+              scrollDirection: Axis.horizontal,
+              itemCount: 10,
+              itemBuilder: (context, index) => Padding(
+                padding: EdgeInsets.symmetric(horizontal: 5),
+                child: FadeInImage.assetNetwork(
+                    placeholder: UIConstants.NO_IMAGE,
+                    image: widget.detailInfo.image_url ?? "",
+                    imageCacheHeight: RestaurantDetailPage.HEAD_IMAGE_H,
+                    imageCacheWidth: MediaQuery.of(context).size.width.toInt(),
+                    placeholderCacheHeight: RestaurantDetailPage.HEAD_IMAGE_H,
+                    placeholderCacheWidth: MediaQuery.of(context).size.width.toInt(),
+                    fit: BoxFit.fill,
+                    width: MediaQuery.of(context).size.width / 3,
+                    height: MediaQuery.of(context).size.width / 3),
+              )
           )
+        )
         ]
       )
   );
 }
+
+
