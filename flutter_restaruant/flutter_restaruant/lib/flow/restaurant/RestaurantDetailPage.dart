@@ -21,7 +21,18 @@ class RestaurantDetailPage extends StatefulWidget {
 }
 
 class RestaurantDetailState extends State<RestaurantDetailPage> {
-  // FIXME: Fake Data
+
+  Widget createBusinessTimeRow(String weedDay, String startTime, String endTime) =>
+      Padding(
+        padding: EdgeInsets.only(top: 5),
+        child: Stack(children: [
+          Align(child: Text(weedDay), alignment: Alignment.centerLeft),
+          Align(
+              child: Text("$startTime - $endTime"),
+              alignment: Alignment.centerRight)
+        ])
+      );
+
   @override
   Widget build(BuildContext context) => PlatformScaffold(
       appBar: PlatformAppBar(
@@ -46,8 +57,8 @@ class RestaurantDetailState extends State<RestaurantDetailPage> {
             fit: BoxFit.fill,
             width: MediaQuery.of(context).size.width,
             height: RestaurantDetailPage.HEAD_IMAGE_H.toDouble()),
-        Container(
-            padding: EdgeInsets.only(left: 5, right: 5, top: 10, bottom: 0),
+        Padding(
+            padding: EdgeInsets.only(left: 5, right: 5, top: 10),
             child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
               SizedBox(
                   width: RestaurantDetailPage.MAP_IMAGE_H.toDouble(),
@@ -73,52 +84,78 @@ class RestaurantDetailState extends State<RestaurantDetailPage> {
                             Text("235 新北市中和區中和路238號1111111",
                                 style: TextStyle(fontWeight: FontWeight.w700),
                                 overflow: TextOverflow.ellipsis),
-                            Row(
-                              children: <Widget>[
-                                Text("電話:",
-                                    style: TextStyle(fontWeight: FontWeight.w700)),
-                                SizedBox(width: 10),
-                                Text("+8860982736457", style: TextStyle(color: Colors.blue))
-                              ]
-                            ),
+                            Row(children: <Widget>[
+                              Text("電話:",
+                                  style:
+                                      TextStyle(fontWeight: FontWeight.w700)),
+                              SizedBox(width: 10),
+                              Text("+8860982736457",
+                                  style: TextStyle(color: Colors.blue))
+                            ]),
                             Text("餐廳", style: TextStyle(color: Colors.grey)),
-                            Image.asset("images/Star_rating_2_of_5.png", height: 20),
+                            Image.asset("images/Star_rating_2_of_5.png",
+                                height: 20),
                             Text("1則評論", style: TextStyle(color: Colors.grey)),
                             DecoratedBox(
-                                decoration: BoxDecoration(color: Colors.red, borderRadius: BorderRadius.all(Radius.circular(15.0))),
-                                child: Padding(padding: EdgeInsets.all(3), child: Text("close", style: TextStyle(color: Colors.white, fontSize: Dimens.mFontSize)))
-                            )
-                          ]
-                      )
-                  )
-               ),
-              ]
-            )
-          ),
+                                decoration: BoxDecoration(
+                                    color: Colors.red,
+                                    borderRadius: BorderRadius.all(
+                                        Radius.circular(15.0))),
+                                child: Padding(
+                                    padding: EdgeInsets.all(3),
+                                    child: Text("close",
+                                        style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: Dimens.mFontSize))))
+                          ]))),
+            ])),
         Container(
-          padding: EdgeInsets.only(left: 5, right: 5, top: 10, bottom: 0),
-          height: MediaQuery.of(context).size.width / 3,
-          child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              itemCount: 10,
-              itemBuilder: (context, index) => Padding(
-                padding: EdgeInsets.symmetric(horizontal: 5),
-                child: FadeInImage.assetNetwork(
-                    placeholder: UIConstants.NO_IMAGE,
-                    image: widget.detailInfo.image_url ?? "",
-                    imageCacheHeight: RestaurantDetailPage.HEAD_IMAGE_H,
-                    imageCacheWidth: MediaQuery.of(context).size.width.toInt(),
-                    placeholderCacheHeight: RestaurantDetailPage.HEAD_IMAGE_H,
-                    placeholderCacheWidth: MediaQuery.of(context).size.width.toInt(),
-                    fit: BoxFit.fill,
-                    width: MediaQuery.of(context).size.width / 3,
-                    height: MediaQuery.of(context).size.width / 3),
+            padding: EdgeInsets.only(top: 10),
+            height: MediaQuery.of(context).size.width / 3,
+            child: ListView.builder(
+                scrollDirection: Axis.horizontal,
+                itemCount: 10,
+                itemBuilder: (context, index) => Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 5),
+                      child: FadeInImage.assetNetwork(
+                          placeholder: UIConstants.NO_IMAGE,
+                          image: widget.detailInfo.image_url ?? "",
+                          imageCacheHeight: RestaurantDetailPage.HEAD_IMAGE_H,
+                          imageCacheWidth:
+                              MediaQuery.of(context).size.width.toInt(),
+                          placeholderCacheHeight:
+                              RestaurantDetailPage.HEAD_IMAGE_H,
+                          placeholderCacheWidth:
+                              MediaQuery.of(context).size.width.toInt(),
+                          fit: BoxFit.fill,
+                          width: MediaQuery.of(context).size.width / 3,
+                          height: MediaQuery.of(context).size.width / 3),
+                    ))),
+        Padding(
+            padding: EdgeInsets.only(top: 10),
+            child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+              Container(
+                  width: MediaQuery.of(context).size.width,
+                  child: DecoratedBox(
+                      decoration: BoxDecoration(color: Colors.grey),
+                      child: Center(
+                          child: Text("營業時間",
+                              style: TextStyle(
+                                  fontSize: Dimens.xhFontSize,
+                                  fontWeight: FontWeight.bold))))),
+              Padding(
+                padding: EdgeInsets.only(left: 10, right: 10),
+                child: Column(mainAxisSize: MainAxisSize.min, children: [
+                  this.createBusinessTimeRow("星期一", "1700", "2200"),
+                  this.createBusinessTimeRow("星期二", "1700", "2200"),
+                  this.createBusinessTimeRow("星期三", "1700", "2200"),
+                  this.createBusinessTimeRow("星期四", "1700", "2200"),
+                  this.createBusinessTimeRow("星期五", "1700", "2200"),
+                  this.createBusinessTimeRow("星期六", "1700", "2200"),
+                  this.createBusinessTimeRow("星期日", "1700", "2200"),
+                ])
               )
-          )
+            ])
         )
-        ]
-      )
-  );
+      ]));
 }
-
-
