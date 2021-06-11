@@ -1,11 +1,12 @@
 import 'package:dio/dio.dart';
+import 'package:flutter_restaruant/utils/Constants.dart';
 
 class DioClient {
 
    late Dio dio;
 
-   DioClient({int connectionTimeout = 60000,
-         int receiveTimeout = 60000,
+   DioClient({int connectionTimeout = Constants.CONNECTION_TIEMOUT,
+         int receiveTimeout = Constants.RECEIVE_TIEMOUT,
          bool isLogEnabled = true,
          List<InterceptorsWrapper>? interceptWraps}) {
      BaseOptions options = () {
