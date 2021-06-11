@@ -1,8 +1,11 @@
 import 'dart:collection';
-
 import 'package:flutter/widgets.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
+import 'package:json_annotation/json_annotation.dart';
 
+part 'YelpBaseInfo.g.dart';
+
+@JsonSerializable()
 class YelpBaseInfo {
   static  Map _sRatingImgMap = <String, Image> {
     "0.0": Image.asset("images/Star_rating_0_of_5.png", width: UIConstants.RATING_IMAGE_W, height: UIConstants.RATING_IMAGE_H),
@@ -19,4 +22,11 @@ class YelpBaseInfo {
   };
 
   Image getRatingImage(String rating) => YelpBaseInfo._sRatingImgMap[rating];
+
+  YelpBaseInfo();
+
+  factory YelpBaseInfo.fromJson(Map<String, dynamic> json) =>
+      _$YelpBaseInfoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$YelpBaseInfoToJson(this);
 }
