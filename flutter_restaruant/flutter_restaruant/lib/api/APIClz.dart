@@ -1,5 +1,4 @@
 import 'package:flutter_restaruant/api/dio/DioClient.dart';
-import 'package:flutter_restaruant/model/ResultVo.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
 import 'package:logger/logger.dart';
 import 'package:retrofit/retrofit.dart';
@@ -19,34 +18,37 @@ abstract class APIClz {
       @Field("client_id") String clientId,
       @Field("client_secret") String clientSecret);
 
-
   @POST("/v3/businesses/search")
-  @Headers(<String, String>{"Content-Type": "application/json",
-    "Authorization": Constants.AUTH_TOKEN})
-  Future<String> businessesSearch(@Field("term") String term,
+  Future<String> businessesSearch(
+      @Field("term") String term,
       @Field("latitude") String latitude,
       @Field("longitude") String longitude,
       @Field("locale") String locale,
       @Field("limit") String limit,
-      { @Field("openAt") String openAt,
+      {@Field("openAt") String openAt,
       @Field("sortBy") String sortBy,
-      @Field("price") String price });
+      @Field("price") String price});
 
   @GET("/v3/businesses/{locationName}")
-  @Headers(<String, String>{"Content-Type": "application/json",
-    "Authorization": Constants.AUTH_TOKEN})
-  Future<String> business(@Path() String locationName,
-      @Field("locale") String locale);
+  Future<String> business(
+      @Path() String locationName, @Field("locale") String locale);
 
   @GET("/v3/businesses/{id}/reviews")
-  @Headers(<String, String>{"Content-Type": "application/json",
-    "Authorization": Constants.AUTH_TOKEN})
-  Future<String> review(@Path() String id,
-      @Field("locale") String locale);
+  Future<String> review(@Path() String id, @Field("locale") String locale);
 }
 
 final dioClient = DioClient(
     connectionTimeout: Constants.CONNECTION_TIEMOUT,
-    receiveTimeout: Constants.RECEIVE_TIEMOUT);
+    receiveTimeout: Constants.RECEIVE_TIEMOUT,
+    interceptWraps: [
+      InterceptorsWrapper(onRequest: (RequestOptions options) async {
+        var customHeaders = {
+          "Content-Type": "application/json",
+          "Authorization": Constants.AUTH_TOKEN
+        };
+        options.headers.addAll(customHeaders);
+        return options;
+      })
+    ]);
 final apiInstance = APIClz(dioClient.dio);
 final logger = Logger();
