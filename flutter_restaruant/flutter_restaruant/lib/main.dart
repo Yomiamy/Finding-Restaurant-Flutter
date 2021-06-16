@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:flutter_restaruant/flow/main/bloc/MainBloc.dart';
+import 'package:flutter_restaruant/flow/main/repository/MainRepository.dart';
 import 'flow/main/MainPage.dart';
 
 void main() {
@@ -9,7 +12,13 @@ void main() {
 class FindingRestaruantApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
-  Widget build(BuildContext context) => PlatformApp(title:  "Find Restaurant", home: MainPage(title: "Find Restaurant"));
+  Widget build(BuildContext context) => PlatformApp(
+      title:  "Find Restaurant",
+      home: BlocProvider(
+          create: (_) => MainBloc(repository: MainRepository()),
+          child: MainPage(title: "Find Restaurant")
+      )
+  );
 }
 
 
