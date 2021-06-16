@@ -1,17 +1,13 @@
-
-// var location:YelpRestaurantLocation?
-// var coordinates:YelpRestaurantCoordinates?
-
-// var hours:[YelpRestaurantHoursInfo]?
-// }
-
 import 'package:flutter_restaruant/model/YelpBaseInfo.dart';
-
+import 'package:json_annotation/json_annotation.dart';
 import 'YelpRestaurantCategory.dart';
 import 'YelpRestaurantCoordinates.dart';
 import 'YelpRestaurantHoursInfo.dart';
 import 'YelpRestaurantLocation.dart';
 
+part 'YelpRestaurantDetailInfo.g.dart';
+
+@JsonSerializable()
 class YelpRestaurantDetailInfo extends YelpBaseInfo {
   String? name;
   String? image_url;
@@ -25,5 +21,10 @@ class YelpRestaurantDetailInfo extends YelpBaseInfo {
   List<String>? photos;
   List<YelpRestaurantHoursInfo>? hours;
 
+  YelpRestaurantDetailInfo();
 
+  factory YelpRestaurantDetailInfo.fromJson(Map<String, dynamic> json) =>
+      _$YelpRestaurantDetailInfoFromJson(json);
+
+  Map<String, dynamic> toJson() => _$YelpRestaurantDetailInfoToJson(this);
 }

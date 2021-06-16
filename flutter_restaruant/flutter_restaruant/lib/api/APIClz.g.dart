@@ -7,50 +7,44 @@ part of 'APIClz.dart';
 // **************************************************************************
 
 class _APIClz implements APIClz {
-  _APIClz(this._dio, {this.baseUrl = ""}) {
-    ArgumentError.checkNotNull(_dio, '_dio');
-    this.baseUrl ??= 'https://api.yelp.com';
+  _APIClz(this._dio, {this.baseUrl}) {
+    baseUrl ??= 'https://api.yelp.com';
   }
 
   final Dio _dio;
 
-  String baseUrl;
+  String? baseUrl;
 
   @override
-  fetchToken(grantType, clientId, clientSecret) async {
-    ArgumentError.checkNotNull(grantType, 'grantType');
-    ArgumentError.checkNotNull(clientId, 'clientId');
-    ArgumentError.checkNotNull(clientSecret, 'clientSecret');
+  Future<String> fetchToken(grantType, clientId, clientSecret) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _data = {
       'grant_type': grantType,
       'client_id': clientId,
       'client_secret': clientSecret
     };
-    final Response<String> _result = await _dio.request('/oauth2/token',
-        queryParameters: queryParameters,
-        options: RequestOptions(
+    _data.removeWhere((k, v) => v == null);
+    final _result = await _dio.fetch<String>(_setStreamType<String>(Options(
             method: 'POST',
             headers: <String, dynamic>{},
             extra: _extra,
-            contentType: 'application/x-www-form-urlencoded',
-            baseUrl: baseUrl),
-        data: _data);
-    final value = _result.data;
-    return Future.value(value);
+            contentType: 'application/x-www-form-urlencoded')
+        .compose(_dio.options, '/oauth2/token',
+            queryParameters: queryParameters, data: _data)
+        .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = _result.data!;
+    return value;
   }
 
   @override
-  businessesSearch(term, latitude, longitude, locale, limit,
-      {openAt = "", sortBy = "", price = ""}) async {
-    ArgumentError.checkNotNull(term, 'term');
-    ArgumentError.checkNotNull(latitude, 'latitude');
-    ArgumentError.checkNotNull(longitude, 'longitude');
-    ArgumentError.checkNotNull(locale, 'locale');
-    ArgumentError.checkNotNull(limit, 'limit');
+  Future<YelpSearchInfo> businessesSearch(
+      term, latitude, longitude, locale, limit,
+      {openAt, sortBy, price}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _data = {
       'term': term,
       'latitude': latitude,
@@ -61,67 +55,61 @@ class _APIClz implements APIClz {
       'sortBy': sortBy,
       'price': price
     };
-    final Response<String> _result = await _dio.request('/v3/businesses/search',
-        queryParameters: queryParameters,
-        options: RequestOptions(
-            method: 'POST',
-            headers: <String, dynamic>{
-              'Content-Type': 'application/json',
-              'Authorization':
-                  'Bearer 4htbz9nLozJ_-Xw-13LpeVWrEIRWZt4IrgTOQXstx7M1DCVeUIoxIZkQ0XVLVEtD2Gy2Vp1FjA2WRz5DOpZMSxHfXVBLR3gi0DeMXIV3X1bCHYoMoJ-_TZLfBn0ZWnYx'
-            },
-            extra: _extra,
-            baseUrl: baseUrl),
-        data: _data);
-    final value = _result.data;
-    return Future.value(value);
+    _data.removeWhere((k, v) => v == null);
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<YelpSearchInfo>(
+            Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, '/v3/businesses/search',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = YelpSearchInfo.fromJson(_result.data!);
+    return value;
   }
 
   @override
-  business(locationName, locale) async {
-    ArgumentError.checkNotNull(locationName, 'locationName');
-    ArgumentError.checkNotNull(locale, 'locale');
+  Future<YelpRestaurantDetailInfo> business(locationName, locale) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _data = {'locale': locale};
-    final Response<String> _result =
-        await _dio.request('/v3/businesses/$locationName',
-            queryParameters: queryParameters,
-            options: RequestOptions(
-                method: 'GET',
-                headers: <String, dynamic>{
-                  'Content-Type': 'application/json',
-                  'Authorization':
-                      'Bearer 4htbz9nLozJ_-Xw-13LpeVWrEIRWZt4IrgTOQXstx7M1DCVeUIoxIZkQ0XVLVEtD2Gy2Vp1FjA2WRz5DOpZMSxHfXVBLR3gi0DeMXIV3X1bCHYoMoJ-_TZLfBn0ZWnYx'
-                },
-                extra: _extra,
-                baseUrl: baseUrl),
-            data: _data);
-    final value = _result.data;
-    return Future.value(value);
+    _data.removeWhere((k, v) => v == null);
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<YelpRestaurantDetailInfo>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, '/v3/businesses/$locationName',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = YelpRestaurantDetailInfo.fromJson(_result.data!);
+    return value;
   }
 
   @override
-  review(id, locale) async {
-    ArgumentError.checkNotNull(id, 'id');
-    ArgumentError.checkNotNull(locale, 'locale');
+  Future<YelpReviewInfo> review(id, locale) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
+    queryParameters.removeWhere((k, v) => v == null);
     final _data = {'locale': locale};
-    final Response<String> _result =
-        await _dio.request('/v3/businesses/$id/reviews',
-            queryParameters: queryParameters,
-            options: RequestOptions(
-                method: 'GET',
-                headers: <String, dynamic>{
-                  'Content-Type': 'application/json',
-                  'Authorization':
-                      'Bearer 4htbz9nLozJ_-Xw-13LpeVWrEIRWZt4IrgTOQXstx7M1DCVeUIoxIZkQ0XVLVEtD2Gy2Vp1FjA2WRz5DOpZMSxHfXVBLR3gi0DeMXIV3X1bCHYoMoJ-_TZLfBn0ZWnYx'
-                },
-                extra: _extra,
-                baseUrl: baseUrl),
-            data: _data);
-    final value = _result.data;
-    return Future.value(value);
+    _data.removeWhere((k, v) => v == null);
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<YelpReviewInfo>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, '/v3/businesses/$id/reviews',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = YelpReviewInfo.fromJson(_result.data!);
+    return value;
+  }
+
+  RequestOptions _setStreamType<T>(RequestOptions requestOptions) {
+    if (T != dynamic &&
+        !(requestOptions.responseType == ResponseType.bytes ||
+            requestOptions.responseType == ResponseType.stream)) {
+      if (T == String) {
+        requestOptions.responseType = ResponseType.plain;
+      } else {
+        requestOptions.responseType = ResponseType.json;
+      }
+    }
+    return requestOptions;
   }
 }
