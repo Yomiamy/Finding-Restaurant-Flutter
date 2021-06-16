@@ -21,16 +21,16 @@ abstract class APIClz {
       @Field("client_id") String? clientId,
       @Field("client_secret") String? clientSecret);
 
-  @POST("/v3/businesses/search")
+  @GET("/v3/businesses/search")
   Future<YelpSearchInfo> businessesSearch({
-      @Field("term") String term,
-      @Field("latitude") double latitude,
-      @Field("longitude") double longitude,
-      @Field("locale") String locale,
-      @Field("limit") int limit,
-      @Field("openAt") int? openAt,
-      @Field("sortBy") String? sortBy,
-      @Field("price") String? price});
+      @Query("term") String? term,
+      @Query("latitude") double? latitude,
+      @Query("longitude") double? longitude,
+      @Query("locale") String? locale,
+      @Query("limit") int? limit,
+      @Query("openAt") int? openAt,
+      @Query("sortBy") String? sortBy,
+      @Query("price") String? price});
 
   @GET("/v3/businesses/{locationName}")
   Future<YelpRestaurantDetailInfo> business(
