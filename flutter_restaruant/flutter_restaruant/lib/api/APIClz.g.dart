@@ -39,7 +39,8 @@ class _APIClz implements APIClz {
   }
 
   @override
-  Future<String> businessesSearch(term, latitude, longitude, locale, limit,
+  Future<YelpSearchInfo> businessesSearch(
+      term, latitude, longitude, locale, limit,
       {openAt, sortBy, price}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
@@ -55,44 +56,47 @@ class _APIClz implements APIClz {
       'price': price
     };
     _data.removeWhere((k, v) => v == null);
-    final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, '/v3/businesses/search',
-                queryParameters: queryParameters, data: _data)
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = _result.data!;
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<YelpSearchInfo>(
+            Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, '/v3/businesses/search',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = YelpSearchInfo.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<String> business(locationName, locale) async {
+  Future<YelpRestaurantDetailInfo> business(locationName, locale) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _data = {'locale': locale};
     _data.removeWhere((k, v) => v == null);
-    final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, '/v3/businesses/$locationName',
-                queryParameters: queryParameters, data: _data)
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = _result.data!;
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<YelpRestaurantDetailInfo>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, '/v3/businesses/$locationName',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = YelpRestaurantDetailInfo.fromJson(_result.data!);
     return value;
   }
 
   @override
-  Future<String> review(id, locale) async {
+  Future<YelpReviewInfo> review(id, locale) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);
     final _data = {'locale': locale};
     _data.removeWhere((k, v) => v == null);
-    final _result = await _dio.fetch<String>(_setStreamType<String>(
-        Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
-            .compose(_dio.options, '/v3/businesses/$id/reviews',
-                queryParameters: queryParameters, data: _data)
-            .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
-    final value = _result.data!;
+    final _result = await _dio.fetch<Map<String, dynamic>>(
+        _setStreamType<YelpReviewInfo>(
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
+                .compose(_dio.options, '/v3/businesses/$id/reviews',
+                    queryParameters: queryParameters, data: _data)
+                .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
+    final value = YelpReviewInfo.fromJson(_result.data!);
     return value;
   }
 
