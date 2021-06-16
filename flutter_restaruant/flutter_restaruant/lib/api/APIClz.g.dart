@@ -40,8 +40,14 @@ class _APIClz implements APIClz {
 
   @override
   Future<YelpSearchInfo> businessesSearch(
-      term, latitude, longitude, locale, limit,
-      {openAt, sortBy, price}) async {
+      {required term,
+      required latitude,
+      required longitude,
+      required locale,
+      required limit,
+      openAt,
+      sortBy,
+      price}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{};
     queryParameters.removeWhere((k, v) => v == null);

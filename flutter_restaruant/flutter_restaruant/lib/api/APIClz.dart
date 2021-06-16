@@ -22,13 +22,13 @@ abstract class APIClz {
       @Field("client_secret") String? clientSecret);
 
   @POST("/v3/businesses/search")
-  Future<YelpSearchInfo> businessesSearch(
-      @Field("term") String? term,
-      @Field("latitude") String? latitude,
-      @Field("longitude") String? longitude,
-      @Field("locale") String? locale,
-      @Field("limit") String? limit,
-      {@Field("openAt") String? openAt,
+  Future<YelpSearchInfo> businessesSearch({
+      @Field("term") String term,
+      @Field("latitude") double latitude,
+      @Field("longitude") double longitude,
+      @Field("locale") String locale,
+      @Field("limit") int limit,
+      @Field("openAt") int? openAt,
       @Field("sortBy") String? sortBy,
       @Field("price") String? price});
 
