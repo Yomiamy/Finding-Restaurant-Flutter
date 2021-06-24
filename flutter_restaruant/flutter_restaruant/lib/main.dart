@@ -14,7 +14,7 @@ class FindingRestaruantApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => PlatformApp(
       title:  "Find Restaurant",
-      home: BlocProvider(
+      home: BlocProvider<MainBloc>(
           create: (_) => MainBloc(repository: MainRepository()),
           child: MainPage(title: "Find Restaurant")
       )

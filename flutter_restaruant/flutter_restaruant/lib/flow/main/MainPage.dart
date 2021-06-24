@@ -51,12 +51,10 @@ class MainPageState extends State<MainPage> {
                 cacheExtent: RestaurantItemCell.IMAGE_H.toDouble(),
                 itemCount: state.searchInfo.businesses?.length ?? 0 ,
                 itemBuilder: (context, index) {
-                  YelpRestaurantSummaryInfo? summaryInfo = state.searchInfo.businesses?[index];
-                  String name = summaryInfo?.name ?? "";
-                  String imgUrl = summaryInfo?.image_url ?? "";
+                  YelpRestaurantSummaryInfo summaryInfo = state.searchInfo.businesses?[index] ?? YelpRestaurantSummaryInfo();
 
                   return GestureDetector(
-                      child: RestaurantItemCell(storeName: name, imgUrl: imgUrl),
+                      child: RestaurantItemCell(summaryInfo: summaryInfo),
                       onTap: () {
                         Navigator.of(context).push(platformPageRoute(context: context, builder: (context) {
                           // FIXME: TBD

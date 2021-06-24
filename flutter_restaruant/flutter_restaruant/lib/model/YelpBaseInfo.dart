@@ -21,9 +21,9 @@ class YelpBaseInfo {
     "5.0": Image.asset("images/Star_rating_5_of_5.png", width: UIConstants.RATING_IMAGE_W, height: UIConstants.RATING_IMAGE_H)
   };
 
-  Image getRatingImage(String rating) => YelpBaseInfo._sRatingImgMap[rating];
-
   YelpBaseInfo();
+
+  Image getRatingImage(String rating) => YelpBaseInfo._sRatingImgMap[rating];
 
   factory YelpBaseInfo.fromJson(Map<String, dynamic> json) =>
       _$YelpBaseInfoFromJson(json);
