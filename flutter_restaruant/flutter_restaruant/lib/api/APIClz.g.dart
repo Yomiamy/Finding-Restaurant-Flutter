@@ -40,25 +40,23 @@ class _APIClz implements APIClz {
 
   @override
   Future<YelpSearchInfo> businessesSearch(
-      term, latitude, longitude, locale, limit,
-      {openAt, sortBy, price}) async {
+      {term, latitude, longitude, locale, limit, openAt, sortBy, price}) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    queryParameters.removeWhere((k, v) => v == null);
-    final _data = {
-      'term': term,
-      'latitude': latitude,
-      'longitude': longitude,
-      'locale': locale,
-      'limit': limit,
-      'openAt': openAt,
-      'sortBy': sortBy,
-      'price': price
+    final queryParameters = <String, dynamic>{
+      r'term': term,
+      r'latitude': latitude,
+      r'longitude': longitude,
+      r'locale': locale,
+      r'limit': limit,
+      r'openAt': openAt,
+      r'sortBy': sortBy,
+      r'price': price
     };
-    _data.removeWhere((k, v) => v == null);
+    queryParameters.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<YelpSearchInfo>(
-            Options(method: 'POST', headers: <String, dynamic>{}, extra: _extra)
+            Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)
                 .compose(_dio.options, '/v3/businesses/search',
                     queryParameters: queryParameters, data: _data)
                 .copyWith(baseUrl: baseUrl ?? _dio.options.baseUrl)));
