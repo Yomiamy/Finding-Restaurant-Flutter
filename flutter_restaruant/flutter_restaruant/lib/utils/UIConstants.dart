@@ -7,6 +7,6 @@ class UIConstants {
   /// [UI]
   static const String NO_IMAGE = "images/empty.png";
   static const double RATING_IMAGE_W = 100.0;
-  static const double RATING_IMAGE_H = 100.0;
+  static const double RATING_IMAGE_H = 20.0;
 
 }
