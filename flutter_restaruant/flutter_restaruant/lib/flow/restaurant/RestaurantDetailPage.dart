@@ -4,13 +4,14 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/cell/restaurant_detail/RestaurantDetailCellCollection.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantDetailInfo.dart';
+import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
 
-  final YelpRestaurantDetailInfo detailInfo;
+  static const ROUTE_NAME = "RestaurantDetailPage";
 
-  const RestaurantDetailPage({required this.detailInfo});
+  const RestaurantDetailPage();
 
   @override
   State<StatefulWidget> createState() => RestaurantDetailState();
@@ -18,27 +19,38 @@ class RestaurantDetailPage extends StatefulWidget {
 
 class RestaurantDetailState extends State<RestaurantDetailPage> {
 
+  late YelpRestaurantDetailInfo detailInfo;
+
   @override
-  Widget build(BuildContext context) => PlatformScaffold(
-      appBar: PlatformAppBar(
-          leading: PlatformIconButton(
-              padding: EdgeInsets.all(0),
-              onPressed: () => Navigator.of(context).pop(),
-              materialIcon: Icon(Icons.arrow_back,
-                  color: Color(UIConstants.BackBtnColor)),
-              cupertinoIcon: Icon(CupertinoIcons.back,
-                  color: Color(UIConstants.BackBtnColor))),
-          title: Text(widget.detailInfo.name ?? "",
-              style: TextStyle(color: Colors.white)),
-          backgroundColor: Color(UIConstants.AppBarColor)),
-      body: Padding(
-        padding: EdgeInsets.only(bottom: 10),
-        child: ListView(children: [
-          RestaurantHeadCell(imageUrl: widget.detailInfo.image_url ?? ""),
-          RestaurantInfoCell(),
-          RestaurantImageCell(imageUrl: widget.detailInfo.image_url ?? ""),
-          RestaurantBusinessCell(),
-          RestaurantCommentCell()
-        ])
-      ));
+  void initState() {
+    super.initState();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final args = ModalRoute.of(context)!.settings.arguments as Tuple2<YelpRestaurantDetailInfo, dynamic>;
+    this.detailInfo = args.item1;
+
+    return PlatformScaffold(
+        appBar: PlatformAppBar(
+            leading: PlatformIconButton(
+                padding: EdgeInsets.all(0),
+                onPressed: () => Navigator.of(context).pop(),
+                materialIcon: Icon(Icons.arrow_back,
+                    color: Color(UIConstants.BackBtnColor)),
+                cupertinoIcon: Icon(CupertinoIcons.back,
+                    color: Color(UIConstants.BackBtnColor))),
+            title: Text(this.detailInfo.name ?? "",
+                style: TextStyle(color: Colors.white)),
+            backgroundColor: Color(UIConstants.AppBarColor)),
+        body: Padding(
+            padding: EdgeInsets.only(bottom: 10),
+            child: ListView(children: [
+              RestaurantHeadCell(imageUrl: this.detailInfo.image_url ?? ""),
+              RestaurantInfoCell(),
+              RestaurantImageCell(imageUrl: this.detailInfo.image_url ?? ""),
+              RestaurantBusinessCell(),
+              RestaurantCommentCell()
+            ])));
+  }
 }
