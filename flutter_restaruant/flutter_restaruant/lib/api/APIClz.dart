@@ -34,7 +34,7 @@ abstract class APIClz {
 
   @GET("/v3/businesses/{locationName}")
   Future<YelpRestaurantDetailInfo> business(
-      @Path() String? locationName,
+      @Path() String? id,
       @Field("locale") String? locale);
 
   @GET("/v3/businesses/{id}/reviews")
