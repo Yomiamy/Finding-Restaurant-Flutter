@@ -32,10 +32,10 @@ abstract class APIClz {
       @Query("sortBy") String? sortBy,
       @Query("price") String? price});
 
-  @GET("/v3/businesses/{locationName}")
+  @GET("/v3/businesses/{id}")
   Future<YelpRestaurantDetailInfo> business(
       @Path() String? id,
-      @Field("locale") String? locale);
+      @Query("locale") String? locale);
 
   @GET("/v3/businesses/{id}/reviews")
   Future<YelpReviewInfo> review(@Path() String? id,
