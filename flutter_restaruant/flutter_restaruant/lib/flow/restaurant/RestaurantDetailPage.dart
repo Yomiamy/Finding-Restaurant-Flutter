@@ -77,7 +77,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                   return ListView(children: [
                     RestaurantHeadCell(imageUrl: state.detailInfo.image_url ?? ""),
                     RestaurantInfoCell(),
-                    RestaurantImageCell(imageUrl: state.detailInfo.image_url ?? ""),
+                    RestaurantImageCell(photos: state.detailInfo.photos ?? []),
                     RestaurantBusinessCell(),
                     RestaurantCommentCell(),
                   ]);
