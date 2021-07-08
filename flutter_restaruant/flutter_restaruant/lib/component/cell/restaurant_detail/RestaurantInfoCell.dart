@@ -14,10 +14,7 @@ class RestaurantInfoCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    List<String> categoryTitles = [];
-    this.detailInfo.categories?.forEach((category) {
-      categoryTitles.add(category.title ?? "");
-    });
+    String category = this.detailInfo.categories?.map((category) => category.title ?? "").join(" ") ?? "";
 
     return Padding(
         padding: EdgeInsets.only(left: 5, right: 5, top: 10),
@@ -53,7 +50,7 @@ class RestaurantInfoCell extends StatelessWidget {
                           Text(this.detailInfo.phone ?? "",
                               style: TextStyle(color: Colors.blue))
                         ]),
-                        Text(categoryTitles.join(" "),
+                        Text(category,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(color: Colors.grey)),
                         this

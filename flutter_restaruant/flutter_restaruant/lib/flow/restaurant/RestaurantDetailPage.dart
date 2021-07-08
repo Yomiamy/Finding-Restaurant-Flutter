@@ -3,6 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:flutter_restaruant/component/EmptyDataWidget.dart';
+import 'package:flutter_restaruant/component/LoadingWidget.dart';
 import 'package:flutter_restaruant/component/cell/restaurant_detail/RestaurantDetailCellCollection.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantDetailInfo.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
@@ -34,7 +36,8 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
     final args = ModalRoute.of(context)!.settings.arguments as Tuple2<String, dynamic>;
     final id = args.item1;
 
-    BlocProvider.of<RestaurantDetailBloc>(context).add(FetchDetailInfo(id: id));
+    RestaurantDetailBloc bloc = BlocProvider.of<RestaurantDetailBloc>(context);
+    bloc.add(FetchDetailInfo(id: id));
 
     return PlatformScaffold(
         appBar: PlatformAppBar(
@@ -46,10 +49,11 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 cupertinoIcon: Icon(CupertinoIcons.back,
                     color: Color(UIConstants.BackBtnColor))),
             title: BlocBuilder<RestaurantDetailBloc, RestaurantDetailState> (
+              bloc: bloc,
               builder: (context, state) {
                 if(state is Success) {
                   return Text(state.detailInfo.name ?? "",
-                      style: TextStyle(
+                          style: TextStyle(
                           color: Colors.white,
                           fontSize: Dimens.xxxhFontSize
                       ));
@@ -63,16 +67,10 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
         body: Padding(
             padding: EdgeInsets.only(bottom: 10),
             child: BlocBuilder<RestaurantDetailBloc, RestaurantDetailState> (
+                bloc: bloc,
               builder: (context, state) {
                 if (state is InProgress) {
-                  return Center(child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget> [
-                        CircularProgressIndicator(),
-                        Text("Loading...")
-                      ]
-                    )
-                  );
+                  return Center(child: LoadingWidget(text: "Loading..."));
                 } else if(state is Success) {
                   return ListView(children: [
                     RestaurantHeadCell(imageUrl: state.detailInfo.image_url ?? ""),
@@ -82,14 +80,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                     RestaurantCommentCell(),
                   ]);
                 } else {
-                  return Center(
-                      child: Text("No Data.",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize:  Dimens.xxxhFontSize
-                      )
-                    )
-                  );
+                  return EmptyDataWidget();
                 }
               }
             )
