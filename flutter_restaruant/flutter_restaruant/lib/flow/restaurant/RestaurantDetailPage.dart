@@ -35,7 +35,8 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
     final args = ModalRoute.of(context)!.settings.arguments as Tuple2<String, dynamic>;
     final id = args.item1;
 
-    BlocProvider.of<RestaurantDetailBloc>(context).add(FetchDetailInfo(id: id));
+    RestaurantDetailBloc bloc = BlocProvider.of<RestaurantDetailBloc>(context);
+    bloc.add(FetchDetailInfo(id: id));
 
     return PlatformScaffold(
         appBar: PlatformAppBar(
@@ -47,10 +48,11 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 cupertinoIcon: Icon(CupertinoIcons.back,
                     color: Color(UIConstants.BackBtnColor))),
             title: BlocBuilder<RestaurantDetailBloc, RestaurantDetailState> (
+              bloc: bloc,
               builder: (context, state) {
                 if(state is Success) {
                   return Text(state.detailInfo.name ?? "",
-                      style: TextStyle(
+                          style: TextStyle(
                           color: Colors.white,
                           fontSize: Dimens.xxxhFontSize
                       ));
@@ -64,6 +66,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
         body: Padding(
             padding: EdgeInsets.only(bottom: 10),
             child: BlocBuilder<RestaurantDetailBloc, RestaurantDetailState> (
+                bloc: bloc,
               builder: (context, state) {
                 if (state is InProgress) {
                   return Center(child: LoadingWidget(text: "Loading..."));
