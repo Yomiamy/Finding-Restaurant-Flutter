@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:flutter_restaruant/component/LoadingWidget.dart';
 import 'package:flutter_restaruant/component/cell/restaurant_detail/RestaurantDetailCellCollection.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantDetailInfo.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
@@ -65,14 +66,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
             child: BlocBuilder<RestaurantDetailBloc, RestaurantDetailState> (
               builder: (context, state) {
                 if (state is InProgress) {
-                  return Center(child: Column(
-                      mainAxisSize: MainAxisSize.min,
-                      children: <Widget> [
-                        CircularProgressIndicator(),
-                        Text("Loading...")
-                      ]
-                    )
-                  );
+                  return Center(child: LoadingWidget(text: "Loading..."));
                 } else if(state is Success) {
                   return ListView(children: [
                     RestaurantHeadCell(imageUrl: state.detailInfo.image_url ?? ""),
