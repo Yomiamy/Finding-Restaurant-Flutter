@@ -76,7 +76,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 } else if(state is Success) {
                   return ListView(children: [
                     RestaurantHeadCell(imageUrl: state.detailInfo.image_url ?? ""),
-                    RestaurantInfoCell(),
+                    RestaurantInfoCell(detailInfo: state.detailInfo),
                     RestaurantImageCell(photos: state.detailInfo.photos ?? []),
                     RestaurantBusinessCell(),
                     RestaurantCommentCell(),
@@ -88,7 +88,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                           fontWeight: FontWeight.bold,
                           fontSize:  Dimens.xxxhFontSize
                       )
-                  )
+                    )
                   );
                 }
               }
