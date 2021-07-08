@@ -5,9 +5,9 @@ class RestaurantImageCell extends StatelessWidget {
 
   static const int IMAGE_H = 200;
 
-  final String _imageUrl;
+  final List<String> _photos;
 
-  const RestaurantImageCell({Key? key, required String imageUrl}) : this._imageUrl = imageUrl, super(key: key);
+  const RestaurantImageCell({Key? key, required List<String> photos}) : this._photos = photos, super(key: key);
 
   @override
   Widget build(BuildContext context) => Container(
@@ -15,12 +15,12 @@ class RestaurantImageCell extends StatelessWidget {
       height: MediaQuery.of(context).size.width / 3,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: 10,
+          itemCount: this._photos.length,
           itemBuilder: (context, index) => Padding(
             padding: EdgeInsets.symmetric(horizontal: 5),
             child: FadeInImage.assetNetwork(
                 placeholder: UIConstants.NO_IMAGE,
-                image: this._imageUrl,
+                image: this._photos[index],
                 imageCacheHeight: RestaurantImageCell.IMAGE_H,
                 imageCacheWidth:
                 MediaQuery.of(context).size.width.toInt(),

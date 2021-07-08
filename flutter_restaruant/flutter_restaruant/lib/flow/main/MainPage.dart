@@ -9,10 +9,9 @@ import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.d
 import 'package:flutter_restaruant/flow/restaurant/RestaurantDetailPage.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantDetailInfo.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
-import 'package:flutter_restaruant/model/YelpSearchInfo.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
+import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
-
 import 'bloc/MainBloc.dart';
 
 class MainPage extends StatefulWidget {
@@ -56,12 +55,10 @@ class MainPageState extends State<MainPage> {
                   return GestureDetector(
                       child: RestaurantItemCell(summaryInfo: summaryInfo),
                       onTap: () {
-                        Navigator.of(context).push(platformPageRoute(context: context, builder: (context) {
-                          // FIXME: TBD
-                          YelpRestaurantDetailInfo detailInfo = YelpRestaurantDetailInfo();
-                          detailInfo.image_url = "https://image.cache.storm.mg/styles/smg-800x533-fp/s3/media/image/2018/10/19/20181019-122810_U9180_M464177_c0e4.jpg?itok=S8YLNR-e";
-                          return RestaurantDetailPage(detailInfo: detailInfo);
-                        }));
+                        String id = summaryInfo.id ?? "";
+                        Tuple2 arguments = Tuple2<String, dynamic>(id, null);
+
+                        Navigator.of(context).pushNamed(RestaurantDetailPage.ROUTE_NAME, arguments: arguments);
                       });
                 });
           } else if(state is InProgress) {
@@ -74,8 +71,9 @@ class MainPageState extends State<MainPage> {
               )
             );
           } else {
-            return Center(child: Text("No Data.",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize:  Dimens.hFontSize)
+            return Center(
+                child: Text("No Data.",
+                style: TextStyle(fontWeight: FontWeight.bold, fontSize:  Dimens.xxxhFontSize)
               )
             );
           }

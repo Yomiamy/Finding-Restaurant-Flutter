@@ -1,5 +1,6 @@
 import 'package:flutter_restaruant/api/APIClz.dart';
 import 'package:flutter_restaruant/model/YelpSearchInfo.dart';
+import 'package:flutter_restaruant/utils/Constants.dart';
 
 class MainRepository {
   // FIXME: Just for test
@@ -7,6 +8,6 @@ class MainRepository {
       term: "Restaurants",
       latitude: 25.047908,
       longitude: 121.517315,
-      locale: "zh_TW",
+      locale: Constants.LOCALE,
       limit: 50);
 }
