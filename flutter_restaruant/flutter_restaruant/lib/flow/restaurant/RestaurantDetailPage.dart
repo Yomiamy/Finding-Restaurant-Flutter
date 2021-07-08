@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:flutter_restaruant/component/EmptyDataWidget.dart';
 import 'package:flutter_restaruant/component/LoadingWidget.dart';
 import 'package:flutter_restaruant/component/cell/restaurant_detail/RestaurantDetailCellCollection.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantDetailInfo.dart';
@@ -79,14 +80,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                     RestaurantCommentCell(),
                   ]);
                 } else {
-                  return Center(
-                      child: Text("No Data.",
-                      style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize:  Dimens.xxxhFontSize
-                      )
-                    )
-                  );
+                  return EmptyDataWidget();
                 }
               }
             )

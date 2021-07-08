@@ -5,6 +5,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:flutter_restaruant/component/EmptyDataWidget.dart';
 import 'package:flutter_restaruant/component/LoadingWidget.dart';
 import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.dart';
 import 'package:flutter_restaruant/flow/restaurant/RestaurantDetailPage.dart';
@@ -65,11 +66,7 @@ class MainPageState extends State<MainPage> {
           } else if(state is InProgress) {
             return Center(child: LoadingWidget(text: "Loading..."));
           } else {
-            return Center(
-                child: Text("No Data.",
-                style: TextStyle(fontWeight: FontWeight.bold, fontSize:  Dimens.xxxhFontSize)
-              )
-            );
+            return EmptyDataWidget();
           }
         }
       )
