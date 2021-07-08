@@ -19,5 +19,5 @@ class FetchDetailInfo extends RestaurantDetailEvent {
   String toString() => "Fetch detail info event.";
 
   @override
-  List<Object> get props => [];
+  List<Object> get props => [this.id];
 }

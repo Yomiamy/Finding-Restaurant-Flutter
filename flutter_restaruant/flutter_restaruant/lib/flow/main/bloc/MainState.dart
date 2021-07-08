@@ -32,7 +32,7 @@ class Success extends MainState {
   const Success({required this.searchInfo});
 
   @override
-  List<Object> get props => [searchInfo.hashCode];
+  List<Object> get props => [this.searchInfo];
 
   @override
   String toString() => "Success get search info ${this.searchInfo}";
