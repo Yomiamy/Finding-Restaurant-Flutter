@@ -4,10 +4,10 @@ import 'package:flutter_restaruant/utils/Constants.dart';
 
 class MainRepository {
   // FIXME: Just for test
-  Future<YelpSearchInfo> fetchYelpSearchInfo() => apiInstance.businessesSearch(
+  Future<YelpSearchInfo> fetchYelpSearchInfo(double lat, double lng) => apiInstance.businessesSearch(
       term: "Restaurants",
-      latitude: 25.047908,
-      longitude: 121.517315,
+      latitude: lat,
+      longitude: lng,
       locale: Constants.LOCALE,
       limit: 50);
 }
