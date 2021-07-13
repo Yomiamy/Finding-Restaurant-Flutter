@@ -83,10 +83,9 @@ class _APIClz implements APIClz {
   @override
   Future<YelpReviewInfo> review(id, locale) async {
     const _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
+    final queryParameters = <String, dynamic>{r'locale': locale};
     queryParameters.removeWhere((k, v) => v == null);
-    final _data = {'locale': locale};
-    _data.removeWhere((k, v) => v == null);
+    final _data = <String, dynamic>{};
     final _result = await _dio.fetch<Map<String, dynamic>>(
         _setStreamType<YelpReviewInfo>(
             Options(method: 'GET', headers: <String, dynamic>{}, extra: _extra)

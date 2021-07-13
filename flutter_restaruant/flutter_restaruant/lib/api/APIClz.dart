@@ -39,7 +39,7 @@ abstract class APIClz {
 
   @GET("/v3/businesses/{id}/reviews")
   Future<YelpReviewInfo> review(@Path() String? id,
-      @Field("locale") String? locale);
+      @Query("locale") String? locale);
 }
 
 final dioClient = DioClient(
