@@ -7,7 +7,7 @@ part 'YelpReviewDetailInfo.g.dart';
 @JsonSerializable()
 class YelpReviewDetailInfo extends YelpBaseInfo {
   String? id;
-  int? rating;
+  double? rating;
   YelpReviewerInfo? user;
   String? text;
   String? time_created;

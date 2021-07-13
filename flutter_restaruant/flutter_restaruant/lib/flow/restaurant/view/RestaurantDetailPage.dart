@@ -6,12 +6,9 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/EmptyDataWidget.dart';
 import 'package:flutter_restaruant/component/LoadingWidget.dart';
 import 'package:flutter_restaruant/component/cell/restaurant_detail/RestaurantDetailCellCollection.dart';
-import 'package:flutter_restaruant/model/YelpRestaurantDetailInfo.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-
 import '../bloc/RestaurantDetailBloc.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
@@ -76,7 +73,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                     RestaurantInfoCell(detailInfo: state.detailInfo),
                     RestaurantImageCell(photos: state.detailInfo.photos ?? []),
                     RestaurantBusinessHourCell(businessTimeInfos: state.detailInfo.hours?[0].open ?? []),
-                    RestaurantCommentCell(),
+                    RestaurantCommentCell(reviewInfos: state.reviewInfo.reviews ?? [])
                   ]);
                 } else {
                   return EmptyDataWidget();

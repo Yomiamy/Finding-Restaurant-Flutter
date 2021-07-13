@@ -9,7 +9,7 @@ part of 'YelpReviewDetailInfo.dart';
 YelpReviewDetailInfo _$YelpReviewDetailInfoFromJson(Map<String, dynamic> json) {
   return YelpReviewDetailInfo()
     ..id = json['id'] as String?
-    ..rating = json['rating'] as int?
+    ..rating = (json['rating'] as num?)?.toDouble()
     ..user = json['user'] == null
         ? null
         : YelpReviewerInfo.fromJson(json['user'] as Map<String, dynamic>)

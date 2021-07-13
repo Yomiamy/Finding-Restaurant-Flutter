@@ -3,6 +3,9 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_restaruant/flow/restaurant/repository/RestaurantDetailRepository.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantDetailInfo.dart';
+import 'package:flutter_restaruant/model/YelpReviewDetailInfo.dart';
+import 'package:flutter_restaruant/model/YelpReviewInfo.dart';
+import 'package:flutter_restaruant/model/YelpReviewerInfo.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
@@ -28,9 +31,10 @@ class RestaurantDetailBloc extends Bloc<RestaurantDetailEvent, RestaurantDetailS
     try {
       yield InProgress();
 
-      final YelpRestaurantDetailInfo detailInfo =  await this._detailRepository.fetchYelpRestaurantDetailInfo(event.id);
+      final YelpRestaurantDetailInfo detailInfo = await this._detailRepository.fetchYelpRestaurantDetailInfo(event.id);
+      final YelpReviewInfo reviewInfo = await this._detailRepository.fetchYelpRestaurantReviewInfo(event.id);
 
-      yield Success(detailInfo: detailInfo);
+      yield Success(detailInfo: detailInfo, reviewInfo: reviewInfo);
     } on Exception catch (_) {
       yield Failure();
     }

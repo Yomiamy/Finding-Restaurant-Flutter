@@ -27,11 +27,12 @@ class InProgress extends RestaurantDetailState {
 class Success extends RestaurantDetailState {
 
   final YelpRestaurantDetailInfo detailInfo;
+  final YelpReviewInfo reviewInfo;
 
-  const Success({required this.detailInfo});
+  const Success({required this.detailInfo, required this.reviewInfo});
 
   @override
-  List<Object> get props => [detailInfo.hashCode];
+  List<Object> get props => [detailInfo.hashCode, reviewInfo.hashCode];
 
   @override
   String toString() => "Success get detail info ${this.detailInfo}";
