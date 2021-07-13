@@ -25,6 +25,31 @@ class YelpBaseInfo {
 
   Image getRatingImage(String rating) => YelpBaseInfo._sRatingImgMap[rating];
 
+  String getWeekDayStrByIndex(int day) {
+    switch(day) {
+      case 0:
+        return "星期一";
+      case 1:
+        return "星期二";
+      case 2:
+        return "星期三";
+      case 3:
+        return "星期四";
+      case 4:
+        return "星期五";
+      case 5:
+        return "星期六";
+      case 6:
+        return "星期日";
+    }
+    return "";
+  }
+
+  bool isNowWeedDayMatchYelpWeekDay({required int nowWeekDay, required int yelpWeekDay}) {
+    if(nowWeekDay == 1 && yelpWeekDay == 6) return true;
+    return (nowWeekDay - 2) == yelpWeekDay;
+  }
+
   factory YelpBaseInfo.fromJson(Map<String, dynamic> json) =>
       _$YelpBaseInfoFromJson(json);
 

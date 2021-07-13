@@ -12,7 +12,7 @@ import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import 'bloc/RestaurantDetailBloc.dart';
+import '../bloc/RestaurantDetailBloc.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
 
@@ -38,7 +38,6 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
 
     RestaurantDetailBloc bloc = BlocProvider.of<RestaurantDetailBloc>(context);
     bloc.add(FetchDetailInfo(id: id));
-
     return PlatformScaffold(
         appBar: PlatformAppBar(
             leading: PlatformIconButton(
@@ -76,7 +75,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                     RestaurantHeadCell(imageUrl: state.detailInfo.image_url ?? ""),
                     RestaurantInfoCell(detailInfo: state.detailInfo),
                     RestaurantImageCell(photos: state.detailInfo.photos ?? []),
-                    RestaurantBusinessCell(),
+                    RestaurantBusinessHourCell(businessTimeInfos: state.detailInfo.hours?[0].open ?? []),
                     RestaurantCommentCell(),
                   ]);
                 } else {

@@ -8,13 +8,13 @@ class RestaurantInfoCell extends StatelessWidget {
   static const int MAP_IMAGE_W = 140;
   static const int MAP_IMAGE_H = 140;
 
-  final YelpRestaurantDetailInfo detailInfo;
+  final YelpRestaurantDetailInfo _detailInfo;
 
-  const RestaurantInfoCell({Key? key = const Key("RestaurantImageCell"), required this.detailInfo}) : super(key: key);
+  const RestaurantInfoCell({Key? key = const Key("RestaurantImageCell"), required YelpRestaurantDetailInfo detailInfo}) : this._detailInfo = detailInfo,  super(key: key);
 
   @override
   Widget build(BuildContext context) {
-    String category = this.detailInfo.categories?.map((category) => category.title ?? "").join(" ") ?? "";
+    String category = this._detailInfo.categories?.map((category) => category.title ?? "").join(" ") ?? "";
 
     return Padding(
         padding: EdgeInsets.only(left: 5, right: 5, top: 10),
@@ -40,23 +40,23 @@ class RestaurantInfoCell extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                            this.detailInfo.location?.display_address?.join("") ?? "",
+                            this._detailInfo.location?.display_address?.join("") ?? "",
                             style: TextStyle(fontWeight: FontWeight.w700),
                             overflow: TextOverflow.ellipsis),
                         Row(children: <Widget>[
                           Text("電話:",
                               style: TextStyle(fontWeight: FontWeight.w700)),
                           SizedBox(width: 10),
-                          Text(this.detailInfo.phone ?? "",
+                          Text(this._detailInfo.phone ?? "",
                               style: TextStyle(color: Colors.blue))
                         ]),
                         Text(category,
                             overflow: TextOverflow.ellipsis,
                             style: TextStyle(color: Colors.grey)),
                         this
-                            .detailInfo
-                            .getRatingImage(this.detailInfo.rating.toString()),
-                        Text("${this.detailInfo.review_count}則評論",
+                            ._detailInfo
+                            .getRatingImage(this._detailInfo.rating.toString()),
+                        Text("${this._detailInfo.review_count}則評論",
                             style: TextStyle(
                                 fontSize: Dimens.mFontSize,
                                 color: Colors.grey)),
