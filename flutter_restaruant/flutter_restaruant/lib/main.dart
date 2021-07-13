@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/flow/main/bloc/MainBloc.dart';
 import 'package:flutter_restaruant/flow/main/repository/MainRepository.dart';
-import 'flow/main/MainPage.dart';
+import 'flow/main/view/MainPage.dart';
 import 'routes/RoutesTable.dart';
 
 void main() {
