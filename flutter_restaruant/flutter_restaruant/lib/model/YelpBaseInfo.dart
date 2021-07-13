@@ -45,6 +45,11 @@ class YelpBaseInfo {
     return "";
   }
 
+  bool isNowWeedDayMatchYelpWeekDay({required int nowWeekDay, required int yelpWeekDay}) {
+    if(nowWeekDay == 1 && yelpWeekDay == 6) return true;
+    return (nowWeekDay - 2) == yelpWeekDay;
+  }
+
   factory YelpBaseInfo.fromJson(Map<String, dynamic> json) =>
       _$YelpBaseInfoFromJson(json);
 
