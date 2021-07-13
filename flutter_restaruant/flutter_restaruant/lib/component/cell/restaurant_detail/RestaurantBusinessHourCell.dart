@@ -1,11 +1,42 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_restaruant/model/YelpResaruantBusinessTime.dart';
+import 'package:flutter_restaruant/model/YelpRestaurantHoursInfo.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 
-class RestaurantBusinessCell extends StatelessWidget {
+class RestaurantBusinessHourCell extends StatelessWidget {
 
-  const RestaurantBusinessCell({Key? key = const Key("RestaurantBusinessCell")}) : super(key: key);
+  final List<Widget> _businessTimeWidgets = <Widget>[];
 
-  Widget createBusinessTimeRow(String weedDay, String startTime, String endTime) => Padding(
+  RestaurantBusinessHourCell({Key? key = const Key("RestaurantBusinessCell"), required List<YelpResaruantBusinessTime> businessTimeInfos}): super(key: key) {
+    this._initBusinessTimeWidgets(businessTimeInfos);
+  }
+
+  void _initBusinessTimeWidgets(List<YelpResaruantBusinessTime> businessTimeInfos) {
+    Map<int, List<Widget>> businessTimeWidgetMap = <int, List<Widget>>{};
+
+    businessTimeInfos.forEach((businessTimeInfo) {
+      int day = businessTimeInfo.day ?? 0;
+      String dayStr = businessTimeInfo.dayStr;
+      String start = businessTimeInfo.start ?? "";
+      String end = businessTimeInfo.end ?? "";
+      Widget businessTimeWidget;
+      List<Widget> businessTimeWidgets;
+
+      if(!businessTimeWidgetMap.containsKey(businessTimeInfo.day)) {
+        businessTimeWidgets = <Widget>[];
+        businessTimeWidget = this._createBusinessTimeRow(dayStr, start, end);
+      } else {
+        businessTimeWidgets = businessTimeWidgetMap[day]!;
+        businessTimeWidget = this._createBusinessTimeRow("", start, end);
+      }
+      businessTimeWidgets.add(businessTimeWidget);
+      businessTimeWidgetMap[day] = businessTimeWidgets;
+    });
+
+    businessTimeWidgetMap.values.forEach((businessTimeWidgets) => this._businessTimeWidgets.addAll(businessTimeWidgets));
+  }
+
+  Widget _createBusinessTimeRow(String weedDay, String startTime, String endTime) => Padding(
       padding: EdgeInsets.only(top: 5),
       child: Stack(children: [
         Align(child: Text(weedDay), alignment: Alignment.centerLeft),
@@ -29,15 +60,9 @@ class RestaurantBusinessCell extends StatelessWidget {
                               fontWeight: FontWeight.bold))))),
           Padding(
               padding: EdgeInsets.only(left: 10, right: 10),
-              child: Column(mainAxisSize: MainAxisSize.min, children: [
-                this.createBusinessTimeRow("星期一", "1700", "2200"),
-                this.createBusinessTimeRow("星期二", "1700", "2200"),
-                this.createBusinessTimeRow("星期三", "1700", "2200"),
-                this.createBusinessTimeRow("星期四", "1700", "2200"),
-                this.createBusinessTimeRow("星期五", "1700", "2200"),
-                this.createBusinessTimeRow("星期六", "1700", "2200"),
-                this.createBusinessTimeRow("星期日", "1700", "2200"),
-              ]))
+              child: Column(mainAxisSize: MainAxisSize.min,
+                  children: this._businessTimeWidgets
+              ))
         ]),
       );
 }
