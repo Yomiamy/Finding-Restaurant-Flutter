@@ -13,35 +13,37 @@ class RestaurantBusinessHourCell extends StatelessWidget {
 
   void _initBusinessTimeWidgets(List<YelpResaruantBusinessTime> businessTimeInfos) {
     Map<int, List<Widget>> businessTimeWidgetMap = <int, List<Widget>>{};
+    int nowWeekDay = DateTime.now().weekday;
 
     businessTimeInfos.forEach((businessTimeInfo) {
-      int day = businessTimeInfo.day ?? 0;
+      int yelpWeekDay = businessTimeInfo.day ?? 0;
       String dayStr = businessTimeInfo.dayStr;
       String start = businessTimeInfo.start ?? "";
       String end = businessTimeInfo.end ?? "";
+      bool isToday = businessTimeInfo.isNowWeedDayMatchYelpWeekDay(nowWeekDay: nowWeekDay, yelpWeekDay: yelpWeekDay);
       Widget businessTimeWidget;
       List<Widget> businessTimeWidgets;
 
       if(!businessTimeWidgetMap.containsKey(businessTimeInfo.day)) {
         businessTimeWidgets = <Widget>[];
-        businessTimeWidget = this._createBusinessTimeRow(dayStr, start, end);
+        businessTimeWidget = this._createBusinessTimeRow(isToday, dayStr, start, end);
       } else {
-        businessTimeWidgets = businessTimeWidgetMap[day]!;
-        businessTimeWidget = this._createBusinessTimeRow("", start, end);
+        businessTimeWidgets = businessTimeWidgetMap[yelpWeekDay]!;
+        businessTimeWidget = this._createBusinessTimeRow(isToday, "", start, end);
       }
       businessTimeWidgets.add(businessTimeWidget);
-      businessTimeWidgetMap[day] = businessTimeWidgets;
+      businessTimeWidgetMap[yelpWeekDay] = businessTimeWidgets;
     });
 
     businessTimeWidgetMap.values.forEach((businessTimeWidgets) => this._businessTimeWidgets.addAll(businessTimeWidgets));
   }
 
-  Widget _createBusinessTimeRow(String weedDay, String startTime, String endTime) => Padding(
+  Widget _createBusinessTimeRow(bool isToday, String weekDay, String startTime, String endTime) => Padding(
       padding: EdgeInsets.only(top: 5),
       child: Stack(children: [
-        Align(child: Text(weedDay), alignment: Alignment.centerLeft),
+        Align(child: Text(weekDay, style: TextStyle(fontWeight: isToday ? FontWeight.bold : FontWeight.normal)), alignment: Alignment.centerLeft),
         Align(
-            child: Text("$startTime - $endTime"),
+            child: Text("$startTime - $endTime", style: TextStyle(fontWeight: isToday ? FontWeight.bold : FontWeight.normal)),
             alignment: Alignment.centerRight)
       ]));
 
