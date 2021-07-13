@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/model/YelpReviewDetailInfo.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
+import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class RestaurantCommentCell extends StatelessWidget {
 
@@ -10,6 +11,7 @@ class RestaurantCommentCell extends StatelessWidget {
   static const double RATING_IMAGE_H = 20;
 
   final List<Widget> _commentWidgets = <Widget>[];
+  final ChromeSafariBrowser _browser = ChromeSafariBrowser();
 
   RestaurantCommentCell({Key? key = const Key("RestaurantCommentCell"), required List<YelpReviewDetailInfo> reviewInfos}): super(key: key) {
     this._initBusinessTimeWidgets(reviewInfos);
@@ -42,6 +44,14 @@ class RestaurantCommentCell extends StatelessWidget {
       GestureDetector(
           onTap: () {
             debugPrint("Comment Url = $commentUrl");
+            this._browser.open(
+                url: Uri.parse(commentUrl),
+                options: ChromeSafariBrowserClassOptions(
+                    android: AndroidChromeCustomTabsOptions(
+                        addDefaultShareMenuItem: false),
+                    ios: IOSSafariOptions(barCollapsingEnabled: true)
+                )
+            );
           },
           child: Padding(
               padding: EdgeInsets.only(bottom: 10),
