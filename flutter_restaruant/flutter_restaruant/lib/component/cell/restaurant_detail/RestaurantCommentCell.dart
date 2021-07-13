@@ -21,53 +21,70 @@ class RestaurantCommentCell extends StatelessWidget {
       String name = reviewInfo.user?.name ?? "";
       Image rateAsset = reviewInfo.getRatingImage(reviewInfo.rating?.toString() ?? "");
       String comment = reviewInfo.text ?? "";
+      String commentUrl = reviewInfo.url ?? "";
 
-      Widget commentWidget = this.createComment(headImgUrl: headImgUrl, name: name, rateAsset: rateAsset, comment: comment);
+      Widget commentWidget = this.createComment(
+          headImgUrl: headImgUrl,
+          name: name,
+          rateAsset: rateAsset,
+          comment: comment,
+          commentUrl: commentUrl);
       this._commentWidgets.add(commentWidget);
     });
   }
 
-  Widget createComment({required String headImgUrl, required String name, required Image rateAsset, required String comment}) => Padding(
-      padding: EdgeInsets.only(bottom: 10),
-      child: Row(
-          mainAxisSize: MainAxisSize.max,
-          crossAxisAlignment: CrossAxisAlignment.start, children: <Widget>[
-        SizedBox(
-            width: RestaurantCommentCell.IMAGE_H.toDouble(),
-            height: RestaurantCommentCell.IMAGE_W.toDouble(),
-            child: FadeInImage.assetNetwork(
-                placeholder: UIConstants.NO_IMAGE,
-                imageErrorBuilder: (context, error, trace) => Image.asset(UIConstants.NO_IMAGE),
-                image: headImgUrl,
-                imageCacheHeight: RestaurantCommentCell.IMAGE_H,
-                imageCacheWidth: RestaurantCommentCell.IMAGE_W,
-                placeholderCacheHeight: RestaurantCommentCell.IMAGE_H,
-                placeholderCacheWidth: RestaurantCommentCell.IMAGE_W,
-                fit: BoxFit.fill)
-        ),
-        Expanded(
-          child: Container(
-              padding: EdgeInsets.only(left: 10),
-              child: Column(
+  Widget createComment(
+          {required String headImgUrl,
+          required String name,
+          required Image rateAsset,
+          required String comment,
+          required String commentUrl}) =>
+      GestureDetector(
+          onTap: () {
+            debugPrint("Comment Url = $commentUrl");
+          },
+          child: Padding(
+              padding: EdgeInsets.only(bottom: 10),
+              child: Row(
+                  mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.start,
-                  mainAxisSize: MainAxisSize.min,
                   children: <Widget>[
-                    Text(name,
-                        style: TextStyle(fontWeight: FontWeight.w700, fontSize: Dimens.hFontSize),
-                        overflow: TextOverflow.ellipsis),
                     SizedBox(
-                        height: RestaurantCommentCell.RATING_IMAGE_H,
-                        child: rateAsset),
-                    Text(comment,
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis)
-                  ]
-              )
-          )
-        )
-      ]
-      )
-  );
+                        width: RestaurantCommentCell.IMAGE_H.toDouble(),
+                        height: RestaurantCommentCell.IMAGE_W.toDouble(),
+                        child: FadeInImage.assetNetwork(
+                            placeholder: UIConstants.NO_IMAGE,
+                            imageErrorBuilder: (context, error, trace) =>
+                                Image.asset(UIConstants.NO_IMAGE),
+                            image: headImgUrl,
+                            imageCacheHeight: RestaurantCommentCell.IMAGE_H,
+                            imageCacheWidth: RestaurantCommentCell.IMAGE_W,
+                            placeholderCacheHeight:
+                                RestaurantCommentCell.IMAGE_H,
+                            placeholderCacheWidth:
+                                RestaurantCommentCell.IMAGE_W,
+                            fit: BoxFit.fill)),
+                    Expanded(
+                        child: Container(
+                            padding: EdgeInsets.only(left: 10),
+                            child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                mainAxisSize: MainAxisSize.min,
+                                children: <Widget>[
+                                  Text(name,
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.w700,
+                                          fontSize: Dimens.hFontSize),
+                                      overflow: TextOverflow.ellipsis),
+                                  SizedBox(
+                                      height:
+                                          RestaurantCommentCell.RATING_IMAGE_H,
+                                      child: rateAsset),
+                                  Text(comment,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis)
+                                ])))
+                  ])));
 
   @override
   Widget build(BuildContext context) => Padding(
