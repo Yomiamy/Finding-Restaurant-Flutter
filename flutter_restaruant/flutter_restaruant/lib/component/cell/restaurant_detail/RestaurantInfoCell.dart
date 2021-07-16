@@ -111,7 +111,7 @@ class RestaurantInfoCell extends StatelessWidget {
                       scheme: Constants.HTTPS_SCHEME,
                       host: Constants.GOOGLE_MAP_HOST,
                       path: Constants.GOOGLE_MAP_NAVIGATION_PATH, parameters: <String, String> {
-                        Constants.GOOGLE_MAP_NAVIGATION_PARAMETER : sprintf("%f,%f", [lat, lng]),
+                        Constants.GOOGLE_MAP_NAVIGATION_LATLNG : sprintf("%f,%f", [lat, lng]),
                   });
                   Navigator.pop(context);
                 }),
@@ -119,10 +119,17 @@ class RestaurantInfoCell extends StatelessWidget {
                 isDefaultAction: false,
                 child: Text("街景視圖"),
                 onPressed: () {
-                  // let panormaViewController = PanoramaViewController()
-                  // panormaViewController.mLat = lat!
-                  // panormaViewController.mLng = lng!
-                  // self.navigationController?.pushViewController(panormaViewController, animated: true)
+                  double lat = this._detailInfo.coordinates?.latitude ?? 0;
+                  double lng = this._detailInfo.coordinates?.longitude ?? 0;
+
+                  Utils.openUrl(
+                      scheme: Constants.HTTPS_SCHEME,
+                      host: Constants.GOOGLE_MAP_HOST,
+                      path: Constants.GOOGLE_MAP_NAVIGATION_PATH, parameters: <String, String> {
+                        Constants.GOOGLE_MAP_NAVIGATION_LATLNG : "",
+                        Constants.GOOGLE_MAP_STREETVIEW_LAYER : "c",
+                        Constants.GOOGLE_MAP_STREETVIEW_LATLNG : sprintf("%f,%f", [lat, lng])
+                  });
                   Navigator.pop(context);
                 })
           ]);
