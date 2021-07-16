@@ -9,8 +9,11 @@ class RestaurantInfoCell extends StatelessWidget {
   static const int MAP_IMAGE_H = 140;
 
   final YelpRestaurantDetailInfo _detailInfo;
+  final String staticMapUrl;
 
-  const RestaurantInfoCell({Key? key = const Key("RestaurantImageCell"), required YelpRestaurantDetailInfo detailInfo}) : this._detailInfo = detailInfo,  super(key: key);
+  const RestaurantInfoCell({Key? key = const Key("RestaurantImageCell"),
+    required YelpRestaurantDetailInfo detailInfo,
+    required this.staticMapUrl}) : this._detailInfo = detailInfo,  super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -26,7 +29,7 @@ class RestaurantInfoCell extends StatelessWidget {
                   placeholder: UIConstants.NO_IMAGE,
                   imageErrorBuilder: (context, error, trace) =>
                       Image.asset(UIConstants.NO_IMAGE),
-                  image: "https://staticmapmaker.com/img/google@2x.png",
+                  image: this.staticMapUrl,
                   imageCacheHeight: RestaurantInfoCell.MAP_IMAGE_H,
                   imageCacheWidth: RestaurantInfoCell.MAP_IMAGE_W,
                   placeholderCacheHeight: RestaurantInfoCell.MAP_IMAGE_H,
