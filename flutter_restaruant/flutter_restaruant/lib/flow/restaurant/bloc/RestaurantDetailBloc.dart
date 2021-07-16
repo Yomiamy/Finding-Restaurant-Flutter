@@ -1,11 +1,13 @@
 import 'dart:async';
 
 import 'package:bloc/bloc.dart';
+import 'package:flutter_restaruant/api/GoogleApiUtil.dart';
 import 'package:flutter_restaruant/flow/restaurant/repository/RestaurantDetailRepository.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantDetailInfo.dart';
 import 'package:flutter_restaruant/model/YelpReviewDetailInfo.dart';
 import 'package:flutter_restaruant/model/YelpReviewInfo.dart';
 import 'package:flutter_restaruant/model/YelpReviewerInfo.dart';
+import 'package:geolocator/geolocator.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
@@ -34,7 +36,11 @@ class RestaurantDetailBloc extends Bloc<RestaurantDetailEvent, RestaurantDetailS
       final YelpRestaurantDetailInfo detailInfo = await this._detailRepository.fetchYelpRestaurantDetailInfo(event.id);
       final YelpReviewInfo reviewInfo = await this._detailRepository.fetchYelpRestaurantReviewInfo(event.id);
 
-      yield Success(detailInfo: detailInfo, reviewInfo: reviewInfo);
+      double lat = detailInfo.coordinates?.latitude ?? 0;
+      double lng = detailInfo.coordinates?.longitude ?? 0;
+      final String staticMapUrl = GoogleApiUtil.createStaticMapUrl(lat: lat, lng: lng);
+
+      yield Success(detailInfo: detailInfo, reviewInfo: reviewInfo, staticMapUrl: staticMapUrl);
     } on Exception catch (_) {
       yield Failure();
     }
