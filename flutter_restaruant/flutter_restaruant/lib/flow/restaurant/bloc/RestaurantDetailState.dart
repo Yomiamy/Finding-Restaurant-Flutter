@@ -28,8 +28,9 @@ class Success extends RestaurantDetailState {
 
   final YelpRestaurantDetailInfo detailInfo;
   final YelpReviewInfo reviewInfo;
+  final String staticMapUrl;
 
-  const Success({required this.detailInfo, required this.reviewInfo});
+  const Success({required this.detailInfo, required this.reviewInfo, required this.staticMapUrl});
 
   @override
   List<Object> get props => [detailInfo.hashCode, reviewInfo.hashCode];

@@ -70,7 +70,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 } else if(state is Success) {
                   return ListView(children: [
                     RestaurantHeadCell(imageUrl: state.detailInfo.image_url ?? ""),
-                    RestaurantInfoCell(detailInfo: state.detailInfo),
+                    RestaurantInfoCell(detailInfo: state.detailInfo, staticMapUrl: state.staticMapUrl),
                     RestaurantImageCell(photos: state.detailInfo.photos ?? []),
                     RestaurantBusinessHourCell(businessTimeInfos: state.detailInfo.hours?[0].open ?? []),
                     RestaurantCommentCell(reviewInfos: state.reviewInfo.reviews ?? [])
