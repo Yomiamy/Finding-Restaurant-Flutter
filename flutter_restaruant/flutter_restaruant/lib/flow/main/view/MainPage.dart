@@ -8,6 +8,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/EmptyDataWidget.dart';
 import 'package:flutter_restaruant/component/LoadingWidget.dart';
 import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.dart';
+import 'package:flutter_restaruant/flow/filter/view/FilterPage.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantDetailInfo.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
@@ -37,39 +38,62 @@ class MainPageState extends State<MainPage> {
     BlocProvider.of<MainBloc>(context).add(FetchSearchInfo());
 
     return PlatformScaffold(
-        body: NestedScrollView(
-      headerSliverBuilder: (BuildContext context, bool isBoxIsScrolled) =>
-          <Widget>[
-        CupertinoSliverNavigationBar(
-            largeTitle: title, backgroundColor: Color(UIConstants.AppBarColor))
-      ],
-      body: BlocBuilder<MainBloc, MainState>(
-        builder: (context, state) {
-          if(state is Success) {
-            return ListView.builder(
-                padding: EdgeInsets.only(top: 0, bottom: 0),
-                itemExtent: RestaurantItemCell.IMAGE_H.toDouble(),
-                cacheExtent: RestaurantItemCell.IMAGE_H.toDouble(),
-                itemCount: state.searchInfo.businesses?.length ?? 0 ,
-                itemBuilder: (context, index) {
-                  YelpRestaurantSummaryInfo summaryInfo = state.searchInfo.businesses?[index] ?? YelpRestaurantSummaryInfo();
+        body: Stack(
+          children: <Widget>[
+            NestedScrollView(
+                headerSliverBuilder: (BuildContext context, bool isBoxIsScrolled) =>
+                <Widget>[
+                  CupertinoSliverNavigationBar(
+                      largeTitle: title, backgroundColor: Color(UIConstants.AppBarColor))
+                ],
+                body: BlocBuilder<MainBloc, MainState>(
+                    builder: (context, state) {
+                      if(state is Success) {
+                        return ListView.builder(
+                            padding: EdgeInsets.only(top: 0, bottom: 0),
+                            itemExtent: RestaurantItemCell.IMAGE_H.toDouble(),
+                            cacheExtent: RestaurantItemCell.IMAGE_H.toDouble(),
+                            itemCount: state.searchInfo.businesses?.length ?? 0 ,
+                            itemBuilder: (context, index) {
+                              YelpRestaurantSummaryInfo summaryInfo = state.searchInfo.businesses?[index] ?? YelpRestaurantSummaryInfo();
 
-                  return GestureDetector(
-                      child: RestaurantItemCell(summaryInfo: summaryInfo),
-                      onTap: () {
-                        String id = summaryInfo.id ?? "";
-                        Tuple2 arguments = Tuple2<String, dynamic>(id, null);
+                              return GestureDetector(
+                                  child: RestaurantItemCell(summaryInfo: summaryInfo),
+                                  onTap: () {
+                                    String id = summaryInfo.id ?? "";
+                                    Tuple2 arguments = Tuple2<String, dynamic>(id, null);
 
-                        Navigator.of(context).pushNamed(RestaurantDetailPage.ROUTE_NAME, arguments: arguments);
-                      });
-                });
-          } else if(state is InProgress) {
-            return Center(child: LoadingWidget(text: "Loading..."));
-          } else {
-            return EmptyDataWidget();
-          }
-        }
-      )
-    ));
+                                    Navigator.of(context).pushNamed(RestaurantDetailPage.ROUTE_NAME, arguments: arguments);
+                                  });
+                            });
+                      } else if(state is InProgress) {
+                        return Center(child: LoadingWidget(text: "Loading..."));
+                      } else {
+                        return EmptyDataWidget();
+                      }
+                    }
+                )
+            ),
+            Align(
+              alignment: Alignment.bottomRight,
+              child:ElevatedButton(
+                  child: Icon(Icons.archive),
+                  onPressed: () {
+                    Tuple4 arguments = Tuple4<int, int, int, void Function(int priceLevelIndex, int sortingRuleIndex, int businessTime)>(
+                      0,
+                      0,
+                      0,
+                        (int priceLevelIndex, int sortingRulIndex, int businessTime) {
+                            debugPrint("priceLevelIndex = $priceLevelIndex, sortingRulIndex = $sortingRulIndex, businessTime = $businessTime}");
+                        }
+
+                    );
+                    Navigator.of(context).pushNamed(FilterPage.ROUTE_NAME, arguments: arguments);
+                  }
+              )
+            )
+          ]
+        )
+    );
   }
 }
