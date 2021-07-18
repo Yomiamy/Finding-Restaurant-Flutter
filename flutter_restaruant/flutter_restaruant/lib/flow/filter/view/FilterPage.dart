@@ -16,7 +16,6 @@ class FilterPage extends StatefulWidget {
 
 class _FilterPageState extends State<FilterPage> {
 
-  late void Function(int, int, int) _applyCallback;
   late int _priceLevelIndex = 0;
   late int _sortingRulIndex = 0;
   late int _businessTime = DateTime.now().millisecond;
@@ -24,11 +23,10 @@ class _FilterPageState extends State<FilterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as Tuple4<int, int, int, void Function(int, int, int)>;
+    final args = ModalRoute.of(context)!.settings.arguments as Tuple3<int, int, int>;
     this._priceLevelIndex = args.item1;
     this._sortingRulIndex = args.item2;
     this._businessTime = args.item3;
-    this._applyCallback = args.item4;
 
     return PlatformScaffold(
         appBar: PlatformAppBar(
@@ -43,7 +41,12 @@ class _FilterPageState extends State<FilterPage> {
               PlatformButton(
                   padding: EdgeInsets.all(0),
                   onPressed: () {
-                    this._applyCallback(this._priceLevelIndex, this._sortingRulIndex, this._businessTime);
+                    Tuple3<int, int, int> result = Tuple3<int, int, int>(
+                        this._priceLevelIndex,
+                        this._sortingRulIndex,
+                        this._businessTime
+                    );
+                    Navigator.pop(context, result);
                   },
                   child: Text("套用",
                       style: TextStyle(

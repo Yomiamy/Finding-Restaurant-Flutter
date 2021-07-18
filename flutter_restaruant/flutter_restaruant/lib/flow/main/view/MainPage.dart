@@ -78,17 +78,11 @@ class MainPageState extends State<MainPage> {
               alignment: Alignment.bottomRight,
               child:ElevatedButton(
                   child: Icon(Icons.archive),
-                  onPressed: () {
-                    Tuple4 arguments = Tuple4<int, int, int, void Function(int priceLevelIndex, int sortingRuleIndex, int businessTime)>(
-                      0,
-                      0,
-                      0,
-                        (int priceLevelIndex, int sortingRulIndex, int businessTime) {
-                            debugPrint("priceLevelIndex = $priceLevelIndex, sortingRulIndex = $sortingRulIndex, businessTime = $businessTime}");
-                        }
+                  onPressed: () async {
+                    Tuple3<int, int, int> arguments = Tuple3<int, int, int>(0, 0, 0);
+                    Tuple3<int, int, int> result = (await Navigator.of(context).pushNamed(FilterPage.ROUTE_NAME, arguments: arguments)) as Tuple3<int, int, int>;
 
-                    );
-                    Navigator.of(context).pushNamed(FilterPage.ROUTE_NAME, arguments: arguments);
+                    debugPrint("_priceLevelIndex = ${result.item1}, _sortingRulIndex = ${result.item2}, _businessTime = ${result.item3}");
                   }
               )
             )
