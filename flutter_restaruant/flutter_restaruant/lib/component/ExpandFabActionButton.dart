@@ -38,11 +38,12 @@ class ExpandFabActionButton extends StatelessWidget {
       },
       child: FadeTransition(
         opacity: progress,
-        child: FloatingActionButton(
-          child: this.child,
-          onPressed: this.onActionPressed
+        child: ElevatedButton (
+            style: ElevatedButton.styleFrom(shape: CircleBorder(), padding: EdgeInsets.all(15)),
+            child: this.child,
+            onPressed: this.onActionPressed
         )
-      ),
+      )
     );
   }
 }
