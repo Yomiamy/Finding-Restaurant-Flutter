@@ -1,6 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:flutter_restaruant/model/FilterConfigs.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
@@ -16,17 +17,17 @@ class FilterPage extends StatefulWidget {
 
 class _FilterPageState extends State<FilterPage> {
 
-  late int _priceLevelIndex = 0;
-  late int _sortingRulIndex = 0;
-  late int _businessTime = DateTime.now().millisecond;
-
+  int _priceIndex = 0;
+  DateTime _openAtDateTime = DateTime.now();
+  int _sortingRuleIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as Tuple3<int, int, int>;
-    this._priceLevelIndex = args.item1;
-    this._sortingRulIndex = args.item2;
-    this._businessTime = args.item3;
+    final args = ModalRoute.of(context)!.settings.arguments as Tuple2<FilterConfigs, dynamic>;
+    FilterConfigs configs = args.item1;
+    this._priceIndex = configs.priceIndex;
+    this._openAtDateTime = configs.openAtDateTime;
+    this._sortingRuleIndex = configs.sortingRuleIndex;
 
     return PlatformScaffold(
         appBar: PlatformAppBar(
@@ -41,11 +42,8 @@ class _FilterPageState extends State<FilterPage> {
               PlatformButton(
                   padding: EdgeInsets.all(0),
                   onPressed: () {
-                    Tuple3<int, int, int> result = Tuple3<int, int, int>(
-                        this._priceLevelIndex,
-                        this._sortingRulIndex,
-                        this._businessTime
-                    );
+                    FilterConfigs configs = FilterConfigs.fromUI(priceIndex: this._priceIndex, openAtDate: this._openAtDateTime, sortingRuleIndex: this._sortingRuleIndex);
+                    Tuple2<FilterConfigs, dynamic> result = Tuple2(configs, null);
                     Navigator.pop(context, result);
                   },
                   child: Text("套用",
@@ -65,10 +63,10 @@ class _FilterPageState extends State<FilterPage> {
                       fontWeight: FontWeight.bold,
                       fontSize: Dimens.xxxhFontSize))),
           this._createSegmentWidget(
-              initValue: this._priceLevelIndex,
+              initValue: this._priceIndex,
               segmentItems: ['\$', '\$\$', '\$\$\$', '\$\$\$\$'],
               valueChange: (i) {
-                this._priceLevelIndex = i;
+                this._priceIndex = i;
               }),
 
           // Business hour
@@ -82,11 +80,11 @@ class _FilterPageState extends State<FilterPage> {
             width: MediaQuery.of(context).size.width.toInt() - 20,
             height: 200,
             child: CupertinoDatePicker(
+                initialDateTime: this._openAtDateTime,
                 use24hFormat: true,
                 mode: CupertinoDatePickerMode.dateAndTime,
-                initialDateTime: DateTime.now(),
                 onDateTimeChanged: (dateTime) {
-                  this._businessTime = DateTime(dateTime.year, dateTime.month, dateTime.day, dateTime.hour, dateTime.second).millisecondsSinceEpoch;
+                  this._openAtDateTime = dateTime;
                 })
           ),
 
@@ -98,10 +96,10 @@ class _FilterPageState extends State<FilterPage> {
                       fontWeight: FontWeight.bold,
                       fontSize: Dimens.xxxhFontSize))),
           this._createSegmentWidget(
-              initValue: this._sortingRulIndex,
+              initValue: this._sortingRuleIndex,
               segmentItems: ["最佳配對", '距離', '評分', '最多評論'],
               valueChange: (i) {
-                this._sortingRulIndex = i;
+                this._sortingRuleIndex = i;
               })
         ]));
   }
