@@ -42,7 +42,14 @@ class MainPageState extends State<MainPage> {
     Widget title = Text("Find Restaurant",
         style: TextStyle(color: Colors.white, fontSize: Dimens.xxxxhFontSize));
 
-    BlocProvider.of<MainBloc>(context).add(FetchSearchInfo());
+    // @Query("openAt") int? openAt,
+    // @Query("sortBy") String? sortBy,
+    // @Query("price") String? price
+    int price = this._configs.price;
+    int openAt = this._configs.openAt;
+    String sortBy = this._configs.sortBy;
+
+    BlocProvider.of<MainBloc>(context).add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
 
     return PlatformScaffold(
         body: Stack(
@@ -100,8 +107,10 @@ class MainPageState extends State<MainPage> {
                               () async {
                                 Tuple2<FilterConfigs, dynamic> arguments = Tuple2<FilterConfigs, dynamic>(this._configs, null);
                                 Tuple2<FilterConfigs, dynamic> result = (await Navigator.of(context).pushNamed(FilterPage.ROUTE_NAME, arguments: arguments)) as Tuple2<FilterConfigs, dynamic>;
-                                this._configs = result.item1;
-                                debugPrint("result: ${this._configs.price}, ${this._configs.openAt}, ${this._configs.sortingRule}");
+                                setState(() {
+                                  this._configs = result.item1;
+                                  debugPrint("result: ${this._configs.price}, ${this._configs.openAt}, ${this._configs.sortBy}");
+                                });
                         }
                         ])
                 )

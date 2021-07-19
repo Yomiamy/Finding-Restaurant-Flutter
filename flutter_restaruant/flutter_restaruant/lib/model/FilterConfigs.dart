@@ -14,7 +14,7 @@ class FilterConfigs {
   int openAt = DateTime.now().millisecondsSinceEpoch;
   DateTime get openAtDateTime => DateTime.fromMillisecondsSinceEpoch(this.openAt);
 
-  String sortingRule = "best_match";
+  String sortBy = "best_match";
   // String get sortingRuleDispStr {
   //   switch(this.sortingRule) {
   //     case "best_match":
@@ -29,8 +29,8 @@ class FilterConfigs {
   //       return "BestMatch";
   //   }
   // }
-  int get sortingRuleIndex {
-    switch(this.sortingRule) {
+  int get sortByIndex {
+    switch(this.sortBy) {
       case "best_match":
         return 0;
       case "distance":
@@ -44,8 +44,8 @@ class FilterConfigs {
     }
   }
 
-  String mapSortingRuleByIndex(int sortingRuleIndex) {
-    switch (sortingRuleIndex) {
+  String mapSortingRuleByIndex(int sortByIndex) {
+    switch (sortByIndex) {
       case 0:
         return "best_match";
       case 1:
@@ -64,6 +64,6 @@ class FilterConfigs {
   FilterConfigs.fromUI({required int priceIndex, required DateTime openAtDate, required int sortingRuleIndex}) {
     this.price = priceIndex + 1;
     this.openAt = openAtDate.millisecondsSinceEpoch;
-    this.sortingRule = this.mapSortingRuleByIndex(sortingRuleIndex);
+    this.sortBy = this.mapSortingRuleByIndex(sortingRuleIndex);
   }
 }

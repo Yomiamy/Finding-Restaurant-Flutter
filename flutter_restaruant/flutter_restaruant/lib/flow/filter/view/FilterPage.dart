@@ -19,7 +19,7 @@ class _FilterPageState extends State<FilterPage> {
 
   int _priceIndex = 0;
   DateTime _openAtDateTime = DateTime.now();
-  int _sortingRuleIndex = 0;
+  int _sortByIndex = 0;
 
   @override
   Widget build(BuildContext context) {
@@ -27,7 +27,7 @@ class _FilterPageState extends State<FilterPage> {
     FilterConfigs configs = args.item1;
     this._priceIndex = configs.priceIndex;
     this._openAtDateTime = configs.openAtDateTime;
-    this._sortingRuleIndex = configs.sortingRuleIndex;
+    this._sortByIndex = configs.sortByIndex;
 
     return PlatformScaffold(
         appBar: PlatformAppBar(
@@ -42,7 +42,7 @@ class _FilterPageState extends State<FilterPage> {
               PlatformButton(
                   padding: EdgeInsets.all(0),
                   onPressed: () {
-                    FilterConfigs configs = FilterConfigs.fromUI(priceIndex: this._priceIndex, openAtDate: this._openAtDateTime, sortingRuleIndex: this._sortingRuleIndex);
+                    FilterConfigs configs = FilterConfigs.fromUI(priceIndex: this._priceIndex, openAtDate: this._openAtDateTime, sortingRuleIndex: this._sortByIndex);
                     Tuple2<FilterConfigs, dynamic> result = Tuple2(configs, null);
                     Navigator.pop(context, result);
                   },
@@ -96,10 +96,10 @@ class _FilterPageState extends State<FilterPage> {
                       fontWeight: FontWeight.bold,
                       fontSize: Dimens.xxxhFontSize))),
           this._createSegmentWidget(
-              initValue: this._sortingRuleIndex,
+              initValue: this._sortByIndex,
               segmentItems: ["最佳配對", '距離', '評分', '最多評論'],
               valueChange: (i) {
-                this._sortingRuleIndex = i;
+                this._sortByIndex = i;
               })
         ]));
   }
