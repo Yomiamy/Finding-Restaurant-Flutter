@@ -11,7 +11,11 @@ abstract class MainEvent extends Equatable {
 
 class FetchSearchInfo extends MainEvent {
 
-  const FetchSearchInfo();
+  final int price;
+  final int openAt;
+  final String sortBy;
+
+  const FetchSearchInfo({required this.price, required this.openAt, required this.sortBy});
 
   @override
   String toString() => "Fetch search info event.";
