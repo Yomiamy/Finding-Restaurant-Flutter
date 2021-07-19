@@ -24,11 +24,6 @@ class RestaurantDetailPage extends StatefulWidget {
 class RestaurantDetailPageState extends State<RestaurantDetailPage> {
 
   @override
-  void initState() {
-    super.initState();
-  }
-
-  @override
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as Tuple2<String, dynamic>;
     final id = args.item1;

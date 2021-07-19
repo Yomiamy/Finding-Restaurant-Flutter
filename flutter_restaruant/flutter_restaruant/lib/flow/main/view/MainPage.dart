@@ -6,13 +6,12 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/EmptyDataWidget.dart';
-import 'package:flutter_restaruant/component/ExpandFabActionButton.dart';
 import 'package:flutter_restaruant/component/ExpandableFabButton.dart';
 import 'package:flutter_restaruant/component/LoadingWidget.dart';
 import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.dart';
 import 'package:flutter_restaruant/flow/filter/view/FilterPage.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
-import 'package:flutter_restaruant/model/YelpRestaurantDetailInfo.dart';
+import 'package:flutter_restaruant/model/FilterConfigs.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
@@ -20,9 +19,8 @@ import 'package:flutter_restaruant/utils/UIConstants.dart';
 import '../bloc/MainBloc.dart';
 
 class MainPage extends StatefulWidget {
-  final String title;
 
-  MainPage({Key key = const Key("MainPage"),  this.title = ""}) : super(key: key);
+  MainPage({Key key = const Key("MainPage")}) : super(key: key);
 
   @override
   MainPageState createState() => MainPageState();
@@ -30,11 +28,18 @@ class MainPage extends StatefulWidget {
 
 class MainPageState extends State<MainPage> {
 
+  FilterConfigs _configs = FilterConfigs();
+
   MainPageState();
 
   @override
+  void initState() {
+    super.initState();
+  }
+
+  @override
   Widget build(BuildContext context) {
-    Widget title = Text(this.widget.title,
+    Widget title = Text("Find Restaurant",
         style: TextStyle(color: Colors.white, fontSize: Dimens.xxxxhFontSize));
 
     BlocProvider.of<MainBloc>(context).add(FetchSearchInfo());
@@ -93,9 +98,10 @@ class MainPageState extends State<MainPage> {
                               () { debugPrint("Action1 pressed"); },
                               () { debugPrint("Action2 pressed"); },
                               () async {
-                                Tuple3<int, int, int> arguments = Tuple3<int, int, int>(0, 0, 0);
-                                Tuple3<int, int, int> result = (await Navigator.of(context).pushNamed(FilterPage.ROUTE_NAME, arguments: arguments)) as Tuple3<int, int, int>;
-                                debugPrint("Action3 pressed");
+                                Tuple2<FilterConfigs, dynamic> arguments = Tuple2<FilterConfigs, dynamic>(this._configs, null);
+                                Tuple2<FilterConfigs, dynamic> result = (await Navigator.of(context).pushNamed(FilterPage.ROUTE_NAME, arguments: arguments)) as Tuple2<FilterConfigs, dynamic>;
+                                this._configs = result.item1;
+                                debugPrint("result: ${this._configs.price}, ${this._configs.openAt}, ${this._configs.sortingRule}");
                         }
                         ])
                 )
