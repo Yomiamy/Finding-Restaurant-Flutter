@@ -8,12 +8,14 @@ class ExpandableFabButton extends StatefulWidget {
     this.initialOpen,
     required this.distance,
     required this.children,
+    required this.mainIcon,
     required this.childrenPressActions
   }) : super(key: key);
 
   final bool? initialOpen;
   final double distance;
   final List<Widget> children;
+  final Icon mainIcon;
   final List<VoidCallback> childrenPressActions;
 
   @override
@@ -101,7 +103,7 @@ class _ExpandableFabButtonState extends State<ExpandableFabButton> with SingleTi
 
   Widget _buildTapToOpenFab() {
     return IgnorePointer(
-      ignoring: _open,
+      ignoring: this._open,
       child: AnimatedContainer(
         transformAlignment: Alignment.center,
         transform: Matrix4.diagonal3Values(
@@ -117,7 +119,7 @@ class _ExpandableFabButtonState extends State<ExpandableFabButton> with SingleTi
           duration: const Duration(milliseconds: 250),
           child: FloatingActionButton(
             onPressed: _toggle,
-            child: const Icon(Icons.create),
+            child: widget.mainIcon,
           ),
         ),
       ),

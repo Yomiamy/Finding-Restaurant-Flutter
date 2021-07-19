@@ -6,6 +6,8 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/EmptyDataWidget.dart';
+import 'package:flutter_restaruant/component/ExpandFabActionButton.dart';
+import 'package:flutter_restaruant/component/ExpandableFabButton.dart';
 import 'package:flutter_restaruant/component/LoadingWidget.dart';
 import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.dart';
 import 'package:flutter_restaruant/flow/filter/view/FilterPage.dart';
@@ -75,16 +77,28 @@ class MainPageState extends State<MainPage> {
                 )
             ),
             Align(
-              alignment: Alignment.bottomRight,
-              child:ElevatedButton(
-                  child: Icon(Icons.archive),
-                  onPressed: () async {
-                    Tuple3<int, int, int> arguments = Tuple3<int, int, int>(0, 0, 0);
-                    Tuple3<int, int, int> result = (await Navigator.of(context).pushNamed(FilterPage.ROUTE_NAME, arguments: arguments)) as Tuple3<int, int, int>;
-
-                    debugPrint("_priceLevelIndex = ${result.item1}, _sortingRulIndex = ${result.item2}, _businessTime = ${result.item3}");
-                  }
-              )
+                alignment: Alignment.bottomRight,
+                child: Padding(
+                    padding: EdgeInsets.only(right: 30, bottom: 50),
+                    child: ExpandableFabButton(
+                        initialOpen: false,
+                        distance: 150,
+                        mainIcon: Icon(Icons.menu),
+                        children: [
+                          const Icon(Icons.add),
+                          const Icon(Icons.alarm_add),
+                          const Icon(Icons.update)
+                        ],
+                        childrenPressActions: [
+                              () { debugPrint("Action1 pressed"); },
+                              () { debugPrint("Action2 pressed"); },
+                              () async {
+                                Tuple3<int, int, int> arguments = Tuple3<int, int, int>(0, 0, 0);
+                                Tuple3<int, int, int> result = (await Navigator.of(context).pushNamed(FilterPage.ROUTE_NAME, arguments: arguments)) as Tuple3<int, int, int>;
+                                debugPrint("Action3 pressed");
+                        }
+                        ])
+                )
             )
           ]
         )
