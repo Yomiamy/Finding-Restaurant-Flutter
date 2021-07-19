@@ -30,7 +30,7 @@ abstract class APIClz {
       @Query("limit") int? limit,
       @Query("openAt") int? openAt,
       @Query("sortBy") String? sortBy,
-      @Query("price") String? price});
+      @Query("price") int? price});
 
   @GET("/v3/businesses/{id}")
   Future<YelpRestaurantDetailInfo> business(
