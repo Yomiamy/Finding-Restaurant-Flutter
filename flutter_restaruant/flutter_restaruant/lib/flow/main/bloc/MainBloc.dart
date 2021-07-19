@@ -29,7 +29,10 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       yield InProgress();
 
       final Position currentPos = await Geolocator.getCurrentPosition();
-      final YelpSearchInfo searchInfo =  await this._mainRepository.fetchYelpSearchInfo(currentPos.latitude, currentPos.longitude);
+      int price = event.price;
+      int openAt = event.openAt;
+      String sortBy = event.sortBy;
+      final YelpSearchInfo searchInfo =  await this._mainRepository.fetchYelpSearchInfo(currentPos.latitude, currentPos.longitude, price, openAt, sortBy);
 
       yield Success(searchInfo: searchInfo);
     } on Exception catch (_) {
