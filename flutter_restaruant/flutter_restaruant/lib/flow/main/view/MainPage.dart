@@ -113,8 +113,10 @@ class MainPageState extends State<MainPage> {
                               () { debugPrint("Action2 pressed"); },
                               () async {
                                 Tuple2<FilterConfigs, dynamic> arguments = Tuple2<FilterConfigs, dynamic>(this._configs, null);
-                                Tuple2<FilterConfigs, dynamic> result = (await Navigator.of(context).pushNamed(FilterPage.ROUTE_NAME, arguments: arguments)) as Tuple2<FilterConfigs, dynamic>;
+                                Tuple2<FilterConfigs, dynamic>? result = (await Navigator.of(context).pushNamed(FilterPage.ROUTE_NAME, arguments: arguments)) as Tuple2<FilterConfigs, dynamic>?;
 
+                                if(result == null) return;
+                                
                                 setState(() {
                                   this._configs = result.item1;
                                 });
