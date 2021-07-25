@@ -38,9 +38,9 @@ class MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    int price = this._configs.price;
-    int openAt = this._configs.openAt;
-    String sortBy = this._configs.sortBy;
+    int? price = this._configs.price;
+    int? openAt = this._configs.openAt;
+    String? sortBy = this._configs.sortBy;
 
     BlocProvider.of<MainBloc>(context).add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
 

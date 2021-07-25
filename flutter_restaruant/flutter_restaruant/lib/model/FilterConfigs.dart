@@ -9,16 +9,16 @@ enum FilterConfigType {
 
 class FilterConfigs extends YelpBaseInfo {
   // Price
-  int price = 1;
-  int get priceIndex => this.price < 1 ? 0 : (this.price - 1);
+  int? price = 1;
+  int get priceIndex => (this.price == null || this.price! < 1) ? 0 : (this.price! - 1);
 
   // Business hours
-  int openAt = DateTime.now().millisecondsSinceEpoch;
-  DateTime get openAtDateTime => (this.openAt > 0) ? DateTime.fromMillisecondsSinceEpoch(this.openAt) : DateTime.now();
+  int? openAt = DateTime.now().millisecondsSinceEpoch;
+  DateTime get openAtDateTime => (this.openAt != null && this.openAt! > 0) ? DateTime.fromMillisecondsSinceEpoch(this.openAt!) : DateTime.now();
   String get openAtDispStr => DateFormat('MM-dd HH:mm').format(this.openAtDateTime);
 
   // Sorting rule
-  String sortBy = "best_match";
+  String? sortBy = "best_match";
   int get sortByIndex {
     switch(this.sortBy) {
       case "best_match":
@@ -59,13 +59,13 @@ class FilterConfigs extends YelpBaseInfo {
   void clearConfig(FilterConfigType configType) {
     switch(configType) {
       case FilterConfigType.PRICE:
-        this.price = -1;
+        this.price = null;
         break;
       case FilterConfigType.OPEN_AT:
-        this.openAt = -1;
+        this.openAt = null;
         break;
       case FilterConfigType.SORTING_RULE:
-        this.sortBy = "";
+        this.sortBy = null;
         break;
     }
   }
