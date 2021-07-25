@@ -7,7 +7,7 @@ class Constants {
   static const GOOGLE_MAP_HOST = "maps.google.de";
   static const GOOGLE_MAP_NAVIGATION_PATH = "/maps";
   static const GOOGLE_MAP_NAVIGATION_LATLNG = "q";
-  static const GOOGLE_MAP_STREETVIEW_LAYER = "c";
+  static const GOOGLE_MAP_STREETVIEW_LAYER = "layer";
   static const GOOGLE_MAP_STREETVIEW_LATLNG = "cbll";
   static const AUTH_TOKEN = "Bearer 4htbz9nLozJ_-Xw-13LpeVWrEIRWZt4IrgTOQXstx7M1DCVeUIoxIZkQ0XVLVEtD2Gy2Vp1FjA2WRz5DOpZMSxHfXVBLR3gi0DeMXIV3X1bCHYoMoJ-_TZLfBn0ZWnYx";
   static const LOCALE = "zh_TW";
