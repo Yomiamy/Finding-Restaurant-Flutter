@@ -28,7 +28,7 @@ class RestaurantInfoCell extends StatelessWidget {
             .categories
             ?.map((category) => category.title ?? "")
             .join(" ") ?? "";
-    String openStatus = (this._detailInfo?.hours?[0].is_open_now ?? false) ? "OPEN" : "CLOSE";
+    String openStatus = (this._detailInfo.hours?[0].is_open_now ?? false) ? "OPEN" : "CLOSE";
 
     return Padding(
         padding: EdgeInsets.only(left: 5, right: 5, top: 10),
