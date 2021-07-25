@@ -65,8 +65,6 @@ class MainPageState extends State<MainPage> {
                       if(state is Success) {
                         return ListView.builder(
                             padding: EdgeInsets.only(top: 0, bottom: 0),
-                            itemExtent: RestaurantItemCell.IMAGE_H.toDouble(),
-                            cacheExtent: RestaurantItemCell.IMAGE_H.toDouble(),
                             itemCount: state.searchInfo.businesses?.length ?? 0 ,
                             itemBuilder: (context, index) {
                               YelpRestaurantSummaryInfo summaryInfo = state.searchInfo.businesses?[index] ?? YelpRestaurantSummaryInfo();
