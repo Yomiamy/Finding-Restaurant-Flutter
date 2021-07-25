@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -17,6 +15,7 @@ import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import '../bloc/MainBloc.dart';
+import 'FilterTagsWidget.dart';
 
 class MainPage extends StatefulWidget {
 
@@ -39,12 +38,6 @@ class MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    Widget title = Text("Find Restaurant",
-        style: TextStyle(color: Colors.white, fontSize: Dimens.xxxxhFontSize));
-
-    // @Query("openAt") int? openAt,
-    // @Query("sortBy") String? sortBy,
-    // @Query("price") String? price
     int price = this._configs.price;
     int openAt = this._configs.openAt;
     String sortBy = this._configs.sortBy;
@@ -58,25 +51,41 @@ class MainPageState extends State<MainPage> {
                 headerSliverBuilder: (BuildContext context, bool isBoxIsScrolled) =>
                 <Widget>[
                   CupertinoSliverNavigationBar(
-                      largeTitle: title, backgroundColor: Color(UIConstants.AppBarColor))
+                      largeTitle: Text("Find Restaurant",
+                          style: TextStyle(
+                              color: Colors.white,
+                              fontSize: Dimens.xxxxhFontSize)
+                      ),
+                      backgroundColor: Color(UIConstants.AppBarColor)
+                  )
                 ],
                 body: BlocBuilder<MainBloc, MainState>(
                     builder: (context, state) {
                       if(state is Success) {
                         return ListView.builder(
                             padding: EdgeInsets.only(top: 0, bottom: 0),
-                            itemCount: state.searchInfo.businesses?.length ?? 0 ,
+                            itemCount: (state.searchInfo.businesses?.length ?? 0) + 1 ,
                             itemBuilder: (context, index) {
-                              YelpRestaurantSummaryInfo summaryInfo = state.searchInfo.businesses?[index] ?? YelpRestaurantSummaryInfo();
+                              if(index == 0) {
+                                return FilterTagsWidget(filterConfigs: this._configs);
+                              } else {
+                                YelpRestaurantSummaryInfo summaryInfo = state
+                                    .searchInfo.businesses?[index] ??
+                                    YelpRestaurantSummaryInfo();
 
-                              return GestureDetector(
-                                  child: RestaurantItemCell(summaryInfo: summaryInfo),
-                                  onTap: () {
-                                    String id = summaryInfo.id ?? "";
-                                    Tuple2 arguments = Tuple2<String, dynamic>(id, null);
+                                return GestureDetector(
+                                    child: RestaurantItemCell(
+                                        summaryInfo: summaryInfo),
+                                    onTap: () {
+                                      String id = summaryInfo.id ?? "";
+                                      Tuple2 arguments = Tuple2<String,
+                                          dynamic>(id, null);
 
-                                    Navigator.of(context).pushNamed(RestaurantDetailPage.ROUTE_NAME, arguments: arguments);
-                                  });
+                                      Navigator.of(context).pushNamed(
+                                          RestaurantDetailPage.ROUTE_NAME,
+                                          arguments: arguments);
+                                    });
+                              }
                             });
                       } else if(state is InProgress) {
                         return Center(child: LoadingWidget(text: "Loading..."));
@@ -105,9 +114,9 @@ class MainPageState extends State<MainPage> {
                               () async {
                                 Tuple2<FilterConfigs, dynamic> arguments = Tuple2<FilterConfigs, dynamic>(this._configs, null);
                                 Tuple2<FilterConfigs, dynamic> result = (await Navigator.of(context).pushNamed(FilterPage.ROUTE_NAME, arguments: arguments)) as Tuple2<FilterConfigs, dynamic>;
+
                                 setState(() {
                                   this._configs = result.item1;
-                                  debugPrint("result: ${this._configs.price}, ${this._configs.openAt}, ${this._configs.sortBy}");
                                 });
                         }
                         ])
