@@ -1,3 +1,4 @@
+import 'package:flutter_restaruant/model/YelpBaseInfo.dart';
 import 'package:intl/intl.dart';
 
 enum FilterConfigType {
@@ -6,20 +7,10 @@ enum FilterConfigType {
   SORTING_RULE
 }
 
-class FilterConfigs {
+class FilterConfigs extends YelpBaseInfo {
   // Price
   int price = 1;
   int get priceIndex => this.price < 1 ? 0 : (this.price - 1);
-
-  String get priceDispStr {
-    switch (this.price) {
-      case 1: return "\$";
-      case 2: return "\$\$";
-      case 3: return "\$\$\$";
-      case 4: return "\$\$\$\$";
-      default: return "";
-    }
-  }
 
   // Business hours
   int openAt = DateTime.now().millisecondsSinceEpoch;
@@ -40,20 +31,6 @@ class FilterConfigs {
         return 3;
       default:
         return 0;
-    }
-  }
-  String get sortingRuleDispStr {
-    switch(this.sortBy) {
-      case "best_match":
-        return "BestMatch";
-      case "distance":
-        return "Distance";
-      case "review_count":
-        return "ReviewCount";
-      case "rating":
-        return "Rating";
-      default:
-        return "";
     }
   }
   String mapSortingRuleByIndex(int sortByIndex) {

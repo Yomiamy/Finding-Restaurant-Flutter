@@ -17,11 +17,11 @@ class FilterTagsWidget extends StatelessWidget {
 
   FilterTagsWidget({Key? key, required filterConfigs}) : this._filterConfigs = filterConfigs, super(key: key) {
     if (this._filterConfigs.sortBy.isNotEmpty) {
-      this._filterConfigsMap[FilterConfigType.SORTING_RULE] = this._filterConfigs.sortingRuleDispStr;
+      this._filterConfigsMap[FilterConfigType.SORTING_RULE] = this._filterConfigs.getSortingRuleDispStr(this._filterConfigs.sortBy);
     }
 
     if (this._filterConfigs.price > 0) {
-      this._filterConfigsMap[FilterConfigType.PRICE] = this._filterConfigs.priceDispStr;
+      this._filterConfigsMap[FilterConfigType.PRICE] = this._filterConfigs.getPriceDispStr(this._filterConfigs.price);
     }
 
     if (this._filterConfigs.openAt > 0) {

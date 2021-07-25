@@ -50,6 +50,32 @@ class YelpBaseInfo {
     return (nowWeekDay - 2) == yelpWeekDay;
   }
 
+  String getPriceDispStr(int price) {
+    switch (price) {
+      case 1: return "\$";
+      case 2: return "\$\$";
+      case 3: return "\$\$\$";
+      case 4: return "\$\$\$\$";
+      default: return "";
+    }
+  }
+
+  String getSortingRuleDispStr(String sortBy) {
+    switch(sortBy) {
+      case "best_match":
+        return "BestMatch";
+      case "distance":
+        return "Distance";
+      case "review_count":
+        return "ReviewCount";
+      case "rating":
+        return "Rating";
+      default:
+        return "";
+    }
+  }
+
+
   factory YelpBaseInfo.fromJson(Map<String, dynamic> json) =>
       _$YelpBaseInfoFromJson(json);
 
