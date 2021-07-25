@@ -85,7 +85,7 @@ class MainPageState extends State<MainPage> {
                               }
                             });
                       } else if(state is InProgress) {
-                        return Center(child: LoadingWidget(text: "Loading..."));
+                        return Center(child: LoadingWidget());
                       } else {
                         return EmptyDataWidget();
                       }
