@@ -3,9 +3,9 @@ import 'package:flutter_restaruant/component/PlatformWidget.dart';
 
 class LoadingWidget extends StatelessWidget {
 
-  final String text;
+  String text;
 
-  const LoadingWidget({Key? key, required this.text}) : super(key: key);
+  LoadingWidget({Key? key, this.text = "Loading..."}) : super(key: key);
 
   @override
   Widget build(BuildContext context) =>

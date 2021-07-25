@@ -3,7 +3,7 @@ import 'package:flutter_restaruant/model/YelpSearchInfo.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
 
 class MainRepository {
-  Future<YelpSearchInfo> fetchYelpSearchInfo(double lat, double lng, int price, int openAt, String sortBy) async => apiInstance.businessesSearch(
+  Future<YelpSearchInfo> fetchYelpSearchInfo(double lat, double lng, int? price, int? openAt, String? sortBy) async => apiInstance.businessesSearch(
       term: "Restaurants",
       latitude: lat,
       longitude: lng,

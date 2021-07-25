@@ -9,13 +9,13 @@ class RestaurantItemCell extends StatelessWidget {
   static const int IMAGE_W = 100;
   static const double ITEM_H = 100;
 
-  final YelpRestaurantSummaryInfo summaryInfo;
+  final YelpRestaurantSummaryInfo _summaryInfo;
 
-  const RestaurantItemCell({required this.summaryInfo});
+  const RestaurantItemCell({required YelpRestaurantSummaryInfo summaryInfo}): this._summaryInfo = summaryInfo;
 
   @override
   Widget build(BuildContext context) {
-    String category = this.summaryInfo.categories?.map((category) => category.title ?? "").join(" ") ?? "";
+    String category = this._summaryInfo.categories?.map((category) => category.title ?? "").join(" ") ?? "";
 
     return SizedBox(
       height: 100,
@@ -28,7 +28,7 @@ class RestaurantItemCell extends StatelessWidget {
                 child: FadeInImage.assetNetwork(
                     placeholder: UIConstants.NO_IMAGE,
                     imageErrorBuilder: (context, error, trace) => Image.asset(UIConstants.NO_IMAGE),
-                    image: this.summaryInfo.image_url ?? "",
+                    image: this._summaryInfo.image_url ?? "",
                     imageCacheHeight: RestaurantItemCell.IMAGE_H,
                     imageCacheWidth: RestaurantItemCell.IMAGE_W,
                     placeholderCacheHeight: RestaurantItemCell.IMAGE_H,
@@ -45,20 +45,20 @@ class RestaurantItemCell extends StatelessWidget {
                             children: <Widget>[
                               Flex(direction: Axis.horizontal, children: <Widget>[
                                 Expanded(
-                                    child: Text(this.summaryInfo.name ?? "",
+                                    child: Text(this._summaryInfo.name ?? "",
                                         overflow: TextOverflow.ellipsis)),
-                                Text(sprintf("%.2fm", [this.summaryInfo.distance]),
+                                Text(sprintf("%.2fm", [this._summaryInfo.distance]),
                                     style: TextStyle(
                                         fontSize: Dimens.mFontSize,
                                         color: Colors.grey))
                               ]),
                               Flex(direction: Axis.horizontal, children: <Widget>[
                                 Expanded(
-                                    child: this.summaryInfo.getRatingImage(this.summaryInfo.rating.toString()),
+                                    child: this._summaryInfo.getRatingImage(this._summaryInfo.rating.toString()),
                                     flex: 1),
                                 Expanded(
                                     child: Align(
-                                        child: Text("${this.summaryInfo.review_count}則評論",
+                                        child: Text("${this._summaryInfo.review_count}則評論",
                                             style: TextStyle(
                                                 fontSize: Dimens.mFontSize,
                                                 color: Colors.grey)),
@@ -66,14 +66,14 @@ class RestaurantItemCell extends StatelessWidget {
                                     flex: 1),
                                 Expanded(
                                     child: Align(
-                                        child: Text("\$\$",
+                                        child: Text(this._summaryInfo.price ?? "",
                                             style: TextStyle(
                                                 fontSize: Dimens.mFontSize,
                                                 color: Colors.grey)),
                                         alignment: Alignment.centerRight),
                                     flex: 1)
                               ]),
-                              Text(this.summaryInfo.location?.display_address?.join("") ?? "",
+                              Text(this._summaryInfo.location?.display_address?.join("") ?? "",
                                   overflow: TextOverflow.ellipsis),
                               Text(category,
                                   overflow: TextOverflow.ellipsis,

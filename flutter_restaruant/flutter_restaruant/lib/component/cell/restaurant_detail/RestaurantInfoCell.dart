@@ -28,6 +28,7 @@ class RestaurantInfoCell extends StatelessWidget {
             .categories
             ?.map((category) => category.title ?? "")
             .join(" ") ?? "";
+    String openStatus = (this._detailInfo.hours?[0].is_open_now ?? false) ? "OPEN" : "CLOSE";
 
     return Padding(
         padding: EdgeInsets.only(left: 5, right: 5, top: 10),
@@ -85,8 +86,11 @@ class RestaurantInfoCell extends StatelessWidget {
                                     BorderRadius.all(Radius.circular(15.0))),
                             child: Padding(
                                 padding: EdgeInsets.all(3),
-                                child: Text("close",
-                                    style: TextStyle(color: Colors.white))))
+                                child: Text(openStatus,
+                                    style: TextStyle(
+                                        fontSize: Dimens.lFontSize,
+                                        color: Colors.white
+                                    ))))
                       ])))
         ]));
   }

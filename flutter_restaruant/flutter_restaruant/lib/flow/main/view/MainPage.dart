@@ -38,9 +38,9 @@ class MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    int price = this._configs.price;
-    int openAt = this._configs.openAt;
-    String sortBy = this._configs.sortBy;
+    int? price = this._configs.price;
+    int? openAt = this._configs.openAt;
+    String? sortBy = this._configs.sortBy;
 
     BlocProvider.of<MainBloc>(context).add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
 
@@ -69,26 +69,23 @@ class MainPageState extends State<MainPage> {
                               if(index == 0) {
                                 return FilterTagsWidget(filterConfigs: this._configs);
                               } else {
-                                YelpRestaurantSummaryInfo summaryInfo = state
-                                    .searchInfo.businesses?[index] ??
-                                    YelpRestaurantSummaryInfo();
+                                YelpRestaurantSummaryInfo summaryInfo = state.searchInfo.businesses?[index - 1] ?? YelpRestaurantSummaryInfo();
 
                                 return GestureDetector(
-                                    child: RestaurantItemCell(
-                                        summaryInfo: summaryInfo),
+                                    child: RestaurantItemCell(summaryInfo: summaryInfo),
                                     onTap: () {
                                       String id = summaryInfo.id ?? "";
-                                      Tuple2 arguments = Tuple2<String,
-                                          dynamic>(id, null);
+                                      Tuple2 arguments = Tuple2<String, dynamic>(id, null);
 
                                       Navigator.of(context).pushNamed(
                                           RestaurantDetailPage.ROUTE_NAME,
-                                          arguments: arguments);
+                                          arguments: arguments
+                                      );
                                     });
                               }
                             });
                       } else if(state is InProgress) {
-                        return Center(child: LoadingWidget(text: "Loading..."));
+                        return Center(child: LoadingWidget());
                       } else {
                         return EmptyDataWidget();
                       }
@@ -101,24 +98,26 @@ class MainPageState extends State<MainPage> {
                     padding: EdgeInsets.only(right: 30, bottom: 50),
                     child: ExpandableFabButton(
                         initialOpen: false,
-                        distance: 150,
+                        distance: 120,
                         mainIcon: Icon(Icons.menu),
                         children: [
-                          const Icon(Icons.add),
-                          const Icon(Icons.alarm_add),
-                          const Icon(Icons.update)
+                          const Icon(Icons.info),
+                          const Icon(Icons.settings),
+                          const Icon(Icons.change_circle),
                         ],
                         childrenPressActions: [
                               () { debugPrint("Action1 pressed"); },
                               () { debugPrint("Action2 pressed"); },
                               () async {
                                 Tuple2<FilterConfigs, dynamic> arguments = Tuple2<FilterConfigs, dynamic>(this._configs, null);
-                                Tuple2<FilterConfigs, dynamic> result = (await Navigator.of(context).pushNamed(FilterPage.ROUTE_NAME, arguments: arguments)) as Tuple2<FilterConfigs, dynamic>;
+                                Tuple2<FilterConfigs, dynamic>? result = (await Navigator.of(context).pushNamed(FilterPage.ROUTE_NAME, arguments: arguments)) as Tuple2<FilterConfigs, dynamic>?;
+
+                                if(result == null) return;
 
                                 setState(() {
                                   this._configs = result.item1;
                                 });
-                        }
+                            }
                         ])
                 )
             )

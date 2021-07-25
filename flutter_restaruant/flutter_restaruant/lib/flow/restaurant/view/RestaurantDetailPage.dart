@@ -61,7 +61,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 bloc: bloc,
               builder: (context, state) {
                 if (state is InProgress) {
-                  return Center(child: LoadingWidget(text: "Loading..."));
+                  return Center(child: LoadingWidget());
                 } else if(state is Success) {
                   return ListView(children: [
                     RestaurantHeadCell(imageUrl: state.detailInfo.image_url ?? ""),
