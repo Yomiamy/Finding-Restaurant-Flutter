@@ -69,21 +69,18 @@ class MainPageState extends State<MainPage> {
                               if(index == 0) {
                                 return FilterTagsWidget(filterConfigs: this._configs);
                               } else {
-                                YelpRestaurantSummaryInfo summaryInfo = state
-                                    .searchInfo.businesses?[index] ??
-                                    YelpRestaurantSummaryInfo();
+                                YelpRestaurantSummaryInfo summaryInfo = state.searchInfo.businesses?[index - 1] ?? YelpRestaurantSummaryInfo();
 
                                 return GestureDetector(
-                                    child: RestaurantItemCell(
-                                        summaryInfo: summaryInfo),
+                                    child: RestaurantItemCell(summaryInfo: summaryInfo),
                                     onTap: () {
                                       String id = summaryInfo.id ?? "";
-                                      Tuple2 arguments = Tuple2<String,
-                                          dynamic>(id, null);
+                                      Tuple2 arguments = Tuple2<String, dynamic>(id, null);
 
                                       Navigator.of(context).pushNamed(
                                           RestaurantDetailPage.ROUTE_NAME,
-                                          arguments: arguments);
+                                          arguments: arguments
+                                      );
                                     });
                               }
                             });
@@ -101,7 +98,7 @@ class MainPageState extends State<MainPage> {
                     padding: EdgeInsets.only(right: 30, bottom: 50),
                     child: ExpandableFabButton(
                         initialOpen: false,
-                        distance: 150,
+                        distance: 120,
                         mainIcon: Icon(Icons.menu),
                         children: [
                           const Icon(Icons.info),
@@ -120,7 +117,7 @@ class MainPageState extends State<MainPage> {
                                 setState(() {
                                   this._configs = result.item1;
                                 });
-                        }
+                            }
                         ])
                 )
             )
