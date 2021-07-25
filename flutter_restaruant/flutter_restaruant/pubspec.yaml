@@ -32,6 +32,8 @@ dependencies:
   sprintf: ^5.0.0
   flutter_inappwebview: ^5.3.2
   url_launcher: ^6.0.9
+  flutter_tags: ^0.4.9+1
+  intl: ^0.16.1
 
   bloc: ^7.0.0
   flutter_bloc: ^7.0.0
