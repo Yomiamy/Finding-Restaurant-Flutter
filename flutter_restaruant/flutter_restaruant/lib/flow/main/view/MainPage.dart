@@ -104,9 +104,9 @@ class MainPageState extends State<MainPage> {
                         distance: 150,
                         mainIcon: Icon(Icons.menu),
                         children: [
-                          const Icon(Icons.add),
-                          const Icon(Icons.alarm_add),
-                          const Icon(Icons.update)
+                          const Icon(Icons.info),
+                          const Icon(Icons.settings),
+                          const Icon(Icons.change_circle),
                         ],
                         childrenPressActions: [
                               () { debugPrint("Action1 pressed"); },
@@ -116,7 +116,7 @@ class MainPageState extends State<MainPage> {
                                 Tuple2<FilterConfigs, dynamic>? result = (await Navigator.of(context).pushNamed(FilterPage.ROUTE_NAME, arguments: arguments)) as Tuple2<FilterConfigs, dynamic>?;
 
                                 if(result == null) return;
-                                
+
                                 setState(() {
                                   this._configs = result.item1;
                                 });
