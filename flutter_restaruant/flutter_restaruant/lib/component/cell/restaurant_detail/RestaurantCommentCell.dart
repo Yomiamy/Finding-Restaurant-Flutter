@@ -47,8 +47,7 @@ class RestaurantCommentCell extends StatelessWidget {
             this._browser.open(
                 url: Uri.parse(commentUrl),
                 options: ChromeSafariBrowserClassOptions(
-                    android: AndroidChromeCustomTabsOptions(
-                        addDefaultShareMenuItem: false),
+                    android: AndroidChromeCustomTabsOptions(),
                     ios: IOSSafariOptions(barCollapsingEnabled: true)
                 )
             );
