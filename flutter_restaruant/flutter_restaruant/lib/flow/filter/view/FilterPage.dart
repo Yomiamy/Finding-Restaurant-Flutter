@@ -7,7 +7,7 @@ import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 
 class FilterPage extends StatefulWidget {
-  static const ROUTE_NAME = "FilterPage";
+  static const ROUTE_NAME = "/FilterPage";
 
   const FilterPage({Key? key}) : super(key: key);
 

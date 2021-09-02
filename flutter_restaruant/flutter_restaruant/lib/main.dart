@@ -16,10 +16,7 @@ class FindingRestaruantApp extends StatelessWidget {
   Widget build(BuildContext context) => PlatformApp(
       title:  "Find Restaurant",
       routes: ROUTES_TABLE,
-      home: BlocProvider<MainBloc>(
-          create: (_) => MainBloc(repository: MainRepository()),
-          child: MainPage()
-      )
+      initialRoute: MainPage.ROUTE_NAME
   );
 }
 
