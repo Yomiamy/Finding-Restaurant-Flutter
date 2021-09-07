@@ -45,3 +45,10 @@ class Failure extends MainState {
   @override
   String toString() => "Fail get search info";
 }
+
+class ResetOffsetSuccess extends MainState {
+  const ResetOffsetSuccess();
+
+  @override
+  String toString() => "Sucess reset offset";
+}

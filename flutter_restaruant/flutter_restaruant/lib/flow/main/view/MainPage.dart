@@ -44,6 +44,7 @@ class MainPageState extends State<MainPage> {
     int? openAt = this._configs.openAt;
     String? sortBy = this._configs.sortBy;
 
+    BlocProvider.of<MainBloc>(context).add(ResetOffset());
     BlocProvider.of<MainBloc>(context).add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
 
     return PlatformScaffold(

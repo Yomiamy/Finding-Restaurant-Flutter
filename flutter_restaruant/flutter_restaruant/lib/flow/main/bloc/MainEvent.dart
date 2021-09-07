@@ -20,3 +20,11 @@ class FetchSearchInfo extends MainEvent {
   @override
   String toString() => "Fetch search info event.";
 }
+
+class ResetOffset extends MainEvent {
+  const ResetOffset();
+
+  @override
+  String toString() => "Reset offset event.";
+}
+

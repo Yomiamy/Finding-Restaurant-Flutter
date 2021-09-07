@@ -21,7 +21,14 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   ) async* {
     if (event is FetchSearchInfo) {
       yield* _mapFetchSearchInfoToState(event, state);
+    } else if(event is ResetOffset) {
+      await _mapResetOffsetToState();
     }
+  }
+
+  Future<MainState> _mapResetOffsetToState() async {
+    this._mainRepository.resetOffset();
+    return ResetOffsetSuccess();
   }
 
   Stream<MainState> _mapFetchSearchInfoToState(FetchSearchInfo event, MainState state) async* {
