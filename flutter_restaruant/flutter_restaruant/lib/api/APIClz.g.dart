@@ -40,7 +40,15 @@ class _APIClz implements APIClz {
 
   @override
   Future<YelpSearchInfo> businessesSearch(
-      {term, latitude, longitude, locale, limit, openAt, sortBy, price}) async {
+      {term,
+      latitude,
+      longitude,
+      locale,
+      limit,
+      offset,
+      openAt,
+      sortBy,
+      price}) async {
     const _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'term': term,
@@ -48,6 +56,7 @@ class _APIClz implements APIClz {
       r'longitude': longitude,
       r'locale': locale,
       r'limit': limit,
+      r'offset': offset,
       r'openAt': openAt,
       r'sortBy': sortBy,
       r'price': price
