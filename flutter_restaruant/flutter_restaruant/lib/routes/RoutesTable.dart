@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_restaruant/flow/photoviewr/view/PhotoViewer.dart';
 import 'package:flutter_restaruant/flow/filter/view/FilterPage.dart';
 import 'package:flutter_restaruant/flow/main/bloc/MainBloc.dart';
 import 'package:flutter_restaruant/flow/main/repository/MainRepository.dart';
@@ -17,5 +18,6 @@ Map<String, WidgetBuilder> ROUTES_TABLE = <String, WidgetBuilder> {
       create: (_) => RestaurantDetailBloc(repository: RestaurantDetailRepository()),
       child: RestaurantDetailPage()
   ),
-  FilterPage.ROUTE_NAME: (context) => FilterPage()
+  FilterPage.ROUTE_NAME: (context) => FilterPage(),
+  PhotoViewer.ROUTE_NAME: (context) => PhotoViewer()
 };
