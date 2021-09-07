@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:flutter_restaruant/flow/main/repository/MainRepository.dart';
+import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/model/YelpSearchInfo.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:meta/meta.dart';
@@ -33,15 +34,21 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
   Stream<MainState> _mapFetchSearchInfoToState(FetchSearchInfo event, MainState state) async* {
     try {
-      yield InProgress();
-
       final Position currentPos = await Geolocator.getCurrentPosition();
+      double lat = currentPos.latitude;
+      double lng = currentPos.longitude;
+      bool isLoadMore = this._mainRepository.summaryInfos.isNotEmpty;
       int? price = event.price;
       int? openAt = event.openAt;
       String? sortBy = event.sortBy;
-      final YelpSearchInfo searchInfo =  await this._mainRepository.fetchYelpSearchInfo(currentPos.latitude, currentPos.longitude, price, openAt, sortBy);
 
-      yield Success(searchInfo: searchInfo);
+      if(!isLoadMore) {
+        // If it is first loading, then display loading progress.
+        yield InProgress();
+      }
+      final List<YelpRestaurantSummaryInfo> summaryInfos =  await this._mainRepository.fetchYelpSearchInfo(lat, lng, price, openAt, sortBy);
+
+      yield isLoadMore ? LoadMoreSuccess(summaryInfos: summaryInfos) : Success(summaryInfos: summaryInfos);
     } on Exception catch (_) {
       yield Failure();
     }

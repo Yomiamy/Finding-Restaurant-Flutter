@@ -27,15 +27,15 @@ class InProgress extends MainState {
 
 class Success extends MainState {
 
-  final YelpSearchInfo searchInfo;
+  final List<YelpRestaurantSummaryInfo> summaryInfos;
 
-  const Success({required this.searchInfo});
-
-  @override
-  List<Object> get props => [this.searchInfo];
+  const Success({required this.summaryInfos});
 
   @override
-  String toString() => "Success get search info ${this.searchInfo}";
+  List<Object> get props => this.summaryInfos;
+
+  @override
+  String toString() => "Success get summary infos ${this.summaryInfos}";
 }
 
 class Failure extends MainState {
@@ -51,4 +51,20 @@ class ResetOffsetSuccess extends MainState {
 
   @override
   String toString() => "Sucess reset offset";
+}
+
+
+class LoadMoreSuccess extends MainState {
+
+  final List<YelpRestaurantSummaryInfo> summaryInfos = [];
+
+  LoadMoreSuccess({required List<YelpRestaurantSummaryInfo> summaryInfos}) {
+    this.summaryInfos.addAll(summaryInfos);
+  }
+
+  @override
+  List<Object> get props => this.summaryInfos;
+
+  @override
+  String toString() => "Load more success.";
 }

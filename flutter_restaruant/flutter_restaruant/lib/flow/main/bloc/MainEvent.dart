@@ -28,3 +28,10 @@ class ResetOffset extends MainEvent {
   String toString() => "Reset offset event.";
 }
 
+class LoadMore extends MainEvent {
+  const LoadMore();
+
+  @override
+  String toString() => "Load more event.";
+}
+
