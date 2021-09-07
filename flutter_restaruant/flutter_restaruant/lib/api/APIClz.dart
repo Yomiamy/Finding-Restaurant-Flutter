@@ -28,6 +28,7 @@ abstract class APIClz {
       @Query("longitude") double? longitude,
       @Query("locale") String? locale,
       @Query("limit") int? limit,
+      @Query("offset") int? offset,
       @Query("openAt") int? openAt,
       @Query("sortBy") String? sortBy,
       @Query("price") int? price});

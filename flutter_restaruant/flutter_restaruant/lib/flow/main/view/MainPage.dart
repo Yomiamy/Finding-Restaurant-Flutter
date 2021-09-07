@@ -19,6 +19,8 @@ import 'FilterTagsWidget.dart';
 
 class MainPage extends StatefulWidget {
 
+  static const ROUTE_NAME = "/";
+
   MainPage({Key key = const Key("MainPage")}) : super(key: key);
 
   @override
@@ -28,6 +30,7 @@ class MainPage extends StatefulWidget {
 class MainPageState extends State<MainPage> {
 
   FilterConfigs _configs = FilterConfigs();
+  ScrollController _scrollController = ScrollController();
 
   MainPageState();
 
@@ -61,29 +64,41 @@ class MainPageState extends State<MainPage> {
                 ],
                 body: BlocBuilder<MainBloc, MainState>(
                     builder: (context, state) {
-                      if(state is Success) {
-                        return ListView.builder(
-                            padding: EdgeInsets.only(top: 0, bottom: 0),
-                            itemCount: (state.searchInfo.businesses?.length ?? 0) + 1 ,
-                            itemBuilder: (context, index) {
-                              if(index == 0) {
-                                return FilterTagsWidget(filterConfigs: this._configs);
-                              } else {
-                                YelpRestaurantSummaryInfo summaryInfo = state.searchInfo.businesses?[index - 1] ?? YelpRestaurantSummaryInfo();
+                      if(state is Success || state is LoadMoreSuccess) {
+                        List<YelpRestaurantSummaryInfo> summaryInfos = (state is Success) ? state.summaryInfos : (state as LoadMoreSuccess).summaryInfos;
 
-                                return GestureDetector(
-                                    child: RestaurantItemCell(summaryInfo: summaryInfo),
-                                    onTap: () {
-                                      String id = summaryInfo.id ?? "";
-                                      Tuple2 arguments = Tuple2<String, dynamic>(id, null);
+                        return NotificationListener<ScrollEndNotification>(
+                          onNotification: (notification) {
+                            if(notification is ScrollEndNotification && this._scrollController.position.atEdge) {
+                              // Load more when scrolling reach the edge of ListView
+                              BlocProvider.of<MainBloc>(context).add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
+                            }
+                            return true;
+                          },
+                          child: ListView.builder(
+                              padding: EdgeInsets.only(top: 0, bottom: 0),
+                              controller: this._scrollController,
+                              itemCount: summaryInfos.length + 1 ,
+                              itemBuilder: (context, index) {
+                                if(index == 0) {
+                                  return FilterTagsWidget(filterConfigs: this._configs);
+                                } else {
+                                  YelpRestaurantSummaryInfo summaryInfo = summaryInfos[index - 1];
 
-                                      Navigator.of(context).pushNamed(
-                                          RestaurantDetailPage.ROUTE_NAME,
-                                          arguments: arguments
-                                      );
-                                    });
-                              }
-                            });
+                                  return GestureDetector(
+                                      child: RestaurantItemCell(summaryInfo: summaryInfo),
+                                      onTap: () {
+                                        String id = summaryInfo.id ?? "";
+                                        Tuple2 arguments = Tuple2<String, dynamic>(id, null);
+
+                                        Navigator.of(context).pushNamed(
+                                            RestaurantDetailPage.ROUTE_NAME,
+                                            arguments: arguments
+                                        );
+                                      });
+                                }
+                              })
+                        );
                       } else if(state is InProgress) {
                         return Center(child: LoadingWidget());
                       } else {

@@ -13,7 +13,7 @@ import '../bloc/RestaurantDetailBloc.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
 
-  static const ROUTE_NAME = "RestaurantDetailPage";
+  static const ROUTE_NAME = "/RestaurantDetailPage";
 
   const RestaurantDetailPage();
 

@@ -8,8 +8,9 @@ import 'package:flutter_restaruant/utils/Utils.dart';
 import 'package:sprintf/sprintf.dart';
 
 class RestaurantInfoCell extends StatelessWidget {
-  static const int MAP_IMAGE_W = 140;
-  static const int MAP_IMAGE_H = 140;
+
+  static const int _MAP_IMAGE_W = 140;
+  static const int _MAP_IMAGE_H = 140;
 
   final YelpRestaurantDetailInfo _detailInfo;
   final String staticMapUrl;
@@ -34,8 +35,8 @@ class RestaurantInfoCell extends StatelessWidget {
         padding: EdgeInsets.only(left: 5, right: 5, top: 10),
         child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
           SizedBox(
-              width: RestaurantInfoCell.MAP_IMAGE_H.toDouble(),
-              height: RestaurantInfoCell.MAP_IMAGE_W.toDouble(),
+              width: RestaurantInfoCell._MAP_IMAGE_H.toDouble(),
+              height: RestaurantInfoCell._MAP_IMAGE_W.toDouble(),
               child: GestureDetector(
                   onTap: () {
                     showCupertinoModalPopup(
@@ -46,10 +47,10 @@ class RestaurantInfoCell extends StatelessWidget {
                       imageErrorBuilder: (context, error, trace) =>
                           Image.asset(UIConstants.NO_IMAGE),
                       image: this.staticMapUrl,
-                      imageCacheHeight: RestaurantInfoCell.MAP_IMAGE_H,
-                      imageCacheWidth: RestaurantInfoCell.MAP_IMAGE_W,
-                      placeholderCacheHeight: RestaurantInfoCell.MAP_IMAGE_H,
-                      placeholderCacheWidth: RestaurantInfoCell.MAP_IMAGE_W,
+                      imageCacheHeight: RestaurantInfoCell._MAP_IMAGE_H,
+                      imageCacheWidth: RestaurantInfoCell._MAP_IMAGE_W,
+                      placeholderCacheHeight: RestaurantInfoCell._MAP_IMAGE_H,
+                      placeholderCacheWidth: RestaurantInfoCell._MAP_IMAGE_W,
                       fit: BoxFit.fill))),
           Expanded(
               child: Container(
