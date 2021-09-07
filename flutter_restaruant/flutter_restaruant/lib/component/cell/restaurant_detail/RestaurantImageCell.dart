@@ -3,7 +3,7 @@ import 'package:flutter_restaruant/utils/UIConstants.dart';
 
 class RestaurantImageCell extends StatelessWidget {
 
-  static const int IMAGE_H = 200;
+  static const int _IMAGE_H = 200;
 
   final List<String> _photos;
 
@@ -21,10 +21,10 @@ class RestaurantImageCell extends StatelessWidget {
             child: FadeInImage.assetNetwork(
                 placeholder: UIConstants.NO_IMAGE,
                 image: this._photos[index],
-                imageCacheHeight: RestaurantImageCell.IMAGE_H,
+                imageCacheHeight: RestaurantImageCell._IMAGE_H,
                 imageCacheWidth:
                 MediaQuery.of(context).size.width.toInt(),
-                placeholderCacheHeight: RestaurantImageCell.IMAGE_H,
+                placeholderCacheHeight: RestaurantImageCell._IMAGE_H,
                 placeholderCacheWidth:
                 MediaQuery.of(context).size.width.toInt(),
                 fit: BoxFit.fill,

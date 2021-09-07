@@ -6,9 +6,9 @@ import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class RestaurantCommentCell extends StatelessWidget {
 
-  static const int IMAGE_W = 100;
-  static const int IMAGE_H = 100;
-  static const double RATING_IMAGE_H = 20;
+  static const int _IMAGE_W = 100;
+  static const int _IMAGE_H = 100;
+  static const double _RATING_IMAGE_H = 20;
 
   final List<Widget> _commentWidgets = <Widget>[];
   final ChromeSafariBrowser _browser = ChromeSafariBrowser();
@@ -59,19 +59,19 @@ class RestaurantCommentCell extends StatelessWidget {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
                     SizedBox(
-                        width: RestaurantCommentCell.IMAGE_H.toDouble(),
-                        height: RestaurantCommentCell.IMAGE_W.toDouble(),
+                        width: RestaurantCommentCell._IMAGE_H.toDouble(),
+                        height: RestaurantCommentCell._IMAGE_W.toDouble(),
                         child: FadeInImage.assetNetwork(
                             placeholder: UIConstants.NO_IMAGE,
                             imageErrorBuilder: (context, error, trace) =>
                                 Image.asset(UIConstants.NO_IMAGE),
                             image: headImgUrl,
-                            imageCacheHeight: RestaurantCommentCell.IMAGE_H,
-                            imageCacheWidth: RestaurantCommentCell.IMAGE_W,
+                            imageCacheHeight: RestaurantCommentCell._IMAGE_H,
+                            imageCacheWidth: RestaurantCommentCell._IMAGE_W,
                             placeholderCacheHeight:
-                                RestaurantCommentCell.IMAGE_H,
+                                RestaurantCommentCell._IMAGE_H,
                             placeholderCacheWidth:
-                                RestaurantCommentCell.IMAGE_W,
+                                RestaurantCommentCell._IMAGE_W,
                             fit: BoxFit.fill)),
                     Expanded(
                         child: Container(
@@ -87,7 +87,7 @@ class RestaurantCommentCell extends StatelessWidget {
                                       overflow: TextOverflow.ellipsis),
                                   SizedBox(
                                       height:
-                                          RestaurantCommentCell.RATING_IMAGE_H,
+                                          RestaurantCommentCell._RATING_IMAGE_H,
                                       child: rateAsset),
                                   Text(comment,
                                       maxLines: 2,
