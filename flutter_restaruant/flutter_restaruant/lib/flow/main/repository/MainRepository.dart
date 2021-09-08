@@ -11,12 +11,12 @@ class MainRepository {
   late List<YelpRestaurantSummaryInfo> summaryInfos;
 
   MainRepository() {
-    this._offset = 0;
-    this.summaryInfos = [];
+    this.resetOffset();
   }
 
   void resetOffset() {
     this._offset = 0;
+    this.summaryInfos = [];
   }
 
   Future<List<YelpRestaurantSummaryInfo>> fetchYelpSearchInfo(double lat, double lng, int? price, int? openAt, String? sortBy) async {
