@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/flow/main/bloc/MainBloc.dart';
 import 'package:flutter_restaruant/flow/main/repository/MainRepository.dart';
+import 'package:flutter_restaruant/flow/splash/view/SplashPage.dart';
 import 'flow/main/view/MainPage.dart';
 import 'routes/RoutesTable.dart';
 
@@ -16,7 +17,7 @@ class FindingRestaruantApp extends StatelessWidget {
   Widget build(BuildContext context) => PlatformApp(
       title:  "Find Restaurant",
       routes: ROUTES_TABLE,
-      initialRoute: MainPage.ROUTE_NAME
+      initialRoute: SplashPage.ROUTE_NAME
   );
 }
 

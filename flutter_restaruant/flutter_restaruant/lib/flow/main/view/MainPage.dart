@@ -19,7 +19,7 @@ import 'FilterTagsWidget.dart';
 
 class MainPage extends StatefulWidget {
 
-  static const ROUTE_NAME = "/";
+  static const ROUTE_NAME = "/MainPage";
 
   MainPage({Key key = const Key("MainPage")}) : super(key: key);
 
