@@ -40,6 +40,7 @@ class _FilterPageState extends State<FilterPage> {
                     color: Color(UIConstants.BackBtnColor))),
             trailingActions: [
               PlatformButton(
+                  color: Color(UIConstants.AppBarColor),
                   padding: EdgeInsets.all(0),
                   onPressed: () {
                     FilterConfigs configs = FilterConfigs.fromUI(priceIndex: this._priceIndex, openAtDate: this._openAtDateTime, sortingRuleIndex: this._sortByIndex);
@@ -48,7 +49,8 @@ class _FilterPageState extends State<FilterPage> {
                   },
                   child: Text("套用",
                       style: TextStyle(
-                          color: Colors.white, fontSize: Dimens.xhFontSize)))
+                          color: Colors.white,
+                          fontSize: Dimens.xhFontSize)))
             ],
             title: Text("過濾條件",
                 style: TextStyle(
