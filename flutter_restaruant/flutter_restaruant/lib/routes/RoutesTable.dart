@@ -8,8 +8,10 @@ import 'package:flutter_restaruant/flow/main/view/MainPage.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
 import 'package:flutter_restaruant/flow/restaurant/bloc/RestaurantDetailBloc.dart';
 import 'package:flutter_restaruant/flow/restaurant/repository/RestaurantDetailRepository.dart';
+import 'package:flutter_restaruant/flow/splash/view/SplashPage.dart';
 
 Map<String, WidgetBuilder> ROUTES_TABLE = <String, WidgetBuilder> {
+  SplashPage.ROUTE_NAME: (context) => SplashPage(),
   MainPage.ROUTE_NAME: (context) => BlocProvider<MainBloc>(
       create: (_) => MainBloc(repository: MainRepository()),
       child: MainPage()
