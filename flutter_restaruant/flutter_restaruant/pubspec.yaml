@@ -85,6 +85,7 @@ flutter:
     - images/Star_rating_4.5_of_5.png
     - images/Star_rating_4_of_5.png
     - images/Star_rating_5_of_5.png
+    - images/launch_image.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

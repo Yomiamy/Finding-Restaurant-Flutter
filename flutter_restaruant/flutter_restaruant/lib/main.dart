@@ -16,8 +16,7 @@ class FindingRestaruantApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => PlatformApp(
       title:  "Find Restaurant",
-      routes: ROUTES_TABLE,
-      initialRoute: SplashPage.ROUTE_NAME
+      routes: ROUTES_TABLE
   );
 }
 

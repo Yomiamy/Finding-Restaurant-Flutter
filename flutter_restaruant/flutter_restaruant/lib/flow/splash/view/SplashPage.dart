@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:flutter_restaruant/flow/main/view/MainPage.dart';
 
 class SplashPage extends StatefulWidget {
 
@@ -12,14 +13,19 @@ class SplashPage extends StatefulWidget {
 }
 
 class _SplashPageState extends State<SplashPage> {
+
   @override
-  Widget build(BuildContext context) => PlatformScaffold(
-    body: Container(
-        child: Image.asset(
-        "images/launch_image.png",
-        fit: BoxFit.fill,
-        height: double.infinity,
-        width: double.infinity,
-      ))
-  );
+  Widget build(BuildContext context) {
+    Future.delayed(Duration(seconds: 2)).then((value) => Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME));
+
+    return PlatformScaffold(
+        body: Container(
+            child: Image.asset(
+              "images/launch_image.png",
+              fit: BoxFit.fill,
+              height: double.infinity,
+              width: double.infinity,
+            ))
+    );
+  }
 }
