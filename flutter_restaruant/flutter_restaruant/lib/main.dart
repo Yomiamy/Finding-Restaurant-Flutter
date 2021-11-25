@@ -4,6 +4,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/flow/main/bloc/MainBloc.dart';
 import 'package:flutter_restaruant/flow/main/repository/MainRepository.dart';
 import 'package:flutter_restaruant/flow/splash/view/SplashPage.dart';
+import 'package:flutter_restaruant/utils/Constants.dart';
 import 'flow/main/view/MainPage.dart';
 import 'routes/RoutesTable.dart';
 
@@ -15,7 +16,7 @@ class FindingRestaruantApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) => PlatformApp(
-      title:  "Find Restaurant",
+      title:  Constants.APP_TITLE,
       routes: ROUTES_TABLE
   );
 }

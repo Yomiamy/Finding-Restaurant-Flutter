@@ -1,4 +1,7 @@
 class Constants {
+  /// [String]
+  static const APP_TITLE = "Find Restaurant";
+
   /// [API]
   static const BASE_URL = "https://api.yelp.com";
   static const GOOGLE_MAP_API_URL = "https://maps.googleapis.com/maps/api";
