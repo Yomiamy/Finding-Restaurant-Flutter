@@ -11,6 +11,8 @@ class YelpRestaurantLocation {
   String? country;
   String? state;
   List<String>? display_address;
+  @JsonKey(ignore: true)
+  String get displayAddressStr => this.display_address?.join("") ?? "";
 
   YelpRestaurantLocation();
 

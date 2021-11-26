@@ -43,7 +43,9 @@ class MainRepository {
 
     if(keyword.isNotEmpty) {
       return this.summaryInfos.where((element) {
-        return (element.name?.contains(keyword) ?? false) || (element.categoriesStr.contains(keyword));
+        return (element.name?.contains(keyword) ?? false)
+            || (element.categoriesStr.contains(keyword))
+            || (element.location?.displayAddressStr.contains(keyword) ?? false);
       }).toList();
     } else {
       return this.summaryInfos;

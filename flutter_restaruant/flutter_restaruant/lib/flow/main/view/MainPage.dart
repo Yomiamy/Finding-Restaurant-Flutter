@@ -140,7 +140,7 @@ class MainPageState extends State<MainPage> {
                                             ),
                                           ),
                                           content: PlatformTextField(
-                                            hintText: "請輸入關鍵字",
+                                            hintText: "店名/分類/地區/路",
                                             onChanged: (keyword) {
                                                   this._filterKeyword = keyword;
                                               },
