@@ -6,7 +6,7 @@ class EmptyDataWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Center(
-      child: Text("No Data.",
+      child: Text("目前無任何資料",
           style: TextStyle(fontWeight: FontWeight.bold, fontSize:  Dimens.xxxhFontSize)
       )
   );

@@ -24,7 +24,18 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       yield* _mapFetchSearchInfoToState(event, state);
     } else if(event is ResetOffset) {
       await _mapResetOffsetToState();
+    }  else if(event is FilterListByKeyword) {
+      yield* _mapFilterListByKeywordToState(event);
     }
+  }
+
+  Stream<MainState> _mapFilterListByKeywordToState(FilterListByKeyword event) async* {
+    yield InProgress();
+
+    await Future.delayed(Duration(seconds: 2));
+
+    final List<YelpRestaurantSummaryInfo> filterInfos = await this._mainRepository.filterByKeyword(event.keyword);
+    yield (filterInfos.isNotEmpty) ? Success(summaryInfos: filterInfos) : Failure();
   }
 
   Future<MainState> _mapResetOffsetToState() async {

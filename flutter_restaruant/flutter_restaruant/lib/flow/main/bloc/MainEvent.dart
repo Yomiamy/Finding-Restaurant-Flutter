@@ -35,3 +35,10 @@ class LoadMore extends MainEvent {
   String toString() => "Load more event.";
 }
 
+class FilterListByKeyword extends MainEvent {
+
+  final String keyword;
+
+  const FilterListByKeyword({this.keyword = ""});
+}
+

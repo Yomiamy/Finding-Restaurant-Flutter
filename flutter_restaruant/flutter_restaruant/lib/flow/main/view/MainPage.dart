@@ -11,6 +11,7 @@ import 'package:flutter_restaruant/flow/filter/view/FilterPage.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
 import 'package:flutter_restaruant/model/FilterConfigs.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
+import 'package:flutter_restaruant/utils/Constants.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
@@ -31,6 +32,8 @@ class MainPageState extends State<MainPage> {
 
   FilterConfigs _configs = FilterConfigs();
   ScrollController _scrollController = ScrollController();
+  String _filterKeyword = "";
+  late MainBloc _mainBloc;
 
   MainPageState();
 
@@ -44,9 +47,10 @@ class MainPageState extends State<MainPage> {
     int? price = this._configs.price;
     int? openAt = this._configs.openAt;
     String? sortBy = this._configs.sortBy;
+    this._mainBloc = BlocProvider.of<MainBloc>(context);
 
-    BlocProvider.of<MainBloc>(context).add(ResetOffset());
-    BlocProvider.of<MainBloc>(context).add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
+    this._mainBloc.add(ResetOffset());
+    this._mainBloc.add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
 
     return PlatformScaffold(
         body: Stack(
@@ -55,12 +59,13 @@ class MainPageState extends State<MainPage> {
                 headerSliverBuilder: (BuildContext context, bool isBoxIsScrolled) =>
                 <Widget>[
                   CupertinoSliverNavigationBar(
-                      largeTitle: Text("Find Restaurant",
+                      automaticallyImplyLeading: false,
+                      largeTitle: Text(Constants.APP_TITLE,
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: Dimens.xxxxhFontSize)
                       ),
-                      backgroundColor: Color(UIConstants.AppBarColor)
+                      backgroundColor: Color(UIConstants.AppBarColor),
                   )
                 ],
                 body: BlocBuilder<MainBloc, MainState>(
@@ -72,7 +77,7 @@ class MainPageState extends State<MainPage> {
                           onNotification: (notification) {
                             if(notification is ScrollEndNotification && this._scrollController.position.atEdge) {
                               // Load more when scrolling reach the edge of ListView
-                              BlocProvider.of<MainBloc>(context).add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
+                              this._mainBloc.add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
                             }
                             return true;
                           },
@@ -118,12 +123,48 @@ class MainPageState extends State<MainPage> {
                         mainIcon: Icon(Icons.menu),
                         children: [
                           const Icon(Icons.info),
-                          const Icon(Icons.settings),
-                          const Icon(Icons.change_circle),
+                          const Icon(Icons.search),
+                          const Icon(Icons.filter_list),
                         ],
                         childrenPressActions: [
                               () { debugPrint("Action1 pressed"); },
-                              () { debugPrint("Action2 pressed"); },
+                              () {
+                                    showPlatformDialog(
+                                        context: context,
+                                        builder: (context) => PlatformAlertDialog(
+                                          title: PlatformText(
+                                            "關鍵字過濾",
+                                            style: TextStyle(
+                                              fontSize: Dimens.xxhFontSize,
+                                              fontWeight: FontWeight.bold
+                                            ),
+                                          ),
+                                          content: PlatformTextField(
+                                            hintText: "店名/分類/地區/路",
+                                            onChanged: (keyword) {
+                                                  this._filterKeyword = keyword;
+                                              },
+                                          ),
+                                          actions: [
+                                            PlatformButton(
+                                                onPressed: () {
+                                                  this._mainBloc.add(FilterListByKeyword(keyword: this._filterKeyword));
+                                                  this._filterKeyword = "";
+
+                                                  Navigator.pop(context);
+                                                },
+                                                child: PlatformText("確定")
+                                            ),
+                                            PlatformButton(
+                                                onPressed: () {
+                                                  Navigator.pop(context);
+                                                },
+                                                child: PlatformText("取消")
+                                            )
+                                          ],
+                                        )
+                                    );
+                                  },
                               () async {
                                 Tuple2<FilterConfigs, dynamic> arguments = Tuple2<FilterConfigs, dynamic>(this._configs, null);
                                 Tuple2<FilterConfigs, dynamic>? result = (await Navigator.of(context).pushNamed(FilterPage.ROUTE_NAME, arguments: arguments)) as Tuple2<FilterConfigs, dynamic>?;

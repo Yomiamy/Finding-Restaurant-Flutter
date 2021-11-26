@@ -20,7 +20,6 @@ YelpRestaurantSummaryInfo _$YelpRestaurantSummaryInfoFromJson(
     ..categories = (json['categories'] as List<dynamic>?)
         ?.map((e) => YelpRestaurantCategory.fromJson(e as Map<String, dynamic>))
         .toList()
-    ..categoriesStr = json['categoriesStr'] as String?
     ..location = json['location'] == null
         ? null
         : YelpRestaurantLocation.fromJson(
@@ -43,7 +42,6 @@ Map<String, dynamic> _$YelpRestaurantSummaryInfoToJson(
       'phone': instance.phone,
       'distance': instance.distance,
       'categories': instance.categories,
-      'categoriesStr': instance.categoriesStr,
       'location': instance.location,
       'coordinates': instance.coordinates,
     };
