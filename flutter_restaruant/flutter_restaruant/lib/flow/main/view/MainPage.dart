@@ -33,6 +33,7 @@ class MainPageState extends State<MainPage> {
   FilterConfigs _configs = FilterConfigs();
   ScrollController _scrollController = ScrollController();
   String _filterKeyword = "";
+  late MainBloc _mainBloc;
 
   MainPageState();
 
@@ -46,9 +47,10 @@ class MainPageState extends State<MainPage> {
     int? price = this._configs.price;
     int? openAt = this._configs.openAt;
     String? sortBy = this._configs.sortBy;
+    this._mainBloc = BlocProvider.of<MainBloc>(context);
 
-    BlocProvider.of<MainBloc>(context).add(ResetOffset());
-    BlocProvider.of<MainBloc>(context).add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
+    this._mainBloc.add(ResetOffset());
+    this._mainBloc.add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
 
     return PlatformScaffold(
         body: Stack(
@@ -75,7 +77,7 @@ class MainPageState extends State<MainPage> {
                           onNotification: (notification) {
                             if(notification is ScrollEndNotification && this._scrollController.position.atEdge) {
                               // Load more when scrolling reach the edge of ListView
-                              BlocProvider.of<MainBloc>(context).add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
+                              this._mainBloc.add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
                             }
                             return true;
                           },
@@ -146,13 +148,15 @@ class MainPageState extends State<MainPage> {
                                           actions: [
                                             PlatformButton(
                                                 onPressed: () {
+                                                  this._mainBloc.add(FilterListByKeyword(keyword: this._filterKeyword));
+                                                  this._filterKeyword = "";
+
                                                   Navigator.pop(context);
                                                 },
                                                 child: PlatformText("確定")
                                             ),
                                             PlatformButton(
                                                 onPressed: () {
-                                                  this._filterKeyword = "";
                                                   Navigator.pop(context);
                                                 },
                                                 child: PlatformText("取消")
