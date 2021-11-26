@@ -18,7 +18,8 @@ class YelpRestaurantSummaryInfo extends YelpBaseInfo {
   String? phone;
   double? distance;
   List<YelpRestaurantCategory>? categories;
-  String? categoriesStr;
+  @JsonKey(ignore: true)
+  String get categoriesStr => categories?.map((category) => category.title ?? "").join(" ") ?? "";
   YelpRestaurantLocation? location;
   YelpRestaurantCoordinates? coordinates;
 

@@ -15,7 +15,7 @@ class RestaurantItemCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String category = this._summaryInfo.categories?.map((category) => category.title ?? "").join(" ") ?? "";
+    String category = this._summaryInfo.categoriesStr;
 
     return SizedBox(
       height: 100,
