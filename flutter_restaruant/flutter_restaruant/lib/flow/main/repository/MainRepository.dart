@@ -9,6 +9,7 @@ class MainRepository {
 
   late int _offset;
   late List<YelpRestaurantSummaryInfo> summaryInfos;
+  String _keyword = "";
 
   MainRepository() {
     this.resetOffset();
@@ -17,6 +18,7 @@ class MainRepository {
   void resetOffset() {
     this._offset = 0;
     this.summaryInfos = [];
+    this._keyword = "";
   }
 
   Future<List<YelpRestaurantSummaryInfo>> fetchYelpSearchInfo(double lat, double lng, int? price, int? openAt, String? sortBy) async {
@@ -33,6 +35,19 @@ class MainRepository {
 
     this.summaryInfos.addAll(searchInfo.businesses ?? []);
 
-    return this.summaryInfos;
+    return (this._keyword.isEmpty) ? this.summaryInfos : await this.filterByKeyword(this._keyword);
   }
+
+  Future<List<YelpRestaurantSummaryInfo>> filterByKeyword(String keyword) async {
+    this._keyword = keyword;
+
+    if(keyword.isNotEmpty) {
+      return this.summaryInfos.where((element) {
+        return (element.name?.contains(keyword) ?? false) || (element.categoriesStr.contains(keyword));
+      }).toList();
+    } else {
+      return this.summaryInfos;
+    }
+  }
+
 }
