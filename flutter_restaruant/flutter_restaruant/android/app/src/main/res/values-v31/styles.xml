@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="LaunchTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimaryDark">@android:color/transparent</item>
+        <item name="android:windowIsTranslucent">true</item>
+<!--        <item name="android:windowSplashScreenAnimatedIcon">@null</item>-->
+<!--        <item name="android:windowSplashScreenBrandingImage">@mipmap/ic_launcher_round</item>-->
+<!--        <item name="android:windowSplashscreenContent">@null</item>-->
+<!--        <item name="android:windowSplashScreenBackground">@color/primary_color_dark</item>-->
+<!--        <item name="android:windowSplashScreenIconBackgroundColor">@color/primary_color_dark</item>-->
+
+    </style>
+</resources>
