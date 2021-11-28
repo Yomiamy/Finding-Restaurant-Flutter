@@ -2,6 +2,7 @@
 <resources>
     <!-- Theme applied to the Android Window while the process is starting -->
     <style name="LaunchTheme" parent="Theme.MaterialComponents.Light.NoActionBar">
+        <item name="colorPrimaryDark">@color/primary_color_dark</item>
         <item name="android:windowBackground">@drawable/launch_background</item>
     </style>
     <!-- Theme applied to the Android Window as soon as the process has started.
