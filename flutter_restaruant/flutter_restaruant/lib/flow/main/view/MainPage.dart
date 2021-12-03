@@ -43,14 +43,24 @@ class MainPageState extends State<MainPage> {
   }
 
   @override
-  Widget build(BuildContext context) {
+  void didUpdateWidget(covariant MainPage oldWidget) {
+    super.didUpdateWidget(oldWidget);
+  }
+
+  void _clearAndFeach() {
     int? price = this._configs.price;
     int? openAt = this._configs.openAt;
     String? sortBy = this._configs.sortBy;
-    this._mainBloc = BlocProvider.of<MainBloc>(context);
 
     this._mainBloc.add(ResetOffset());
     this._mainBloc.add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    this._mainBloc = BlocProvider.of<MainBloc>(context);
+
+    this._clearAndFeach();
 
     return PlatformScaffold(
         body: Stack(
@@ -76,6 +86,10 @@ class MainPageState extends State<MainPage> {
                         return NotificationListener<ScrollEndNotification>(
                           onNotification: (notification) {
                             if(notification is ScrollEndNotification && this._scrollController.position.atEdge) {
+                              int? price = this._configs.price;
+                              int? openAt = this._configs.openAt;
+                              String? sortBy = this._configs.sortBy;
+
                               // Load more when scrolling reach the edge of ListView
                               this._mainBloc.add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
                             }
@@ -122,16 +136,17 @@ class MainPageState extends State<MainPage> {
                         distance: 120,
                         mainIcon: Icon(Icons.menu),
                         children: [
-                          const Icon(Icons.info),
+                          const Icon(Icons.navigation),
                           const Icon(Icons.search),
                           const Icon(Icons.filter_list),
                         ],
                         childrenPressActions: [
-                              () { debugPrint("Action1 pressed"); },
+                              () { this._clearAndFeach(); },
                               () {
                                     showPlatformDialog(
                                         context: context,
                                         builder: (context) => PlatformAlertDialog(
+                                          key: GlobalKey(debugLabel: "FilterListByKeywordDialog"),
                                           title: PlatformText(
                                             "關鍵字過濾",
                                             style: TextStyle(
