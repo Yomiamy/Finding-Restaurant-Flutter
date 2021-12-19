@@ -1,0 +1,55 @@
+{
+  "project_info": {
+    "project_number": "35224406241",
+    "firebase_url": "https://findrestaurant-c80ea.firebaseio.com",
+    "project_id": "findrestaurant-c80ea",
+    "storage_bucket": "findrestaurant-c80ea.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:35224406241:android:00f352bb5d635a1b924fa0",
+        "android_client_info": {
+          "package_name": "com.yomi.flutter_restaruant"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "35224406241-hve1g7v9c5neh8vcrtjfv5h4agbr6kf3.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yomi.flutter_restaruant",
+            "certificate_hash": "566e198f9b3f7347afcbecb4ab3347399c0d878a"
+          }
+        },
+        {
+          "client_id": "35224406241-26j0d0cktudi01ro1ash1hn00rti207g.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAazLGDNd0sM6ixVxEIx0kSgRuJU1iAB4w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "35224406241-26j0d0cktudi01ro1ash1hn00rti207g.apps.googleusercontent.com",
+              "client_type": 3
+            },
+            {
+              "client_id": "35224406241-8bh7hq1e07129nav2gcme5n9p565su7k.apps.googleusercontent.com",
+              "client_type": 2,
+              "ios_info": {
+                "bundle_id": "com.yomi.find-restaurant"
+              }
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
