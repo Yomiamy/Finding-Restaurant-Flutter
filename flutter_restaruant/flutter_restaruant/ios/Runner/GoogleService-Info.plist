@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>CLIENT_ID</key>
+	<string>35224406241-8bh7hq1e07129nav2gcme5n9p565su7k.apps.googleusercontent.com</string>
+	<key>REVERSED_CLIENT_ID</key>
+	<string>com.googleusercontent.apps.35224406241-8bh7hq1e07129nav2gcme5n9p565su7k</string>
+	<key>ANDROID_CLIENT_ID</key>
+	<string>35224406241-hve1g7v9c5neh8vcrtjfv5h4agbr6kf3.apps.googleusercontent.com</string>
+	<key>API_KEY</key>
+	<string>AIzaSyAfe5kOHB_-GPPNovB8iCDimCBnTsW6OYQ</string>
+	<key>GCM_SENDER_ID</key>
+	<string>35224406241</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.yomi.find-restaurant</string>
+	<key>PROJECT_ID</key>
+	<string>findrestaurant-c80ea</string>
+	<key>STORAGE_BUCKET</key>
+	<string>findrestaurant-c80ea.appspot.com</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:35224406241:ios:d8eb3d68795bc2d1924fa0</string>
+	<key>DATABASE_URL</key>
+	<string>https://findrestaurant-c80ea.firebaseio.com</string>
+</dict>
+</plist>
