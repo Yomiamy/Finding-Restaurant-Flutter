@@ -61,5 +61,16 @@
         <key>NSAllowsLocalNetworking</key>
         <true/>
     </dict>
+    <key>CFBundleURLTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeRole</key>
+            <string>Editor</string>
+            <key>CFBundleURLSchemes</key>
+            <array>
+                <string>com.googleusercontent.apps.35224406241-8bh7hq1e07129nav2gcme5n9p565su7k</string>
+            </array>
+        </dict>
+    </array>
 </dict>
 </plist>
