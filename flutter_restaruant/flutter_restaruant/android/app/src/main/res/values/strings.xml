@@ -1,0 +1,6 @@
+<resources>
+    <string name="app_name">FindRestaurant</string>
+    <string name="facebook_app_id">625220045459409</string>
+    <string name="fb_login_protocol_scheme">fb625220045459409</string>
+    <string name="facebook_client_token">54423e82152ccb6fbf1c5c652306d28a</string>
+</resources>
