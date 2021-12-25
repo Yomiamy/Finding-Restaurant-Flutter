@@ -27,5 +27,5 @@ class GoogleSignInManager {
     return userCredential.user?.uid ?? "";
   }
 
-  void signInOutWithGoogle() async => await GoogleSignIn().signOut();
+  void signOutWithGoogle() async => await FirebaseAuth.instance.signOut();
 }
