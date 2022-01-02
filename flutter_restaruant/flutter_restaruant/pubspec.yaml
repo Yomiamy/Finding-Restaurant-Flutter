@@ -53,6 +53,7 @@ dependencies:
   sign_in_with_apple: ^3.3.0
   crypto: ^3.0.1
   flutter_facebook_auth: "^3.5.7"
+  flutter_signin_button: ^2.0.0
 
   flutter:
     sdk: flutter
