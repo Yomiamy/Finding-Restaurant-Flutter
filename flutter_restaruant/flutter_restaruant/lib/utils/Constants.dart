@@ -1,6 +1,11 @@
+import 'package:flutter/cupertino.dart';
+
 class Constants {
+  static const EmptyWidget = SizedBox(height: 0);
+
   /// [String]
-  static const APP_TITLE = "Find Restaurant";
+  static const APP_TITLE = "尋找餐廳";
+  static const LOGIN_TITLE = "登入頁";
 
   /// [API]
   static const BASE_URL = "https://api.yelp.com";
