@@ -1,7 +1,4 @@
-import 'package:flutter/cupertino.dart';
-
 class Constants {
-  static const EmptyWidget = SizedBox(height: 0);
 
   /// [String]
   static const APP_TITLE = "尋找餐廳";
