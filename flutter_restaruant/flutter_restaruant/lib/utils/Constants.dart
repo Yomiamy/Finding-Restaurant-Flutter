@@ -1,6 +1,8 @@
 class Constants {
+
   /// [String]
-  static const APP_TITLE = "Find Restaurant";
+  static const APP_TITLE = "尋找餐廳";
+  static const LOGIN_TITLE = "登入頁";
 
   /// [API]
   static const BASE_URL = "https://api.yelp.com";

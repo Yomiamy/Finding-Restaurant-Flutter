@@ -7,7 +7,6 @@ import 'package:flutter_restaruant/flow/main/repository/MainRepository.dart';
 import 'package:flutter_restaruant/flow/splash/view/SplashPage.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
 import 'firebase_options.dart';
-import 'flow/login/view/LoginPage.dart';
 import 'flow/main/view/MainPage.dart';
 import 'routes/RoutesTable.dart';
 import 'package:firebase_core/firebase_core.dart';
