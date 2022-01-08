@@ -16,7 +16,7 @@ class SignInManager {
   AppleSignInManager _appleSignInManager = AppleSignInManager();
   FacebookSignInManager _facebookSignInManager = FacebookSignInManager();
 
-  Future<void> signIn({accountType:AccountType}) async {
+  Future<void> signIn(AccountType accountType) async {
     switch(accountType) {
       case AccountType.GOOGLE:
         this.accountInfo = await this._googleSignInManager.signInWithGoogle();

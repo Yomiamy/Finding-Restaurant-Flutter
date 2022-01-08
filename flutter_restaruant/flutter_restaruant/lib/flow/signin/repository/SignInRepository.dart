@@ -12,19 +12,19 @@ class SignInRepository {
   Future<SignInState> signIn(SignInEvent signInEvent) async {
     if(signInEvent is GoogleSignInEvent) {
       // Google登入
-      await this._signInManager.signIn(accountType: AccountType.GOOGLE);
+      await this._signInManager.signIn(AccountType.GOOGLE);
 
       AccountInfo? accountInfo = this._signInManager.accountInfo;
       return (accountInfo != null) ? Success(accountInfo: accountInfo) : Failure(event: signInEvent);
     } else if(signInEvent is FacebookSignInEvent) {
       // Facebook登入
-      await this._signInManager.signIn(accountType: AccountType.FACEBOOK);
+      await this._signInManager.signIn(AccountType.FACEBOOK);
 
       AccountInfo? accountInfo = this._signInManager.accountInfo;
       return (accountInfo != null) ? Success(accountInfo: accountInfo) : Failure(event: signInEvent);
     } else if(signInEvent is AppleSignInEvent) {
       // Apple登入
-      await this._signInManager.signIn(accountType: AccountType.APPLE);
+      await this._signInManager.signIn(AccountType.APPLE);
 
       AccountInfo? accountInfo = this._signInManager.accountInfo;
       return (accountInfo != null) ? Success(accountInfo: accountInfo) : Failure(event: signInEvent);
