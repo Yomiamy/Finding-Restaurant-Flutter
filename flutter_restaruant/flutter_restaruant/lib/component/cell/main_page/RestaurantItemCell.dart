@@ -25,15 +25,33 @@ class RestaurantItemCell extends StatelessWidget {
             SizedBox(
                 width: RestaurantItemCell.IMAGE_W.toDouble(),
                 height: RestaurantItemCell.IMAGE_H.toDouble(),
-                child: FadeInImage.assetNetwork(
-                    placeholder: UIConstants.NO_IMAGE,
-                    imageErrorBuilder: (context, error, trace) => Image.asset(UIConstants.NO_IMAGE),
-                    image: this._summaryInfo.image_url ?? "",
-                    imageCacheHeight: RestaurantItemCell.IMAGE_H,
-                    imageCacheWidth: RestaurantItemCell.IMAGE_W,
-                    placeholderCacheHeight: RestaurantItemCell.IMAGE_H,
-                    placeholderCacheWidth: RestaurantItemCell.IMAGE_W,
-                    fit: BoxFit.fill)),
+                child: Stack(
+                  children: <Widget>[
+                    Align(
+                      alignment:Alignment.center,
+                      child: FadeInImage.assetNetwork(
+                          placeholder: UIConstants.NO_IMAGE,
+                          imageErrorBuilder: (context, error, trace) => Image.asset(UIConstants.NO_IMAGE),
+                          image: this._summaryInfo.image_url ?? "",
+                          imageCacheHeight: RestaurantItemCell.IMAGE_H,
+                          imageCacheWidth: RestaurantItemCell.IMAGE_W,
+                          placeholderCacheHeight: RestaurantItemCell.IMAGE_H,
+                          placeholderCacheWidth: RestaurantItemCell.IMAGE_W,
+                          fit: BoxFit.fill)
+                    ),
+                    Align(
+                      alignment:Alignment.bottomRight,
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 8, bottom: 5),
+                        child: Image.asset(
+                            this._summaryInfo.isFavor! ? "images/ic_favor_fill.png" : "images/ic_favor_empty.png",
+                            width: UIConstants.FAVOR_IMAGE_W,
+                            height: UIConstants.FAVOR_IMAGE_H,
+                            fit: BoxFit.fill)
+                      )
+                    )
+                  ]
+                )),
             Expanded(
                 child: Container(
                     padding: EdgeInsets.only(left: 10),
