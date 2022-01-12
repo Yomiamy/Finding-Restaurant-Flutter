@@ -1,5 +1,4 @@
 class Constants {
-
   /// [AD]
   // PROD AD banner id
   static const AD_ANDROID_BANNER_ID = "ca-app-pub-7910179918263365/3813466391";
@@ -22,5 +21,4 @@ class Constants {
   static const int CONNECTION_TIEMOUT = 30000;
   static const int RECEIVE_TIEMOUT = 30000;
   static const int PAGE_ITEM_COUNT = 50;
-
 }
