@@ -13,4 +13,19 @@ class FetchFavorInfoEvent extends FavorEvent {
   final String uid;
 
   const FetchFavorInfoEvent({required this.uid});
+
+  @override
+  List<Object> get props => [this.uid];
+}
+
+
+class UpdateFavorInfoEvent extends FavorEvent {
+  // 透過uid取得喜好列表
+  final String uid;
+  final YelpRestaurantSummaryInfo summaryInfo;
+
+  const UpdateFavorInfoEvent({required this.uid, required this.summaryInfo});
+
+  @override
+  List<Object> get props => [this.uid, this.summaryInfo.hashCode];
 }
