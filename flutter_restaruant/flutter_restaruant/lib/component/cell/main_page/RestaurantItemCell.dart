@@ -44,7 +44,7 @@ class RestaurantItemCell extends StatelessWidget {
                       child: Padding(
                         padding: EdgeInsets.only(right: 8, bottom: 5),
                         child: Image.asset(
-                            this._summaryInfo.isFavor! ? "images/ic_favor_fill.png" : "images/ic_favor_empty.png",
+                            this._summaryInfo.favor! ? "images/ic_favor_fill.png" : "images/ic_favor_empty.png",
                             width: UIConstants.FAVOR_IMAGE_W,
                             height: UIConstants.FAVOR_IMAGE_H,
                             fit: BoxFit.fill)
