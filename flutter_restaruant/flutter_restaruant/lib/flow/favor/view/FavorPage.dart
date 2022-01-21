@@ -1,9 +1,14 @@
+import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/EmptyDataWidget.dart';
 import 'package:flutter_restaruant/component/LoadingWidget.dart';
+import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.dart';
 import 'package:flutter_restaruant/flow/favor/bloc/FavorBloc.dart';
+import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
+import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 
@@ -19,41 +24,48 @@ class FavorPage extends StatefulWidget {
 class _FavorPageState extends State<FavorPage> {
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)!.settings.arguments as Tuple2<String, dynamic>;
-    final uid = args.item1;
+    // TODO: uid尚未決定來源
+    // final args =
+    //     ModalRoute.of(context)!.settings.arguments as Tuple2<String, dynamic>;
+    // final uid = args.item1;
 
     FavorBloc bloc = BlocProvider.of<FavorBloc>(context);
-    bloc.add(FetchFavorInfoEvent(uid: uid));
-    // TODO: 寫到此
+    bloc.add(FetchFavorInfoEvent(uid: "123456"));
     return PlatformScaffold(
         appBar: PlatformAppBar(
-          title: Text(UIConstants.FAVOR_TITLE),
-        ),
+            leading: PlatformIconButton(
+                padding: EdgeInsets.all(0),
+                onPressed: () => Navigator.of(context).pop(),
+                materialIcon: Icon(Icons.arrow_back,
+                    color: Color(UIConstants.BackBtnColor)),
+                cupertinoIcon: Icon(CupertinoIcons.back,
+                    color: Color(UIConstants.BackBtnColor))),
+            title: Text(UIConstants.FAVOR_TITLE),
+            backgroundColor: Color(UIConstants.AppBarColor)),
         body: BlocBuilder<FavorBloc, FavorState>(
             bloc: bloc,
             builder: (context, state) {
               if (state is InProgress) {
                 return Center(child: LoadingWidget());
               } else if (state is Success) {
+                List<YelpRestaurantSummaryInfo> favor = state.favorInfos;
+
                 return ListView.builder(
                     padding: EdgeInsets.only(top: 0, bottom: 0),
+                    itemCount: favor.length,
                     itemBuilder: (context, index) {
-                      // TODO: 未完
-                      // YelpRestaurantSummaryInfo summaryInfo = summaryInfos[index - 1];
-                      //
-                      // return GestureDetector(
-                      //     child: RestaurantItemCell(summaryInfo: summaryInfo),
-                      //     onTap: () {
-                      //       String id = summaryInfo.id ?? "";
-                      //       Tuple2 arguments = Tuple2<String, dynamic>(id, null);
-                      //
-                      //       Navigator.of(context).pushNamed(
-                      //           RestaurantDetailPage.ROUTE_NAME,
-                      //           arguments: arguments
-                      //       );
-                      //     });
-                      return UIConstants.EmptyWidget;
+                      YelpRestaurantSummaryInfo favorInfo = favor[index];
+
+                      return GestureDetector(
+                          child: RestaurantItemCell(summaryInfo: favorInfo),
+                          onTap: () {
+                            String id = favorInfo.id ?? "";
+                            Tuple2 arguments = Tuple2<String, dynamic>(id, null);
+
+                            Navigator.of(context).pushNamed(
+                                RestaurantDetailPage.ROUTE_NAME,
+                                arguments: arguments);
+                          });
                     });
               } else {
                 return EmptyDataWidget();
