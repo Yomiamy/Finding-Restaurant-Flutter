@@ -1,22 +1,25 @@
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_restaruant/flow/main/bloc/MainBloc.dart';
-import 'package:flutter_restaruant/flow/main/repository/MainRepository.dart';
-import 'package:flutter_restaruant/flow/splash/view/SplashPage.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
+import 'component/ad/BannerADState.dart';
 import 'firebase_options.dart';
-import 'flow/main/view/MainPage.dart';
 import 'routes/RoutesTable.dart';
-import 'package:firebase_core/firebase_core.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
+import 'package:provider/provider.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  runApp(FindingRestaruantApp());
+  final initFuture = MobileAds.instance.initialize();
+  final adState = BannerADState(initFuture);
+  runApp(Provider.value(
+    value: adState,
+    builder: (context, child) => FindingRestaruantApp()
+  ));
 }
 
 class FindingRestaruantApp extends StatelessWidget {
