@@ -8,6 +8,8 @@ import 'routes/RoutesTable.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 
+import 'utils/UIConstants.dart';
+
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
@@ -26,7 +28,7 @@ class FindingRestaruantApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) => PlatformApp(
-      title:  Constants.APP_TITLE,
+      title:  UIConstants.APP_TITLE,
       routes: ROUTES_TABLE
   );
 }

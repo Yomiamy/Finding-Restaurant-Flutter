@@ -40,6 +40,8 @@ class MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
+
+    this._mainBloc = BlocProvider.of<MainBloc>(context);
   }
 
   @override
@@ -58,8 +60,6 @@ class MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    this._mainBloc = BlocProvider.of<MainBloc>(context);
-
     this._clearAndFeach();
 
     return PlatformScaffold(
@@ -70,7 +70,7 @@ class MainPageState extends State<MainPage> {
                 <Widget>[
                   CupertinoSliverNavigationBar(
                       automaticallyImplyLeading: false,
-                      largeTitle: Text(Constants.APP_TITLE,
+                      largeTitle: Text(UIConstants.APP_TITLE,
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: Dimens.xxxxhFontSize)

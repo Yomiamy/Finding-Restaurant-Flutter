@@ -1,9 +1,5 @@
 class Constants {
 
-  /// [String]
-  static const APP_TITLE = "尋找餐廳";
-  static const LOGIN_TITLE = "登入頁";
-
   /// [AD]
   // PROD AD banner id
   static const AD_ANDROID_BANNER_ID = "ca-app-pub-7910179918263365/3813466391";

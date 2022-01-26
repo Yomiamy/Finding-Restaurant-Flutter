@@ -4,7 +4,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/ad/InterstitialAD.dart';
 import 'package:flutter_restaruant/component/ad/InterstitialADState.dart';
-import 'package:flutter_restaruant/flow/favor/view/FavorPage.dart';
 import 'package:flutter_restaruant/flow/main/view/MainPage.dart';
 import 'package:flutter_restaruant/flow/signin/view/SignInPage.dart';
 import 'package:flutter_restaruant/manager/GoogleSignInManager.dart';
