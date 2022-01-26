@@ -94,5 +94,7 @@
     <string>54423e82152ccb6fbf1c5c652306d28a</string>
     <key>FacebookDisplayName</key>
     <string>FindRestaurant</string>
+    <key>GADApplicationIdentifier</key>
+    <string>ca-app-pub-7910179918263365~3586257761</string>
 </dict>
 </plist>
