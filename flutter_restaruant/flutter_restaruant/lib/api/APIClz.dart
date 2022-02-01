@@ -29,8 +29,8 @@ abstract class APIClz {
       @Query("locale") String? locale,
       @Query("limit") int? limit,
       @Query("offset") int? offset,
-      @Query("openAt") int? openAt,
-      @Query("sortBy") String? sortBy,
+      @Query("open_at") int? openAt,
+      @Query("sort_by") String? sortBy,
       @Query("price") int? price});
 
   @GET("/v3/businesses/{id}")

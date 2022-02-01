@@ -90,7 +90,7 @@ class MainPageState extends State<MainPage> {
                           onNotification: (notification) {
                             if(this._scrollController.position.atEdge) {
                               int? price = this._configs.price;
-                              int? openAt = this._configs.openAt;
+                              int? openAt = this._configs.openAtInSec;
                               String? sortBy = this._configs.sortBy;
 
                               // Load more when scrolling reach the edge of ListView
@@ -127,6 +127,7 @@ class MainPageState extends State<MainPage> {
                               })
                         );
                       } else if(state is InProgress) {
+                          int? openAt = this._configs.openAtInSec;
                         return Center(child: LoadingWidget());
                       } else {
                         return EmptyDataWidget();
