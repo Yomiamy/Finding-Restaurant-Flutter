@@ -88,7 +88,7 @@ class MainPageState extends State<MainPage> {
 
                         return NotificationListener<ScrollEndNotification>(
                           onNotification: (notification) {
-                            if(notification is ScrollEndNotification && this._scrollController.position.atEdge) {
+                            if(this._scrollController.position.atEdge) {
                               int? price = this._configs.price;
                               int? openAt = this._configs.openAt;
                               String? sortBy = this._configs.sortBy;
@@ -110,7 +110,7 @@ class MainPageState extends State<MainPage> {
                                 } else if(index == 1) {
                                   return FilterTagsWidget(filterConfigs: this._configs);
                                 } else {
-                                  YelpRestaurantSummaryInfo summaryInfo = summaryInfos[index - 1];
+                                  YelpRestaurantSummaryInfo summaryInfo = summaryInfos[index - 2];
 
                                   return GestureDetector(
                                       child: RestaurantItemCell(summaryInfo: summaryInfo),

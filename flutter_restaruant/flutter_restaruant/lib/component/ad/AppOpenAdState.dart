@@ -27,14 +27,14 @@ class AppOpenADState {
          this.isShowingAd = false;
          this.appOpenAd = null;
 
-         await ad?.dispose();
+         ad.dispose();
          this.appOpenADEventListener.onFailedToShow();
        },
        onAdDismissedFullScreenContent: (ad) async {
          this.isShowingAd = false;
          this.appOpenAd = null;
 
-         ad?.dispose();
+         ad.dispose();
          this.appOpenADEventListener.onAdDismissed();
        }
      );
