@@ -18,32 +18,57 @@
 	<string>$(MARKETING_VERSION)</string>
 	<key>CFBundleSignature</key>
 	<string>????</string>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<string>com.googleusercontent.apps.35224406241-8bh7hq1e07129nav2gcme5n9p565su7k</string>
+				<string>fb625220045459409</string>
+			</array>
+		</dict>
+	</array>
 	<key>CFBundleVersion</key>
 	<string>$(CURRENT_PROJECT_VERSION)</string>
+	<key>FacebookAppID</key>
+	<string>625220045459409</string>
+	<key>FacebookClientToken</key>
+	<string>54423e82152ccb6fbf1c5c652306d28a</string>
+	<key>FacebookDisplayName</key>
+	<string>FindRestaurant</string>
+	<key>GADApplicationIdentifier</key>
+	<string>ca-app-pub-7910179918263365~3586257761</string>
 	<key>ITSAppUsesNonExemptEncryption</key>
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
 	<array>
-        <string>https</string>
-        <string>http</string>
-        <string>fbapi</string>
-        <string>fbapi20130214</string>
-        <string>fbapi20130410</string>
-        <string>fbapi20130702</string>
-        <string>fbapi20131010</string>
-        <string>fbapi20131219</string>
-        <string>fbapi20140410</string>
-        <string>fbapi20140116</string>
-        <string>fbapi20150313</string>
-        <string>fbapi20150629</string>
-        <string>fbapi20160328</string>
-        <string>fbauth</string>
-        <string>fb-messenger-share-api</string>
-        <string>fbauth2</string>
-        <string>fbshareextension</string>
+		<string>https</string>
+		<string>http</string>
+		<string>fbapi</string>
+		<string>fbapi20130214</string>
+		<string>fbapi20130410</string>
+		<string>fbapi20130702</string>
+		<string>fbapi20131010</string>
+		<string>fbapi20131219</string>
+		<string>fbapi20140410</string>
+		<string>fbapi20140116</string>
+		<string>fbapi20150313</string>
+		<string>fbapi20150629</string>
+		<string>fbapi20160328</string>
+		<string>fbauth</string>
+		<string>fb-messenger-share-api</string>
+		<string>fbauth2</string>
+		<string>fbshareextension</string>
 	</array>
 	<key>LSRequiresIPhoneOS</key>
 	<true/>
+	<key>NSAppTransportSecurity</key>
+	<dict>
+		<key>NSAllowsLocalNetworking</key>
+		<true/>
+	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>Request camera permission for some functionalities, e.g: Scanning photo, QR</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
@@ -71,30 +96,5 @@
 	<string>Light</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-    <key>NSAppTransportSecurity</key>
-    <dict>
-        <key>NSAllowsLocalNetworking</key>
-        <true/>
-    </dict>
-    <key>CFBundleURLTypes</key>
-    <array>
-        <dict>
-            <key>CFBundleTypeRole</key>
-            <string>Editor</string>
-            <key>CFBundleURLSchemes</key>
-            <array>
-                <string>com.googleusercontent.apps.35224406241-8bh7hq1e07129nav2gcme5n9p565su7k</string>
-                <string>fb625220045459409</string>
-            </array>
-        </dict>
-    </array>
-    <key>FacebookAppID</key>
-    <string>625220045459409</string>
-    <key>FacebookClientToken</key>
-    <string>54423e82152ccb6fbf1c5c652306d28a</string>
-    <key>FacebookDisplayName</key>
-    <string>FindRestaurant</string>
-    <key>GADApplicationIdentifier</key>
-    <string>ca-app-pub-7910179918263365~3586257761</string>
 </dict>
 </plist>
