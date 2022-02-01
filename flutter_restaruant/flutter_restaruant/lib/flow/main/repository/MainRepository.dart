@@ -10,6 +10,7 @@ class MainRepository {
   late int _offset;
   late List<YelpRestaurantSummaryInfo> summaryInfos;
   String _keyword = "";
+  bool _isLoading = false;
 
   MainRepository() {
     this.resetOffset();
@@ -22,6 +23,12 @@ class MainRepository {
   }
 
   Future<List<YelpRestaurantSummaryInfo>> fetchYelpSearchInfo(double lat, double lng, int? price, int? openAt, String? sortBy) async {
+    if(this._isLoading) {
+      // If new items is loading, then don't handle new fetching request until the old one completed.
+      return (this._keyword.isEmpty) ? this.summaryInfos : await this.filterByKeyword(this._keyword);
+    }
+    
+    this._isLoading = true;
     YelpSearchInfo searchInfo = await apiInstance.businessesSearch(
         term: "Restaurants",
         latitude: lat,
@@ -34,6 +41,7 @@ class MainRepository {
         offset: ++this._offset);
 
     this.summaryInfos.addAll(searchInfo.businesses ?? []);
+    this._isLoading = false;
 
     return (this._keyword.isEmpty) ? this.summaryInfos : await this.filterByKeyword(this._keyword);
   }
