@@ -43,6 +43,10 @@
         android:icon="@mipmap/ic_launcher"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:usesCleartextTraffic="true">
+        <meta-data
+            android:name="com.google.android.gms.ads.APPLICATION_ID"
+            android:value="ca-app-pub-7910179918263365~5206283588"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"

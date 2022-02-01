@@ -3,6 +3,11 @@ import 'dart:ui';
 import 'package:flutter/widgets.dart';
 
 class UIConstants {
+
+  /// [TITLE]
+  static const APP_TITLE = "尋找餐廳";
+  static const LOGIN_TITLE = "登入頁";
+
   static const EmptyWidget = SizedBox(height: 0);
 
   static const AppBarColor = 0xffd84a20;

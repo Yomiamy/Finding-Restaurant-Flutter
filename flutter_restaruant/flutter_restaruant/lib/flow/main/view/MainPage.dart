@@ -6,15 +6,18 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/EmptyDataWidget.dart';
 import 'package:flutter_restaruant/component/ExpandableFabButton.dart';
 import 'package:flutter_restaruant/component/LoadingWidget.dart';
+import 'package:flutter_restaruant/component/ad/BannerADState.dart';
+import 'package:flutter_restaruant/component/ad/BannerAD.dart';
 import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.dart';
 import 'package:flutter_restaruant/flow/filter/view/FilterPage.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
 import 'package:flutter_restaruant/model/FilterConfigs.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
-import 'package:flutter_restaruant/utils/Constants.dart';
+import 'package:provider/provider.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
+import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../bloc/MainBloc.dart';
 import 'FilterTagsWidget.dart';
 
@@ -40,6 +43,8 @@ class MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
+
+    this._mainBloc = BlocProvider.of<MainBloc>(context);
   }
 
   @override
@@ -58,8 +63,6 @@ class MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
-    this._mainBloc = BlocProvider.of<MainBloc>(context);
-
     this._clearAndFeach();
 
     return PlatformScaffold(
@@ -70,7 +73,7 @@ class MainPageState extends State<MainPage> {
                 <Widget>[
                   CupertinoSliverNavigationBar(
                       automaticallyImplyLeading: false,
-                      largeTitle: Text(Constants.APP_TITLE,
+                      largeTitle: Text(UIConstants.APP_TITLE,
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: Dimens.xxxxhFontSize)
@@ -98,9 +101,13 @@ class MainPageState extends State<MainPage> {
                           child: ListView.builder(
                               padding: EdgeInsets.only(top: 0, bottom: 0),
                               controller: this._scrollController,
-                              itemCount: summaryInfos.length + 1 ,
+                              itemCount: summaryInfos.length + 2 ,
                               itemBuilder: (context, index) {
                                 if(index == 0) {
+                                  final adState = Provider.of<BannerADState>(context);
+
+                                  return BannerAD(adState: adState);
+                                } else if(index == 1) {
                                   return FilterTagsWidget(filterConfigs: this._configs);
                                 } else {
                                   YelpRestaurantSummaryInfo summaryInfo = summaryInfos[index - 1];
@@ -195,6 +202,16 @@ class MainPageState extends State<MainPage> {
             )
           ]
         )
+    );
+  }
+
+  Future<AnchoredAdaptiveBannerAdSize?> _anchoredAdaptiveBannerAdSize(
+      BuildContext context) async {
+    return await AdSize.getAnchoredAdaptiveBannerAdSize(
+      MediaQuery.of(context).orientation == Orientation.portrait
+          ? Orientation.portrait
+          : Orientation.landscape,
+      MediaQuery.of(context).size.width.toInt(),
     );
   }
 }
