@@ -2,13 +2,10 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_restaruant/component/ad/InterstitialAD.dart';
-import 'package:flutter_restaruant/component/ad/InterstitialADState.dart';
+import 'package:flutter_restaruant/component/ad/AppLifecycleReactor.dart';
+import 'package:flutter_restaruant/component/ad/AppOpenAD.dart';
+import 'package:flutter_restaruant/component/ad/AppOpenAdState.dart';
 import 'package:flutter_restaruant/flow/main/view/MainPage.dart';
-import 'package:flutter_restaruant/flow/signin/view/SignInPage.dart';
-import 'package:flutter_restaruant/manager/GoogleSignInManager.dart';
-import 'package:flutter_restaruant/utils/Constants.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 class SplashPage extends StatefulWidget {
 
@@ -20,20 +17,21 @@ class SplashPage extends StatefulWidget {
   _SplashPageState createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> {
+class _SplashPageState extends State<SplashPage> implements AppOpenADEvent {
+
+  late AppLifecycleReactor _appLifecycleReactor;
 
   @override
   void initState() {
     super.initState();
 
-    // 全屏AD
-    IntersitialAD(adState: InterstitialADState()).load();
+    // App Open Ad
+    AppOpenAD appOpenAD = AppOpenAD(adState: AppOpenADState(appOpenADEventListener: this))..loadAd();
+    _appLifecycleReactor = AppLifecycleReactor(appOpenAd: appOpenAD);
   }
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 10)).then((value) => Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME));
-
     return PlatformScaffold(
         body: Container(
             child: Image.asset(
@@ -43,5 +41,16 @@ class _SplashPageState extends State<SplashPage> {
               width: double.infinity,
             ))
     );
+  }
+
+  /// AppOpenADEvent
+  @override
+  void onFailedToShow() {
+    Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME);
+  }
+
+  @override
+  void onAdDismissed() {
+    Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME);
   }
 }
