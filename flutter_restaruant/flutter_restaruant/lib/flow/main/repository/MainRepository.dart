@@ -7,19 +7,21 @@ class MainRepository {
 
   static const int _MAX_ITEMS_COUNT_IN_LIST = 50;
 
-  late int _offset;
-  late List<YelpRestaurantSummaryInfo> summaryInfos;
+  List<YelpRestaurantSummaryInfo> summaryInfos = [];
+  int _offset = 0;
   String _keyword = "";
   bool _isLoading = false;
 
   MainRepository() {
-    this.resetOffset();
+    this.reset();
   }
 
-  void resetOffset() {
+  void reset() {
     this._offset = 0;
-    this.summaryInfos = [];
     this._keyword = "";
+    this._isLoading = false;
+
+    this.summaryInfos.clear();
   }
 
   Future<List<YelpRestaurantSummaryInfo>> fetchYelpSearchInfo(double lat, double lng, int? price, int? openAt, String? sortBy) async {
@@ -27,7 +29,7 @@ class MainRepository {
       // If new items is loading, then don't handle new fetching request until the old one completed.
       return (this._keyword.isEmpty) ? this.summaryInfos : await this.filterByKeyword(this._keyword);
     }
-    
+
     this._isLoading = true;
     YelpSearchInfo searchInfo = await apiInstance.businessesSearch(
         term: "Restaurants",
@@ -39,7 +41,6 @@ class MainRepository {
         sortBy: sortBy,
         limit: MainRepository._MAX_ITEMS_COUNT_IN_LIST,
         offset: ++this._offset);
-
     this.summaryInfos.addAll(searchInfo.businesses ?? []);
     this._isLoading = false;
 

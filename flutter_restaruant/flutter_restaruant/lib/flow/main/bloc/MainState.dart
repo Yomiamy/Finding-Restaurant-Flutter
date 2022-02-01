@@ -46,8 +46,8 @@ class Failure extends MainState {
   String toString() => "Fail get search info";
 }
 
-class ResetOffsetSuccess extends MainState {
-  const ResetOffsetSuccess();
+class ResetSuccess extends MainState {
+  const ResetSuccess();
 
   @override
   String toString() => "Sucess reset offset";

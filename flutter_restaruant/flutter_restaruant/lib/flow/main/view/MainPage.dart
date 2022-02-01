@@ -52,19 +52,8 @@ class MainPageState extends State<MainPage> {
     super.didUpdateWidget(oldWidget);
   }
 
-  void _clearAndFeach() {
-    int? price = this._configs.price;
-    int? openAt = this._configs.openAt;
-    String? sortBy = this._configs.sortBy;
-
-    this._mainBloc.add(ResetOffset());
-    this._mainBloc.add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
-  }
-
   @override
   Widget build(BuildContext context) {
-    this._clearAndFeach();
-
     return PlatformScaffold(
         body: Stack(
           children: <Widget>[
@@ -126,8 +115,14 @@ class MainPageState extends State<MainPage> {
                                 }
                               })
                         );
-                      } else if(state is InProgress) {
+                      } else if(state is InProgress || state is MainInitial || state is ResetSuccess) {
+                        if(state is MainInitial || state is ResetSuccess) {
+                          int? price = this._configs.price;
                           int? openAt = this._configs.openAtInSec;
+                          String? sortBy = this._configs.sortBy;
+
+                          this._mainBloc.add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
+                        }
                         return Center(child: LoadingWidget());
                       } else {
                         return EmptyDataWidget();
@@ -149,7 +144,7 @@ class MainPageState extends State<MainPage> {
                           const Icon(Icons.filter_list),
                         ],
                         childrenPressActions: [
-                              () { this._clearAndFeach(); },
+                              () { this._mainBloc.add(Reset()); },
                               () {
                                     showPlatformDialog(
                                         context: context,
@@ -194,9 +189,8 @@ class MainPageState extends State<MainPage> {
 
                                 if(result == null) return;
 
-                                setState(() {
-                                  this._configs = result.item1;
-                                });
+                                this._configs = result.item1;
+                                this._mainBloc.add(Reset());
                             }
                         ])
                 )
