@@ -29,4 +29,15 @@ class YelpRestaurantSummaryInfo extends YelpBaseInfo {
       _$YelpRestaurantSummaryInfoFromJson(json);
 
   Map<String, dynamic> toJson() => _$YelpRestaurantSummaryInfoToJson(this);
+
+
+  @override
+  int get hashCode => this.id.hashCode;
+
+  @override
+  bool operator ==(Object other) {
+    if(other is! YelpRestaurantSummaryInfo) return false;
+
+    return this.id!.compareTo(other.id!) == 0;
+  }
 }

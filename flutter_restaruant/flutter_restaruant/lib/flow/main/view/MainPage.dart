@@ -166,7 +166,7 @@ class MainPageState extends State<MainPage> {
                                           actions: [
                                             PlatformButton(
                                                 onPressed: () {
-                                                  this._mainBloc.add(FilterListByKeyword(keyword: this._filterKeyword));
+                                                  this._mainBloc.add(FilterListByKeyword(keyword: this._filterKeyword, sortByStr: this._configs.sortBy));
                                                   this._filterKeyword = "";
 
                                                   Navigator.pop(context);

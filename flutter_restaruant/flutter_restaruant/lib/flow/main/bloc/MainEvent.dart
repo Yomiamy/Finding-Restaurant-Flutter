@@ -38,7 +38,8 @@ class LoadMore extends MainEvent {
 class FilterListByKeyword extends MainEvent {
 
   final String keyword;
+  final String? sortByStr;
 
-  const FilterListByKeyword({this.keyword = ""});
+  const FilterListByKeyword({this.keyword = "", this.sortByStr});
 }
 

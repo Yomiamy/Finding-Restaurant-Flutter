@@ -34,7 +34,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
     await Future.delayed(Duration(seconds: 2));
 
-    final List<YelpRestaurantSummaryInfo> filterInfos = await this._mainRepository.filterByKeyword(event.keyword);
+    final List<YelpRestaurantSummaryInfo> filterInfos = await this._mainRepository.filterByKeyword(event.keyword, event.sortByStr);
     yield (filterInfos.isNotEmpty) ? Success(summaryInfos: filterInfos) : Failure();
   }
 
@@ -48,7 +48,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       final Position currentPos = await Geolocator.getCurrentPosition();
       double lat = currentPos.latitude;
       double lng = currentPos.longitude;
-      bool isLoadMore = this._mainRepository.summaryInfos.isNotEmpty;
+      bool isLoadMore = this._mainRepository.summaryInfoSet.isNotEmpty;
       int? price = event.price;
       int? openAt = event.openAt;
       String? sortBy = event.sortBy;
