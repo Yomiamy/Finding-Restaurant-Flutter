@@ -1,4 +1,5 @@
 import 'package:flutter_restaruant/api/APIClz.dart';
+import 'package:flutter_restaruant/model/FilterConfigs.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/model/YelpSearchInfo.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
@@ -24,7 +25,7 @@ class MainRepository {
     this.summaryInfos.clear();
   }
 
-  Future<List<YelpRestaurantSummaryInfo>> fetchYelpSearchInfo(double lat, double lng, int? price, int? openAt, String? sortBy) async {
+  Future<List<YelpRestaurantSummaryInfo>> fetchYelpSearchInfo(double lat, double lng, int? price, int? openAt, String? sortByStr) async {
     if(this._isLoading) {
       // If new items is loading, then don't handle new fetching request until the old one completed.
       return (this._keyword.isEmpty) ? this.summaryInfos : await this.filterByKeyword(this._keyword);
@@ -38,11 +39,33 @@ class MainRepository {
         locale: Constants.LOCALE,
         price: price,
         openAt: openAt,
-        sortBy: sortBy,
+        sortBy: sortByStr,
         limit: MainRepository._MAX_ITEMS_COUNT_IN_LIST,
         offset: ++this._offset);
-    this.summaryInfos.addAll(searchInfo.businesses ?? []);
     this._isLoading = false;
+
+    SortBy sortBy = SortBy.values.firstWhere((element) => element.toShortString() == sortByStr);
+    this.summaryInfos.addAll(searchInfo.businesses ?? []);
+    this.summaryInfos.sort((info1, info2) {
+      switch(sortBy) {
+        case SortBy.distance:
+          double dist1 = info1.distance ?? 0;
+          double dist2 = info2.distance ?? 0;
+
+          return dist1.compareTo(dist2);
+        case SortBy.review_count:
+          int reviewCount1 = info1.review_count ?? 0;
+          int reviewCount2 = info2.review_count ?? 0;
+
+          return reviewCount1.compareTo(reviewCount2);
+        case SortBy.rating:
+          double rating1 = info1.rating ?? 0;
+          double rating2 = info2.rating ?? 0;
+
+          return rating1.compareTo(rating2);
+      }
+      return 0;
+    });
 
     return (this._keyword.isEmpty) ? this.summaryInfos : await this.filterByKeyword(this._keyword);
   }

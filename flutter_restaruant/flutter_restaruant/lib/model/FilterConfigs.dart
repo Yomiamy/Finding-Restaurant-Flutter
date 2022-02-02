@@ -1,3 +1,4 @@
+import 'dart:core';
 import 'package:flutter_restaruant/model/YelpBaseInfo.dart';
 import 'package:intl/intl.dart';
 
@@ -5,6 +6,19 @@ enum FilterConfigType {
   PRICE,
   OPEN_AT,
   SORTING_RULE
+}
+
+enum SortBy {
+  best_match,
+  distance,
+  rating,
+  review_count
+}
+
+extension SortByExtension on SortBy {
+  String toShortString() {
+    return this.toString().split('.').last;
+  }
 }
 
 class FilterConfigs extends YelpBaseInfo {
@@ -20,32 +34,20 @@ class FilterConfigs extends YelpBaseInfo {
 
   // Sorting rule
   String? sortBy = "best_match";
-  int get sortByIndex {
-    switch(this.sortBy) {
-      case "best_match":
-        return 0;
-      case "distance":
-        return 1;
-      case "rating":
-        return 2;
-      case "review_count":
-        return 3;
-      default:
-        return 0;
-    }
-  }
+  int get sortByIndex => SortBy.values.firstWhere((element) => element.toShortString() == this.sortBy).index;
+
   String mapSortingRuleByIndex(int sortByIndex) {
     switch (sortByIndex) {
       case 0:
-        return "best_match";
+        return SortBy.best_match.toShortString();
       case 1:
-        return "distance";
+        return SortBy.distance.toShortString();
       case 2:
-        return "rating";
+        return SortBy.rating.toShortString();
       case 3:
-        return "review_count";
+        return SortBy.review_count.toShortString();
       default:
-        return "best_match";
+        return SortBy.best_match.toShortString();
     }
   }
 
