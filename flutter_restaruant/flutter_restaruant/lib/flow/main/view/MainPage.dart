@@ -6,6 +6,9 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/EmptyDataWidget.dart';
 import 'package:flutter_restaruant/component/ExpandableFabButton.dart';
 import 'package:flutter_restaruant/component/LoadingWidget.dart';
+import 'package:flutter_restaruant/component/ad/AppLifecycleReactor.dart';
+import 'package:flutter_restaruant/component/ad/AppOpenAD.dart';
+import 'package:flutter_restaruant/component/ad/AppOpenAdState.dart';
 import 'package:flutter_restaruant/component/ad/BannerADState.dart';
 import 'package:flutter_restaruant/component/ad/BannerAD.dart';
 import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.dart';
@@ -31,12 +34,13 @@ class MainPage extends StatefulWidget {
   MainPageState createState() => MainPageState();
 }
 
-class MainPageState extends State<MainPage> {
+class MainPageState extends State<MainPage> implements AppOpenADEvent {
 
   FilterConfigs _configs = FilterConfigs();
   ScrollController _scrollController = ScrollController();
   String _filterKeyword = "";
   late MainBloc _mainBloc;
+  late AppLifecycleReactor _appLifecycleReactor;
 
   MainPageState();
 
@@ -45,6 +49,9 @@ class MainPageState extends State<MainPage> {
     super.initState();
 
     this._mainBloc = BlocProvider.of<MainBloc>(context);
+    // App Open Ad
+    AppOpenAD appOpenAD = AppOpenAD(adState: AppOpenADState(appOpenADEventListener: this))..loadAd();
+    this._appLifecycleReactor = AppLifecycleReactor(appOpenAd: appOpenAD);
   }
 
   @override
@@ -209,4 +216,11 @@ class MainPageState extends State<MainPage> {
       MediaQuery.of(context).size.width.toInt(),
     );
   }
+
+  /// [AppOpenADEvent]
+  @override
+  void onAdDismissed() {}
+
+  @override
+  void onFailedToShow() {}
 }

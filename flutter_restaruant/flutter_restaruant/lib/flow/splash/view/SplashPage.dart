@@ -17,21 +17,12 @@ class SplashPage extends StatefulWidget {
   _SplashPageState createState() => _SplashPageState();
 }
 
-class _SplashPageState extends State<SplashPage> implements AppOpenADEvent {
-
-  late AppLifecycleReactor _appLifecycleReactor;
-
-  @override
-  void initState() {
-    super.initState();
-
-    // App Open Ad
-    AppOpenAD appOpenAD = AppOpenAD(adState: AppOpenADState(appOpenADEventListener: this))..loadAd();
-    _appLifecycleReactor = AppLifecycleReactor(appOpenAd: appOpenAD);
-  }
+class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
+    Future.delayed(Duration(seconds: 3)).then((value) => Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME));
+
     return PlatformScaffold(
         body: Container(
             child: Image.asset(
