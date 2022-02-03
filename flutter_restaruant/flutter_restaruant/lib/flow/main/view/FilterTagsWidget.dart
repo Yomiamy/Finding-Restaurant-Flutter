@@ -46,10 +46,13 @@ class FilterTagsWidget extends StatelessWidget {
               combine: ItemTagsCombine.withTextBefore,
               color: Theme.of(context).primaryColor,
               onPressed: (item) {
-                MainBloc mainBloc = BlocProvider.of<MainBloc>(context);
+                context.findAncestorStateOfType<MainPageState>()?.setState(() {
+                  MainBloc mainBloc = BlocProvider.of<MainBloc>(context);
 
-                this._filterConfigs.clearConfig(item.customData as FilterConfigType);
-                mainBloc.add(Reset());
+                  this._filterConfigs.clearConfig(
+                      item.customData as FilterConfigType);
+                  mainBloc.add(Reset());
+                });
               }
           )
       )
