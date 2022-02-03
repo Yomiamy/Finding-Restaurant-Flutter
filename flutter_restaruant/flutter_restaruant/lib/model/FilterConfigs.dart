@@ -23,18 +23,18 @@ extension SortByExtension on SortBy {
 
 class FilterConfigs extends YelpBaseInfo {
   // Price
-  int? price = 1;
+  int? price;
   int get priceIndex => (this.price == null || this.price! < 1) ? 0 : (this.price! - 1);
 
   // Business hours
-  int? openAt = DateTime.now().millisecondsSinceEpoch;
+  int? openAt;
   DateTime get openAtDateTime => (this.openAt != null && this.openAt! > 0) ? DateTime.fromMillisecondsSinceEpoch(this.openAt!) : DateTime.now();
   int get openAtInSec => (this.openAt != null && this.openAt! > 0) ? openAt! ~/ 1000 : DateTime.now().millisecondsSinceEpoch ~/ 1000;
   String get openAtDispStr => DateFormat('MM-dd HH:mm').format(this.openAtDateTime);
 
   // Sorting rule
-  String? sortBy = "best_match";
-  int get sortByIndex => SortBy.values.firstWhere((element) => element.toShortString() == this.sortBy).index;
+  String? sortBy;
+  int get sortByIndex => (sortBy != null) ? SortBy.values.firstWhere((element) => element.toShortString() == this.sortBy).index : 0;
 
   String mapSortingRuleByIndex(int sortByIndex) {
     switch (sortByIndex) {

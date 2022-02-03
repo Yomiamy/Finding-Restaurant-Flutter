@@ -1,6 +1,8 @@
 import 'dart:collection';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_restaruant/flow/main/bloc/MainBloc.dart';
 import 'package:flutter_restaruant/model/FilterConfigs.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_tags/flutter_tags.dart';
@@ -44,10 +46,10 @@ class FilterTagsWidget extends StatelessWidget {
               combine: ItemTagsCombine.withTextBefore,
               color: Theme.of(context).primaryColor,
               onPressed: (item) {
-                debugPrint('item = ${item}');
-                context.findAncestorStateOfType<MainPageState>()?.setState(() {
-                  this._filterConfigs.clearConfig(item.customData as FilterConfigType);
-                });
+                MainBloc mainBloc = BlocProvider.of<MainBloc>(context);
+
+                this._filterConfigs.clearConfig(item.customData as FilterConfigType);
+                mainBloc.add(Reset());
               }
           )
       )
