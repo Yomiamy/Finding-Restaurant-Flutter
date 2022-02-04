@@ -21,8 +21,8 @@ class FetchSearchInfo extends MainEvent {
   String toString() => "Fetch search info event.";
 }
 
-class ResetOffset extends MainEvent {
-  const ResetOffset();
+class Reset extends MainEvent {
+  const Reset();
 
   @override
   String toString() => "Reset offset event.";
@@ -38,7 +38,8 @@ class LoadMore extends MainEvent {
 class FilterListByKeyword extends MainEvent {
 
   final String keyword;
+  final String? sortByStr;
 
-  const FilterListByKeyword({this.keyword = ""});
+  const FilterListByKeyword({this.keyword = "", this.sortByStr});
 }
 

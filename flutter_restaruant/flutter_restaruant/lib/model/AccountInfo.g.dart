@@ -8,8 +8,8 @@ part of 'AccountInfo.dart';
 
 AccountInfo _$AccountInfoFromJson(Map<String, dynamic> json) {
   return AccountInfo(
-    uid: json['uid'] as String,
-    account: json['account'] as String,
+    uid: json['uid'] as String?,
+    account: json['account'] as String?,
   );
 }
 

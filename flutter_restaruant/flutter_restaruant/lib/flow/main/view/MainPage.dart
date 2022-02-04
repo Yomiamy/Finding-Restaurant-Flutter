@@ -6,6 +6,9 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/EmptyDataWidget.dart';
 import 'package:flutter_restaruant/component/ExpandableFabButton.dart';
 import 'package:flutter_restaruant/component/LoadingWidget.dart';
+import 'package:flutter_restaruant/component/ad/AppLifecycleReactor.dart';
+import 'package:flutter_restaruant/component/ad/AppOpenAD.dart';
+import 'package:flutter_restaruant/component/ad/AppOpenAdState.dart';
 import 'package:flutter_restaruant/component/ad/BannerADState.dart';
 import 'package:flutter_restaruant/component/ad/BannerAD.dart';
 import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.dart';
@@ -31,12 +34,13 @@ class MainPage extends StatefulWidget {
   MainPageState createState() => MainPageState();
 }
 
-class MainPageState extends State<MainPage> {
+class MainPageState extends State<MainPage> implements AppOpenADEvent {
 
   FilterConfigs _configs = FilterConfigs();
   ScrollController _scrollController = ScrollController();
   String _filterKeyword = "";
   late MainBloc _mainBloc;
+  late AppLifecycleReactor _appLifecycleReactor;
 
   MainPageState();
 
@@ -52,19 +56,8 @@ class MainPageState extends State<MainPage> {
     super.didUpdateWidget(oldWidget);
   }
 
-  void _clearAndFeach() {
-    int? price = this._configs.price;
-    int? openAt = this._configs.openAt;
-    String? sortBy = this._configs.sortBy;
-
-    this._mainBloc.add(ResetOffset());
-    this._mainBloc.add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
-  }
-
   @override
   Widget build(BuildContext context) {
-    this._clearAndFeach();
-
     return PlatformScaffold(
         body: Stack(
           children: <Widget>[
@@ -88,9 +81,9 @@ class MainPageState extends State<MainPage> {
 
                         return NotificationListener<ScrollEndNotification>(
                           onNotification: (notification) {
-                            if(notification is ScrollEndNotification && this._scrollController.position.atEdge) {
+                            if(this._scrollController.position.atEdge) {
                               int? price = this._configs.price;
-                              int? openAt = this._configs.openAt;
+                              int? openAt = this._configs.openAtInSec;
                               String? sortBy = this._configs.sortBy;
 
                               // Load more when scrolling reach the edge of ListView
@@ -110,7 +103,7 @@ class MainPageState extends State<MainPage> {
                                 } else if(index == 1) {
                                   return FilterTagsWidget(filterConfigs: this._configs);
                                 } else {
-                                  YelpRestaurantSummaryInfo summaryInfo = summaryInfos[index - 1];
+                                  YelpRestaurantSummaryInfo summaryInfo = summaryInfos[index - 2];
 
                                   return GestureDetector(
                                       child: RestaurantItemCell(summaryInfo: summaryInfo),
@@ -126,7 +119,14 @@ class MainPageState extends State<MainPage> {
                                 }
                               })
                         );
-                      } else if(state is InProgress) {
+                      } else if(state is InProgress || state is MainInitial || state is ResetSuccess) {
+                        if(state is MainInitial || state is ResetSuccess) {
+                          int? price = this._configs.price;
+                          int? openAt = this._configs.openAtInSec;
+                          String? sortBy = this._configs.sortBy;
+
+                          this._mainBloc.add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
+                        }
                         return Center(child: LoadingWidget());
                       } else {
                         return EmptyDataWidget();
@@ -148,7 +148,7 @@ class MainPageState extends State<MainPage> {
                           const Icon(Icons.filter_list),
                         ],
                         childrenPressActions: [
-                              () { this._clearAndFeach(); },
+                              () { this._mainBloc.add(Reset()); },
                               () {
                                     showPlatformDialog(
                                         context: context,
@@ -170,7 +170,7 @@ class MainPageState extends State<MainPage> {
                                           actions: [
                                             PlatformButton(
                                                 onPressed: () {
-                                                  this._mainBloc.add(FilterListByKeyword(keyword: this._filterKeyword));
+                                                  this._mainBloc.add(FilterListByKeyword(keyword: this._filterKeyword, sortByStr: this._configs.sortBy));
                                                   this._filterKeyword = "";
 
                                                   Navigator.pop(context);
@@ -193,9 +193,8 @@ class MainPageState extends State<MainPage> {
 
                                 if(result == null) return;
 
-                                setState(() {
-                                  this._configs = result.item1;
-                                });
+                                this._configs = result.item1;
+                                this._mainBloc.add(Reset());
                             }
                         ])
                 )
@@ -214,4 +213,11 @@ class MainPageState extends State<MainPage> {
       MediaQuery.of(context).size.width.toInt(),
     );
   }
+
+  /// [AppOpenADEvent]
+  @override
+  void onAdDismissed() {}
+
+  @override
+  void onAdFailedToShow() {}
 }

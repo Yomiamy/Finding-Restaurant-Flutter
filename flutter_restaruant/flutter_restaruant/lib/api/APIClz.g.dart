@@ -57,8 +57,8 @@ class _APIClz implements APIClz {
       r'locale': locale,
       r'limit': limit,
       r'offset': offset,
-      r'openAt': openAt,
-      r'sortBy': sortBy,
+      r'open_at': openAt,
+      r'sort_by': sortBy,
       r'price': price
     };
     queryParameters.removeWhere((k, v) => v == null);

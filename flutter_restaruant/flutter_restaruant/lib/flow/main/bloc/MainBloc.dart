@@ -22,8 +22,8 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   ) async* {
     if (event is FetchSearchInfo) {
       yield* _mapFetchSearchInfoToState(event, state);
-    } else if(event is ResetOffset) {
-      await _mapResetOffsetToState();
+    } else if(event is Reset) {
+      yield* _mapResetToState();
     }  else if(event is FilterListByKeyword) {
       yield* _mapFilterListByKeywordToState(event);
     }
@@ -34,13 +34,13 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
     await Future.delayed(Duration(seconds: 2));
 
-    final List<YelpRestaurantSummaryInfo> filterInfos = await this._mainRepository.filterByKeyword(event.keyword);
+    final List<YelpRestaurantSummaryInfo> filterInfos = await this._mainRepository.filterByKeyword(event.keyword, event.sortByStr);
     yield (filterInfos.isNotEmpty) ? Success(summaryInfos: filterInfos) : Failure();
   }
 
-  Future<MainState> _mapResetOffsetToState() async {
-    this._mainRepository.resetOffset();
-    return ResetOffsetSuccess();
+  Stream<MainState> _mapResetToState() async* {
+    this._mainRepository.reset();
+    yield ResetSuccess();
   }
 
   Stream<MainState> _mapFetchSearchInfoToState(FetchSearchInfo event, MainState state) async* {
@@ -48,7 +48,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       final Position currentPos = await Geolocator.getCurrentPosition();
       double lat = currentPos.latitude;
       double lng = currentPos.longitude;
-      bool isLoadMore = this._mainRepository.summaryInfos.isNotEmpty;
+      bool isLoadMore = this._mainRepository.summaryInfoSet.isNotEmpty;
       int? price = event.price;
       int? openAt = event.openAt;
       String? sortBy = event.sortBy;

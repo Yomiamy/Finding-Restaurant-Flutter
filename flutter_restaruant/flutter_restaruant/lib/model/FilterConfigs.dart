@@ -1,3 +1,4 @@
+import 'dart:core';
 import 'package:flutter_restaruant/model/YelpBaseInfo.dart';
 import 'package:intl/intl.dart';
 
@@ -7,44 +8,46 @@ enum FilterConfigType {
   SORTING_RULE
 }
 
+enum SortBy {
+  best_match,
+  distance,
+  rating,
+  review_count
+}
+
+extension SortByExtension on SortBy {
+  String toShortString() {
+    return this.toString().split('.').last;
+  }
+}
+
 class FilterConfigs extends YelpBaseInfo {
   // Price
-  int? price = 1;
+  int? price;
   int get priceIndex => (this.price == null || this.price! < 1) ? 0 : (this.price! - 1);
 
   // Business hours
-  int? openAt = DateTime.now().millisecondsSinceEpoch;
+  int? openAt;
   DateTime get openAtDateTime => (this.openAt != null && this.openAt! > 0) ? DateTime.fromMillisecondsSinceEpoch(this.openAt!) : DateTime.now();
+  int get openAtInSec => (this.openAt != null && this.openAt! > 0) ? openAt! ~/ 1000 : DateTime.now().millisecondsSinceEpoch ~/ 1000;
   String get openAtDispStr => DateFormat('MM-dd HH:mm').format(this.openAtDateTime);
 
   // Sorting rule
-  String? sortBy = "best_match";
-  int get sortByIndex {
-    switch(this.sortBy) {
-      case "best_match":
-        return 0;
-      case "distance":
-        return 1;
-      case "rating":
-        return 2;
-      case "review_count":
-        return 3;
-      default:
-        return 0;
-    }
-  }
+  String? sortBy;
+  int get sortByIndex => (sortBy != null) ? SortBy.values.firstWhere((element) => element.toShortString() == this.sortBy).index : 0;
+
   String mapSortingRuleByIndex(int sortByIndex) {
     switch (sortByIndex) {
       case 0:
-        return "best_match";
+        return SortBy.best_match.toShortString();
       case 1:
-        return "distance";
+        return SortBy.distance.toShortString();
       case 2:
-        return "rating";
+        return SortBy.rating.toShortString();
       case 3:
-        return "review_count";
+        return SortBy.review_count.toShortString();
       default:
-        return "best_match";
+        return SortBy.best_match.toShortString();
     }
   }
 
