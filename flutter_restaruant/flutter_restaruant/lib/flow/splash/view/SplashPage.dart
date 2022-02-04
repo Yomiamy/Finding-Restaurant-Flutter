@@ -5,6 +5,8 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/ad/AppLifecycleReactor.dart';
 import 'package:flutter_restaruant/component/ad/AppOpenAD.dart';
 import 'package:flutter_restaruant/component/ad/AppOpenAdState.dart';
+import 'package:flutter_restaruant/component/ad/InterstitialAD.dart';
+import 'package:flutter_restaruant/component/ad/InterstitialADState.dart';
 import 'package:flutter_restaruant/flow/main/view/MainPage.dart';
 
 class SplashPage extends StatefulWidget {
@@ -32,16 +34,5 @@ class _SplashPageState extends State<SplashPage> {
               width: double.infinity,
             ))
     );
-  }
-
-  /// AppOpenADEvent
-  @override
-  void onFailedToShow() {
-    Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME);
-  }
-
-  @override
-  void onAdDismissed() {
-    Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME);
   }
 }

@@ -49,9 +49,6 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
     super.initState();
 
     this._mainBloc = BlocProvider.of<MainBloc>(context);
-    // App Open Ad
-    AppOpenAD appOpenAD = AppOpenAD(adState: AppOpenADState(appOpenADEventListener: this))..loadAd();
-    this._appLifecycleReactor = AppLifecycleReactor(appOpenAd: appOpenAD);
   }
 
   @override
