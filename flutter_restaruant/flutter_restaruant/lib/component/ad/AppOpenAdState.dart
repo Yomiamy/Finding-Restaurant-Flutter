@@ -5,7 +5,7 @@ import 'AppOpenAD.dart';
 
 abstract class AppOpenADEvent {
   void onAdDismissed();
-  void onFailedToShow();
+  void onAdFailedToShow();
 }
 
 class AppOpenADState {
@@ -28,7 +28,7 @@ class AppOpenADState {
          this.appOpenAd = null;
 
          ad.dispose();
-         this.appOpenADEventListener.onFailedToShow();
+         this.appOpenADEventListener.onAdFailedToShow();
        },
        onAdDismissedFullScreenContent: (ad) async {
          this.isShowingAd = false;

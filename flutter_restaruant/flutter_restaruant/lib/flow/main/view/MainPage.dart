@@ -222,5 +222,5 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
   void onAdDismissed() {}
 
   @override
-  void onFailedToShow() {}
+  void onAdFailedToShow() {}
 }
