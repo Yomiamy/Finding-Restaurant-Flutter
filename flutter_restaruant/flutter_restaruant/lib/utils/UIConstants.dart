@@ -4,10 +4,6 @@ import 'package:flutter/widgets.dart';
 
 class UIConstants {
 
-  /// [TITLE]
-  static const APP_TITLE = "尋找餐廳";
-  static const LOGIN_TITLE = "登入頁";
-
   /// [UI]
   static const APP_TITLE = "尋找餐廳";
   static const LOGIN_TITLE = "登入";

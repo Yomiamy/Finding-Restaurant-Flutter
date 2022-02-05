@@ -29,7 +29,7 @@ class FilterConfigs extends YelpBaseInfo {
   // Business hours
   int? openAt;
   DateTime get openAtDateTime => (this.openAt != null && this.openAt! > 0) ? DateTime.fromMillisecondsSinceEpoch(this.openAt!) : DateTime.now();
-  int get openAtInSec => (this.openAt != null && this.openAt! > 0) ? openAt! ~/ 1000 : DateTime.now().millisecondsSinceEpoch ~/ 1000;
+  int? get openAtInSec => (this.openAt != null && this.openAt! > 0) ? openAt! ~/ 1000 : null;
   String get openAtDispStr => DateFormat('MM-dd HH:mm').format(this.openAtDateTime);
 
   // Sorting rule
