@@ -10,8 +10,9 @@ class RestaurantItemCell extends StatelessWidget {
   static const double ITEM_H = 100;
 
   final YelpRestaurantSummaryInfo _summaryInfo;
+  final bool _isFavorPage;
 
-  const RestaurantItemCell({required YelpRestaurantSummaryInfo summaryInfo}): this._summaryInfo = summaryInfo;
+  const RestaurantItemCell({required YelpRestaurantSummaryInfo summaryInfo, required bool isFavorPage}): this._summaryInfo = summaryInfo, this._isFavorPage = isFavorPage;
 
   @override
   Widget build(BuildContext context) {
@@ -41,16 +42,20 @@ class RestaurantItemCell extends StatelessWidget {
                             fit: BoxFit.fill)
                       )
                     ),
-                    Align(
-                      alignment:Alignment.bottomRight,
-                      child: Padding(
-                        padding: EdgeInsets.only(right: 8, bottom: 5),
-                        child: Image.asset(
-                            (this._summaryInfo.favor != null) && (this._summaryInfo.favor!) ? "images/ic_favor_fill.png" : "images/ic_favor_empty.png",
-                            width: UIConstants.FAVOR_IMAGE_W,
-                            height: UIConstants.FAVOR_IMAGE_H,
-                            fit: BoxFit.fill)
-                      )
+                    Visibility(
+                      child: Align(
+                          alignment: Alignment.bottomRight,
+                          child: Padding(
+                              padding: EdgeInsets.only(right: 8, bottom: 5),
+                              child: Image.asset(
+                                  (this._summaryInfo.favor != null) &&
+                                          (this._summaryInfo.favor!)
+                                      ? "images/ic_favor_fill.png"
+                                      : "images/ic_favor_empty.png",
+                                  width: UIConstants.FAVOR_IMAGE_W,
+                                  height: UIConstants.FAVOR_IMAGE_H,
+                                  fit: BoxFit.fill))),
+                      visible: !this._isFavorPage,
                     )
                   ]
                 )),
