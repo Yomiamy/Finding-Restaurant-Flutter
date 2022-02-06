@@ -29,15 +29,17 @@ class RestaurantItemCell extends StatelessWidget {
                   children: <Widget>[
                     Align(
                       alignment:Alignment.center,
-                      child: FadeInImage.assetNetwork(
-                          placeholder: UIConstants.NO_IMAGE,
-                          imageErrorBuilder: (context, error, trace) => Image.asset(UIConstants.NO_IMAGE),
-                          image: this._summaryInfo.image_url ?? "",
-                          imageCacheHeight: RestaurantItemCell.IMAGE_H,
-                          imageCacheWidth: RestaurantItemCell.IMAGE_W,
-                          placeholderCacheHeight: RestaurantItemCell.IMAGE_H,
-                          placeholderCacheWidth: RestaurantItemCell.IMAGE_W,
-                          fit: BoxFit.fill)
+                      child: SizedBox.expand(
+                        child: FadeInImage.assetNetwork(
+                            placeholder: UIConstants.NO_IMAGE,
+                            imageErrorBuilder: (context, error, trace) => Image.asset(UIConstants.NO_IMAGE),
+                            image: this._summaryInfo.image_url ?? "",
+                            imageCacheHeight: RestaurantItemCell.IMAGE_H,
+                            imageCacheWidth: RestaurantItemCell.IMAGE_W,
+                            placeholderCacheHeight: RestaurantItemCell.IMAGE_H,
+                            placeholderCacheWidth: RestaurantItemCell.IMAGE_W,
+                            fit: BoxFit.fill)
+                      )
                     ),
                     Align(
                       alignment:Alignment.bottomRight,
