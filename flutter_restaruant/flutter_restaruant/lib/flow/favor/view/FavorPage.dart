@@ -48,13 +48,13 @@ class _FavorPageState extends State<FavorPage> {
               if (state is InProgress) {
                 return Center(child: LoadingWidget());
               } else if (state is Success) {
-                List<YelpRestaurantSummaryInfo> favor = state.favorInfos;
+                List<YelpRestaurantSummaryInfo> favorInfos = state.favorInfos;
 
                 return ListView.builder(
                     padding: EdgeInsets.only(top: 0, bottom: 0),
-                    itemCount: favor.length,
+                    itemCount: favorInfos.length,
                     itemBuilder: (context, index) {
-                      YelpRestaurantSummaryInfo favorInfo = favor[index];
+                      YelpRestaurantSummaryInfo favorInfo = favorInfos[index];
 
                       return GestureDetector(
                           child: RestaurantItemCell(summaryInfo: favorInfo),
