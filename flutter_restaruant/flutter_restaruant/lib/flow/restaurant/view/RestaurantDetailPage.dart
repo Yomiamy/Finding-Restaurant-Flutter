@@ -52,9 +52,9 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
                 materialIcon: Icon(Icons.arrow_back,
-                    color: Color(UIConstants.BackBtnColor)),
+                    color: Color(UIConstants.BACK_BTN_COLOR)),
                 cupertinoIcon: Icon(CupertinoIcons.back,
-                    color: Color(UIConstants.BackBtnColor))),
+                    color: Color(UIConstants.BACK_BTN_COLOR))),
             title: BlocBuilder<RestaurantDetailBloc, RestaurantDetailState> (
               bloc: bloc,
               builder: (context, state) {
@@ -69,7 +69,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 }
               }
             ),
-            backgroundColor: Color(UIConstants.AppBarColor)
+            backgroundColor: Color(UIConstants.APP_BAR_COLOR)
         ),
         body: Padding(
             padding: EdgeInsets.only(bottom: 10),

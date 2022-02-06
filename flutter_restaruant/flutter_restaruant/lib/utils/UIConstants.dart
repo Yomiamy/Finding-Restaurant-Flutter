@@ -15,10 +15,10 @@ class UIConstants {
   static const double FAVOR_IMAGE_H = 20.0;
   static const double FAVOR_IMAGE_W = 20.0;
 
-  static const AppBarColor = 0xffd84a20;
-  static const BackBtnColor = 0xffffffff;
+  static const APP_BAR_COLOR = 0xffd84a20;
+  static const BACK_BTN_COLOR = 0xffffffff;
 
-  static const EmptyWidget = SizedBox(height: 0);
+  static const EMPTY_WIDGET = SizedBox(height: 0);
 
   static int InterstitialADCountDown = 3;
 }

@@ -34,7 +34,7 @@ class _SignInPageState extends State<SignInPage> {
         appBar: PlatformAppBar(
             title: Text('登入',
                     style: TextStyle(color: Colors.white, fontSize: Dimens.xxxhFontSize)),
-            backgroundColor: Color(UIConstants.AppBarColor)),
+            backgroundColor: Color(UIConstants.APP_BAR_COLOR)),
         body: BlocBuilder<SignInBloc, SignInState>(builder: (context, state) {
           if(state is Success) {
             Fluttertoast.showToast(msg: "SignIn Success");
@@ -49,7 +49,7 @@ class _SignInPageState extends State<SignInPage> {
                   alignment: Alignment.topCenter,
                 child: Padding(
                   padding: EdgeInsets.only(top: 150),
-                  child: (state is InProgress) ? const CircularProgressIndicator() : UIConstants.EmptyWidget
+                  child: (state is InProgress) ? const CircularProgressIndicator() : UIConstants.EMPTY_WIDGET
                 )
               ),
               Align(
@@ -83,7 +83,7 @@ class _SignInPageState extends State<SignInPage> {
                               this._signInBloc.add(AppleSignInEvent());
                               Fluttertoast.showToast(msg: "Apple SignIn");
                             }
-                        ) : UIConstants.EmptyWidget
+                        ) : UIConstants.EMPTY_WIDGET
                       ]
                   )
                 )

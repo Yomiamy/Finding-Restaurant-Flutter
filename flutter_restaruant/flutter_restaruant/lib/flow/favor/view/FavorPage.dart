@@ -38,14 +38,14 @@ class _FavorPageState extends State<FavorPage> {
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
                 materialIcon: Icon(Icons.arrow_back,
-                    color: Color(UIConstants.BackBtnColor)),
+                    color: Color(UIConstants.BACK_BTN_COLOR)),
                 cupertinoIcon: Icon(CupertinoIcons.back,
-                    color: Color(UIConstants.BackBtnColor))),
+                    color: Color(UIConstants.BACK_BTN_COLOR))),
             title: Text(UIConstants.FAVOR_TITLE,
                 style: TextStyle(
                 color: Colors.white,
                 fontSize: Dimens.xxxxhFontSize)),
-            backgroundColor: Color(UIConstants.AppBarColor)),
+            backgroundColor: Color(UIConstants.APP_BAR_COLOR)),
         body: BlocBuilder<FavorBloc, FavorState>(
             bloc: bloc,
             builder: (context, state) {

@@ -72,7 +72,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                               color: Colors.white,
                               fontSize: Dimens.xxxxhFontSize)
                       ),
-                      backgroundColor: Color(UIConstants.AppBarColor),
+                      backgroundColor: Color(UIConstants.APP_BAR_COLOR),
                   )
                 ],
                 body: BlocBuilder<MainBloc, MainState>(
