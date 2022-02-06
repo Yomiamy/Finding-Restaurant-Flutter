@@ -9,6 +9,7 @@ import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.d
 import 'package:flutter_restaruant/flow/favor/bloc/FavorBloc.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
+import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 
@@ -40,7 +41,10 @@ class _FavorPageState extends State<FavorPage> {
                     color: Color(UIConstants.BackBtnColor)),
                 cupertinoIcon: Icon(CupertinoIcons.back,
                     color: Color(UIConstants.BackBtnColor))),
-            title: Text(UIConstants.FAVOR_TITLE),
+            title: Text(UIConstants.FAVOR_TITLE,
+                style: TextStyle(
+                color: Colors.white,
+                fontSize: Dimens.xxxxhFontSize)),
             backgroundColor: Color(UIConstants.AppBarColor)),
         body: BlocBuilder<FavorBloc, FavorState>(
             bloc: bloc,
