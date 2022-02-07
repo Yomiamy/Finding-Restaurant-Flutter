@@ -29,14 +29,14 @@ class _PhotoViewerState extends State<PhotoViewer> {
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
                 materialIcon: Icon(Icons.arrow_back,
-                    color: Color(UIConstants.BackBtnColor)),
+                    color: Color(UIConstants.BACK_BTN_COLOR)),
                 cupertinoIcon: Icon(CupertinoIcons.back,
-                    color: Color(UIConstants.BackBtnColor))),
+                    color: Color(UIConstants.BACK_BTN_COLOR))),
             title: Text("Photo Viewer",
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: Dimens.xxxhFontSize)),
-            backgroundColor: Color(UIConstants.AppBarColor)),
+            backgroundColor: Color(UIConstants.APP_BAR_COLOR)),
         body: InteractiveViewer(
           // Set it to false
           boundaryMargin: EdgeInsets.all(100),

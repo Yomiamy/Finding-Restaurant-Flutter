@@ -22,6 +22,7 @@ class YelpRestaurantSummaryInfo extends YelpBaseInfo {
   String get categoriesStr => categories?.map((category) => category.title ?? "").join(" ") ?? "";
   YelpRestaurantLocation? location;
   YelpRestaurantCoordinates? coordinates;
+  bool? favor = false;
 
   YelpRestaurantSummaryInfo():super();
 

@@ -25,7 +25,11 @@ class FacebookSignInManager {
 
       // Once signed in, return the UserCredential
       UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
-      return AccountInfo(uid:userCredential.user?.uid ?? "", account: userCredential.user?.email ?? "");
+      return AccountInfo(
+          type: AccountType.FACEBOOK,
+          uid:userCredential.user?.uid ?? "",
+          account: userCredential.user?.email ?? ""
+      );
     } on Exception catch(e) {
       // 登入錯誤
       print("FacebookSignInManager, error = $e");
@@ -33,5 +37,5 @@ class FacebookSignInManager {
     }
   }
 
-  void signInOutWithFB() async => await FacebookAuth.instance.logOut();
+  void signOutWithFB() async => await FacebookAuth.instance.logOut();
 }

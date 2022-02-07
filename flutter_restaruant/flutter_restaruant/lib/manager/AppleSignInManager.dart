@@ -62,7 +62,11 @@ class AppleSignInManager {
       // Sign in the user with Firebase. If the nonce we generated earlier does
       // not match the nonce in `appleCredential.identityToken`, sign in will fail.
       UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-      return AccountInfo(uid: userCredential.user?.uid ?? "", account: userCredential.user?.email ?? "");
+      return AccountInfo(
+          type: AccountType.APPLE,
+          uid: userCredential.user?.uid ?? "",
+          account: userCredential.user?.email ?? ""
+      );
     }  on Exception catch(e) {
       // 登入錯誤
       print("AppleSignInManager, error = $e");

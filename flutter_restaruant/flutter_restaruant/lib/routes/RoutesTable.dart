@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_restaruant/flow/favor/bloc/FavorBloc.dart';
+import 'package:flutter_restaruant/flow/favor/repository/FavorRepository.dart';
+import 'package:flutter_restaruant/flow/favor/view/FavorPage.dart';
 import 'package:flutter_restaruant/flow/photoviewr/view/PhotoViewer.dart';
 import 'package:flutter_restaruant/flow/filter/view/FilterPage.dart';
 import 'package:flutter_restaruant/flow/main/bloc/MainBloc.dart';
@@ -26,6 +29,10 @@ Map<String, WidgetBuilder> ROUTES_TABLE = <String, WidgetBuilder> {
   RestaurantDetailPage.ROUTE_NAME: (context) => BlocProvider<RestaurantDetailBloc>(
       create: (_) => RestaurantDetailBloc(repository: RestaurantDetailRepository()),
       child: RestaurantDetailPage()
+  ),
+  FavorPage.ROUTE_NAME: (context) => BlocProvider<FavorBloc>(
+      create: (_) => FavorBloc(repository: FavorRepository()),
+      child: FavorPage()
   ),
   FilterPage.ROUTE_NAME: (context) => FilterPage(),
   PhotoViewer.ROUTE_NAME: (context) => PhotoViewer()

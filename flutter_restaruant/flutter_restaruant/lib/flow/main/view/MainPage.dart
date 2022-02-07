@@ -12,6 +12,7 @@ import 'package:flutter_restaruant/component/ad/AppOpenAdState.dart';
 import 'package:flutter_restaruant/component/ad/BannerADState.dart';
 import 'package:flutter_restaruant/component/ad/BannerAD.dart';
 import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.dart';
+import 'package:flutter_restaruant/flow/favor/view/FavorPage.dart';
 import 'package:flutter_restaruant/flow/filter/view/FilterPage.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
 import 'package:flutter_restaruant/model/FilterConfigs.dart';
@@ -71,7 +72,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                               color: Colors.white,
                               fontSize: Dimens.xxxxhFontSize)
                       ),
-                      backgroundColor: Color(UIConstants.AppBarColor),
+                      backgroundColor: Color(UIConstants.APP_BAR_COLOR),
                   )
                 ],
                 body: BlocBuilder<MainBloc, MainState>(
@@ -106,10 +107,11 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                                   YelpRestaurantSummaryInfo summaryInfo = summaryInfos[index - 2];
 
                                   return GestureDetector(
-                                      child: RestaurantItemCell(summaryInfo: summaryInfo),
+                                      child: RestaurantItemCell(summaryInfo: summaryInfo, isFavorPage: false),
                                       onTap: () {
                                         String id = summaryInfo.id ?? "";
-                                        Tuple2 arguments = Tuple2<String, dynamic>(id, null);
+                                        // TODO: 尚未指定
+                                        Tuple2 arguments = Tuple2<String, bool>(id, true);
 
                                         Navigator.of(context).pushNamed(
                                             RestaurantDetailPage.ROUTE_NAME,
@@ -143,12 +145,14 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                         distance: 120,
                         mainIcon: Icon(Icons.menu),
                         children: [
+                          const Icon(Icons.stars),
                           const Icon(Icons.navigation),
                           const Icon(Icons.search),
                           const Icon(Icons.filter_list),
                         ],
                         childrenPressActions: [
-                              () { this._mainBloc.add(Reset()); },
+                              () => Navigator.of(context).pushNamed(FavorPage.ROUTE_NAME),
+                              () => this._mainBloc.add(Reset()),
                               () {
                                     showPlatformDialog(
                                         context: context,

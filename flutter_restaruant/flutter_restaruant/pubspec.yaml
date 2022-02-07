@@ -46,11 +46,11 @@ dependencies:
   json_serializable: ^4.1.3
 
   firebase_core: ^1.10.6
-  firebase_analytics: ^9.0.4
-  firebase_auth: ^3.3.4
-  cloud_firestore: ^3.1.6
-  firebase_storage: ^10.2.5
   google_mobile_ads: ^1.0.1
+  firebase_analytics: ^9.0.5
+  firebase_auth: ^3.3.5
+  cloud_firestore: ^3.1.7
+  firebase_storage: ^10.2.5
 
   google_sign_in: "^5.2.1"
   sign_in_with_apple: ^3.3.0
@@ -99,6 +99,8 @@ flutter:
     - images/Star_rating_4_of_5.png
     - images/Star_rating_5_of_5.png
     - images/launch_image.png
+    - images/ic_favor_empty.png
+    - images/ic_favor_fill.png
 
 
   # An image asset can refer to one or more resolution-specific "variants", see

@@ -31,7 +31,11 @@ class GoogleSignInManager {
 
       // Once signed in, return the UserCredential
       UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
-      return AccountInfo(uid: userCredential.user?.uid ?? "", account: userCredential.user?.email ?? "");
+      return AccountInfo(
+          type: AccountType.FACEBOOK,
+          uid: userCredential.user?.uid ?? "",
+          account: userCredential.user?.email ?? ""
+      );
     } on Exception catch(e) {
       // 登入錯誤
        print("GoogleSignInManager, error = $e");

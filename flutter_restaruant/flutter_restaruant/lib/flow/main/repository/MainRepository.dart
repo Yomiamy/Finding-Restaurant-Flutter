@@ -1,5 +1,7 @@
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter_restaruant/api/APIClz.dart';
 import 'package:flutter_restaruant/model/FilterConfigs.dart';
+import 'package:flutter_restaruant/flow/favor/repository/FavorRepository.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/model/YelpSearchInfo.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
@@ -45,6 +47,9 @@ class MainRepository {
     this._isLoading = false;
     this.summaryInfoSet.addAll(searchInfo.businesses ?? []);
 
+    // List<YelpRestaurantSummaryInfo> favList = await FavorRepository().fetchFavorInfos("123456");
+    // FavorRepository().updateFavorInfo("123456", favList[0]);
+    // Reference ref = FirebaseStorage.instance.ref("Gh3CuBx9LrhoTrBveY4B2OBLWvj2/test.png");
     return await this.filterByKeyword(this._keyword, sortByStr);
   }
 

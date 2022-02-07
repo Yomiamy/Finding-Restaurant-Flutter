@@ -30,8 +30,8 @@ class _SplashPageState extends State<SplashPage> {
             child: Image.asset(
               "images/launch_image.png",
               fit: BoxFit.fill,
-              height: double.infinity,
-              width: double.infinity,
+              height: MediaQuery.of(context).size.height,
+              width: MediaQuery.of(context).size.width,
             ))
     );
   }

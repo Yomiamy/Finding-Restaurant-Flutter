@@ -35,12 +35,12 @@ class _FilterPageState extends State<FilterPage> {
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
                 materialIcon: Icon(Icons.arrow_back,
-                    color: Color(UIConstants.BackBtnColor)),
+                    color: Color(UIConstants.BACK_BTN_COLOR)),
                 cupertinoIcon: Icon(CupertinoIcons.back,
-                    color: Color(UIConstants.BackBtnColor))),
+                    color: Color(UIConstants.BACK_BTN_COLOR))),
             trailingActions: [
               PlatformButton(
-                  color: Color(UIConstants.AppBarColor),
+                  color: Color(UIConstants.APP_BAR_COLOR),
                   padding: EdgeInsets.all(0),
                   onPressed: () {
                     FilterConfigs configs = FilterConfigs.fromUI(priceIndex: this._priceIndex, openAtDate: this._openAtDateTime, sortingRuleIndex: this._sortByIndex);
@@ -55,7 +55,7 @@ class _FilterPageState extends State<FilterPage> {
             title: Text("過濾條件",
                 style: TextStyle(
                     color: Colors.white, fontSize: Dimens.xxxhFontSize)),
-            backgroundColor: Color(UIConstants.AppBarColor)),
+            backgroundColor: Color(UIConstants.APP_BAR_COLOR)),
         body: ListView(children: <Widget>[
           // Price level
           Padding(
