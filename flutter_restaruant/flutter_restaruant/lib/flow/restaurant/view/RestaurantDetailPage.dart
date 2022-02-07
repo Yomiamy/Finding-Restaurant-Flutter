@@ -27,6 +27,8 @@ class RestaurantDetailPage extends StatefulWidget {
 
 class RestaurantDetailPageState extends State<RestaurantDetailPage> {
 
+  bool _isFavor = false;
+
   @override
   void initState() {
     super.initState();
@@ -41,8 +43,9 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as Tuple2<String, dynamic>;
+    final args = ModalRoute.of(context)!.settings.arguments as Tuple2<String, bool>;
     final id = args.item1;
+    this._isFavor = args.item2;
 
     RestaurantDetailBloc bloc = BlocProvider.of<RestaurantDetailBloc>(context);
     bloc.add(FetchDetailInfo(id: id));
@@ -80,7 +83,37 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                   return Center(child: LoadingWidget());
                 } else if(state is Success) {
                   return ListView(children: [
-                    RestaurantHeadCell(imageUrl: state.detailInfo.image_url ?? ""),
+                    Stack(
+                      children: <Widget>[
+                        RestaurantHeadCell(imageUrl: state.detailInfo.image_url ?? ""),
+                        StatefulBuilder(builder: (context, setState) {
+                          return GestureDetector(
+                              onTap: () {
+                                // TODO: 尚未指定
+                                setState(() {
+                                  this._isFavor = !this._isFavor;
+                                });
+                              },
+                              child: Align(
+                                  alignment: Alignment.topRight,
+                                  child: Padding(
+                                      padding: EdgeInsets.only(top:10, right: 10),
+                                      child: CircleAvatar(
+                                          backgroundColor: Colors.white,
+                                          child: Image.asset(
+                                              this._isFavor
+                                                  ? "images/ic_favor_fill.png"
+                                                  : "images/ic_favor_empty.png",
+                                              width: UIConstants.FAVOR_IMAGE_W,
+                                              height: UIConstants.FAVOR_IMAGE_H,
+                                              fit: BoxFit.fill)
+                                      )
+                                  )
+                              )
+                          );
+                        })
+                      ]
+                    ),
                     RestaurantInfoCell(detailInfo: state.detailInfo, staticMapUrl: state.staticMapUrl),
                     RestaurantImageCell(photos: state.detailInfo.photos ?? []),
                     RestaurantBusinessHourCell(businessTimeInfos: state.detailInfo.hours?[0].open ?? []),

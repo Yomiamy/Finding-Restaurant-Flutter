@@ -64,7 +64,8 @@ class _FavorPageState extends State<FavorPage> {
                           child: RestaurantItemCell(summaryInfo: favorInfo, isFavorPage: true),
                           onTap: () {
                             String id = favorInfo.id ?? "";
-                            Tuple2 arguments = Tuple2<String, dynamic>(id, null);
+                            // TODO: 尚未指定
+                            Tuple2 arguments = Tuple2<String, bool>(id, false);
 
                             Navigator.of(context).pushNamed(
                                 RestaurantDetailPage.ROUTE_NAME,
