@@ -72,7 +72,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 }
               }
             ),
-            backgroundColor: Color(UIConstants.APP_BAR_COLOR)
+            backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)
         ),
         body: Padding(
             padding: EdgeInsets.only(bottom: 10),

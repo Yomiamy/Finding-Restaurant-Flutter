@@ -45,7 +45,7 @@ class _FavorPageState extends State<FavorPage> {
                 style: TextStyle(
                 color: Colors.white,
                 fontSize: Dimens.xxxxhFontSize)),
-            backgroundColor: Color(UIConstants.APP_BAR_COLOR)),
+            backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: BlocBuilder<FavorBloc, FavorState>(
             bloc: bloc,
             builder: (context, state) {
