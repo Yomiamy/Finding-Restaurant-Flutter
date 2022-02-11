@@ -36,7 +36,11 @@ class _SignInPageState extends State<SignInPage> {
         body: BlocBuilder<SignInBloc, SignInState>(builder: (context, state) {
           if (state is Success) {
             Fluttertoast.showToast(msg: "SignIn Success");
-            Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME);
+
+            WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+              // Waiting building is finish and run.
+              Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME);
+            });
           } else if (state is Failure) {
             Fluttertoast.showToast(msg: "SignIn Fail");
           }
@@ -45,7 +49,7 @@ class _SignInPageState extends State<SignInPage> {
             Align(
                 alignment: Alignment.topCenter,
                 child: Padding(
-                    padding: EdgeInsets.only(top: 100),
+                    padding: EdgeInsets.only(top: 50),
                     child: Column(children: <Widget>[
                       Image.asset(
                           "images/icon_signinup_icon.gif",
@@ -60,7 +64,7 @@ class _SignInPageState extends State<SignInPage> {
             Align(
                 alignment: Alignment.bottomCenter,
                 child: Padding(
-                    padding: EdgeInsets.only(bottom: 150),
+                    padding: EdgeInsets.only(bottom: 100),
                     child: Column(
                         mainAxisSize: MainAxisSize.min,
                         children: <Widget>[
