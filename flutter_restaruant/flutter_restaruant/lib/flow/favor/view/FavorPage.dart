@@ -8,6 +8,7 @@ import 'package:flutter_restaruant/component/LoadingWidget.dart';
 import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.dart';
 import 'package:flutter_restaruant/flow/favor/bloc/FavorBloc.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
+import 'package:flutter_restaruant/manager/SignInManager.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
@@ -64,8 +65,8 @@ class _FavorPageState extends State<FavorPage> {
                           child: RestaurantItemCell(summaryInfo: favorInfo, isFavorPage: true),
                           onTap: () {
                             String id = favorInfo.id ?? "";
-                            // TODO: 尚未指定
-                            Tuple2 arguments = Tuple2<String, bool>(id, false);
+                            bool isFavor = favorInfo.favor ?? false;
+                            Tuple2 arguments = Tuple2<String, bool>(id, isFavor);
 
                             Navigator.of(context).pushNamed(
                                 RestaurantDetailPage.ROUTE_NAME,

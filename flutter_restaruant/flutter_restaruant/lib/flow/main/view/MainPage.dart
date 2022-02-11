@@ -110,8 +110,8 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                                       child: RestaurantItemCell(summaryInfo: summaryInfo, isFavorPage: false),
                                       onTap: () {
                                         String id = summaryInfo.id ?? "";
-                                        // TODO: 尚未指定
-                                        Tuple2 arguments = Tuple2<String, bool>(id, true);
+                                        bool isFavor = summaryInfo.favor ?? false;
+                                        Tuple2 arguments = Tuple2<String, bool>(id, isFavor);
 
                                         Navigator.of(context).pushNamed(
                                             RestaurantDetailPage.ROUTE_NAME,
