@@ -26,13 +26,9 @@ class FavorPage extends StatefulWidget {
 class _FavorPageState extends State<FavorPage> {
   @override
   Widget build(BuildContext context) {
-    // TODO: uid尚未決定來源
-    // final args =
-    //     ModalRoute.of(context)!.settings.arguments as Tuple2<String, dynamic>;
-    // final uid = args.item1;
-
     FavorBloc bloc = BlocProvider.of<FavorBloc>(context);
-    bloc.add(FetchFavorInfoEvent(uid: "123456"));
+
+    bloc.add(FetchFavorInfoEvent());
     return PlatformScaffold(
         appBar: PlatformAppBar(
             leading: PlatformIconButton(
@@ -65,7 +61,7 @@ class _FavorPageState extends State<FavorPage> {
                           child: RestaurantItemCell(summaryInfo: favorInfo, isFavorPage: true),
                           onTap: () {
                             String id = favorInfo.id ?? "";
-                            bool isFavor = favorInfo.favor ?? false;
+                            bool isFavor = favorInfo.favor;
                             Tuple2 arguments = Tuple2<String, bool>(id, isFavor);
 
                             Navigator.of(context).pushNamed(
