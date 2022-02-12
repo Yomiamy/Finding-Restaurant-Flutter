@@ -15,6 +15,7 @@ import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.d
 import 'package:flutter_restaruant/flow/favor/view/FavorPage.dart';
 import 'package:flutter_restaruant/flow/filter/view/FilterPage.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
+import 'package:flutter_restaruant/manager/SignInManager.dart';
 import 'package:flutter_restaruant/model/FilterConfigs.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:provider/provider.dart';
@@ -41,7 +42,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
   ScrollController _scrollController = ScrollController();
   String _filterKeyword = "";
   late MainBloc _mainBloc;
-  late AppLifecycleReactor _appLifecycleReactor;
+  late List<YelpRestaurantSummaryInfo> _summaryInfos;
 
   MainPageState();
 
@@ -50,6 +51,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
     super.initState();
 
     this._mainBloc = BlocProvider.of<MainBloc>(context);
+    this._summaryInfos = List.empty();
   }
 
   @override
@@ -77,8 +79,10 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                 ],
                 body: BlocBuilder<MainBloc, MainState>(
                     builder: (context, state) {
-                      if(state is Success || state is LoadMoreSuccess) {
-                        List<YelpRestaurantSummaryInfo> summaryInfos = (state is Success) ? state.summaryInfos : (state as LoadMoreSuccess).summaryInfos;
+                      if(state is Success || state is LoadMoreSuccess || state is ToggleFavorSuccess) {
+                        if(state is Success || state is LoadMoreSuccess) {
+                          this._summaryInfos = (state is Success) ? state.summaryInfos : (state as LoadMoreSuccess).summaryInfos;
+                        }
 
                         return NotificationListener<ScrollEndNotification>(
                           onNotification: (notification) {
@@ -95,7 +99,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                           child: ListView.builder(
                               padding: EdgeInsets.only(top: 0, bottom: 0),
                               controller: this._scrollController,
-                              itemCount: summaryInfos.length + 2 ,
+                              itemCount: this._summaryInfos.length + 2 ,
                               itemBuilder: (context, index) {
                                 if(index == 0) {
                                   final adState = Provider.of<BannerADState>(context);
@@ -104,13 +108,13 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                                 } else if(index == 1) {
                                   return FilterTagsWidget(filterConfigs: this._configs);
                                 } else {
-                                  YelpRestaurantSummaryInfo summaryInfo = summaryInfos[index - 2];
+                                  YelpRestaurantSummaryInfo summaryInfo = this._summaryInfos[index - 2];
 
                                   return GestureDetector(
                                       child: RestaurantItemCell(summaryInfo: summaryInfo, isFavorPage: false),
                                       onTap: () {
                                         String id = summaryInfo.id ?? "";
-                                        bool isFavor = summaryInfo.favor ?? false;
+                                        bool isFavor = summaryInfo.favor;
                                         Tuple2 arguments = Tuple2<String, bool>(id, isFavor);
 
                                         Navigator.of(context).pushNamed(

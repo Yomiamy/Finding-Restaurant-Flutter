@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_restaruant/flow/main/bloc/MainBloc.dart';
+import 'package:flutter_restaruant/manager/SignInManager.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sprintf/sprintf.dart';
 
 class RestaurantItemCell extends StatelessWidget {
@@ -13,8 +17,8 @@ class RestaurantItemCell extends StatelessWidget {
   final bool _isFavorPage;
 
   const RestaurantItemCell(
-      {required YelpRestaurantSummaryInfo summaryInfo,
-      required bool isFavorPage})
+      { required YelpRestaurantSummaryInfo summaryInfo,
+        required bool isFavorPage})
       : this._summaryInfo = summaryInfo,
         this._isFavorPage = isFavorPage;
 
@@ -89,26 +93,28 @@ class RestaurantItemCell extends StatelessWidget {
                                       flex: 1)
                                 ]),
                                 Text(
-                                    this
-                                            ._summaryInfo
-                                            .location
-                                            ?.display_address
-                                            ?.join("") ??
-                                        "",
+                                    this._summaryInfo.location?.display_address?.join("") ?? "",
                                     overflow: TextOverflow.ellipsis),
                                 Row(
                                   children: <Widget>[
                                     Padding(padding: EdgeInsets.only(left: 5),
                                         child: Visibility(
-                                          child: Image.asset(
-                                              (this._summaryInfo.favor != null) && (this._summaryInfo.favor!)
-                                                  ? "images/ic_favor_fill.png"
-                                                  : "images/ic_favor_empty.png",
-                                              width: UIConstants.FAVOR_IMAGE_W,
-                                              height: UIConstants.FAVOR_IMAGE_H,
-                                              fit: BoxFit.fill),
+                                          child: GestureDetector(
+                                            child: Image.asset(
+                                                (this._summaryInfo.favor)
+                                                    ? "images/ic_favor_fill.png"
+                                                    : "images/ic_favor_empty.png",
+                                                width: UIConstants.FAVOR_IMAGE_W,
+                                                height: UIConstants.FAVOR_IMAGE_H,
+                                                fit: BoxFit.fill),
+                                              onTap: () {
+                                                MainBloc bloc = BlocProvider.of<MainBloc>(context);
+
+                                                bloc.add(ToggleFavor(summaryInfo: this._summaryInfo));
+                                            }),
                                           visible: !this._isFavorPage,
-                                        )),
+                                        )
+                                    ),
                                     Padding(
                                         padding: EdgeInsets.only(left: 5, right: 5),
                                         child: Text(category,

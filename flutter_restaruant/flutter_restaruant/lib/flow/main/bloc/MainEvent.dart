@@ -41,5 +41,18 @@ class FilterListByKeyword extends MainEvent {
   final String? sortByStr;
 
   const FilterListByKeyword({this.keyword = "", this.sortByStr});
+
+  @override
+  String toString() => "FilterListByKeyword event.";
+}
+
+class ToggleFavor extends MainEvent {
+  // 透過uid取得喜好列表
+  final YelpRestaurantSummaryInfo summaryInfo;
+
+  const ToggleFavor({required this.summaryInfo});
+
+  @override
+  String toString() => "ToggleFavor event.";
 }
 

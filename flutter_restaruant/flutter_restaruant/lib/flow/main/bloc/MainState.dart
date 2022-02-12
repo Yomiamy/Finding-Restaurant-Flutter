@@ -68,3 +68,10 @@ class LoadMoreSuccess extends MainState {
   @override
   String toString() => "Load more success.";
 }
+
+class ToggleFavorSuccess extends MainState {
+  const ToggleFavorSuccess();
+
+  @override
+  String toString() => "Toggle favor success.";
+}

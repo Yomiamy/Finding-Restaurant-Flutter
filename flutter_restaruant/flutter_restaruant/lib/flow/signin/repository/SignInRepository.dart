@@ -8,7 +8,7 @@ import 'package:flutter_restaruant/model/AccountInfo.dart';
 
 class SignInRepository {
 
-  static String _sUserCollectionName = "users";
+  static const String USER_COLLECTION_NAME = "users";
 
   SignInManager _signInManager = SignInManager();
 
@@ -37,7 +37,7 @@ class SignInRepository {
       return;
     }
 
-    DocumentReference ref = FirebaseFirestore.instance.collection(_sUserCollectionName).doc(accountInfo.uid!);
+    DocumentReference ref = FirebaseFirestore.instance.collection(USER_COLLECTION_NAME).doc(accountInfo.uid!);
     // 更新資料
     ref.set(accountInfo.toJson());
   }
