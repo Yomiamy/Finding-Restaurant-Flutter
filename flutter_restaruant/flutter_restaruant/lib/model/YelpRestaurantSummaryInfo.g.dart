@@ -27,8 +27,7 @@ YelpRestaurantSummaryInfo _$YelpRestaurantSummaryInfoFromJson(
     ..coordinates = json['coordinates'] == null
         ? null
         : YelpRestaurantCoordinates.fromJson(
-            json['coordinates'] as Map<String, dynamic>)
-    ..favor = json['favor'] as bool?;
+            json['coordinates'] as Map<String, dynamic>);
 }
 
 Map<String, dynamic> _$YelpRestaurantSummaryInfoToJson(
@@ -45,5 +44,4 @@ Map<String, dynamic> _$YelpRestaurantSummaryInfoToJson(
       'categories': instance.categories,
       'location': instance.location,
       'coordinates': instance.coordinates,
-      'favor': instance.favor,
     };
