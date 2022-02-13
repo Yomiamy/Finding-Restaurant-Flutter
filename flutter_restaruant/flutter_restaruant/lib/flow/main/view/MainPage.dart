@@ -113,9 +113,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                                   return GestureDetector(
                                       child: RestaurantItemCell(summaryInfo: summaryInfo, isFavorPage: false),
                                       onTap: () {
-                                        String id = summaryInfo.id ?? "";
-                                        bool isFavor = summaryInfo.favor;
-                                        Tuple2 arguments = Tuple2<String, bool>(id, isFavor);
+                                        Tuple2 arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(summaryInfo, null);
 
                                         Navigator.of(context).pushNamed(
                                             RestaurantDetailPage.ROUTE_NAME,

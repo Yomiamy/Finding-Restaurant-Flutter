@@ -24,6 +24,7 @@ class FavorPage extends StatefulWidget {
 }
 
 class _FavorPageState extends State<FavorPage> {
+
   @override
   Widget build(BuildContext context) {
     FavorBloc bloc = BlocProvider.of<FavorBloc>(context);
@@ -60,9 +61,7 @@ class _FavorPageState extends State<FavorPage> {
                       return GestureDetector(
                           child: RestaurantItemCell(summaryInfo: favorInfo, isFavorPage: true),
                           onTap: () {
-                            String id = favorInfo.id ?? "";
-                            bool isFavor = favorInfo.favor;
-                            Tuple2 arguments = Tuple2<String, bool>(id, isFavor);
+                            Tuple2 arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(favorInfo, null);
 
                             Navigator.of(context).pushNamed(
                                 RestaurantDetailPage.ROUTE_NAME,
