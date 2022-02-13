@@ -20,7 +20,12 @@ class FavorRepository {
                                               .doc(this._uid)
                                               .get();
     Map<String, dynamic> favorMap = (snapshots.data() != null) ? snapshots.data() as Map<String, dynamic> : Map<String, dynamic>();
-    return favorMap.values.map((value) => YelpRestaurantSummaryInfo.fromJson(jsonDecode(value))).toList();
+    return favorMap.values.map((value) {
+      YelpRestaurantSummaryInfo summaryInfo = YelpRestaurantSummaryInfo.fromJson(jsonDecode(value));
+      summaryInfo.favor = true;
+
+      return summaryInfo;
+    }).toList();
   }
 
   Future<void> toggleFavor(YelpRestaurantSummaryInfo summaryInfo) async {
