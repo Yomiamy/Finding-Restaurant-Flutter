@@ -111,14 +111,11 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                                   YelpRestaurantSummaryInfo summaryInfo = this._summaryInfos[index - 2];
 
                                   return GestureDetector(
-                                      child: RestaurantItemCell(summaryInfo: summaryInfo, isFavorPage: false),
-                                      onTap: () {
+                                      child: RestaurantItemCell(summaryInfo: summaryInfo),
+                                      onTap: () async {
                                         Tuple2 arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(summaryInfo, null);
 
-                                        Navigator.of(context).pushNamed(
-                                            RestaurantDetailPage.ROUTE_NAME,
-                                            arguments: arguments
-                                        );
+                                        Navigator.of(context).pushNamed(RestaurantDetailPage.ROUTE_NAME, arguments: arguments);
                                       });
                                 }
                               })

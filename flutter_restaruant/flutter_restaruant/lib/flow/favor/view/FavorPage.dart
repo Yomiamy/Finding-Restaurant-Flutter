@@ -59,7 +59,7 @@ class _FavorPageState extends State<FavorPage> {
                       YelpRestaurantSummaryInfo favorInfo = favorInfos[index];
 
                       return GestureDetector(
-                          child: RestaurantItemCell(summaryInfo: favorInfo, isFavorPage: true),
+                          child: RestaurantItemCell(summaryInfo: favorInfo),
                           onTap: () async {
                             Tuple2 arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(favorInfo, null);
                             await Navigator.of(context).pushNamed(RestaurantDetailPage.ROUTE_NAME, arguments: arguments);

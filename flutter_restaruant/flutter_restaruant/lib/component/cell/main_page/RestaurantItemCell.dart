@@ -14,13 +14,10 @@ class RestaurantItemCell extends StatelessWidget {
   static const double ITEM_H = 100;
 
   final YelpRestaurantSummaryInfo _summaryInfo;
-  final bool _isFavorPage;
 
   const RestaurantItemCell(
-      { required YelpRestaurantSummaryInfo summaryInfo,
-        required bool isFavorPage})
-      : this._summaryInfo = summaryInfo,
-        this._isFavorPage = isFavorPage;
+      { required YelpRestaurantSummaryInfo summaryInfo})
+      : this._summaryInfo = summaryInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -95,36 +92,11 @@ class RestaurantItemCell extends StatelessWidget {
                                 Text(
                                     this._summaryInfo.location?.display_address?.join("") ?? "",
                                     overflow: TextOverflow.ellipsis),
-                                Row(
-                                  children: <Widget>[
-                                    Padding(padding: EdgeInsets.only(left: 5),
-                                        child: Visibility(
-                                          child: GestureDetector(
-                                            child: Image.asset(
-                                                (this._summaryInfo.favor)
-                                                    ? "images/ic_favor_fill.png"
-                                                    : "images/ic_favor_empty.png",
-                                                width: UIConstants.FAVOR_IMAGE_W,
-                                                height: UIConstants.FAVOR_IMAGE_H,
-                                                fit: BoxFit.fill),
-                                              onTap: () {
-                                                MainBloc bloc = BlocProvider.of<MainBloc>(context);
-
-                                                bloc.add(ToggleFavor(summaryInfo: this._summaryInfo));
-                                            }),
-                                          visible: !this._isFavorPage,
-                                        )
-                                    ),
-                                    Padding(
-                                        padding: EdgeInsets.only(left: 5, right: 5),
-                                        child: Text(category,
-                                            overflow: TextOverflow.ellipsis,
-                                            style: TextStyle(
-                                                fontSize: Dimens.mFontSize,
-                                                color: Colors.grey))
-                                    )
-                                  ]
-                                )
+                                Text(category,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: Dimens.mFontSize,
+                                        color: Colors.grey))
                               ])
                       )
                   )
