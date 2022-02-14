@@ -21,3 +21,13 @@ class FetchDetailInfo extends RestaurantDetailEvent {
   @override
   List<Object> get props => [this.id];
 }
+
+class ToggleFavor extends RestaurantDetailEvent {
+  // 透過uid取得喜好列表
+  final YelpRestaurantSummaryInfo summaryInfo;
+
+  const ToggleFavor({required this.summaryInfo});
+
+  @override
+  String toString() => "ToggleFavor event.";
+}

@@ -40,7 +40,7 @@ class _FilterPageState extends State<FilterPage> {
                     color: Color(UIConstants.BACK_BTN_COLOR))),
             trailingActions: [
               PlatformButton(
-                  color: Color(UIConstants.APP_BAR_COLOR),
+                  color: Color(UIConstants.APP_PRIMARY_COLOR),
                   padding: EdgeInsets.all(0),
                   onPressed: () {
                     FilterConfigs configs = FilterConfigs.fromUI(priceIndex: this._priceIndex, openAtDate: this._openAtDateTime, sortingRuleIndex: this._sortByIndex);
@@ -55,7 +55,7 @@ class _FilterPageState extends State<FilterPage> {
             title: Text("過濾條件",
                 style: TextStyle(
                     color: Colors.white, fontSize: Dimens.xxxhFontSize)),
-            backgroundColor: Color(UIConstants.APP_BAR_COLOR)),
+            backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: ListView(children: <Widget>[
           // Price level
           Padding(

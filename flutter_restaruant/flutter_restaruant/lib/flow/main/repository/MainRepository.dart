@@ -1,5 +1,10 @@
+import 'dart:convert';
+
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:flutter/widgets.dart';
 import 'package:flutter_restaruant/api/APIClz.dart';
+import 'package:flutter_restaruant/manager/SignInManager.dart';
 import 'package:flutter_restaruant/model/FilterConfigs.dart';
 import 'package:flutter_restaruant/flow/favor/repository/FavorRepository.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
@@ -9,13 +14,17 @@ import 'package:flutter_restaruant/utils/Constants.dart';
 class MainRepository {
 
   static const int _MAX_ITEMS_COUNT_IN_LIST = 50;
+  static const String FAVOR_COLLECTION_NAME = "favors";
 
   Set<YelpRestaurantSummaryInfo> summaryInfoSet = Set();
   int _offset = 0;
   String _keyword = "";
   bool _isLoading = false;
+  String _uid = "";
 
   MainRepository() {
+    this._uid = SignInManager().accountInfo?.uid ?? "";
+
     this.reset();
   }
 
@@ -45,10 +54,14 @@ class MainRepository {
         limit: MainRepository._MAX_ITEMS_COUNT_IN_LIST,
         offset: ++this._offset);
     this._isLoading = false;
+    Map<String, dynamic> favorsMap = await this._fetchFavorsMap();
+
+    // 檢查是否為最愛店家
+    searchInfo.businesses?.forEach((summaryInfo) {
+      summaryInfo.favor = (favorsMap.containsKey(summaryInfo.id));
+    });
     this.summaryInfoSet.addAll(searchInfo.businesses ?? []);
 
-    // List<YelpRestaurantSummaryInfo> favList = await FavorRepository().fetchFavorInfos("123456");
-    // FavorRepository().updateFavorInfo("123456", favList[0]);
     // Reference ref = FirebaseStorage.instance.ref("Gh3CuBx9LrhoTrBveY4B2OBLWvj2/test.png");
     return await this.filterByKeyword(this._keyword, sortByStr);
   }
@@ -95,5 +108,36 @@ class MainRepository {
     });
 
     return summaryInfos;
+  }
+
+  Future<void> toggleFavor(YelpRestaurantSummaryInfo summaryInfo) async {
+    Map<String, dynamic> favorsMap = await this._fetchFavorsMap();
+    summaryInfo.favor = !summaryInfo.favor;
+
+    if (summaryInfo.favor) {
+      // 若設定為最愛資料則新增
+      String summaryInfoJsonStr = jsonEncode(summaryInfo);
+
+      favorsMap[summaryInfo.id!] = summaryInfoJsonStr;
+    } else {
+      // 若設定為非最愛資料則刪除
+      favorsMap.remove(summaryInfo.id!);
+    }
+    // 更新資料
+    this._updateFavorsMap(favorsMap);
+  }
+
+  Future<Map<String, dynamic>> _fetchFavorsMap() async {
+    DocumentReference ref = FirebaseFirestore.instance.collection(FAVOR_COLLECTION_NAME).doc(this._uid);
+    DocumentSnapshot snapshots = await ref.get();
+    Map<String, dynamic> favorsMap = (snapshots.data() != null) ? snapshots.data() as Map<String, dynamic> : Map<String, dynamic>();
+
+    return favorsMap;
+  }
+
+  Future<void> _updateFavorsMap(Map<String, dynamic> favorsMap) async {
+    DocumentReference ref = FirebaseFirestore.instance.collection(FAVOR_COLLECTION_NAME).doc(this._uid);
+
+    ref.set(favorsMap, SetOptions(merge: false));
   }
 }

@@ -36,7 +36,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: Dimens.xxxhFontSize)),
-            backgroundColor: Color(UIConstants.APP_BAR_COLOR)),
+            backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: InteractiveViewer(
           // Set it to false
           boundaryMargin: EdgeInsets.all(100),

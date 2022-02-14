@@ -15,7 +15,7 @@ class UIConstants {
   static const double FAVOR_IMAGE_H = 20.0;
   static const double FAVOR_IMAGE_W = 20.0;
 
-  static const APP_BAR_COLOR = 0xffd84a20;
+  static const APP_PRIMARY_COLOR = 0xffd84a20;
   static const BACK_BTN_COLOR = 0xffffffff;
 
   static const EMPTY_WIDGET = SizedBox(height: 0);

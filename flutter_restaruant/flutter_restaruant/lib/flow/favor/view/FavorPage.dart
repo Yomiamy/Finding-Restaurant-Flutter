@@ -8,6 +8,7 @@ import 'package:flutter_restaruant/component/LoadingWidget.dart';
 import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.dart';
 import 'package:flutter_restaruant/flow/favor/bloc/FavorBloc.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
+import 'package:flutter_restaruant/manager/SignInManager.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
@@ -23,15 +24,12 @@ class FavorPage extends StatefulWidget {
 }
 
 class _FavorPageState extends State<FavorPage> {
+
   @override
   Widget build(BuildContext context) {
-    // TODO: uid尚未決定來源
-    // final args =
-    //     ModalRoute.of(context)!.settings.arguments as Tuple2<String, dynamic>;
-    // final uid = args.item1;
-
     FavorBloc bloc = BlocProvider.of<FavorBloc>(context);
-    bloc.add(FetchFavorInfoEvent(uid: "123456"));
+
+    bloc.add(FetchFavorInfoEvent(false));
     return PlatformScaffold(
         appBar: PlatformAppBar(
             leading: PlatformIconButton(
@@ -45,7 +43,7 @@ class _FavorPageState extends State<FavorPage> {
                 style: TextStyle(
                 color: Colors.white,
                 fontSize: Dimens.xxxxhFontSize)),
-            backgroundColor: Color(UIConstants.APP_BAR_COLOR)),
+            backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: BlocBuilder<FavorBloc, FavorState>(
             bloc: bloc,
             builder: (context, state) {
@@ -61,15 +59,12 @@ class _FavorPageState extends State<FavorPage> {
                       YelpRestaurantSummaryInfo favorInfo = favorInfos[index];
 
                       return GestureDetector(
-                          child: RestaurantItemCell(summaryInfo: favorInfo, isFavorPage: true),
-                          onTap: () {
-                            String id = favorInfo.id ?? "";
-                            // TODO: 尚未指定
-                            Tuple2 arguments = Tuple2<String, bool>(id, false);
+                          child: RestaurantItemCell(summaryInfo: favorInfo),
+                          onTap: () async {
+                            Tuple2 arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(favorInfo, null);
+                            await Navigator.of(context).pushNamed(RestaurantDetailPage.ROUTE_NAME, arguments: arguments);
 
-                            Navigator.of(context).pushNamed(
-                                RestaurantDetailPage.ROUTE_NAME,
-                                arguments: arguments);
+                            bloc.add(FetchFavorInfoEvent(true));
                           });
                     });
               } else {

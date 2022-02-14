@@ -21,11 +21,13 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     MainEvent event,
   ) async* {
     if (event is FetchSearchInfo) {
-      yield* _mapFetchSearchInfoToState(event, state);
+      yield* _mapFetchSearchInfoToState(event);
     } else if(event is Reset) {
       yield* _mapResetToState();
     }  else if(event is FilterListByKeyword) {
       yield* _mapFilterListByKeywordToState(event);
+    } else if(event is ToggleFavor) {
+      yield* _mapToggleFavorToState(event);
     }
   }
 
@@ -43,7 +45,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     yield ResetSuccess();
   }
 
-  Stream<MainState> _mapFetchSearchInfoToState(FetchSearchInfo event, MainState state) async* {
+  Stream<MainState> _mapFetchSearchInfoToState(FetchSearchInfo event) async* {
     try {
       final Position currentPos = await Geolocator.getCurrentPosition();
       double lat = currentPos.latitude;
@@ -61,6 +63,19 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
       yield isLoadMore ? LoadMoreSuccess(summaryInfos: summaryInfos) : Success(summaryInfos: summaryInfos);
     } on Exception catch (_) {
+      yield Failure();
+    }
+  }
+
+  Stream<MainState> _mapToggleFavorToState(ToggleFavor event) async* {
+    try {
+      yield InProgress();
+
+      YelpRestaurantSummaryInfo summary = event.summaryInfo;
+      await this._mainRepository.toggleFavor(summary);
+
+      yield ToggleFavorSuccess();
+    } on Exception catch(_) {
       yield Failure();
     }
   }

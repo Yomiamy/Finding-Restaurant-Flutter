@@ -9,23 +9,21 @@ abstract class FavorEvent extends Equatable {
 }
 
 class FetchFavorInfoEvent extends FavorEvent {
-  // 透過uid取得喜好列表
-  final String uid;
 
-  const FetchFavorInfoEvent({required this.uid});
+  final bool isRefreshLocalOnly;
+
+  const FetchFavorInfoEvent(this.isRefreshLocalOnly);
 
   @override
-  List<Object> get props => [this.uid];
+  List<Object> get props => [];
 }
 
 
 class UpdateFavorInfoEvent extends FavorEvent {
-  // 透過uid取得喜好列表
-  final String uid;
   final YelpRestaurantSummaryInfo summaryInfo;
 
-  const UpdateFavorInfoEvent({required this.uid, required this.summaryInfo});
+  const UpdateFavorInfoEvent({required this.summaryInfo});
 
   @override
-  List<Object> get props => [this.uid, this.summaryInfo.hashCode];
+  List<Object> get props => [this.summaryInfo.hashCode];
 }

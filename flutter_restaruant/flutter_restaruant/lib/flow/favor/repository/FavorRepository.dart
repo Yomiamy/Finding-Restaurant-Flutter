@@ -1,35 +1,56 @@
+import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:flutter_restaruant/manager/SignInManager.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 
 class FavorRepository {
   
-  static String _sFavorCollectionName = "favors";
+  static const String FAVOR_COLLECTION_NAME = "favors";
+
+  String _uid = "";
+  List<YelpRestaurantSummaryInfo> _favorInfos = [];
+
+  FavorRepository() {
+    this._uid = SignInManager().accountInfo?.uid ?? "";
+  }
   
-  Future<List<YelpRestaurantSummaryInfo>> fetchFavorInfos(String uid) async {
-    DocumentSnapshot snapshots = await FirebaseFirestore.instance
-                                              .collection(_sFavorCollectionName)
-                                              .doc(uid)
-                                              .get();
-    Map<String, dynamic> favorMap = snapshots.data() as Map<String, dynamic>;
-    return favorMap.values.map((value) => YelpRestaurantSummaryInfo.fromJson(value)).toList();
+  Future<List<YelpRestaurantSummaryInfo>> fetchFavorInfos(bool isRefreshLocalOnly) async {
+    if(isRefreshLocalOnly) {
+      this._favorInfos = this._favorInfos.where((element) => element.favor).toList();
+    } else {
+      DocumentSnapshot snapshots = await FirebaseFirestore.instance
+          .collection(FAVOR_COLLECTION_NAME)
+          .doc(this._uid)
+          .get();
+      Map<String, dynamic> favorMap = (snapshots.data() != null) ? snapshots.data() as Map<String, dynamic> : Map<String, dynamic>();
+      this._favorInfos = favorMap.values.map((value) {
+        YelpRestaurantSummaryInfo summaryInfo = YelpRestaurantSummaryInfo.fromJson(jsonDecode(value));
+        summaryInfo.favor = true;
+
+        return summaryInfo;
+      }).toList();
+    }
+
+    return this._favorInfos;
   }
 
-  Future<void> updateFavorInfo(String uid, YelpRestaurantSummaryInfo summaryInfo) async {
-    DocumentReference ref = await FirebaseFirestore.instance
-        .collection(_sFavorCollectionName)
-        .doc(uid);
+  Future<void> toggleFavor(YelpRestaurantSummaryInfo summaryInfo) async {
+    DocumentReference ref = FirebaseFirestore.instance.collection(FAVOR_COLLECTION_NAME).doc(this._uid);
     DocumentSnapshot snapshots = await ref.get();
-    Map<String, dynamic> favorMap = snapshots.data() as Map<String, dynamic>;
-    bool isFavor = summaryInfo.favor ?? false;
+    Map<String, dynamic> favorsMap = (snapshots.data() != null) ? snapshots.data() as Map<String, dynamic> : Map<String, dynamic>();
+    summaryInfo.favor = !summaryInfo.favor;
 
-    if (isFavor) {
+    if (summaryInfo.favor) {
       // 若設定為最愛資料則新增
-      favorMap[summaryInfo.id!] = summaryInfo.toJson();
+      String summaryInfoJsonStr = jsonEncode(summaryInfo);
+
+      favorsMap[summaryInfo.id!] = summaryInfoJsonStr;
     } else {
       // 若設定為非最愛資料則刪除
-      favorMap.remove(summaryInfo.id!);
+      favorsMap.remove(summaryInfo.id!);
     }
     // 更新資料
-    ref.set(favorMap);
+    ref.set(favorsMap, SetOptions(merge: false));
   }
 }

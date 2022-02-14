@@ -25,7 +25,7 @@ class FavorBloc extends Bloc<FavorEvent, FavorState> {
     try {
       yield InProgress();
 
-      final List<YelpRestaurantSummaryInfo> favorInfos = await this._repository.fetchFavorInfos(event.uid);
+      final List<YelpRestaurantSummaryInfo> favorInfos = await this._repository.fetchFavorInfos(event.isRefreshLocalOnly);
 
       yield Success(favorInfos: favorInfos);
     } on Exception catch(_) {

@@ -46,3 +46,10 @@ class Failure extends RestaurantDetailState {
   @override
   String toString() => "Fail get detail info";
 }
+
+class ToggleFavorSuccess extends RestaurantDetailState {
+  const ToggleFavorSuccess();
+
+  @override
+  String toString() => "Toggle favor success.";
+}
