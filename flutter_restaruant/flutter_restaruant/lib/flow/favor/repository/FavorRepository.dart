@@ -9,23 +9,30 @@ class FavorRepository {
   static const String FAVOR_COLLECTION_NAME = "favors";
 
   String _uid = "";
+  List<YelpRestaurantSummaryInfo> _favorInfos = [];
 
   FavorRepository() {
     this._uid = SignInManager().accountInfo?.uid ?? "";
   }
   
-  Future<List<YelpRestaurantSummaryInfo>> fetchFavorInfos() async {
-    DocumentSnapshot snapshots = await FirebaseFirestore.instance
-                                              .collection(FAVOR_COLLECTION_NAME)
-                                              .doc(this._uid)
-                                              .get();
-    Map<String, dynamic> favorMap = (snapshots.data() != null) ? snapshots.data() as Map<String, dynamic> : Map<String, dynamic>();
-    return favorMap.values.map((value) {
-      YelpRestaurantSummaryInfo summaryInfo = YelpRestaurantSummaryInfo.fromJson(jsonDecode(value));
-      summaryInfo.favor = true;
+  Future<List<YelpRestaurantSummaryInfo>> fetchFavorInfos(bool isRefreshLocalOnly) async {
+    if(isRefreshLocalOnly) {
+      this._favorInfos = this._favorInfos.where((element) => element.favor).toList();
+    } else {
+      DocumentSnapshot snapshots = await FirebaseFirestore.instance
+          .collection(FAVOR_COLLECTION_NAME)
+          .doc(this._uid)
+          .get();
+      Map<String, dynamic> favorMap = (snapshots.data() != null) ? snapshots.data() as Map<String, dynamic> : Map<String, dynamic>();
+      this._favorInfos = favorMap.values.map((value) {
+        YelpRestaurantSummaryInfo summaryInfo = YelpRestaurantSummaryInfo.fromJson(jsonDecode(value));
+        summaryInfo.favor = true;
 
-      return summaryInfo;
-    }).toList();
+        return summaryInfo;
+      }).toList();
+    }
+
+    return this._favorInfos;
   }
 
   Future<void> toggleFavor(YelpRestaurantSummaryInfo summaryInfo) async {

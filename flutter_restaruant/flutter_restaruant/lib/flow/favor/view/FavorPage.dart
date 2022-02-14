@@ -29,7 +29,7 @@ class _FavorPageState extends State<FavorPage> {
   Widget build(BuildContext context) {
     FavorBloc bloc = BlocProvider.of<FavorBloc>(context);
 
-    bloc.add(FetchFavorInfoEvent());
+    bloc.add(FetchFavorInfoEvent(false));
     return PlatformScaffold(
         appBar: PlatformAppBar(
             leading: PlatformIconButton(
@@ -60,12 +60,11 @@ class _FavorPageState extends State<FavorPage> {
 
                       return GestureDetector(
                           child: RestaurantItemCell(summaryInfo: favorInfo, isFavorPage: true),
-                          onTap: () {
+                          onTap: () async {
                             Tuple2 arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(favorInfo, null);
+                            await Navigator.of(context).pushNamed(RestaurantDetailPage.ROUTE_NAME, arguments: arguments);
 
-                            Navigator.of(context).pushNamed(
-                                RestaurantDetailPage.ROUTE_NAME,
-                                arguments: arguments);
+                            bloc.add(FetchFavorInfoEvent(true));
                           });
                     });
               } else {
