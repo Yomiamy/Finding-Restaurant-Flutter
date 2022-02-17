@@ -18,6 +18,7 @@ import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dar
 import 'package:flutter_restaruant/manager/SignInManager.dart';
 import 'package:flutter_restaruant/model/FilterConfigs.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
+import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
@@ -141,15 +142,17 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                     padding: EdgeInsets.only(right: 30, bottom: 50),
                     child: ExpandableFabButton(
                         initialOpen: false,
-                        distance: 120,
+                        distance: 170,
                         mainIcon: Icon(Icons.menu),
                         children: [
-                          const Icon(Icons.stars),
+                          const Icon(Icons.settings),
+                          const Icon(Icons.favorite),
                           const Icon(Icons.navigation),
                           const Icon(Icons.search),
                           const Icon(Icons.filter_list),
                         ],
                         childrenPressActions: [
+                              () => Fluttertoast.showToast(msg: "Settings"),
                               () => Navigator.of(context).pushNamed(FavorPage.ROUTE_NAME),
                               () => this._mainBloc.add(Reset()),
                               () {
