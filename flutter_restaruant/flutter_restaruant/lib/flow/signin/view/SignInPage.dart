@@ -22,11 +22,13 @@ class SignInPage extends StatefulWidget {
 
 class _SignInPageState extends State<SignInPage> {
   late SignInBloc _signInBloc;
+  late String _email;
+  late String _passwd;
+  bool _isLoginForm = true;
 
   @override
   Widget build(BuildContext context) {
     this._signInBloc = BlocProvider.of<SignInBloc>(context);
-
     return PlatformScaffold(
         appBar: PlatformAppBar(
             title: Text('登入',
@@ -45,56 +47,145 @@ class _SignInPageState extends State<SignInPage> {
             Fluttertoast.showToast(msg: "登入失敗, 請確認帳號密碼");
           }
 
-          return Stack(children: <Widget>[
-            Align(
-                alignment: Alignment.topCenter,
-                child: Padding(
-                    padding: EdgeInsets.only(top: 50),
-                    child: Column(children: <Widget>[
-                      Image.asset(
-                          "images/icon_signinup_icon.gif",
-                          height: 280.0,
-                          width: 280.0
-                      ),
-                      (state is InProgress) ? const CircularProgressIndicator() : UIConstants.EMPTY_WIDGET
-                    ]
-                    )
-                )
-            ),
-            Align(
-                alignment: Alignment.bottomCenter,
-                child: Padding(
-                    padding: EdgeInsets.only(bottom: 100),
-                    child: Column(
-                        mainAxisSize: MainAxisSize.min,
-                        children: <Widget>[
-                          SignInButton(
-                            Buttons.Google,
-                            elevation: 3.0,
-                            text: "使用Google繼續",
-                            onPressed: () {
-                              this._signInBloc.add(GoogleSignInEvent());
-                              Fluttertoast.showToast(msg: "Google SignIn");
-                            },
-                          ),
-                          SizedBox(height: 20),
-                          SignInButton(Buttons.FacebookNew,
-                              elevation: 3.0,
-                              text: "使用Facebook繼續", onPressed: () {
-                            this._signInBloc.add(FacebookSignInEvent());
-                            Fluttertoast.showToast(msg: "Facebook SignIn");
-                          }),
-                          SizedBox(height: 20),
-                          (Platform.isIOS)
-                              ? SignInButton(Buttons.Apple,
-                                  elevation: 3.0,
-                                  text: "使用Apple繼續", onPressed: () {
-                                  this._signInBloc.add(AppleSignInEvent());
-                                  Fluttertoast.showToast(msg: "Apple SignIn");
-                                })
-                              : UIConstants.EMPTY_WIDGET
-                        ])))
+          return ListView(children: <Widget>[
+            showLogo(state),
+            showInput(state),
+            showSignInUpBtns(),
+            Padding(
+                padding: EdgeInsets.only(top: 10, bottom: 10),
+                child: Center(
+                    child: Text("---------OR---------",
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                            fontSize: Dimens.xxxhFontSize,
+                            color: Colors.grey)))),
+            show3rdSignInUpBtns()
           ]);
         }));
   }
+
+  Widget showLogo(SignInState state) => Padding(
+      padding: EdgeInsets.only(top: 30),
+      child: Column(children: <Widget>[
+        Image.asset("images/icon_signinup_icon.gif",
+            height: 240.0, width: 250.0),
+        (state is InProgress)
+            ? const CircularProgressIndicator()
+            : UIConstants.EMPTY_WIDGET
+      ]));
+
+  Widget showInput(SignInState state) => Container(
+      child: Form(
+          child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: <Widget>[showEmailInput(), showPasswordInput()])));
+
+  Widget showEmailInput() => Padding(
+      padding: const EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 0.0),
+      child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
+        Icon(
+          Icons.mail,
+          color: Colors.grey,
+        ),
+        Expanded(
+            child: Padding(
+                padding: EdgeInsets.only(left: 10),
+                child: PlatformTextFormField(
+                  maxLines: 1,
+                  autofocus: false,
+                  autovalidateMode: AutovalidateMode.onUserInteraction,
+                  validator: (value) =>
+                      (value == null || value.isEmpty) ? "請輸入正確Email" : null,
+                  onSaved: (value) => this._email = value!,
+                  hintText: 'Email帳號',
+                  cupertino: (_, __) => CupertinoTextFormFieldData(
+                    // Assign a default cupertino decoration
+                    decoration: PlatformTextField().createCupertinoWidget(context).decoration
+                  )
+                )))
+      ]));
+
+  Widget showPasswordInput() => Padding(
+      padding: const EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 0.0),
+      child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
+        Icon(
+          Icons.lock,
+          color: Colors.grey,
+        ),
+        Expanded(
+            child: Padding(
+                padding: EdgeInsets.only(left: 10),
+                child: PlatformTextFormField(
+                    maxLines: 1,
+                    obscureText: true,
+                    autofocus: false,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value) =>
+                    (value == null || value.isEmpty) ? "請輸入密碼" : null,
+                    onSaved: (value) => this._passwd = value!,
+                    hintText: "密碼",
+                    cupertino: (_, __) => CupertinoTextFormFieldData(
+                      // Assign a default cupertino decoration
+                        decoration: PlatformTextField().createCupertinoWidget(context).decoration
+                    )
+                )))
+      ]));
+
+  Widget showSignInUpBtns() => Column(
+    children: <Widget>[
+      Padding(
+          padding: EdgeInsets.fromLTRB(50.0, 25.0, 50.0, 0.0),
+          child: PlatformElevatedButton(
+              child: Text(this._isLoginForm ? '登入' : '註冊',
+                  style: TextStyle(
+                      fontSize: Dimens.xhFontSize,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white)
+              ),
+              onPressed: () {
+                Fluttertoast.showToast(msg: "Login");
+              }
+          )),
+      PlatformTextButton(
+          child: Text(
+              this._isLoginForm ? '註冊新帳號' : '已經有帳號了? 點此登入',
+              style: TextStyle(
+                  fontSize: Dimens.hFontSize,
+                  color: Colors.grey
+              )
+          ),
+        onPressed: () {
+
+        }
+      )
+    ]
+  );
+
+  Widget show3rdSignInUpBtns() => Padding(
+      padding: EdgeInsets.only(bottom: 100),
+      child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+        SignInButton(
+          Buttons.Google,
+          elevation: 3.0,
+          text: "使用Google繼續",
+          onPressed: () {
+            this._signInBloc.add(GoogleSignInEvent());
+            Fluttertoast.showToast(msg: "Google SignIn");
+          },
+        ),
+        SizedBox(height: 20),
+        SignInButton(Buttons.FacebookNew, elevation: 3.0, text: "使用Facebook繼續",
+            onPressed: () {
+          this._signInBloc.add(FacebookSignInEvent());
+          Fluttertoast.showToast(msg: "Facebook SignIn");
+        }),
+        SizedBox(height: 20),
+        (Platform.isIOS)
+            ? SignInButton(Buttons.Apple, elevation: 3.0, text: "使用Apple繼續",
+                onPressed: () {
+                this._signInBloc.add(AppleSignInEvent());
+                Fluttertoast.showToast(msg: "Apple SignIn");
+              })
+            : UIConstants.EMPTY_WIDGET
+      ]));
 }
