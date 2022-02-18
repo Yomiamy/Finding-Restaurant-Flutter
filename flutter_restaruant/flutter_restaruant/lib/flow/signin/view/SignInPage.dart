@@ -35,14 +35,14 @@ class _SignInPageState extends State<SignInPage> {
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: BlocBuilder<SignInBloc, SignInState>(builder: (context, state) {
           if (state is Success) {
-            Fluttertoast.showToast(msg: "SignIn Success");
+            Fluttertoast.showToast(msg: "登入成功");
 
             WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
               // Waiting building is finish and run.
               Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME);
             });
           } else if (state is Failure) {
-            Fluttertoast.showToast(msg: "SignIn Fail");
+            Fluttertoast.showToast(msg: "登入失敗, 請確認帳號密碼");
           }
 
           return Stack(children: <Widget>[
