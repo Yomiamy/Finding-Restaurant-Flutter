@@ -21,10 +21,10 @@ class SignInPage extends StatefulWidget {
 }
 
 class _SignInPageState extends State<SignInPage> {
+  final _formKey = new GlobalKey<FormState>();
   late SignInBloc _signInBloc;
-  late String _email;
-  late String _passwd;
-  bool _isLoginForm = true;
+  String _email = "";
+  String _passwd = "";
 
   @override
   Widget build(BuildContext context) {
@@ -74,6 +74,7 @@ class _SignInPageState extends State<SignInPage> {
 
   Widget showInput(SignInState state) => Container(
       child: Form(
+          key: this._formKey,
           child: Column(
               mainAxisSize: MainAxisSize.min,
               children: <Widget>[showEmailInput(), showPasswordInput()])));
@@ -135,21 +136,29 @@ class _SignInPageState extends State<SignInPage> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             PlatformElevatedButton(
-                child: Text(this._isLoginForm ? '登入' : '註冊',
+                child: Text("登入",
                     style: TextStyle(
                         fontSize: Dimens.xhFontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.white)),
                 onPressed: () {
-                  Fluttertoast.showToast(msg: "Login");
+                  if(this._formKey.currentState != null && this._formKey.currentState!.validate()) {
+                    this._formKey.currentState!.save();
+                    Fluttertoast.showToast(msg: "Login, main = ${this._email}, passwd = ${this._passwd}");
+                  }
                 }),
             PlatformTextButton(
                 child: Text(
-                    this._isLoginForm ? '註冊新帳號' : '已經有帳號了? 點此登入',
+                    "註冊新帳號",
                     style: TextStyle(
                         fontSize: Dimens.mFontSize,
                         color: Colors.grey)),
-                onPressed: () {})
+                onPressed: () {
+                  if (this._formKey.currentState != null && this._formKey.currentState!.validate()) {
+                    this._formKey.currentState!.save();
+                    Fluttertoast.showToast(msg: "SignUp, main = ${this._email}, passwd = ${this._passwd}");
+                  }
+            })
           ]));
 
   Widget show3rdSignInUpBtns() => Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
@@ -162,13 +171,13 @@ class _SignInPageState extends State<SignInPage> {
         Fluttertoast.showToast(msg: "Google SignIn");
       },
     ),
-    SizedBox(height: 20),
+    SizedBox(height: 10),
     SignInButton(Buttons.FacebookNew, elevation: 3.0, text: "使用Facebook繼續",
         onPressed: () {
           this._signInBloc.add(FacebookSignInEvent());
           Fluttertoast.showToast(msg: "Facebook SignIn");
         }),
-    SizedBox(height: 20),
+    SizedBox(height: 10),
     (Platform.isIOS)
         ? SignInButton(Buttons.Apple, elevation: 3.0, text: "使用Apple繼續",
         onPressed: () {
