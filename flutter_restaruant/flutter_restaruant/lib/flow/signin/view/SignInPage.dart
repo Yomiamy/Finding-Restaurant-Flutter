@@ -31,7 +31,7 @@ class _SignInPageState extends State<SignInPage> {
     this._signInBloc = BlocProvider.of<SignInBloc>(context);
     return PlatformScaffold(
         appBar: PlatformAppBar(
-            title: Text('登入',
+            title: Text('登入/註冊',
                 style: TextStyle(
                     color: Colors.white, fontSize: Dimens.xxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
@@ -64,15 +64,13 @@ class _SignInPageState extends State<SignInPage> {
         }));
   }
 
-  Widget showLogo(SignInState state) => Padding(
-      padding: EdgeInsets.only(top: 30),
-      child: Column(children: <Widget>[
-        Image.asset("images/icon_signinup_icon.gif",
-            height: 240.0, width: 250.0),
-        (state is InProgress)
-            ? const CircularProgressIndicator()
-            : UIConstants.EMPTY_WIDGET
-      ]));
+  Widget showLogo(SignInState state) => Column(children: <Widget>[
+    Image.asset("images/icon_signinup_icon.gif",
+        height: 230.0, width: 230.0),
+    (state is InProgress)
+        ? const CircularProgressIndicator()
+        : UIConstants.EMPTY_WIDGET
+  ]);
 
   Widget showInput(SignInState state) => Container(
       child: Form(
@@ -131,34 +129,35 @@ class _SignInPageState extends State<SignInPage> {
                 )))
       ]));
 
-  Widget showSignInUpBtns() => Column(
-    children: <Widget>[
-      Padding(
-          padding: EdgeInsets.fromLTRB(50.0, 25.0, 50.0, 0.0),
-          child: PlatformElevatedButton(
-              child: Text(this._isLoginForm ? '登入' : '註冊',
-                  style: TextStyle(
-                      fontSize: Dimens.xhFontSize,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white)
+  Widget showSignInUpBtns() => Center(
+    child: Padding(
+        padding: EdgeInsets.only(top: 25),
+        child: Stack(
+            children: <Widget>[
+              Align(
+                alignment: Alignment.center,
+                child: PlatformElevatedButton(
+                    child: Text(this._isLoginForm ? '登入' : '註冊',
+                        style: TextStyle(
+                            fontSize: Dimens.xhFontSize,
+                            fontWeight: FontWeight.bold,
+                            color: Colors.white)),
+                    onPressed: () {
+                      Fluttertoast.showToast(msg: "Login");
+                    })
               ),
-              onPressed: () {
-                Fluttertoast.showToast(msg: "Login");
-              }
-          )),
-      PlatformTextButton(
-          child: Text(
-              this._isLoginForm ? '註冊新帳號' : '已經有帳號了? 點此登入',
-              style: TextStyle(
-                  fontSize: Dimens.hFontSize,
-                  color: Colors.grey
-              )
-          ),
-        onPressed: () {
-
-        }
-      )
-    ]
+              Align(
+                alignment: Alignment.center,
+                child: Padding(
+                    padding: EdgeInsets.only(top:10, left: 150),
+                    child: PlatformTextButton(
+                        child: Text(
+                            this._isLoginForm ? '註冊新帳號' : '已經有帳號了? 點此登入',
+                            style: TextStyle(
+                                fontSize: Dimens.mFontSize,
+                                color: Colors.grey)),
+                        onPressed: () {})))
+          ]))
   );
 
   Widget show3rdSignInUpBtns() => Padding(
