@@ -52,7 +52,7 @@ class _SignInPageState extends State<SignInPage> {
             showInput(state),
             showSignInUpBtns(),
             Padding(
-                padding: EdgeInsets.only(top: 10, bottom: 10),
+                padding: EdgeInsets.only(top: 5, bottom: 5),
                 child: Center(
                     child: Text("---------OR---------",
                         textAlign: TextAlign.center,
@@ -129,62 +129,52 @@ class _SignInPageState extends State<SignInPage> {
                 )))
       ]));
 
-  Widget showSignInUpBtns() => Center(
-    child: Padding(
-        padding: EdgeInsets.only(top: 25),
-        child: Stack(
-            children: <Widget>[
-              Align(
-                alignment: Alignment.center,
-                child: PlatformElevatedButton(
-                    child: Text(this._isLoginForm ? '登入' : '註冊',
-                        style: TextStyle(
-                            fontSize: Dimens.xhFontSize,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white)),
-                    onPressed: () {
-                      Fluttertoast.showToast(msg: "Login");
-                    })
-              ),
-              Align(
-                alignment: Alignment.center,
-                child: Padding(
-                    padding: EdgeInsets.only(top:10, left: 150),
-                    child: PlatformTextButton(
-                        child: Text(
-                            this._isLoginForm ? '註冊新帳號' : '已經有帳號了? 點此登入',
-                            style: TextStyle(
-                                fontSize: Dimens.mFontSize,
-                                color: Colors.grey)),
-                        onPressed: () {})))
-          ]))
-  );
+  Widget showSignInUpBtns() => Padding(
+      padding: EdgeInsets.only(top: 15),
+      child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            PlatformElevatedButton(
+                child: Text(this._isLoginForm ? '登入' : '註冊',
+                    style: TextStyle(
+                        fontSize: Dimens.xhFontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white)),
+                onPressed: () {
+                  Fluttertoast.showToast(msg: "Login");
+                }),
+            PlatformTextButton(
+                child: Text(
+                    this._isLoginForm ? '註冊新帳號' : '已經有帳號了? 點此登入',
+                    style: TextStyle(
+                        fontSize: Dimens.mFontSize,
+                        color: Colors.grey)),
+                onPressed: () {})
+          ]));
 
-  Widget show3rdSignInUpBtns() => Padding(
-      padding: EdgeInsets.only(bottom: 100),
-      child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-        SignInButton(
-          Buttons.Google,
-          elevation: 3.0,
-          text: "使用Google繼續",
-          onPressed: () {
-            this._signInBloc.add(GoogleSignInEvent());
-            Fluttertoast.showToast(msg: "Google SignIn");
-          },
-        ),
-        SizedBox(height: 20),
-        SignInButton(Buttons.FacebookNew, elevation: 3.0, text: "使用Facebook繼續",
-            onPressed: () {
+  Widget show3rdSignInUpBtns() => Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+    SignInButton(
+      Buttons.Google,
+      elevation: 3.0,
+      text: "使用Google繼續",
+      onPressed: () {
+        this._signInBloc.add(GoogleSignInEvent());
+        Fluttertoast.showToast(msg: "Google SignIn");
+      },
+    ),
+    SizedBox(height: 20),
+    SignInButton(Buttons.FacebookNew, elevation: 3.0, text: "使用Facebook繼續",
+        onPressed: () {
           this._signInBloc.add(FacebookSignInEvent());
           Fluttertoast.showToast(msg: "Facebook SignIn");
         }),
-        SizedBox(height: 20),
-        (Platform.isIOS)
-            ? SignInButton(Buttons.Apple, elevation: 3.0, text: "使用Apple繼續",
-                onPressed: () {
-                this._signInBloc.add(AppleSignInEvent());
-                Fluttertoast.showToast(msg: "Apple SignIn");
-              })
-            : UIConstants.EMPTY_WIDGET
-      ]));
+    SizedBox(height: 20),
+    (Platform.isIOS)
+        ? SignInButton(Buttons.Apple, elevation: 3.0, text: "使用Apple繼續",
+        onPressed: () {
+          this._signInBloc.add(AppleSignInEvent());
+          Fluttertoast.showToast(msg: "Apple SignIn");
+        })
+        : UIConstants.EMPTY_WIDGET
+  ]);
 }
