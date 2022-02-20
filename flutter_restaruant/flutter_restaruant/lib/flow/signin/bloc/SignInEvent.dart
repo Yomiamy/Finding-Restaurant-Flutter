@@ -7,6 +7,28 @@ abstract class SignInEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class MailSignInEvent extends SignInEvent {
+
+  final String mail;
+  final String passwd;
+
+  MailSignInEvent({required this.mail, required this.passwd});
+
+  @override
+  String toString() => "MailSignIn event.";
+}
+
+class MailSignUpEvent extends SignInEvent {
+
+  final String mail;
+  final String passwd;
+
+  MailSignUpEvent({required this.mail, required this.passwd});
+
+  @override
+  String toString() => "MailSignUp event.";
+}
+
 class GoogleSignInEvent extends SignInEvent {
   @override
   String toString() => "GoogleSignIn event.";
