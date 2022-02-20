@@ -17,6 +17,10 @@ class MailSignInUpManager {
       );
 
       return AccountInfo(
+      // 傳送驗證碼
+      if (user!= null && !user.emailVerified) {
+        await user.sendEmailVerification();
+      }
           type: AccountType.MAIL,
           uid:userCredential.user?.uid ?? "",
           account: userCredential.user?.email ?? ""
@@ -43,6 +47,10 @@ class MailSignInUpManager {
       );
 
       return AccountInfo(
+      // 傳送驗證碼
+      if (user!= null && !user.emailVerified) {
+        return Tuple2(null, "Email尚未驗證, 請使用驗證信驗證後再登入");
+      }
           type: AccountType.MAIL,
           uid:userCredential.user?.uid ?? "",
           account: userCredential.user?.email ?? ""
