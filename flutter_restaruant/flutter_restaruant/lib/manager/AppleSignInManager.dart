@@ -3,6 +3,7 @@ import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_restaruant/model/AccountInfo.dart';
+import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AppleSignInManager {
@@ -30,7 +31,7 @@ class AppleSignInManager {
     return digest.toString();
   }
 
-  Future<AccountInfo?> signInWithApple() async {
+  Future<Tuple2<AccountInfo?, String>> signInWithApple() async {
     try {
       // To prevent replay attacks with the credential returned from Apple, we
       // include a nonce in the credential request. When signing in with
@@ -50,7 +51,7 @@ class AppleSignInManager {
 
       if (appleCredential.identityToken == null) {
         // 未登入
-        return null;
+        return Tuple2<AccountInfo?, String>(null, "發生錯誤請再試一次");
       }
 
       // Create an `OAuthCredential` from the credential returned by Apple.
@@ -62,15 +63,17 @@ class AppleSignInManager {
       // Sign in the user with Firebase. If the nonce we generated earlier does
       // not match the nonce in `appleCredential.identityToken`, sign in will fail.
       UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-      return AccountInfo(
+      AccountInfo accountInfo = AccountInfo(
           type: AccountType.APPLE,
           uid: userCredential.user?.uid ?? "",
           account: userCredential.user?.email ?? ""
       );
+
+      return Tuple2(accountInfo, "");
     }  on Exception catch(e) {
       // 登入錯誤
       print("AppleSignInManager, error = $e");
-      return null;
+      return Tuple2(null, "Google登入失敗, 請再試一次\n${e.toString()}");
     }
   }
 

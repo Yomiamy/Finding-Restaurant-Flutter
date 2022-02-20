@@ -51,13 +51,13 @@ class _SignInPageState extends State<SignInPage> {
                   builder: (context) => PlatformAlertDialog(
                     key: GlobalKey(debugLabel: "FilterListByKeywordDialog"),
                     title: PlatformText(
-                      "Email註冊成功",
+                      "Email帳號建立成功",
                       style: TextStyle(
                           fontSize: Dimens.xxhFontSize,
                           fontWeight: FontWeight.bold
                       ),
                     ),
-                    content: PlatformText("帳號註冊成功, 請使用新帳號進行登入"),
+                    content: PlatformText("帳號建立成功, 請使用Email接收驗證連結並完成驗證"),
                     actions: [
                       PlatformTextButton(
                           onPressed: () => Navigator.pop(context),
@@ -68,7 +68,7 @@ class _SignInPageState extends State<SignInPage> {
               );
             });
           } else if (state is Failure) {
-            Fluttertoast.showToast(msg: "登入失敗, 帳號密碼輸入錯誤或不存在");
+            Fluttertoast.showToast(msg: state.errorMsg);
           }
 
           return ListView(children: <Widget>[

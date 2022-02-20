@@ -2,6 +2,7 @@ import 'package:flutter_restaruant/manager/AppleSignInManager.dart';
 import 'package:flutter_restaruant/manager/FacebookSignInManager.dart';
 import 'package:flutter_restaruant/manager/GoogleSignInManager.dart';
 import 'package:flutter_restaruant/model/AccountInfo.dart';
+import 'package:flutter_restaruant/utils/Tuple.dart';
 
 import 'MailSignInUpManager.dart';
 
@@ -19,29 +20,39 @@ class SignInManager {
   FacebookSignInManager _facebookSignInManager = FacebookSignInManager();
   MailSignInUpManager _mailSignInUpManager = MailSignInUpManager();
 
-  Future<void> signIn(AccountType accountType, {mail:String, passwd:String}) async {
+  Future<Tuple2<AccountInfo?, String>> signIn(AccountType accountType, {mail:String, passwd:String}) async {
+    Tuple2<AccountInfo?, String> signInResult = Tuple2(null, "");
+
     switch(accountType) {
       case AccountType.GOOGLE:
-        this.accountInfo = await this._googleSignInManager.signInWithGoogle();
+        signInResult = await this._googleSignInManager.signInWithGoogle();
         break;
       case AccountType.APPLE:
-        this.accountInfo = await this._appleSignInManager.signInWithApple();
+        signInResult = await this._appleSignInManager.signInWithApple();
         break;
       case AccountType.FACEBOOK:
-        this.accountInfo = await this._facebookSignInManager.signInWithFB();
+        signInResult = await this._facebookSignInManager.signInWithFB();
         break;
       case AccountType.MAIL:
-        this.accountInfo = await this._mailSignInUpManager.signInWithMail(mail, passwd);
+        signInResult = await this._mailSignInUpManager.signInWithMail(mail, passwd);
         break;
     }
+    this.accountInfo = signInResult.item1;
+
+    return signInResult;
   }
 
-  Future<void> signUp(AccountType accountType, {mail:String, passwd:String}) async {
+  Future<Tuple2<AccountInfo?, String>> signUp(AccountType accountType, {mail:String, passwd:String}) async {
+    Tuple2<AccountInfo?, String> signUpResult = Tuple2(null, "");
+
     switch(accountType) {
       case AccountType.MAIL:
-        this.accountInfo = await this._mailSignInUpManager.signUpWithMail(mail, passwd);
+        signUpResult = await this._mailSignInUpManager.signUpWithMail(mail, passwd);
         break;
     }
+    this.accountInfo = signUpResult.item1;
+
+    return signUpResult;
   }
 
   Future<void> signOut() async {

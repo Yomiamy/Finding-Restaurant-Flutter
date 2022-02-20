@@ -38,10 +38,10 @@ class SignUpSuccess extends SignInState {
 }
 
 class Failure extends SignInState {
-  final SignInEvent event;
+  final String errorMsg;
 
-  Failure({required this.event});
+  Failure({required this.errorMsg});
 
   @override
-  List<Object> get props => [this.event];
+  List<Object> get props => [this.errorMsg];
 }

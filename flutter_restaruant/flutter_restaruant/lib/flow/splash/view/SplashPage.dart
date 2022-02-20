@@ -8,6 +8,7 @@ import 'package:flutter_restaruant/component/ad/AppOpenAdState.dart';
 import 'package:flutter_restaruant/component/ad/InterstitialAD.dart';
 import 'package:flutter_restaruant/component/ad/InterstitialADState.dart';
 import 'package:flutter_restaruant/flow/main/view/MainPage.dart';
+import 'package:flutter_restaruant/flow/signin/view/SignInPage.dart';
 
 class SplashPage extends StatefulWidget {
 
@@ -23,7 +24,7 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-    Future.delayed(Duration(seconds: 3)).then((value) => Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME));
+    Future.delayed(Duration(seconds: 3)).then((value) => Navigator.of(context).pushReplacementNamed(SignInPage.ROUTE_NAME));
 
     return PlatformScaffold(
         body: Container(
