@@ -7,6 +7,7 @@ import 'package:flutter_restaruant/flow/main/view/MainPage.dart';
 import 'package:flutter_restaruant/flow/signin/bloc/SignInBloc.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
+import 'package:flutter_restaruant/utils/ViewUtils.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -44,31 +45,20 @@ class _SignInPageState extends State<SignInPage> {
               Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME);
             });
           } else if(state is SignUpSuccess) {
-            WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
-              // Waiting building is finish and run.
-              showPlatformDialog(
-                  context: context,
-                  builder: (context) => PlatformAlertDialog(
-                    key: GlobalKey(debugLabel: "FilterListByKeywordDialog"),
-                    title: PlatformText(
-                      "Email帳號建立成功",
-                      style: TextStyle(
-                          fontSize: Dimens.xxhFontSize,
-                          fontWeight: FontWeight.bold
-                      ),
-                    ),
-                    content: PlatformText("帳號建立成功, 請使用Email接收驗證連結並完成驗證"),
-                    actions: [
-                      PlatformTextButton(
-                          onPressed: () => Navigator.pop(context),
-                          child: PlatformText("確定")
-                      )
-                    ],
-                  )
-              );
-            });
+            ViewUtils.showPromptDialog(
+                context: context,
+                title: "Email帳號建立成功",
+                msg: "帳號建立成功, 請使用Email接收驗證連結並完成驗證",
+                confirmStr: "確定"
+            );
           } else if (state is Failure) {
-            Fluttertoast.showToast(msg: state.errorMsg);
+            // Waiting building is finish and run.
+            ViewUtils.showPromptDialog(
+                context: context,
+                title: "錯誤",
+                msg: state.errorMsg,
+                confirmStr: "確定"
+            );
           }
 
           return ListView(children: <Widget>[
@@ -169,7 +159,6 @@ class _SignInPageState extends State<SignInPage> {
                   if(this._formKey.currentState != null && this._formKey.currentState!.validate()) {
                     this._formKey.currentState!.save();
                     this._signInBloc.add(MailSignInEvent(mail: this._email, passwd: this._passwd));
-                    Fluttertoast.showToast(msg: "Login, main = ${this._email}, passwd = ${this._passwd}");
                   }
                 }),
             PlatformTextButton(
@@ -182,7 +171,6 @@ class _SignInPageState extends State<SignInPage> {
                   if (this._formKey.currentState != null && this._formKey.currentState!.validate()) {
                     this._formKey.currentState!.save();
                     this._signInBloc.add(MailSignUpEvent(mail: this._email, passwd: this._passwd));
-                    Fluttertoast.showToast(msg: "SignUp, main = ${this._email}, passwd = ${this._passwd}");
                   }
             })
           ]));
