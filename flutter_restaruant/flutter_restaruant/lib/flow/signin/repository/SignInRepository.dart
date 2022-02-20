@@ -12,9 +12,7 @@ class SignInRepository {
 
   SignInManager _signInManager = SignInManager();
 
-  Future<SignInState> signIn(SignInEvent signInEvent) async {
-
-
+  Future<AccountInfo?> signIn(SignInEvent signInEvent) async {
     if(signInEvent is GoogleSignInEvent) {
       // Google登入
       await this._signInManager.signIn(AccountType.GOOGLE);
@@ -24,12 +22,18 @@ class SignInRepository {
     } else if(signInEvent is AppleSignInEvent) {
       // Apple登入
       await this._signInManager.signIn(AccountType.APPLE);
+    } else if(signInEvent is MailSignInEvent) {
+      // Mail登入
+      await this._signInManager.signIn(AccountType.MAIL, mail: signInEvent.mail, passwd: signInEvent.passwd);
+    } else if(signInEvent is MailSignUpEvent) {
+      // Mail註冊+登入
+      await this._signInManager.signUp(AccountType.MAIL, mail: signInEvent.mail, passwd: signInEvent.passwd);
     }
 
     AccountInfo? accountInfo = this._signInManager.accountInfo;
     await this.updateUserInfo(accountInfo);
 
-    return (accountInfo != null) ? Success(accountInfo: accountInfo) : Failure(event: signInEvent);
+    return accountInfo;
   }
 
   Future<void> updateUserInfo(AccountInfo? accountInfo) async {

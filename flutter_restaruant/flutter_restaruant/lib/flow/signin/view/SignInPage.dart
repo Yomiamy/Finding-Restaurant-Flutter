@@ -36,15 +36,39 @@ class _SignInPageState extends State<SignInPage> {
                     color: Colors.white, fontSize: Dimens.xxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: BlocBuilder<SignInBloc, SignInState>(builder: (context, state) {
-          if (state is Success) {
+          if (state is SignInSuccess) {
             Fluttertoast.showToast(msg: "登入成功");
 
             WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
               // Waiting building is finish and run.
               Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME);
             });
+          } else if(state is SignUpSuccess) {
+            WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+              // Waiting building is finish and run.
+              showPlatformDialog(
+                  context: context,
+                  builder: (context) => PlatformAlertDialog(
+                    key: GlobalKey(debugLabel: "FilterListByKeywordDialog"),
+                    title: PlatformText(
+                      "Email註冊成功",
+                      style: TextStyle(
+                          fontSize: Dimens.xxhFontSize,
+                          fontWeight: FontWeight.bold
+                      ),
+                    ),
+                    content: PlatformText("帳號註冊成功, 請使用新帳號進行登入"),
+                    actions: [
+                      PlatformTextButton(
+                          onPressed: () => Navigator.pop(context),
+                          child: PlatformText("確定")
+                      )
+                    ],
+                  )
+              );
+            });
           } else if (state is Failure) {
-            Fluttertoast.showToast(msg: "登入失敗, 請確認帳號密碼");
+            Fluttertoast.showToast(msg: "登入失敗, 帳號密碼輸入錯誤或不存在");
           }
 
           return ListView(children: <Widget>[
@@ -144,6 +168,7 @@ class _SignInPageState extends State<SignInPage> {
                 onPressed: () {
                   if(this._formKey.currentState != null && this._formKey.currentState!.validate()) {
                     this._formKey.currentState!.save();
+                    this._signInBloc.add(MailSignInEvent(mail: this._email, passwd: this._passwd));
                     Fluttertoast.showToast(msg: "Login, main = ${this._email}, passwd = ${this._passwd}");
                   }
                 }),
@@ -156,6 +181,7 @@ class _SignInPageState extends State<SignInPage> {
                 onPressed: () {
                   if (this._formKey.currentState != null && this._formKey.currentState!.validate()) {
                     this._formKey.currentState!.save();
+                    this._signInBloc.add(MailSignUpEvent(mail: this._email, passwd: this._passwd));
                     Fluttertoast.showToast(msg: "SignUp, main = ${this._email}, passwd = ${this._passwd}");
                   }
             })
