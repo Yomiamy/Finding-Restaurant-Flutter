@@ -17,21 +17,31 @@ class InProgress extends SignInState {
   String toString() => "Loading detail info";
 }
 
-class Success extends SignInState {
+class SignInSuccess extends SignInState {
 
   final AccountInfo accountInfo;
 
-  Success({required this.accountInfo});
+  SignInSuccess({required this.accountInfo});
+
+  @override
+  List<Object> get props => [this.accountInfo.hashCode];
+}
+
+class SignUpSuccess extends SignInState {
+
+  final AccountInfo accountInfo;
+
+  SignUpSuccess({required this.accountInfo});
 
   @override
   List<Object> get props => [this.accountInfo.hashCode];
 }
 
 class Failure extends SignInState {
-  final SignInEvent event;
+  final String errorMsg;
 
-  Failure({required this.event});
+  Failure({required this.errorMsg});
 
   @override
-  List<Object> get props => [this.event];
+  List<Object> get props => [this.errorMsg];
 }

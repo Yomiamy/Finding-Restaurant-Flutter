@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import 'package:flutter_restaruant/model/AccountInfo.dart';
+import 'package:flutter_restaruant/utils/Tuple.dart';
 
 class FacebookSignInManager {
 
@@ -10,14 +11,14 @@ class FacebookSignInManager {
 
   factory FacebookSignInManager() => _singleton;
 
-  Future<AccountInfo?> signInWithFB() async {
+  Future<Tuple2<AccountInfo?, String>> signInWithFB() async {
     try {
       // Trigger the sign-in flow
       final LoginResult loginResult = await FacebookAuth.instance.login();
 
       if(loginResult.accessToken == null) {
         // 未登入
-        return null;
+        return Tuple2<AccountInfo?, String>(null, "發生錯誤請再試一次");
       }
 
       // Create a credential from the access token
@@ -25,15 +26,17 @@ class FacebookSignInManager {
 
       // Once signed in, return the UserCredential
       UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(facebookAuthCredential);
-      return AccountInfo(
+      AccountInfo accountInfo = AccountInfo(
           type: AccountType.FACEBOOK,
           uid:userCredential.user?.uid ?? "",
           account: userCredential.user?.email ?? ""
       );
+
+      return Tuple2(accountInfo, "");
     } on Exception catch(e) {
       // 登入錯誤
       print("FacebookSignInManager, error = $e");
-      return null;
+      return Tuple2(null, "FB登入失敗, 請再試一次\n${e.toString()}");
     }
   }
 

@@ -51,5 +51,6 @@ const _$AccountTypeEnumMap = {
   AccountType.GOOGLE: 'GOOGLE',
   AccountType.FACEBOOK: 'FACEBOOK',
   AccountType.APPLE: 'APPLE',
+  AccountType.MAIL: 'MAIL',
   AccountType.NONE: 'NONE',
 };

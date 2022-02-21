@@ -84,7 +84,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
               builder: (context, state) {
                 if (state is InProgress || state is ToggleFavorSuccess) {
                   if(state is ToggleFavorSuccess) {
-                    String favorToggleMsg = this._summaryInfo.favor! ? "新增最愛店家" : "解除最愛店家";
+                    String favorToggleMsg = this._summaryInfo.favor ? "新增最愛店家" : "解除最愛店家";
 
                     Fluttertoast.showToast(msg: favorToggleMsg);
                     // Re-fetch detail and build detail page
@@ -93,34 +93,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                   return Center(child: LoadingWidget());
                 } else if(state is Success) {
                   return ListView(children: [
-                    Stack(
-                      children: <Widget>[
-                        RestaurantHeadCell(imageUrl: state.detailInfo.image_url ?? ""),
-                        StatefulBuilder(builder: (context, setState) {
-                          return GestureDetector(
-                              onTap: () {
-                                this._bloc.add(ToggleFavor(summaryInfo: this._summaryInfo));
-                              },
-                              child: Align(
-                                  alignment: Alignment.topRight,
-                                  child: Padding(
-                                      padding: EdgeInsets.only(top:10, right: 10),
-                                      child: CircleAvatar(
-                                          backgroundColor: Colors.white,
-                                          child: Image.asset(
-                                              this._summaryInfo.favor
-                                                  ? "images/ic_favor_fill.png"
-                                                  : "images/ic_favor_empty.png",
-                                              width: UIConstants.FAVOR_IMAGE_W,
-                                              height: UIConstants.FAVOR_IMAGE_H,
-                                              fit: BoxFit.fill)
-                                      )
-                                  )
-                              )
-                          );
-                        })
-                      ]
-                    ),
+                    RestaurantHeadCell(imageUrl: state.detailInfo.image_url ?? "", summaryInfo: this._summaryInfo),
                     RestaurantInfoCell(detailInfo: state.detailInfo, staticMapUrl: state.staticMapUrl),
                     RestaurantImageCell(photos: state.detailInfo.photos ?? []),
                     RestaurantBusinessHourCell(businessTimeInfos: state.detailInfo.hours?[0].open ?? []),
