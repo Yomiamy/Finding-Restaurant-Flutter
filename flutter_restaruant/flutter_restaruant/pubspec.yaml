@@ -35,6 +35,7 @@ dependencies:
   flutter_tags: ^1.0.0-nullsafety.1
   intl: ^0.17.0
   fluttertoast: ^8.0.8
+  settings_ui: ^2.0.2
 
   bloc: ^7.0.0
   flutter_bloc: ^7.0.0
