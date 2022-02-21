@@ -11,6 +11,7 @@ part 'SignInEvent.dart';
 part 'SignInState.dart';
 
 class SignInBloc extends Bloc<SignInEvent, SignInState> {
+
   final SignInRepository _signInRepository;
 
   SignInBloc({required SignInRepository repository})

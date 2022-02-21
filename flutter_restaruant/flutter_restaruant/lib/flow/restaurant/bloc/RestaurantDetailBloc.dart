@@ -18,6 +18,7 @@ part 'RestaurantDetailState.dart';
 
 class RestaurantDetailBloc
     extends Bloc<RestaurantDetailEvent, RestaurantDetailState> {
+
   final RestaurantDetailRepository _detailRepository;
 
   RestaurantDetailBloc({required RestaurantDetailRepository repository})
