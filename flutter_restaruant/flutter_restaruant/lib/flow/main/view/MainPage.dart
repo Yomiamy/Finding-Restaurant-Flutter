@@ -1,3 +1,4 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -15,6 +16,7 @@ import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.d
 import 'package:flutter_restaruant/flow/favor/view/FavorPage.dart';
 import 'package:flutter_restaruant/flow/filter/view/FilterPage.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
+import 'package:flutter_restaruant/flow/settings/view/SettingsPage.dart';
 import 'package:flutter_restaruant/manager/SignInManager.dart';
 import 'package:flutter_restaruant/model/FilterConfigs.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
@@ -152,7 +154,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                           const Icon(Icons.filter_list),
                         ],
                         childrenPressActions: [
-                              () => Fluttertoast.showToast(msg: "Settings"),
+                              () => Navigator.of(context).pushNamed(SettingsPage.ROUTE_NAME),
                               () => Navigator.of(context).pushNamed(FavorPage.ROUTE_NAME),
                               () => this._mainBloc.add(Reset()),
                               () {
