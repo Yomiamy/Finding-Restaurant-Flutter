@@ -28,8 +28,14 @@ class _SignInPageState extends State<SignInPage> {
   String _passwd = "";
 
   @override
-  Widget build(BuildContext context) {
+  void initState() {
+    super.initState();
+
     this._signInBloc = BlocProvider.of<SignInBloc>(context);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return PlatformScaffold(
         appBar: PlatformAppBar(
             title: Text('登入/註冊',
