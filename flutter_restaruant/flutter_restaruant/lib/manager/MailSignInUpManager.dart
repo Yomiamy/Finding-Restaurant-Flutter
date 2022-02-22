@@ -89,4 +89,6 @@ class MailSignInUpManager {
       return Tuple2(null, errorMsg);
     }
   }
+
+  void signOutWithMail() async => await FirebaseAuth.instance.signOut();
 }

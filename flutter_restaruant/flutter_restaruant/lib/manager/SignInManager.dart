@@ -66,7 +66,11 @@ class SignInManager {
       case AccountType.FACEBOOK:
         this._facebookSignInManager.signOutWithFB();
         break;
+      case AccountType.MAIL:
+        this._mailSignInUpManager.signOutWithMail();
+        break;
     }
+
     this.accountInfo = null;
   }
 }
