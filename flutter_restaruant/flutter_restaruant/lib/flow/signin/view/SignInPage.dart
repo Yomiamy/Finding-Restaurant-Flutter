@@ -88,7 +88,7 @@ class _SignInPageState extends State<SignInPage> {
     Image.asset("images/icon_signinup_icon.gif",
         height: 230.0, width: 230.0),
     (state is InProgress)
-        ? const CircularProgressIndicator()
+        ? LoadingWidget(text: "")
         : UIConstants.EMPTY_WIDGET
   ]);
 
