@@ -20,6 +20,16 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
+
+  late SettingsBloc _settingsBloc;
+
+  @override
+  void initState() {
+    super.initState();
+
+    this._settingsBloc = BlocProvider.of<SettingsBloc>(context);
+  }
+
   @override
   Widget build(BuildContext context) {
     return PlatformScaffold(
@@ -36,6 +46,13 @@ class _SettingsPageState extends State<SettingsPage> {
                     color: Colors.white, fontSize: Dimens.xxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: BlocBuilder<SettingsBloc, SettingsState>(builder: (context, state) {
+          if(state is LogoutSuccess) {
+            WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+              // Waiting building is finish and run.
+              Navigator.of(context).pushNamedAndRemoveUntil(SignInPage.ROUTE_NAME, ModalRoute.withName('/'));
+            });
+          }
+
           return SettingsList(
             sections: [
               SettingsSection(
@@ -64,7 +81,7 @@ class _SettingsPageState extends State<SettingsPage> {
                             fontWeight: FontWeight.bold,
                             color: Colors.white)),
                     onPressed: () {
-                      Navigator.of(context).pushNamedAndRemoveUntil(SignInPage.ROUTE_NAME, ModalRoute.withName('/'));
+                      this._settingsBloc.add(LogoutEvent());
                     })
               ]))
             ],

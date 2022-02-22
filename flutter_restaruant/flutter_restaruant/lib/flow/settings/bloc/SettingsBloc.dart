@@ -16,7 +16,17 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
         super(SettingsInitial());
 
   @override
-  Stream<SettingsState> mapEventToState(SettingsEvent event) {
-    return Stream.empty();
+  Stream<SettingsState> mapEventToState(SettingsEvent event) async* {
+    if (event is LogoutEvent) {
+      yield* _mapLogoutToState();
+    }
+  }
+
+  Stream<SettingsState> _mapLogoutToState() async* {
+    yield InProgress();
+
+    await _settingsRepository.logout();
+
+    yield LogoutSuccess();
   }
 }
