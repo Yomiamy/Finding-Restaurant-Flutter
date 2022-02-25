@@ -56,7 +56,7 @@ class _SettingsPageState extends State<SettingsPage> {
           return SettingsList(
             sections: [
               SettingsSection(
-                title: PlatformText('Common'),
+                title: PlatformText('資訊'),
                 tiles: <SettingsTile>[
                   SettingsTile(
                     leading: Icon(Icons.info),
@@ -72,18 +72,22 @@ class _SettingsPageState extends State<SettingsPage> {
                 ],
               ),
               CustomSettingsSection(
-                  child: Column(children: <Widget>[
-                PlatformElevatedButton(
-                    color: Colors.red,
-                    child: Text("登出",
-                        style: TextStyle(
-                            fontSize: Dimens.xhFontSize,
-                            fontWeight: FontWeight.bold,
-                            color: Colors.white)),
-                    onPressed: () {
-                      this._settingsBloc.add(LogoutEvent());
-                    })
-              ]))
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 20, top: 50, right: 20),
+                    child: SizedBox(
+                      height: 60,
+                      child: PlatformElevatedButton(
+                          color: Colors.red,
+                          child: Text("登出",
+                              style: TextStyle(
+                                  fontSize: Dimens.xhFontSize,
+                                  fontWeight: FontWeight.bold,
+                                  color: Colors.white)),
+                          onPressed: () {
+                            this._settingsBloc.add(LogoutEvent());
+                          })
+                    )
+                  ))
             ],
           );
         }));
