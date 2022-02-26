@@ -46,5 +46,9 @@ class GoogleSignInManager {
     }
   }
 
-  void signOutWithGoogle() async => await GoogleSignIn().signOut();
+  void signOutWithGoogle() async {
+    await GoogleSignIn().signOut();
+    await FirebaseAuth.instance.signOut();
+  }
+
 }

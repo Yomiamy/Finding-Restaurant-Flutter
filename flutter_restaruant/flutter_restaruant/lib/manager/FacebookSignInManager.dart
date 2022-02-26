@@ -40,5 +40,8 @@ class FacebookSignInManager {
     }
   }
 
-  void signOutWithFB() async => await FacebookAuth.instance.logOut();
+  void signOutWithFB() async {
+    await FacebookAuth.instance.logOut();
+    await FirebaseAuth.instance.signOut();
+  }
 }
