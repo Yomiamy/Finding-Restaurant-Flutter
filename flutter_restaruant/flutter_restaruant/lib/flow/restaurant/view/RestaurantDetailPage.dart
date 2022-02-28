@@ -37,6 +37,8 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
   void initState() {
     super.initState();
 
+    this._bloc = BlocProvider.of<RestaurantDetailBloc>(context);
+
     if(--UIConstants.InterstitialADCountDown <= 0) {
       UIConstants.InterstitialADCountDown = 3;
 
@@ -49,7 +51,6 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
   Widget build(BuildContext context) {
     final args = ModalRoute.of(context)!.settings.arguments as Tuple2<YelpRestaurantSummaryInfo, dynamic>;
     this._summaryInfo = args.item1;
-    this._bloc = BlocProvider.of<RestaurantDetailBloc>(context);
 
     this._bloc.add(FetchDetailInfo(id: this._summaryInfo.id!));
     return PlatformScaffold(

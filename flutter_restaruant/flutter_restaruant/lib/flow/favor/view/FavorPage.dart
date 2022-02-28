@@ -25,11 +25,19 @@ class FavorPage extends StatefulWidget {
 
 class _FavorPageState extends State<FavorPage> {
 
+  late FavorBloc _favorBloc;
+
+  @override
+  void initState() {
+    super.initState();
+
+    this._favorBloc = BlocProvider.of<FavorBloc>(context);
+  }
+
   @override
   Widget build(BuildContext context) {
-    FavorBloc bloc = BlocProvider.of<FavorBloc>(context);
+    this._favorBloc.add(FetchFavorInfoEvent(false));
 
-    bloc.add(FetchFavorInfoEvent(false));
     return PlatformScaffold(
         appBar: PlatformAppBar(
             leading: PlatformIconButton(
@@ -45,7 +53,7 @@ class _FavorPageState extends State<FavorPage> {
                 fontSize: Dimens.xxxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: BlocBuilder<FavorBloc, FavorState>(
-            bloc: bloc,
+            bloc: this._favorBloc,
             builder: (context, state) {
               if (state is InProgress) {
                 return Center(child: LoadingWidget());
@@ -64,7 +72,7 @@ class _FavorPageState extends State<FavorPage> {
                             Tuple2 arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(favorInfo, null);
                             await Navigator.of(context).pushNamed(RestaurantDetailPage.ROUTE_NAME, arguments: arguments);
 
-                            bloc.add(FetchFavorInfoEvent(true));
+                            this._favorBloc.add(FetchFavorInfoEvent(true));
                           });
                     });
               } else {

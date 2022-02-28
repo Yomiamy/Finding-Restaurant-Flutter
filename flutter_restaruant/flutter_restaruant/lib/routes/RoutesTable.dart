@@ -11,6 +11,9 @@ import 'package:flutter_restaruant/flow/main/view/MainPage.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
 import 'package:flutter_restaruant/flow/restaurant/bloc/RestaurantDetailBloc.dart';
 import 'package:flutter_restaruant/flow/restaurant/repository/RestaurantDetailRepository.dart';
+import 'package:flutter_restaruant/flow/settings/bloc/SettingsBloc.dart';
+import 'package:flutter_restaruant/flow/settings/repository/SettingsRepository.dart';
+import 'package:flutter_restaruant/flow/settings/view/SettingsPage.dart';
 import 'package:flutter_restaruant/flow/signin/bloc/SignInBloc.dart';
 import 'package:flutter_restaruant/flow/signin/repository/SignInRepository.dart';
 import 'package:flutter_restaruant/flow/signin/view/SignInPage.dart';
@@ -35,5 +38,9 @@ Map<String, WidgetBuilder> ROUTES_TABLE = <String, WidgetBuilder> {
       child: FavorPage()
   ),
   FilterPage.ROUTE_NAME: (context) => FilterPage(),
-  PhotoViewer.ROUTE_NAME: (context) => PhotoViewer()
+  PhotoViewer.ROUTE_NAME: (context) => PhotoViewer(),
+  SettingsPage.ROUTE_NAME: (context) => BlocProvider<SettingsBloc>(
+      create: (_) => SettingsBloc(repository: SettingsRepository()),
+      child: SettingsPage()
+  )
 };
