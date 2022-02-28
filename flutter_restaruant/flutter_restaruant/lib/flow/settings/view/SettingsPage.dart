@@ -62,13 +62,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     leading: Icon(Icons.info),
                     title: PlatformText('版本'),
                     value: PlatformText('1.2.3'),
-                  ),
-                  SettingsTile.switchTile(
-                    onToggle: (value) {},
-                    initialValue: true,
-                    leading: Icon(Icons.format_paint),
-                    title: Text('Enable custom theme'),
-                  ),
+                  )
                 ],
               ),
               CustomSettingsSection(
