@@ -70,11 +70,11 @@
 		<true/>
 	</dict>
 	<key>NSCameraUsageDescription</key>
-	<string>Request camera permission for some functionalities, e.g: Scanning photo, QR</string>
+	<string>使用相機權限以便進行圖像資料讀取, 如: QR code掃描</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>Request a location information for some functionality, e.g: Nearby store</string>
+	<string>要求位置資訊以進行位置資訊判斷, 如: 相鄰店家餐廳</string>
 	<key>NSPhotoLibraryUsageDescription</key>
-	<string>Request photo permission for picture selection usage</string>
+	<string>要求相簿權限以便進行照片選取</string>
 	<key>SKAdNetworkItems</key>
 	<array>
 		<dict>
@@ -247,5 +247,7 @@
 	<string>Light</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
+	<key>NSFaceIDUsageDescription</key>
+    <string>使用Face ID進行登入驗證</string>
 </dict>
 </plist>
