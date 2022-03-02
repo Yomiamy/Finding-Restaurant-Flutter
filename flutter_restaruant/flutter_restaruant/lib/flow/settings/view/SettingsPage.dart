@@ -55,6 +55,11 @@ class _SettingsPageState extends State<SettingsPage> {
 
           return SettingsList(
             sections: [
+              CustomSettingsSection(child: Image.asset(
+                  "images/icon_setting_icon.gif",
+                  height: 230.0,
+                  width: 230.0)
+              ),
               SettingsSection(
                 title: PlatformText('資訊'),
                 tiles: <SettingsTile>[
@@ -82,7 +87,7 @@ class _SettingsPageState extends State<SettingsPage> {
                           })
                     )
                   ))
-            ],
+            ]
           );
         }));
   }

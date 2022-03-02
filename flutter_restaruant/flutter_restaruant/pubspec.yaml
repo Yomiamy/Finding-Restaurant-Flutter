@@ -89,6 +89,7 @@ flutter:
   assets:
     - images/empty.png
     - images/icon_signinup_icon.gif
+    - images/icon_setting_icon.gif
     - images/Star_rating_0.5_of_5.png
     - images/Star_rating_0_of_5.png
     - images/Star_rating_1.5_of_5.png
