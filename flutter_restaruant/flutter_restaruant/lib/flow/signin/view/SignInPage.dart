@@ -62,7 +62,7 @@ class _SignInPageState extends State<SignInPage> {
                 msg: "帳號建立成功, 請使用Email接收驗證連結並完成驗證",
                 confirmStr: "確定"
             );
-          } else if (state is Failure) {
+          } else if (state is Failure && state.errorMsg.isNotEmpty) {
             // Waiting building is finish and run.
             ViewUtils.showPromptDialog(
                 context: context,

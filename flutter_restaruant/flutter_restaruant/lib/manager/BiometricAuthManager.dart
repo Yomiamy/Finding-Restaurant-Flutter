@@ -33,7 +33,7 @@ class BiometricAuthManager {
     bool isAuthSuccess = await _localAuth.authenticate(localizedReason: '請使用生物識別認證進行登入');
 
     if(!isAuthSuccess) {
-      return Tuple2(null, "登入失敗, 請再試一次");
+      return Tuple2(null, "");
     } else {
       // 緩存登入資料代表登入過
       final prefs = await SharedPreferences.getInstance();

@@ -37,7 +37,6 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
       }
     } else {
       String errorMsg = result.item2;
-
       yield Failure(errorMsg: errorMsg);
     }
   }
