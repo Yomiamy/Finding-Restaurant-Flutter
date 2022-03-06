@@ -3,7 +3,7 @@ import 'package:json_annotation/json_annotation.dart';
 part 'AccountInfo.g.dart';
 
 enum AccountType {
-  GOOGLE, FACEBOOK, APPLE, MAIL, NONE
+  GOOGLE, FACEBOOK, APPLE, MAIL, BIOMETRIC, NONE
 }
 
 @JsonSerializable()
