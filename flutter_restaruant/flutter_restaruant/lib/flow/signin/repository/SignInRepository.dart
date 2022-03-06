@@ -51,6 +51,10 @@ class SignInRepository {
       return;
     }
 
+    // 緩存登入資料代表登入過
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(Constants.PREF_KEY_ACCOUNT_INFO, jsonEncode(accountInfo));
+
     DocumentReference ref = FirebaseFirestore.instance.collection(USER_COLLECTION_NAME).doc(accountInfo.uid!);
     // 更新資料
     ref.set(accountInfo.toJson());

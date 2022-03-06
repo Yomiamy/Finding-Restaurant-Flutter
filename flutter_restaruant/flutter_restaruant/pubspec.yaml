@@ -24,7 +24,7 @@ dependencies:
   flutter_platform_widgets: ^1.20.0
   event_bus: ^2.0.0
   path_provider: ^2.0.2
-  shared_preferences: ^2.0.6
+  shared_preferences: ^2.0.13
   sqflite: ^2.0.0+3
   geolocator: ^7.1.0
   image_picker: ^0.8.0+3
