@@ -73,7 +73,7 @@ class AppleSignInManager {
     }  on Exception catch(e) {
       // 登入錯誤
       print("AppleSignInManager, error = $e");
-      return Tuple2(null, "Google登入失敗, 請再試一次\n${e.toString()}");
+      return Tuple2(null, "Apple登入失敗, 請再試一次\n${e.toString()}");
     }
   }
 
