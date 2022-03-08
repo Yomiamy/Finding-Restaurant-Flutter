@@ -1,11 +1,15 @@
+import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter_restaruant/flow/signin/bloc/SignInBloc.dart';
 import 'package:flutter_restaruant/manager/AppleSignInManager.dart';
+import 'package:flutter_restaruant/manager/BiometricAuthManager.dart';
 import 'package:flutter_restaruant/manager/FacebookSignInManager.dart';
 import 'package:flutter_restaruant/manager/GoogleSignInManager.dart';
 import 'package:flutter_restaruant/manager/SignInManager.dart';
 import 'package:flutter_restaruant/model/AccountInfo.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+import '../../../utils/Constants.dart';
 
 class SignInRepository {
 
@@ -31,6 +35,9 @@ class SignInRepository {
     } else if(signInEvent is MailSignUpEvent) {
       // Mail註冊+登入
       signInUpResult = await this._signInManager.signUp(AccountType.MAIL, mail: signInEvent.mail, passwd: signInEvent.passwd);
+    } else if(signInEvent is BiometricAuthEvent) {
+      // 生物識別登入
+      signInUpResult = await this._signInManager.signIn(AccountType.BIOMETRIC);
     }
 
     AccountInfo? accountInfo = this._signInManager.accountInfo;
@@ -43,6 +50,10 @@ class SignInRepository {
     if(accountInfo == null) {
       return;
     }
+
+    // 緩存登入資料代表登入過
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString(Constants.PREF_KEY_ACCOUNT_INFO, jsonEncode(accountInfo));
 
     DocumentReference ref = FirebaseFirestore.instance.collection(USER_COLLECTION_NAME).doc(accountInfo.uid!);
     // 更新資料

@@ -1,4 +1,7 @@
 class Constants {
+  static const PREF_KEY_ACCOUNT_INFO = "account_info";
+
+
   /// [AD]
   // PROD AD banner id
   static const AD_ANDROID_BANNER_ID = "ca-app-pub-7910179918263365/3813466391";

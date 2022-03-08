@@ -43,3 +43,8 @@ class AppleSignInEvent extends SignInEvent {
   @override
   String toString() => "AppleSignIn event.";
 }
+
+class BiometricAuthEvent extends SignInEvent {
+  @override
+  String toString() => "MailSignIn event.";
+}

@@ -23,40 +23,40 @@ environment:
 dependencies:
   flutter_platform_widgets: ^1.20.0
   event_bus: ^2.0.0
-  path_provider: ^2.0.2
-  shared_preferences: ^2.0.6
-  sqflite: ^2.0.0+3
-  geolocator: ^7.1.0
-  image_picker: ^0.8.0+3
-  camera: ^0.8.1+3
+  path_provider: ^2.0.8
+  shared_preferences: ^2.0.13
+  sqflite: ^2.0.2
+  geolocator: ^8.0.5
+  image_picker: ^0.8.4+5
+  camera: ^0.9.4+9
   sprintf: ^6.0.0
   flutter_inappwebview: ^5.3.2
-  url_launcher: ^6.0.9
+  url_launcher: ^6.0.18
   flutter_tags: ^1.0.0-nullsafety.1
   intl: ^0.17.0
   fluttertoast: ^8.0.8
   settings_ui: ^2.0.2
+  local_auth: ^1.1.11
 
-  bloc: ^7.0.0
-  flutter_bloc: ^7.0.0
-  rxdart: ^0.27.1
+  bloc: ^7.2.0
+  flutter_bloc: ^7.3.3
+  rxdart: ^0.27.3
 
-  dio: ^4.0.0
-  retrofit: ^2.0.0
-  logger: ^1.0.0
-  json_serializable: ^4.1.3
+  dio: ^4.0.4
+  retrofit: ^3.0.1
+  logger: ^1.1.0
 
-  firebase_core: ^1.10.6
-  google_mobile_ads: ^1.0.1
-  firebase_analytics: ^9.0.5
-  firebase_auth: ^3.3.5
+  firebase_core: ^1.12.0
+  google_mobile_ads: ^1.1.0
+  firebase_analytics: ^9.1.0
+  firebase_auth: ^3.3.6
   cloud_firestore: ^3.1.7
-  firebase_storage: ^10.2.5
+  firebase_storage: ^10.2.6
 
-  google_sign_in: "^5.2.4"
+  google_sign_in: ^5.2.4
   sign_in_with_apple: ^3.3.0
   crypto: ^3.0.1
-  flutter_facebook_auth: "^4.1.1"
+  flutter_facebook_auth: ^4.1.1
   flutter_signin_button: ^2.0.0
 
   flutter:
@@ -64,12 +64,13 @@ dependencies:
 
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
-  cupertino_icons: ^1.0.3
+  cupertino_icons: ^1.0.4
 
 dev_dependencies:
   equatable: any
-  retrofit_generator: ^2.0.0+1
-  build_runner: ^2.0.4
+  retrofit_generator: ^4.0.1
+  build_runner: ^2.1.7
+  json_serializable: ^6.1.4
 
   flutter_test:
     sdk: flutter
@@ -89,6 +90,7 @@ flutter:
   assets:
     - images/empty.png
     - images/icon_signinup_icon.gif
+    - images/icon_setting_icon.gif
     - images/Star_rating_0.5_of_5.png
     - images/Star_rating_0_of_5.png
     - images/Star_rating_1.5_of_5.png

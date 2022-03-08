@@ -11,6 +11,9 @@ import 'package:flutter_restaruant/utils/ViewUtils.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:local_auth/local_auth.dart';
+
+import '../../../manager/BiometricAuthManager.dart';
 
 class SignInPage extends StatefulWidget {
   static const ROUTE_NAME = "/SignInPage";
@@ -36,6 +39,8 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
+    this._signInBloc.add(BiometricAuthEvent());
+
     return PlatformScaffold(
         appBar: PlatformAppBar(
             title: Text('登入/註冊',
@@ -57,7 +62,7 @@ class _SignInPageState extends State<SignInPage> {
                 msg: "帳號建立成功, 請使用Email接收驗證連結並完成驗證",
                 confirmStr: "確定"
             );
-          } else if (state is Failure) {
+          } else if (state is Failure && state.errorMsg.isNotEmpty) {
             // Waiting building is finish and run.
             ViewUtils.showPromptDialog(
                 context: context,
