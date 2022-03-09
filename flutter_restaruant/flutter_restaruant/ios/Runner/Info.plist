@@ -71,6 +71,8 @@
 	</dict>
 	<key>NSCameraUsageDescription</key>
 	<string>使用相機權限以便進行圖像資料讀取, 如: QR code掃描</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>使用Face ID進行登入驗證</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
 	<string>要求位置資訊以進行位置資訊判斷, 如: 相鄰店家餐廳</string>
 	<key>NSPhotoLibraryUsageDescription</key>
@@ -233,8 +235,6 @@
 	<key>UISupportedInterfaceOrientations</key>
 	<array>
 		<string>UIInterfaceOrientationPortrait</string>
-		<string>UIInterfaceOrientationLandscapeLeft</string>
-		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UISupportedInterfaceOrientations~ipad</key>
 	<array>
@@ -247,7 +247,5 @@
 	<string>Light</string>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
 	<false/>
-	<key>NSFaceIDUsageDescription</key>
-    <string>使用Face ID進行登入驗證</string>
 </dict>
 </plist>
