@@ -3,6 +3,7 @@ import 'package:bloc/bloc.dart';
 import 'package:flutter_restaruant/flow/main/repository/MainRepository.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/model/YelpSearchInfo.dart';
+import 'package:flutter_restaruant/utils/Utils.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
@@ -47,7 +48,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
   Stream<MainState> _mapFetchSearchInfoToState(FetchSearchInfo event) async* {
     try {
-      final Position currentPos = await Geolocator.getCurrentPosition();
+      final Position currentPos = await Utils.getCurrentPosition();
       double lat = currentPos.latitude;
       double lng = currentPos.longitude;
       bool isLoadMore = this._mainRepository.summaryInfoSet.isNotEmpty;
