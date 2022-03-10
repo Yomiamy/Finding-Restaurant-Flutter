@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/flow/settings/bloc/SettingsBloc.dart';
-import 'package:flutter_restaruant/flow/signin/bloc/SignInBloc.dart';
 import 'package:flutter_restaruant/flow/signin/view/SignInPage.dart';
+import 'package:flutter_restaruant/manager/BiometricAuthManager.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -22,6 +21,7 @@ class SettingsPage extends StatefulWidget {
 class _SettingsPageState extends State<SettingsPage> {
 
   late SettingsBloc _settingsBloc;
+  bool _isEnableBiometricAuth = false;
 
   @override
   void initState() {
@@ -67,8 +67,22 @@ class _SettingsPageState extends State<SettingsPage> {
                     leading: Icon(Icons.info),
                     title: PlatformText('版本'),
                     value: PlatformText('1.2.3'),
-                  )
-                ],
+                  ),
+                  // TODO:判斷生物辨識
+                  SettingsTile.switchTile(
+                      leading: Visibility(
+                          visible: true,
+                          child: Icon(Icons.fingerprint)
+                      ),
+                      title: PlatformText('生物辨識'),
+                      initialValue: this._isEnableBiometricAuth,
+                      onToggle: (value) {
+                        // TODO:緩存設定處理
+                        setState(() {
+                          this._isEnableBiometricAuth = value;
+                    });
+                      })
+                ]
               ),
               CustomSettingsSection(
                   child: Padding(
