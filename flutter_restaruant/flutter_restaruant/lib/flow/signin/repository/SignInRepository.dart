@@ -36,8 +36,16 @@ class SignInRepository {
       // Mail註冊+登入
       signInUpResult = await this._signInManager.signUp(AccountType.MAIL, mail: signInEvent.mail, passwd: signInEvent.passwd);
     } else if(signInEvent is BiometricAuthEvent) {
-      // 生物識別登入
-      signInUpResult = await this._signInManager.signIn(AccountType.BIOMETRIC);
+      final prefs = await SharedPreferences.getInstance();
+      bool isBiometricAuthEnabled = prefs.getBool(Constants.PREF_KEY_BIOMETRIC_AUTH_SETTING) ?? false;
+
+      if(isBiometricAuthEnabled) {
+        // 生物識別登入
+        signInUpResult = await this._signInManager.signIn(AccountType.BIOMETRIC);
+      } else {
+        // 略過生物識別登入
+        signInUpResult = Tuple2(null, "");
+      }
     }
 
     AccountInfo? accountInfo = this._signInManager.accountInfo;

@@ -7,6 +7,14 @@ abstract class SettingsEvent extends Equatable {
   List<Object> get props => [];
 }
 
+class InitBioAuthSettingEvent extends SettingsEvent {
+
+  const InitBioAuthSettingEvent();
+
+  @override
+  List<Object> get props => [];
+}
+
 class ToggleBioAuthSettingEvent extends SettingsEvent {
 
   const ToggleBioAuthSettingEvent();

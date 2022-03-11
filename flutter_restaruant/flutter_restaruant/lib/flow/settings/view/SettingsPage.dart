@@ -31,6 +31,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
+    this._settingsBloc.add(InitBioAuthSettingEvent());
+
     return PlatformScaffold(
         appBar: PlatformAppBar(
             leading: PlatformIconButton(
@@ -52,7 +54,9 @@ class _SettingsPageState extends State<SettingsPage> {
               // Waiting building is finish and run.
               Navigator.of(context).pushNamedAndRemoveUntil(SignInPage.ROUTE_NAME, ModalRoute.withName('/'));
             });
-          } else if(state is ToggleBioAuthSettingState) {
+          } else if (state is ToggleBioAuthSettingState) {
+            bioAuthSettingSwitchValue = state.settingValue;
+          } else if (state is InitBioAuthSettingState) {
             bioAuthSettingSwitchValue = state.settingValue;
           }
 
