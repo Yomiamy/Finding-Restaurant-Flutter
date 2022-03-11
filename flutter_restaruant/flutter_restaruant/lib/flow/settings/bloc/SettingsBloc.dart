@@ -19,6 +19,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   Stream<SettingsState> mapEventToState(SettingsEvent event) async* {
     if (event is LogoutEvent) {
       yield* _mapLogoutToState();
+    } else if (event is ToggleBioAuthSettingEvent) {
+      yield* _mapToggleBioAuthSettingState();
     }
   }
 
@@ -28,5 +30,11 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     await _settingsRepository.logout();
 
     yield LogoutSuccess();
+  }
+
+  Stream<SettingsState> _mapToggleBioAuthSettingState() async* {
+    bool settingValue = await _settingsRepository.toggleBioAuthSetting();
+
+    yield ToggleBioAuthSettingState(settingValue: settingValue);
   }
 }
