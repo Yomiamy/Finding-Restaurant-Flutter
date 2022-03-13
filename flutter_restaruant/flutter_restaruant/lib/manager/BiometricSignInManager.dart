@@ -14,7 +14,7 @@ class BiometricSignInManager {
   static final BiometricSignInManager _singleton = BiometricSignInManager._internal();
 
   BiometricSignInManager._internal() {
-    this.initBioAuthInfo();
+    this.initBioSignInInfo();
   }
 
   factory BiometricSignInManager() => _singleton;
@@ -26,7 +26,7 @@ class BiometricSignInManager {
   late bool isSupportFaceIdAuth;
 
 
-  Future<void> initBioAuthInfo() async {
+  Future<void> initBioSignInInfo() async {
     _availableBiometrics = await _localAuth.getAvailableBiometrics();
     isSupportBiometricAuth = _availableBiometrics.isNotEmpty;
     isSupportFingerPrintAuth = _availableBiometrics.contains(BiometricType.fingerprint);
@@ -34,9 +34,17 @@ class BiometricSignInManager {
   }
 
   Future<Tuple2<AccountInfo?, String>> signInWithBiometric() async {
-    bool isAuthSuccess = await _localAuth.authenticate(localizedReason: '請使用生物識別認證進行登入');
+    final prefs = await SharedPreferences.getInstance();
+    bool isBiometricSignInEnabled = prefs.getBool(Constants.PREF_KEY_BIOMETRIC_AUTH_SETTING) ?? false;
 
-    if(!isAuthSuccess) {
+    if(!isBiometricSignInEnabled) {
+      // 不支援生物辨識登入
+      return Tuple2(null, "");
+    }
+
+    bool isSignInSuccess = await _localAuth.authenticate(localizedReason: '請使用生物識別認證進行登入');
+
+    if(!isSignInSuccess) {
       return Tuple2(null, "");
     } else {
       // 緩存登入資料代表登入過
