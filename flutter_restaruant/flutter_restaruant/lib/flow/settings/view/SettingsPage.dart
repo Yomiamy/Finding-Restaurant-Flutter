@@ -32,6 +32,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     this._settingsBloc.add(InitBioAuthSettingEvent());
+    bool isSupportBiometricAuth = BiometricAuthManager().isSupportBiometricAuth;
 
     return PlatformScaffold(
         appBar: PlatformAppBar(
@@ -63,7 +64,7 @@ class _SettingsPageState extends State<SettingsPage> {
           return SettingsList(
             sections: [
               this.createHeadSection(),
-              this.createInfoSettingsSection(bioAuthSettingSwitchValue),
+              this.createInfoSettingsSection(bioAuthSettingSwitchValue, isSupportBiometricAuth),
               this.createLogoutSection(),
             ]
           );
@@ -75,7 +76,7 @@ class _SettingsPageState extends State<SettingsPage> {
           height: 230.0,
           width: 230.0));
 
-  AbstractSettingsSection createInfoSettingsSection(bool bioAuthSettingSwitchValue) =>
+  AbstractSettingsSection createInfoSettingsSection(bool bioAuthSettingSwitchValue, bool isSupportBiometricAuth) =>
       SettingsSection(title: PlatformText('資訊'), tiles: <SettingsTile>[
         SettingsTile(
           leading: Icon(Icons.info),
@@ -83,13 +84,13 @@ class _SettingsPageState extends State<SettingsPage> {
           value: PlatformText('1.2.3'),
         ),
         // TODO:判斷生物辨識
-        SettingsTile.switchTile(
-            leading: Visibility(visible: true, child: Icon(Icons.fingerprint)),
-            title: PlatformText('生物辨識'),
-            initialValue: bioAuthSettingSwitchValue,
-            onToggle: (value) {
-              this._settingsBloc.add(ToggleBioAuthSettingEvent());
-            })
+        // SettingsTile.switchTile(
+        //     leading: Icon(Icons.fingerprint),
+        //     title: PlatformText('生物辨識'),
+        //     initialValue: bioAuthSettingSwitchValue,
+        //     onToggle: (value) {
+        //       this._settingsBloc.add(ToggleBioAuthSettingEvent());
+        //     })
       ]);
 
   AbstractSettingsSection createLogoutSection() => CustomSettingsSection(

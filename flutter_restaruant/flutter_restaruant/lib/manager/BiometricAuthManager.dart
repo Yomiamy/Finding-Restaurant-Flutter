@@ -13,20 +13,24 @@ class BiometricAuthManager {
 
   static final BiometricAuthManager _singleton = BiometricAuthManager._internal();
 
-  BiometricAuthManager._internal();
+  BiometricAuthManager._internal() {
+    this.initBioAuthInfo();
+  }
 
   factory BiometricAuthManager() => _singleton;
 
   var _localAuth = LocalAuthentication();
-  Future<List<BiometricType>> get _availableBiometrics async => await _localAuth.getAvailableBiometrics();
-  Future<bool> get isBiometricAvailable async => (await _availableBiometrics).isNotEmpty;
-  Future<bool> get isSupportFingerPrintAuth async {
-    List<BiometricType> availableBiometrics = await _availableBiometrics;
-    return availableBiometrics.contains(BiometricType.fingerprint);
-  }
-  Future<bool> get isSupportFaceIdAuth async {
-    List<BiometricType> availableBiometrics = await _availableBiometrics;
-    return availableBiometrics.contains(BiometricType.face);
+  late List<BiometricType> _availableBiometrics;
+  late bool isSupportBiometricAuth;
+  late bool isSupportFingerPrintAuth;
+  late bool isSupportFaceIdAuth;
+
+
+  Future<void> initBioAuthInfo() async {
+    _availableBiometrics = await _localAuth.getAvailableBiometrics();
+    isSupportBiometricAuth = _availableBiometrics.isNotEmpty;
+    isSupportFingerPrintAuth = _availableBiometrics.contains(BiometricType.fingerprint);
+    isSupportFaceIdAuth = _availableBiometrics.contains(BiometricType.face)
   }
 
   Future<Tuple2<AccountInfo?, String>> signInWithBiometric() async {
