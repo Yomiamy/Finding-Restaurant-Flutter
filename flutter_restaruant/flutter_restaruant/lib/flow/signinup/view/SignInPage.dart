@@ -39,7 +39,7 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    this._signInBloc.add(BiometricSignInEvent());
+    this._signInBloc.add(AutoSignInEvent());
 
     return PlatformScaffold(
         appBar: PlatformAppBar(

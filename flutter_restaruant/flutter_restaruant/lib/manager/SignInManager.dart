@@ -1,4 +1,5 @@
 import 'package:flutter_restaruant/manager/AppleSignInManager.dart';
+import 'package:flutter_restaruant/manager/AutoSignInManager.dart';
 import 'package:flutter_restaruant/manager/BiometricSignInManager.dart';
 import 'package:flutter_restaruant/manager/FacebookSignInManager.dart';
 import 'package:flutter_restaruant/manager/GoogleSignInManager.dart';
@@ -21,6 +22,7 @@ class SignInManager {
   FacebookSignInManager _facebookSignInManager = FacebookSignInManager();
   MailSignInUpManager _mailSignInUpManager = MailSignInUpManager();
   BiometricSignInManager _biometricAuthManager = BiometricSignInManager();
+  AutoSignInManager _autoSignInManager = AutoSignInManager();
 
   Future<Tuple2<AccountInfo?, String>> signIn(AccountType accountType, {mail:String, passwd:String}) async {
     Tuple2<AccountInfo?, String> signInResult = Tuple2(null, "");
@@ -40,6 +42,9 @@ class SignInManager {
         break;
       case AccountType.BIOMETRIC:
         signInResult = await this._biometricAuthManager.signInWithBiometric();
+        break;
+      case AccountType.AUTO:
+        signInResult = await this._autoSignInManager.signInWithAuto();
         break;
     }
     this.accountInfo = signInResult.item1;

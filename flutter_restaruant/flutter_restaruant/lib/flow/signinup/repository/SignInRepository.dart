@@ -34,10 +34,9 @@ class SignInRepository {
     } else if(signInEvent is BiometricSignInEvent) {
         // 生物識別登入
         signInUpResult = await this._signInManager.signIn(AccountType.BIOMETRIC);
-        signInUpResult = Tuple2(null, "");
-      }
-    }  else if(signInEvent is BiometricSignInEvent) {
-
+    } else if (signInEvent is AutoSignInEvent) {
+       // 自動登入
+       signInUpResult = await this._signInManager.signIn(AccountType.AUTO);
     }
 
     AccountInfo? accountInfo = this._signInManager.accountInfo;
