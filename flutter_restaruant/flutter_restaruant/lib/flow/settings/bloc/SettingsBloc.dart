@@ -17,9 +17,21 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   @override
   Stream<SettingsState> mapEventToState(SettingsEvent event) async* {
-    if (event is LogoutEvent) {
+    if(event is InitBioAuthSettingEvent) {
+      yield* _mapInitBioAuthSettingToState();
+    } else if (event is LogoutEvent) {
       yield* _mapLogoutToState();
+    } else if (event is ToggleBioAuthSettingEvent) {
+      yield* _mapToggleBioAuthSettingState();
     }
+  }
+
+  Stream<SettingsState> _mapInitBioAuthSettingToState() async* {
+    yield InProgress();
+
+    bool settingValue = await _settingsRepository.initBioAuthSetting();
+
+    yield InitBioAuthSettingState(settingValue: settingValue);
   }
 
   Stream<SettingsState> _mapLogoutToState() async* {
@@ -28,5 +40,11 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
     await _settingsRepository.logout();
 
     yield LogoutSuccess();
+  }
+
+  Stream<SettingsState> _mapToggleBioAuthSettingState() async* {
+    bool settingValue = await _settingsRepository.toggleBioAuthSetting();
+
+    yield ToggleBioAuthSettingState(settingValue: settingValue);
   }
 }

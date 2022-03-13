@@ -81,6 +81,9 @@ class MailSignInUpManager {
       if (e.code == 'user-not-found') {
         print('No user found for that email.');
         errorMsg = "帳號輸入錯誤或尚未註冊, 請再試一次";
+      } else if (e.code == 'invalid-email') {
+        print('invalid-email.');
+        errorMsg = "無效Email, 請再輸入一次";
       } else if (e.code == 'wrong-password') {
         print('Wrong password provided for that user.');
         errorMsg = "密碼錯誤, 請再試一次";

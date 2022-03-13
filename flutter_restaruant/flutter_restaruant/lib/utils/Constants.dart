@@ -1,5 +1,7 @@
 class Constants {
+
   static const PREF_KEY_ACCOUNT_INFO = "account_info";
+  static const PREF_KEY_BIOMETRIC_AUTH_SETTING = "biometric_auth_setting";
 
 
   /// [AD]
