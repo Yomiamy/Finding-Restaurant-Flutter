@@ -4,7 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/LoadingWidget.dart';
 import 'package:flutter_restaruant/flow/main/view/MainPage.dart';
-import 'package:flutter_restaruant/flow/signin/bloc/SignInBloc.dart';
+import 'package:flutter_restaruant/flow/signinup/bloc/SignInBloc.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_restaruant/utils/ViewUtils.dart';
@@ -13,7 +13,7 @@ import 'package:flutter_signin_button/button_view.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import 'package:local_auth/local_auth.dart';
 
-import '../../../manager/BiometricAuthManager.dart';
+import '../../../manager/BiometricSignInManager.dart';
 
 class SignInPage extends StatefulWidget {
   static const ROUTE_NAME = "/SignInPage";
@@ -39,7 +39,7 @@ class _SignInPageState extends State<SignInPage> {
 
   @override
   Widget build(BuildContext context) {
-    this._signInBloc.add(BiometricAuthEvent());
+    this._signInBloc.add(BiometricSignInEvent());
 
     return PlatformScaffold(
         appBar: PlatformAppBar(

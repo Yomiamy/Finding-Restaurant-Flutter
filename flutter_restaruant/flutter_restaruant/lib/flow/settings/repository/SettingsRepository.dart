@@ -8,7 +8,13 @@ class SettingsRepository {
 
   const SettingsRepository();
 
-  Future<void> logout() async => SignInManager().signOut();
+  Future<void> logout() async {
+    // 清除緩存的設定
+    final prefs = await SharedPreferences.getInstance();
+
+    await prefs.clear();
+    SignInManager().signOut();
+  }
 
   Future<bool> initBioAuthSetting() async {
     final prefs = await SharedPreferences.getInstance();

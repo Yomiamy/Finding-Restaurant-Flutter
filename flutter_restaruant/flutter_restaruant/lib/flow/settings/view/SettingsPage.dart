@@ -3,8 +3,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/flow/settings/bloc/SettingsBloc.dart';
-import 'package:flutter_restaruant/flow/signin/view/SignInPage.dart';
-import 'package:flutter_restaruant/manager/BiometricAuthManager.dart';
+import 'package:flutter_restaruant/flow/signinup/view/SignInPage.dart';
+import 'package:flutter_restaruant/manager/BiometricSignInManager.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -32,7 +32,7 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     this._settingsBloc.add(InitBioAuthSettingEvent());
-    bool isSupportBiometricAuth = BiometricAuthManager().isSupportBiometricAuth;
+    bool isSupportBiometricAuth = BiometricSignInManager().isSupportBiometricAuth;
 
     return PlatformScaffold(
         appBar: PlatformAppBar(

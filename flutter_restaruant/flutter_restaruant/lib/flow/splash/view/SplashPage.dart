@@ -1,14 +1,6 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_restaruant/component/ad/AppLifecycleReactor.dart';
-import 'package:flutter_restaruant/component/ad/AppOpenAD.dart';
-import 'package:flutter_restaruant/component/ad/AppOpenAdState.dart';
-import 'package:flutter_restaruant/component/ad/InterstitialAD.dart';
-import 'package:flutter_restaruant/component/ad/InterstitialADState.dart';
-import 'package:flutter_restaruant/flow/main/view/MainPage.dart';
-import 'package:flutter_restaruant/flow/signin/view/SignInPage.dart';
+import 'package:flutter_restaruant/flow/signinup/view/SignInPage.dart';
 
 class SplashPage extends StatefulWidget {
 

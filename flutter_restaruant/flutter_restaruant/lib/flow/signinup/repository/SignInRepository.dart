@@ -1,10 +1,6 @@
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import 'package:flutter_restaruant/flow/signin/bloc/SignInBloc.dart';
-import 'package:flutter_restaruant/manager/AppleSignInManager.dart';
-import 'package:flutter_restaruant/manager/BiometricAuthManager.dart';
-import 'package:flutter_restaruant/manager/FacebookSignInManager.dart';
-import 'package:flutter_restaruant/manager/GoogleSignInManager.dart';
+import 'package:flutter_restaruant/flow/signinup/bloc/SignInBloc.dart';
 import 'package:flutter_restaruant/manager/SignInManager.dart';
 import 'package:flutter_restaruant/model/AccountInfo.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
@@ -35,7 +31,7 @@ class SignInRepository {
     } else if(signInEvent is MailSignUpEvent) {
       // Mail註冊+登入
       signInUpResult = await this._signInManager.signUp(AccountType.MAIL, mail: signInEvent.mail, passwd: signInEvent.passwd);
-    } else if(signInEvent is BiometricAuthEvent) {
+    } else if(signInEvent is BiometricSignInEvent) {
       final prefs = await SharedPreferences.getInstance();
       bool isBiometricAuthEnabled = prefs.getBool(Constants.PREF_KEY_BIOMETRIC_AUTH_SETTING) ?? false;
 
@@ -46,6 +42,8 @@ class SignInRepository {
         // 略過生物識別登入
         signInUpResult = Tuple2(null, "");
       }
+    }  else if(signInEvent is BiometricSignInEvent) {
+
     }
 
     AccountInfo? accountInfo = this._signInManager.accountInfo;

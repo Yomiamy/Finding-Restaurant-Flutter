@@ -9,15 +9,15 @@ import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class BiometricAuthManager {
+class BiometricSignInManager {
 
-  static final BiometricAuthManager _singleton = BiometricAuthManager._internal();
+  static final BiometricSignInManager _singleton = BiometricSignInManager._internal();
 
-  BiometricAuthManager._internal() {
+  BiometricSignInManager._internal() {
     this.initBioAuthInfo();
   }
 
-  factory BiometricAuthManager() => _singleton;
+  factory BiometricSignInManager() => _singleton;
 
   var _localAuth = LocalAuthentication();
   late List<BiometricType> _availableBiometrics;
