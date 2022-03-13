@@ -30,7 +30,7 @@ class BiometricAuthManager {
     _availableBiometrics = await _localAuth.getAvailableBiometrics();
     isSupportBiometricAuth = _availableBiometrics.isNotEmpty;
     isSupportFingerPrintAuth = _availableBiometrics.contains(BiometricType.fingerprint);
-    isSupportFaceIdAuth = _availableBiometrics.contains(BiometricType.face)
+    isSupportFaceIdAuth = _availableBiometrics.contains(BiometricType.face);
   }
 
   Future<Tuple2<AccountInfo?, String>> signInWithBiometric() async {
