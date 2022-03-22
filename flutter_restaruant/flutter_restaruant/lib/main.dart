@@ -28,6 +28,7 @@ class FindingRestaruantApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) => PlatformApp(
+      debugShowCheckedModeBanner: false,
       title:  UIConstants.APP_TITLE,
       routes: ROUTES_TABLE
   );
