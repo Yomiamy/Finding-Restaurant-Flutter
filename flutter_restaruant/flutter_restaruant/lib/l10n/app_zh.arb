@@ -1,0 +1,6 @@
+{
+  "@@locale": "zh",
+
+  "hello_world": "你好嗎!",
+  "@hello_world": { "description": ""}
+}
