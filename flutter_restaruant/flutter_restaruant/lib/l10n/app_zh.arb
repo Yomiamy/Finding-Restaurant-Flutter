@@ -10,5 +10,12 @@
   "filter_sorting_rule_best_match": "最佳配對",
   "filter_sorting_rule_distance": "距離",
   "filter_sorting_rating": "評分",
-  "filter_sorting_review_count": "最多評論"
+  "filter_sorting_review_count": "最多評論",
+
+  "@==== Main Page ====": {},
+  "main_page_title": "尋找餐廳",
+  "keyword_search": "關鍵字過濾",
+  "keyword_search_hint": "店名/分類/地區/路",
+  "confirm": "確定",
+  "cancel": "取消"
 }
