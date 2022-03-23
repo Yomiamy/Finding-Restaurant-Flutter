@@ -1,6 +1,14 @@
 {
   "@@locale": "zh",
 
-  "hello_world": "你好嗎!",
-  "@hello_world": { "description": ""}
+  "@==== Filter Page ====": {},
+  "apply": "套用",
+  "filter_rules": "過濾條件",
+  "filter_price": "消費程度",
+  "filter_business_hour": "營業時間",
+  "filter_sorting_rule": "排序依據",
+  "filter_sorting_rule_best_match": "最佳配對",
+  "filter_sorting_rule_distance": "距離",
+  "filter_sorting_rating": "評分",
+  "filter_sorting_review_count": "最多評論"
 }
