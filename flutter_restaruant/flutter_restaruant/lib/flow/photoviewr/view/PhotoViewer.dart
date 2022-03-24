@@ -4,6 +4,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class PhotoViewer extends StatefulWidget {
   static const ROUTE_NAME = "/PhotoViewer";
@@ -32,7 +33,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
                     color: Color(UIConstants.BACK_BTN_COLOR)),
                 cupertinoIcon: Icon(CupertinoIcons.back,
                     color: Color(UIConstants.BACK_BTN_COLOR))),
-            title: Text("Photo Viewer",
+            title: Text(AppLocalizations?.of(context)?.photo_viewer_title ?? "",
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: Dimens.xxxhFontSize)),

@@ -17,5 +17,8 @@
   "keyword_search": "Keyword Search",
   "keyword_search_hint": "Store/Category/Street...",
   "confirm": "Ok",
-  "cancel": "Cancel"
+  "cancel": "Cancel",
+
+  "@==== PhotoViewer ====": {},
+  "photo_viewer_title": "Photo Viewer"
 }

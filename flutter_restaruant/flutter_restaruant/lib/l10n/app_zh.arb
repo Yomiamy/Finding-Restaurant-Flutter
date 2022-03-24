@@ -17,5 +17,8 @@
   "keyword_search": "關鍵字過濾",
   "keyword_search_hint": "店名/分類/地區/路",
   "confirm": "確定",
-  "cancel": "取消"
+  "cancel": "取消",
+
+  "@==== PhotoViewer ====": {},
+  "photo_viewer_title": "預覽"
 }
