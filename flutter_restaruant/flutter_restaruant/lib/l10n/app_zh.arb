@@ -1,6 +1,11 @@
 {
   "@@locale": "zh",
 
+  "error": "錯誤",
+  "error_and_retry": "發生錯誤請再試一次",
+  "confirm": "確定",
+  "cancel": "取消",
+
   "@==== Filter Page ====": {},
   "apply": "套用",
   "filter_rules": "過濾條件",
@@ -16,19 +21,35 @@
   "main_page_title": "尋找餐廳",
   "keyword_search": "關鍵字過濾",
   "keyword_search_hint": "店名/分類/地區/路",
-  "confirm": "確定",
-  "cancel": "取消",
 
   "@==== PhotoViewer ====": {},
   "photo_viewer_title": "預覽",
 
   "@==== Restaurant Detail Page ====": {},
-  "favorite_store_add": "Add in favorite list",
-  "favorite_store_remove": "Remove from favorite list",
+  "favorite_store_add": "新增最愛店家",
+  "favorite_store_remove": "解除最愛店家",
 
   "@==== Settings Page ====": {},
-  "settings_title": "Settings",
-  "information_section_title": "Information",
-  "version_tile_title": "Version",
-  "logout_section_title": "Logout"
+  "settings_title": "設定",
+  "information_section_title": "資訊",
+  "version_tile_title": "版本",
+  "logout_section_title": "登出",
+
+  "@==== SignIn Page ====": {},
+  "signin_page_title": "登入/註冊",
+  "signin_success_msg": "登入成功",
+  "email_signup_success_hint_title": "Email帳號建立成功",
+  "email_signup_success_hint_msg": "帳號建立成功, 請使用Email接收驗證連結並完成驗證",
+  "email_invalid_hint_msg": "請輸入正確Email",
+  "email_invalid_hint_title": "Email帳號",
+  "passwd_invalid_hint_msg": "請輸入密碼",
+  "passwd_invalid_hint_title": "密碼",
+  "signin_btn_title": "登入",
+  "signup_title": "註冊新帳號",
+  "signinup_with_google": "使用Google繼續",
+  "signinup_with_google_hint_msg": "Google登入成功",
+  "signinup_with_fb": "使用Facebook繼續",
+  "signinup_with_fb_hint_msg": "Facebook登入成功",
+  "signinup_with_apple": "使用Apple繼續",
+  "signinup_with_apple_hint_msg": "Apple登入成功"
 }

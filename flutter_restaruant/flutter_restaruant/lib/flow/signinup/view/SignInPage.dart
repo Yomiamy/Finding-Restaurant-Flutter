@@ -11,9 +11,7 @@ import 'package:flutter_restaruant/utils/ViewUtils.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:local_auth/local_auth.dart';
-
-import '../../../manager/BiometricSignInManager.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SignInPage extends StatefulWidget {
   static const ROUTE_NAME = "/SignInPage";
@@ -43,13 +41,13 @@ class _SignInPageState extends State<SignInPage> {
 
     return PlatformScaffold(
         appBar: PlatformAppBar(
-            title: Text('登入/註冊',
+            title: Text(AppLocalizations?.of(context)?.signin_page_title ?? "",
                 style: TextStyle(
                     color: Colors.white, fontSize: Dimens.xxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: BlocBuilder<SignInBloc, SignInState>(builder: (context, state) {
           if (state is SignInSuccess) {
-            Fluttertoast.showToast(msg: "登入成功");
+            Fluttertoast.showToast(msg: AppLocalizations?.of(context)?.signin_success_msg ?? "");
 
             WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
               // Waiting building is finish and run.
@@ -58,17 +56,17 @@ class _SignInPageState extends State<SignInPage> {
           } else if(state is SignUpSuccess) {
             ViewUtils.showPromptDialog(
                 context: context,
-                title: "Email帳號建立成功",
-                msg: "帳號建立成功, 請使用Email接收驗證連結並完成驗證",
-                confirmStr: "確定"
+                title: AppLocalizations?.of(context)?.email_signup_success_hint_title ?? "",
+                msg: AppLocalizations?.of(context)?.email_signup_success_hint_msg ?? "",
+                confirmStr: AppLocalizations?.of(context)?.confirm ?? ""
             );
           } else if (state is Failure && state.errorMsg.isNotEmpty) {
             // Waiting building is finish and run.
             ViewUtils.showPromptDialog(
                 context: context,
-                title: "錯誤",
+                title: AppLocalizations?.of(context)?.error ?? "",
                 msg: state.errorMsg,
-                confirmStr: "確定"
+                confirmStr: AppLocalizations?.of(context)?.confirm ?? ""
             );
           }
 
@@ -119,9 +117,9 @@ class _SignInPageState extends State<SignInPage> {
                   autofocus: false,
                   autovalidateMode: AutovalidateMode.onUserInteraction,
                   validator: (value) =>
-                      (value == null || value.isEmpty) ? "請輸入正確Email" : null,
+                      (value == null || value.isEmpty) ? AppLocalizations?.of(context)?.email_invalid_hint_msg ?? "": null,
                   onSaved: (value) => this._email = value!,
-                  hintText: 'Email帳號',
+                  hintText: AppLocalizations?.of(context)?.email_invalid_hint_title ?? "",
                   cupertino: (_, __) => CupertinoTextFormFieldData(
                     // Assign a default cupertino decoration
                     decoration: PlatformTextField().createCupertinoWidget(context).decoration
@@ -145,9 +143,9 @@ class _SignInPageState extends State<SignInPage> {
                     autofocus: false,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) =>
-                    (value == null || value.isEmpty) ? "請輸入密碼" : null,
+                    (value == null || value.isEmpty) ? AppLocalizations?.of(context)?.passwd_invalid_hint_msg ?? "" : null,
                     onSaved: (value) => this._passwd = value!,
-                    hintText: "密碼",
+                    hintText: AppLocalizations?.of(context)?.passwd_invalid_hint_title ?? "",
                     cupertino: (_, __) => CupertinoTextFormFieldData(
                       // Assign a default cupertino decoration
                         decoration: PlatformTextField().createCupertinoWidget(context).decoration
@@ -161,7 +159,7 @@ class _SignInPageState extends State<SignInPage> {
           mainAxisSize: MainAxisSize.min,
           children: <Widget>[
             PlatformElevatedButton(
-                child: Text("登入",
+                child: Text(AppLocalizations?.of(context)?.signin_btn_title ?? "",
                     style: TextStyle(
                         fontSize: Dimens.xhFontSize,
                         fontWeight: FontWeight.bold,
@@ -174,7 +172,7 @@ class _SignInPageState extends State<SignInPage> {
                 }),
             PlatformTextButton(
                 child: Text(
-                    "註冊新帳號",
+                    AppLocalizations?.of(context)?.signup_title ?? "",
                     style: TextStyle(
                         fontSize: Dimens.mFontSize,
                         color: Colors.grey)),
@@ -190,24 +188,24 @@ class _SignInPageState extends State<SignInPage> {
     SignInButton(
       Buttons.Google,
       elevation: 3.0,
-      text: "使用Google繼續",
+      text: AppLocalizations?.of(context)?.signinup_with_google ?? "",
       onPressed: () {
         this._signInBloc.add(GoogleSignInEvent());
-        Fluttertoast.showToast(msg: "Google SignIn");
+        Fluttertoast.showToast(msg: AppLocalizations?.of(context)?.signinup_with_google_hint_msg ?? "");
       },
     ),
     SizedBox(height: 10),
-    SignInButton(Buttons.FacebookNew, elevation: 3.0, text: "使用Facebook繼續",
+    SignInButton(Buttons.FacebookNew, elevation: 3.0, text: AppLocalizations?.of(context)?.signinup_with_fb ?? "",
         onPressed: () {
           this._signInBloc.add(FacebookSignInEvent());
-          Fluttertoast.showToast(msg: "Facebook SignIn");
+          Fluttertoast.showToast(msg: AppLocalizations?.of(context)?.signinup_with_fb_hint_msg ?? "");
         }),
     SizedBox(height: 10),
     (Platform.isIOS)
-        ? SignInButton(Buttons.Apple, elevation: 3.0, text: "使用Apple繼續",
+        ? SignInButton(Buttons.Apple, elevation: 3.0, text: AppLocalizations?.of(context)?.signinup_with_apple ?? "",
         onPressed: () {
           this._signInBloc.add(AppleSignInEvent());
-          Fluttertoast.showToast(msg: "Apple SignIn");
+          Fluttertoast.showToast(msg: AppLocalizations?.of(context)?.signinup_with_apple_hint_msg ?? "");
         })
         : UIConstants.EMPTY_WIDGET
   ]);
