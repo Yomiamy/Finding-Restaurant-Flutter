@@ -24,5 +24,11 @@
 
   "@==== Restaurant Detail Page ====": {},
   "favorite_store_add": "新增最愛店家",
-  "favorite_store_remove": "解除最愛店家"
+  "favorite_store_remove": "解除最愛店家",
+
+  "@==== Settings Page ====": {},
+  "settings_title": "設定",
+  "information_section_title": "資訊",
+  "version_tile_title": "版本",
+  "logout_section_title": "登出"
 }

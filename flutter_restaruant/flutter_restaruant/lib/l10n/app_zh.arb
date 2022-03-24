@@ -24,5 +24,11 @@
 
   "@==== Restaurant Detail Page ====": {},
   "favorite_store_add": "Add in favorite list",
-  "favorite_store_remove": "Remove from favorite list"
+  "favorite_store_remove": "Remove from favorite list",
+
+  "@==== Settings Page ====": {},
+  "settings_title": "Settings",
+  "information_section_title": "Information",
+  "version_tile_title": "Version",
+  "logout_section_title": "Logout"
 }
