@@ -20,5 +20,9 @@
   "cancel": "取消",
 
   "@==== PhotoViewer ====": {},
-  "photo_viewer_title": "預覽"
+  "photo_viewer_title": "預覽",
+
+  "@==== Restaurant Detail Page ====": {},
+  "favorite_store_add": "Add in favorite list",
+  "favorite_store_remove": "Remove from favorite list"
 }

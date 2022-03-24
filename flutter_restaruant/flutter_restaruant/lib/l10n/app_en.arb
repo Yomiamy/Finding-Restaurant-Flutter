@@ -19,6 +19,10 @@
   "confirm": "Ok",
   "cancel": "Cancel",
 
-  "@==== PhotoViewer ====": {},
-  "photo_viewer_title": "Photo Viewer"
+  "@==== Restaurant Detail Page ====": {},
+  "photo_viewer_title": "Photo Viewer",
+
+  "@==== Restaurant Detail Page ====": {},
+  "favorite_store_add": "新增最愛店家",
+  "favorite_store_remove": "解除最愛店家"
 }
