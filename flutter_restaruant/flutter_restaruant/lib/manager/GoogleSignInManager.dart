@@ -21,7 +21,7 @@ class GoogleSignInManager {
 
       if(googleAuth?.accessToken == null && googleAuth?.idToken == null) {
         // 未登入
-        return Tuple2<AccountInfo?, String>(null, "發生錯誤請再試一次");
+        return Tuple2<AccountInfo?, String>(null, "Error occurred, please retry again");
       }
 
       // Create a new credential
@@ -42,7 +42,7 @@ class GoogleSignInManager {
     } on Exception catch(e) {
       // 登入錯誤
        print("GoogleSignInManager, error = $e");
-       return Tuple2(null, "Google登入失敗, 請再試一次\n${e.toString()}");
+       return Tuple2(null, "Google sign in fail, please retry again\n${e.toString()}");
     }
   }
 

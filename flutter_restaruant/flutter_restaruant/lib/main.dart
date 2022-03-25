@@ -7,7 +7,7 @@ import 'firebase_options.dart';
 import 'routes/RoutesTable.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
-
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'utils/UIConstants.dart';
 
 void main() async {
@@ -28,6 +28,9 @@ class FindingRestaruantApp extends StatelessWidget {
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) => PlatformApp(
+      localizationsDelegates: AppLocalizations.localizationsDelegates,
+      supportedLocales: AppLocalizations.supportedLocales,
+      debugShowCheckedModeBanner: false,
       title:  UIConstants.APP_TITLE,
       routes: ROUTES_TABLE
   );

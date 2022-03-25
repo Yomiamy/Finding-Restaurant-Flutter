@@ -1,0 +1,55 @@
+{
+  "@@locale": "en",
+
+  "error": "Error",
+  "error_and_retry": "Please retry again.",
+  "confirm": "Ok",
+  "cancel": "Cancel",
+
+  "@==== Filter Page ====": {},
+  "apply": "Apply",
+  "filter_rules": "Filter Rules",
+  "filter_price": "Price Rule",
+  "filter_business_hour": "Business Hour",
+  "filter_sorting_rule": "Sorting Rule",
+  "filter_sorting_rule_best_match": "Best Match",
+  "filter_sorting_rule_distance": "Distance",
+  "filter_sorting_rating": "Rating",
+  "filter_sorting_review_count": "Review Count",
+
+  "@==== Main Page ====": {},
+  "main_page_title": "FindRestaurant",
+  "keyword_search": "Keyword Search",
+  "keyword_search_hint": "Store/Category/Street...",
+
+  "@==== Restaurant Detail Page ====": {},
+  "photo_viewer_title": "Photo Viewer",
+
+  "@==== Restaurant Detail Page ====": {},
+  "favorite_store_add": "Add in favorite list",
+  "favorite_store_remove": "Remove from favorite list",
+
+  "@==== Settings Page ====": {},
+  "settings_title": "Settings",
+  "information_section_title": "Information",
+  "version_tile_title": "Version",
+  "logout_section_title": "Logout",
+
+  "@==== SignIn Page ====": {},
+  "signin_page_title": "SignIn/SignUp",
+  "signin_success_msg": "SignIn successfully",
+  "email_signup_success_hint_title": "Email signup successfully",
+  "email_signup_success_hint_msg": "Account created successfully, please receive the confirmation link in the email and verification",
+  "email_invalid_hint_msg": "Please input email",
+  "email_invalid_hint_title": "Email Account",
+  "passwd_invalid_hint_msg": "Please input password",
+  "passwd_invalid_hint_title": "Password",
+  "signin_btn_title": "SignIn",
+  "signup_title": "SignUp",
+  "signinup_with_google": "Continue with Google",
+  "signinup_with_google_hint_msg": "Google SignIn",
+  "signinup_with_fb": "Continue with Facebook",
+  "signinup_with_fb_hint_msg": "Facebook SignIn",
+  "signinup_with_apple": "Continue with Apple",
+  "signinup_with_apple_hint_msg": "Apple SignIn"
+}

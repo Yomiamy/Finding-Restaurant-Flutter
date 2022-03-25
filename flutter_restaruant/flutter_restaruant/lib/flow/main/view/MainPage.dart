@@ -1,4 +1,3 @@
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
@@ -7,8 +6,6 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/EmptyDataWidget.dart';
 import 'package:flutter_restaruant/component/ExpandableFabButton.dart';
 import 'package:flutter_restaruant/component/LoadingWidget.dart';
-import 'package:flutter_restaruant/component/ad/AppLifecycleReactor.dart';
-import 'package:flutter_restaruant/component/ad/AppOpenAD.dart';
 import 'package:flutter_restaruant/component/ad/AppOpenAdState.dart';
 import 'package:flutter_restaruant/component/ad/BannerADState.dart';
 import 'package:flutter_restaruant/component/ad/BannerAD.dart';
@@ -17,10 +14,8 @@ import 'package:flutter_restaruant/flow/favor/view/FavorPage.dart';
 import 'package:flutter_restaruant/flow/filter/view/FilterPage.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
 import 'package:flutter_restaruant/flow/settings/view/SettingsPage.dart';
-import 'package:flutter_restaruant/manager/SignInManager.dart';
 import 'package:flutter_restaruant/model/FilterConfigs.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
@@ -28,6 +23,7 @@ import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../bloc/MainBloc.dart';
 import 'FilterTagsWidget.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MainPage extends StatefulWidget {
 
@@ -72,7 +68,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                 <Widget>[
                   CupertinoSliverNavigationBar(
                       automaticallyImplyLeading: false,
-                      largeTitle: Text(UIConstants.APP_TITLE,
+                      largeTitle: Text(AppLocalizations?.of(context)?.main_page_title ?? "",
                           style: TextStyle(
                               color: Colors.white,
                               fontSize: Dimens.xxxxhFontSize)
@@ -163,14 +159,14 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                                         builder: (context) => PlatformAlertDialog(
                                           key: GlobalKey(debugLabel: "FilterListByKeywordDialog"),
                                           title: PlatformText(
-                                            "關鍵字過濾",
+                                            AppLocalizations?.of(context)?.keyword_search ?? "",
                                             style: TextStyle(
                                               fontSize: Dimens.xxhFontSize,
                                               fontWeight: FontWeight.bold
                                             ),
                                           ),
                                           content: PlatformTextField(
-                                            hintText: "店名/分類/地區/路",
+                                            hintText: AppLocalizations?.of(context)?.keyword_search_hint ?? "",
                                             onChanged: (keyword) {
                                                   this._filterKeyword = keyword;
                                               },
@@ -183,13 +179,13 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
 
                                                   Navigator.pop(context);
                                                 },
-                                                child: PlatformText("確定")
+                                                child: PlatformText(AppLocalizations?.of(context)?.confirm ?? "")
                                             ),
                                             PlatformButton(
                                                 onPressed: () {
                                                   Navigator.pop(context);
                                                 },
-                                                child: PlatformText("取消")
+                                                child: PlatformText(AppLocalizations?.of(context)?.cancel ?? "")
                                             )
                                           ],
                                         )

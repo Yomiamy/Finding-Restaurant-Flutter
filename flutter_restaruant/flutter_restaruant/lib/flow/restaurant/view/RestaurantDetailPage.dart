@@ -17,6 +17,7 @@ import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../bloc/RestaurantDetailBloc.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
 
@@ -85,7 +86,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
               builder: (context, state) {
                 if (state is InProgress || state is ToggleFavorSuccess) {
                   if(state is ToggleFavorSuccess) {
-                    String favorToggleMsg = this._summaryInfo.favor ? "新增最愛店家" : "解除最愛店家";
+                    String favorToggleMsg = this._summaryInfo.favor ? AppLocalizations?.of(context)?.favorite_store_add ?? "" : AppLocalizations?.of(context)?.favorite_store_remove ?? "";
 
                     Fluttertoast.showToast(msg: favorToggleMsg);
                     // Re-fetch detail and build detail page

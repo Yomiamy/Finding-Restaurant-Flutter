@@ -8,6 +8,7 @@ import 'package:flutter_restaruant/manager/BiometricSignInManager.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:settings_ui/settings_ui.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class SettingsPage extends StatefulWidget {
   static const ROUTE_NAME = "/SettingsPage";
@@ -43,7 +44,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     color: Color(UIConstants.BACK_BTN_COLOR)),
                 cupertinoIcon: Icon(CupertinoIcons.back,
                     color: Color(UIConstants.BACK_BTN_COLOR))),
-            title: PlatformText('設定',
+            title: PlatformText(AppLocalizations?.of(context)?.settings_title ?? "",
                 style: TextStyle(
                     color: Colors.white, fontSize: Dimens.xxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
@@ -77,10 +78,10 @@ class _SettingsPageState extends State<SettingsPage> {
           width: 230.0));
 
   AbstractSettingsSection createInfoSettingsSection(bool bioAuthSettingSwitchValue, bool isSupportBiometricAuth) =>
-      SettingsSection(title: PlatformText('資訊'), tiles: <SettingsTile>[
+      SettingsSection(title: PlatformText(AppLocalizations?.of(context)?.information_section_title ?? ""), tiles: <SettingsTile>[
         SettingsTile(
           leading: Icon(Icons.info),
-          title: PlatformText('版本'),
+          title: PlatformText(AppLocalizations?.of(context)?.version_tile_title ?? ""),
           value: PlatformText('1.2.3'),
         ),
         // TODO:判斷生物辨識
@@ -100,7 +101,7 @@ class _SettingsPageState extends State<SettingsPage> {
               height: 60,
               child: PlatformElevatedButton(
                   color: Colors.red,
-                  child: Text("登出",
+                  child: Text(AppLocalizations?.of(context)?.logout_section_title ?? "",
                       style: TextStyle(
                           fontSize: Dimens.xhFontSize,
                           fontWeight: FontWeight.bold,

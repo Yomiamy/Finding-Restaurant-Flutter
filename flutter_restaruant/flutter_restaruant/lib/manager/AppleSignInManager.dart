@@ -51,7 +51,7 @@ class AppleSignInManager {
 
       if (appleCredential.identityToken == null) {
         // 未登入
-        return Tuple2<AccountInfo?, String>(null, "發生錯誤請再試一次");
+        return Tuple2<AccountInfo?, String>(null, "Error occurred, please retry again");
       }
 
       // Create an `OAuthCredential` from the credential returned by Apple.
@@ -73,7 +73,7 @@ class AppleSignInManager {
     }  on Exception catch(e) {
       // 登入錯誤
       print("AppleSignInManager, error = $e");
-      return Tuple2(null, "Apple登入失敗, 請再試一次\n${e.toString()}");
+      return Tuple2(null, "Apple sign in fail, please retry again\n${e.toString()}");
     }
   }
 

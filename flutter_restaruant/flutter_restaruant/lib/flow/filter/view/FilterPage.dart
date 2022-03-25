@@ -5,6 +5,7 @@ import 'package:flutter_restaruant/model/FilterConfigs.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class FilterPage extends StatefulWidget {
   static const ROUTE_NAME = "/FilterPage";
@@ -47,12 +48,13 @@ class _FilterPageState extends State<FilterPage> {
                     Tuple2<FilterConfigs, dynamic> result = Tuple2(configs, null);
                     Navigator.pop(context, result);
                   },
-                  child: Text("套用",
+
+                  child: Text(AppLocalizations?.of(context)?.apply ?? "",
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: Dimens.xhFontSize)))
             ],
-            title: Text("過濾條件",
+            title: Text(AppLocalizations?.of(context)?.filter_rules ?? "",
                 style: TextStyle(
                     color: Colors.white, fontSize: Dimens.xxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
@@ -60,7 +62,7 @@ class _FilterPageState extends State<FilterPage> {
           // Price level
           Padding(
               padding: EdgeInsets.only(left: 20, top: 15),
-              child: Text("消費程度",
+              child: Text(AppLocalizations?.of(context)?.filter_price ?? "",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: Dimens.xxxhFontSize))),
@@ -74,7 +76,7 @@ class _FilterPageState extends State<FilterPage> {
           // Business hour
           Padding(
               padding: EdgeInsets.only(left: 20, top: 15, right: 20),
-              child: Text("營業時間",
+              child: Text(AppLocalizations?.of(context)?.filter_business_hour ?? "",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: Dimens.xxxhFontSize))),
@@ -93,13 +95,17 @@ class _FilterPageState extends State<FilterPage> {
           // Sorting rule
           Padding(
               padding: EdgeInsets.only(left: 20, top: 15),
-              child: Text("排序依據",
+              child: Text(AppLocalizations?.of(context)?.filter_sorting_rule ?? "",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: Dimens.xxxhFontSize))),
           this._createSegmentWidget(
               initValue: this._sortByIndex,
-              segmentItems: ["最佳配對", '距離', '評分', '最多評論'],
+              segmentItems: [
+                AppLocalizations?.of(context)?.filter_sorting_rule_best_match ?? "",
+                AppLocalizations?.of(context)?.filter_sorting_rule_distance ?? "",
+                AppLocalizations?.of(context)?.filter_sorting_rating ?? "",
+                AppLocalizations?.of(context)?.filter_sorting_review_count ?? ""],
               valueChange: (i) {
                 this._sortByIndex = i;
               })
