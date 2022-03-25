@@ -46,8 +46,7 @@ class YelpBaseInfo {
   }
 
   bool isNowWeedDayMatchYelpWeekDay({required int nowWeekDay, required int yelpWeekDay}) {
-    if(nowWeekDay == 1 && yelpWeekDay == 6) return true;
-    return (nowWeekDay - 2) == yelpWeekDay;
+    return (nowWeekDay - 1) == yelpWeekDay;
   }
 
   String getPriceDispStr(int price) {
