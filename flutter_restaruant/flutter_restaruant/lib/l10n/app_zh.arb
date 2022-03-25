@@ -28,6 +28,7 @@
   "@==== Restaurant Detail Page ====": {},
   "favorite_store_add": "新增最愛店家",
   "favorite_store_remove": "解除最愛店家",
+  "business_hour": "營業時間",
 
   "@==== Settings Page ====": {},
   "settings_title": "設定",

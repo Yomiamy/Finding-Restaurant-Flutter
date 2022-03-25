@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/model/YelpResaruantBusinessTime.dart';
-import 'package:flutter_restaruant/model/YelpRestaurantHoursInfo.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RestaurantBusinessHourCell extends StatelessWidget {
 
@@ -56,7 +56,7 @@ class RestaurantBusinessHourCell extends StatelessWidget {
               child: DecoratedBox(
                   decoration: BoxDecoration(color: Colors.grey),
                   child: Center(
-                      child: Text("營業時間",
+                      child: Text(AppLocalizations?.of(context)?.business_hour ?? "" ,
                           style: TextStyle(
                               fontSize: Dimens.xhFontSize,
                               fontWeight: FontWeight.bold))))),
