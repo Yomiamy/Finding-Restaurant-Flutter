@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
 
@@ -48,4 +50,6 @@ class Utils {
 
     return Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
   }
+
+  static bool isLocaleZh() => Platform.localeName.contains("zh");
 }

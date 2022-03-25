@@ -1,7 +1,8 @@
-import 'dart:collection';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
+import 'package:flutter_restaruant/utils/Utils.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 part 'YelpBaseInfo.g.dart';
 
@@ -26,21 +27,23 @@ class YelpBaseInfo {
   Image getRatingImage(String rating) => YelpBaseInfo._sRatingImgMap[rating];
 
   String getWeekDayStrByIndex(int day) {
+    bool isLocaleZh = Utils.isLocaleZh();
+
     switch(day) {
       case 0:
-        return "星期一";
+        return isLocaleZh ? "星期一" : "Monday";
       case 1:
-        return "星期二";
+        return isLocaleZh ? "星期二" : "Tuesday";
       case 2:
-        return "星期三";
+        return isLocaleZh ? "星期三" : "Wednesday";
       case 3:
-        return "星期四";
+        return isLocaleZh ? "星期四" : "Thursday";
       case 4:
-        return "星期五";
+        return isLocaleZh ? "星期五" : "Friday";
       case 5:
-        return "星期六";
+        return isLocaleZh ? "星期六" : "Saturday";
       case 6:
-        return "星期日";
+        return isLocaleZh ? "星期日" : "Sunday";
     }
     return "";
   }
