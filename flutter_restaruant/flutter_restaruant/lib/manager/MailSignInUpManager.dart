@@ -31,20 +31,20 @@ class MailSignInUpManager {
 
       return Tuple2(accountInfo, "");
     } on FirebaseAuthException catch (e) {
-      String errorMsg = "Mail註冊失敗, 請再試一次\n${e.toString()}";
+      String errorMsg = "Mail registration failed, please retry again\n${e.toString()}";
 
       // 註冊錯誤
       if (e.code == 'weak-password') {
         print('The password provided is too weak.');
-        errorMsg = "密碼安全性偏低, 請使用其他字元組合";
+        errorMsg = "Password security is low, please use another character combination";
       } else if (e.code == 'email-already-in-use') {
         print('The account already exists for that email.');
-        errorMsg = "Email已被使用, 請使用其他Email註冊";
+        errorMsg = "Email already registered, please use another email to register";
       }
 
       return Tuple2(null, errorMsg);
     } catch (e) {
-      String errorMsg = "Mail註冊失敗, 請再試一次\n${e.toString()}";
+      String errorMsg = "Mail registration failed, please retry again\n${e.toString()}";
 
       // 註冊錯誤
       print(e);

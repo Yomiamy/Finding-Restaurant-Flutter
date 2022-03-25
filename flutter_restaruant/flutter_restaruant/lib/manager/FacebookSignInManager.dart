@@ -18,7 +18,7 @@ class FacebookSignInManager {
 
       if(loginResult.accessToken == null) {
         // 未登入
-        return Tuple2<AccountInfo?, String>(null, "發生錯誤請再試一次");
+        return Tuple2<AccountInfo?, String>(null, "Error occurred, please retry again");
       }
 
       // Create a credential from the access token
@@ -40,9 +40,9 @@ class FacebookSignInManager {
         List<String> signInMethods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
         String signInMethodsStr = signInMethods.join("/");
 
-        return Tuple2(null, "帳號已由其他方式($signInMethodsStr)建立, 請改以其他方式以相同帳號登入");
+        return Tuple2(null, "Account already created by ($signInMethodsStr), please use $signInMethodsStr account to sign in");
       } else {
-        return Tuple2(null, "FB登入失敗, 請再試一次\n${e.toString()}");
+        return Tuple2(null, "FB sign in fail, please retry again\n${e.toString()}");
       }
     }
   }
