@@ -6,6 +6,7 @@ import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_restaruant/utils/Utils.dart';
 import 'package:sprintf/sprintf.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RestaurantInfoCell extends StatelessWidget {
 
@@ -64,7 +65,7 @@ class RestaurantInfoCell extends StatelessWidget {
                             style: TextStyle(fontWeight: FontWeight.w700),
                             overflow: TextOverflow.ellipsis),
                         Row(children: <Widget>[
-                          Text("電話:",
+                          Text(AppLocalizations?.of(context)?.store_phone ?? "",
                               style: TextStyle(fontWeight: FontWeight.w700)),
                           SizedBox(width: 10),
                           Text(this._detailInfo.phone ?? "",
@@ -76,7 +77,7 @@ class RestaurantInfoCell extends StatelessWidget {
                         this
                             ._detailInfo
                             .getRatingImage(this._detailInfo.rating.toString()),
-                        Text("${this._detailInfo.review_count}則評論",
+                        Text("${this._detailInfo.review_count}${AppLocalizations?.of(context)?.review_count_suffix ?? ""}",
                             style: TextStyle(
                                 fontSize: Dimens.mFontSize,
                                 color: Colors.grey)),
@@ -98,16 +99,16 @@ class RestaurantInfoCell extends StatelessWidget {
 
   CupertinoActionSheet buildNavigationActionSheet(BuildContext context) =>
       CupertinoActionSheet(
-          title: Text("請選擇導覽方式"),
+          title: Text(AppLocalizations?.of(context)?.navigation_choice ?? ""),
           cancelButton: CupertinoActionSheetAction(
               isDestructiveAction: true,
-              child: Text("取消"),
+              child: Text(AppLocalizations?.of(context)?.cancel ?? ""),
               onPressed: () {
                 Navigator.pop(context);
               }),
           actions: [
             CupertinoActionSheetAction(
-                child: Text("導航"),
+                child: Text(AppLocalizations?.of(context)?.route_navigation ?? ""),
                 onPressed: () {
                   double lat = this._detailInfo.coordinates?.latitude ?? 0;
                   double lng = this._detailInfo.coordinates?.longitude ?? 0;
@@ -122,7 +123,7 @@ class RestaurantInfoCell extends StatelessWidget {
                 }),
             CupertinoActionSheetAction(
                 isDefaultAction: false,
-                child: Text("街景視圖"),
+                child: Text(AppLocalizations?.of(context)?.street_view ?? ""),
                 onPressed: () {
                   double lat = this._detailInfo.coordinates?.latitude ?? 0;
                   double lng = this._detailInfo.coordinates?.longitude ?? 0;
