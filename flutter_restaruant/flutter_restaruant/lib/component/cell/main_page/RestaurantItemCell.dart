@@ -1,12 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_restaruant/flow/main/bloc/MainBloc.dart';
-import 'package:flutter_restaruant/manager/SignInManager.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import 'package:sprintf/sprintf.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RestaurantItemCell extends StatelessWidget {
   static const int IMAGE_H = 100;
@@ -73,7 +70,7 @@ class RestaurantItemCell extends StatelessWidget {
                                   Expanded(
                                       child: Align(
                                           child: Text(
-                                              "${this._summaryInfo.review_count}則評論",
+                                              "${this._summaryInfo.review_count}${AppLocalizations?.of(context)?.review_count_suffix ?? ""}",
                                               style: TextStyle(
                                                   fontSize: Dimens.mFontSize,
                                                   color: Colors.grey)),
