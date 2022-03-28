@@ -7,6 +7,7 @@ import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_restaruant/utils/Utils.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class RestaurantInfoCell extends StatelessWidget {
 
@@ -68,8 +69,12 @@ class RestaurantInfoCell extends StatelessWidget {
                           Text(AppLocalizations?.of(context)?.store_phone ?? "",
                               style: TextStyle(fontWeight: FontWeight.w700)),
                           SizedBox(width: 10),
-                          Text(this._detailInfo.phone ?? "",
-                              style: TextStyle(color: Colors.blue))
+                          GestureDetector(
+                              onTap: () {
+                                launch("tel://${this._detailInfo.phone ?? ""}");
+                              },
+                              child: Text(this._detailInfo.phone ?? "",
+                                  style: TextStyle(color: Colors.blue)))
                         ]),
                         Text(category,
                             overflow: TextOverflow.ellipsis,
