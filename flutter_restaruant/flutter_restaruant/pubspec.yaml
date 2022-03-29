@@ -33,7 +33,7 @@ dependencies:
   flutter_inappwebview: ^5.3.2
   flutter_tags: ^1.0.0-nullsafety.1
   url_launcher: ^6.0.20
-  fluttertoast: ^8.0.8
+  fluttertoast: ^8.0.9
   settings_ui: ^2.0.2
   local_auth: ^1.1.11
 
