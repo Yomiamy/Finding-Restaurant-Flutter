@@ -26,7 +26,7 @@ dependencies:
   path_provider: ^2.0.9
   shared_preferences: ^2.0.13
   sqflite: ^2.0.2
-  geolocator: ^8.0.5
+  geolocator: ^8.2.0
   image_picker: ^0.8.4+5
   camera: ^0.9.4+9
   sprintf: ^6.0.0
