@@ -48,7 +48,7 @@ dependencies:
   firebase_core: ^1.13.1
   google_mobile_ads: ^1.1.0
   firebase_analytics: ^9.1.2
-  cloud_firestore: ^3.1.7
+  cloud_firestore: ^3.1.10
   firebase_storage: ^10.2.6
   firebase_auth: ^3.3.10
 
