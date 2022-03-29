@@ -24,10 +24,14 @@
 
   "@==== PhotoViewer ====": {},
   "photo_viewer_title": "預覽",
-
-  "@==== Restaurant Detail Page ====": {},
+  "store_phone": "電話:",
+  "review_count_suffix": "則評論",
+  "navigation_choice": "請選擇導覽方式",
+  "route_navigation": "導航",
+  "street_view": "街景視圖",
   "favorite_store_add": "新增最愛店家",
   "favorite_store_remove": "解除最愛店家",
+  "business_hour": "營業時間",
 
   "@==== Settings Page ====": {},
   "settings_title": "設定",
