@@ -5,10 +5,7 @@ import 'package:flutter_restaruant/api/GoogleApiUtil.dart';
 import 'package:flutter_restaruant/flow/restaurant/repository/RestaurantDetailRepository.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantDetailInfo.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
-import 'package:flutter_restaruant/model/YelpReviewDetailInfo.dart';
 import 'package:flutter_restaruant/model/YelpReviewInfo.dart';
-import 'package:flutter_restaruant/model/YelpReviewerInfo.dart';
-import 'package:geolocator/geolocator.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
@@ -23,53 +20,41 @@ class RestaurantDetailBloc
 
   RestaurantDetailBloc({required RestaurantDetailRepository repository})
       : this._detailRepository = repository,
-        super(RestaurantDetailInitial());
+        super(RestaurantDetailInitial()) {
+    on<FetchDetailInfo>((event, emit) async {
+      try {
+        emit(InProgress());
 
-  @override
-  Stream<RestaurantDetailState> mapEventToState(
-    RestaurantDetailEvent event,
-  ) async* {
-    if (event is FetchDetailInfo) {
-      yield* _mapFetchDetailInfoToState(event, state);
-    } else if (event is ToggleFavor) {
-      yield* _mapToggleFavorToState(event);
-    }
-  }
+        final YelpRestaurantDetailInfo detailInfo =
+        await this._detailRepository.fetchYelpRestaurantDetailInfo(event.id);
+        final YelpReviewInfo reviewInfo =
+        await this._detailRepository.fetchYelpRestaurantReviewInfo(event.id);
 
-  Stream<RestaurantDetailState> _mapFetchDetailInfoToState(
-      FetchDetailInfo event, RestaurantDetailState state) async* {
-    try {
-      yield InProgress();
+        double lat = detailInfo.coordinates?.latitude ?? 0;
+        double lng = detailInfo.coordinates?.longitude ?? 0;
+        final String staticMapUrl =
+        GoogleApiUtil.createStaticMapUrl(lat: lat, lng: lng);
 
-      final YelpRestaurantDetailInfo detailInfo =
-          await this._detailRepository.fetchYelpRestaurantDetailInfo(event.id);
-      final YelpReviewInfo reviewInfo =
-          await this._detailRepository.fetchYelpRestaurantReviewInfo(event.id);
+        emit(Success(
+            detailInfo: detailInfo,
+            reviewInfo: reviewInfo,
+            staticMapUrl: staticMapUrl));
+      } on Exception catch (_) {
+        emit(Failure());
+      }
+    });
 
-      double lat = detailInfo.coordinates?.latitude ?? 0;
-      double lng = detailInfo.coordinates?.longitude ?? 0;
-      final String staticMapUrl =
-          GoogleApiUtil.createStaticMapUrl(lat: lat, lng: lng);
+    on<ToggleFavor>((event, emit) async {
+      try {
+        emit(InProgress());
 
-      yield Success(
-          detailInfo: detailInfo,
-          reviewInfo: reviewInfo,
-          staticMapUrl: staticMapUrl);
-    } on Exception catch (_) {
-      yield Failure();
-    }
-  }
+        YelpRestaurantSummaryInfo summary = event.summaryInfo;
+        await this._detailRepository.toggleFavor(summary);
 
-  Stream<RestaurantDetailState> _mapToggleFavorToState(ToggleFavor event) async* {
-    try {
-      yield InProgress();
-
-      YelpRestaurantSummaryInfo summary = event.summaryInfo;
-      await this._detailRepository.toggleFavor(summary);
-
-      yield ToggleFavorSuccess();
-    } on Exception catch(_) {
-      yield Failure();
-    }
+        emit(ToggleFavorSuccess());
+      } on Exception catch(_) {
+        emit(Failure());
+      }
+    });
   }
 }

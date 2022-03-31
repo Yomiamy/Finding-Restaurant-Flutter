@@ -8,9 +8,4 @@ part 'SplashState.dart';
 class SplashBloc extends Bloc<SplashEvent, SplashState> {
 
   SplashBloc() : super(SplashInitial());
-
-  @override
-  Stream<SplashState> mapEventToState(SplashEvent event) async*  {
-
-  }
 }
