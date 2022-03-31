@@ -12,24 +12,17 @@ class FavorBloc extends Bloc<FavorEvent, FavorState> {
 
   final FavorRepository _repository;
 
-  FavorBloc({required FavorRepository repository}) : this._repository = repository, super(FavorInitial());
+  FavorBloc({required FavorRepository repository}) : this._repository = repository, super(FavorInitial()) {
+    on<FetchFavorInfoEvent>((event, emit) async {
+      try {
+        emit(InProgress());
 
-  @override
-  Stream<FavorState> mapEventToState(FavorEvent event) async* {
-    if (event is FetchFavorInfoEvent) {
-      yield* _mapFetchFavorInfoEventToState(event);
-    }
-  }
+        final List<YelpRestaurantSummaryInfo> favorInfos = await this._repository.fetchFavorInfos(event.isRefreshLocalOnly);
 
-  Stream<FavorState> _mapFetchFavorInfoEventToState(FetchFavorInfoEvent event) async* {
-    try {
-      yield InProgress();
-
-      final List<YelpRestaurantSummaryInfo> favorInfos = await this._repository.fetchFavorInfos(event.isRefreshLocalOnly);
-
-      yield Success(favorInfos: favorInfos);
-    } on Exception catch(_) {
-      yield Failure();
-    }
+        emit(Success(favorInfos: favorInfos));
+      } on Exception catch(_) {
+        emit(Failure());
+      }
+    });
   }
 }

@@ -15,70 +15,63 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
   final MainRepository _mainRepository;
 
-  MainBloc({required MainRepository repository}) : this._mainRepository = repository, super(MainInitial());
+  MainBloc({required MainRepository repository}) : this._mainRepository = repository, super(MainInitial()) {
+    on<FetchSearchInfo>((event, emit) async {
+      try {
+        final Position currentPos = await Utils.getCurrentPosition();
+        double lat = currentPos.latitude;
+        double lng = currentPos.longitude;
+        bool isLoadMore = this._mainRepository.summaryInfoSet.isNotEmpty;
+        int? price = event.price;
+        int? openAt = event.openAt;
+        String? sortBy = event.sortBy;
 
-  @override
-  Stream<MainState> mapEventToState(
-    MainEvent event,
-  ) async* {
-    if (event is FetchSearchInfo) {
-      yield* _mapFetchSearchInfoToState(event);
-    } else if(event is Reset) {
-      yield* _mapResetToState();
-    }  else if(event is FilterListByKeyword) {
-      yield* _mapFilterListByKeywordToState(event);
-    } else if(event is ToggleFavor) {
-      yield* _mapToggleFavorToState(event);
-    }
-  }
+        if(!isLoadMore) {
+          // If it is first loading, then display loading progress.
+          emit(InProgress());
+        }
+        final List<YelpRestaurantSummaryInfo> summaryInfos =  await this._mainRepository.fetchYelpSearchInfo(lat, lng, price, openAt, sortBy);
 
-  Stream<MainState> _mapFilterListByKeywordToState(FilterListByKeyword event) async* {
-    yield InProgress();
-
-    await Future.delayed(Duration(seconds: 2));
-
-    final List<YelpRestaurantSummaryInfo> filterInfos = await this._mainRepository.filterByKeyword(event.keyword, event.sortByStr);
-    yield (filterInfos.isNotEmpty) ? Success(summaryInfos: filterInfos) : Failure();
-  }
-
-  Stream<MainState> _mapResetToState() async* {
-    this._mainRepository.reset();
-    yield ResetSuccess();
-  }
-
-  Stream<MainState> _mapFetchSearchInfoToState(FetchSearchInfo event) async* {
-    try {
-      final Position currentPos = await Utils.getCurrentPosition();
-      double lat = currentPos.latitude;
-      double lng = currentPos.longitude;
-      bool isLoadMore = this._mainRepository.summaryInfoSet.isNotEmpty;
-      int? price = event.price;
-      int? openAt = event.openAt;
-      String? sortBy = event.sortBy;
-
-      if(!isLoadMore) {
-        // If it is first loading, then display loading progress.
-        yield InProgress();
+        if(isLoadMore) {
+          emit(LoadMoreSuccess(summaryInfos: summaryInfos));
+        } else {
+          emit(Success(summaryInfos: summaryInfos));
+        }
+      } on Exception catch (_) {
+        emit(Failure());
       }
-      final List<YelpRestaurantSummaryInfo> summaryInfos =  await this._mainRepository.fetchYelpSearchInfo(lat, lng, price, openAt, sortBy);
+    });
 
-      yield isLoadMore ? LoadMoreSuccess(summaryInfos: summaryInfos) : Success(summaryInfos: summaryInfos);
-    } on Exception catch (_) {
-      yield Failure();
-    }
-  }
+    on<Reset>((event, emit) async {
+      this._mainRepository.reset();
+      emit(ResetSuccess());
+    });
 
-  Stream<MainState> _mapToggleFavorToState(ToggleFavor event) async* {
-    try {
-      yield InProgress();
+    on<FilterListByKeyword>((event, emit) async {
+      emit(InProgress());
 
-      YelpRestaurantSummaryInfo summary = event.summaryInfo;
-      await this._mainRepository.toggleFavor(summary);
+      await Future.delayed(Duration(seconds: 2));
+      final List<YelpRestaurantSummaryInfo> filterInfos = await this._mainRepository.filterByKeyword(event.keyword, event.sortByStr);
 
-      yield ToggleFavorSuccess();
-    } on Exception catch(_) {
-      yield Failure();
-    }
+      if(filterInfos.isNotEmpty) {
+        emit(Success(summaryInfos: filterInfos));
+      } else {
+        emit(Failure());
+      }
+    });
+
+    on<ToggleFavor>((event, emit) async {
+      try {
+        emit(InProgress());
+
+        YelpRestaurantSummaryInfo summary = event.summaryInfo;
+        await this._mainRepository.toggleFavor(summary);
+
+        emit(ToggleFavorSuccess());
+      } on Exception catch(_) {
+        emit(Failure());
+      }
+    });
   }
 }
 

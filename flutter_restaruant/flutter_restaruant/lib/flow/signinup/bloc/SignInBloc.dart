@@ -15,28 +15,23 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
 
   SignInBloc({required SignInRepository repository})
       : this._signInRepository = repository,
-        super(SignInInitial());
+        super(SignInInitial()) {
+    on<SignInEvent>((event, emit) async {
+      emit(InProgress());
 
-  @override
-  Stream<SignInState> mapEventToState(SignInEvent event) async* {
-    yield* _mapSignInToState(event);
-  }
+      Tuple2<AccountInfo?, String> result = await this._signInRepository.signInUp(event);
+      AccountInfo? accountInfo = result.item1;
 
-  Stream<SignInState> _mapSignInToState(SignInEvent event) async* {
-    yield InProgress();
-
-    Tuple2<AccountInfo?, String> result = await this._signInRepository.signInUp(event);
-    AccountInfo? accountInfo = result.item1;
-
-    if (accountInfo != null) {
-      if (event is! MailSignUpEvent) {
-        yield SignInSuccess(accountInfo: accountInfo);
+      if (accountInfo != null) {
+        if (event is! MailSignUpEvent) {
+          emit(SignInSuccess(accountInfo: accountInfo));
+        } else {
+          emit(SignUpSuccess(accountInfo: accountInfo));
+        }
       } else {
-        yield SignUpSuccess(accountInfo: accountInfo);
+        String errorMsg = result.item2;
+        emit(Failure(errorMsg: errorMsg));
       }
-    } else {
-      String errorMsg = result.item2;
-      yield Failure(errorMsg: errorMsg);
-    }
+    });
   }
 }

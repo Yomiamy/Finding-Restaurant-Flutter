@@ -13,38 +13,27 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
   SettingsBloc({required SettingsRepository repository})
       : this._settingsRepository = repository,
-        super(SettingsInitial());
+        super(SettingsInitial()) {
+    on<InitBioAuthSettingEvent>((event, emit) async {
+      emit(InProgress());
 
-  @override
-  Stream<SettingsState> mapEventToState(SettingsEvent event) async* {
-    if(event is InitBioAuthSettingEvent) {
-      yield* _mapInitBioAuthSettingToState();
-    } else if (event is LogoutEvent) {
-      yield* _mapLogoutToState();
-    } else if (event is ToggleBioAuthSettingEvent) {
-      yield* _mapToggleBioAuthSettingState();
-    }
-  }
+      bool settingValue = await _settingsRepository.initBioAuthSetting();
 
-  Stream<SettingsState> _mapInitBioAuthSettingToState() async* {
-    yield InProgress();
+      emit(InitBioAuthSettingState(settingValue: settingValue));
+    });
 
-    bool settingValue = await _settingsRepository.initBioAuthSetting();
+    on<LogoutEvent>((event, emit) async {
+      emit(InProgress());
 
-    yield InitBioAuthSettingState(settingValue: settingValue);
-  }
+      await _settingsRepository.logout();
 
-  Stream<SettingsState> _mapLogoutToState() async* {
-    yield InProgress();
+      emit(LogoutSuccess());
+    });
 
-    await _settingsRepository.logout();
+    on<ToggleBioAuthSettingEvent>((event, emit) async {
+      bool settingValue = await _settingsRepository.toggleBioAuthSetting();
 
-    yield LogoutSuccess();
-  }
-
-  Stream<SettingsState> _mapToggleBioAuthSettingState() async* {
-    bool settingValue = await _settingsRepository.toggleBioAuthSetting();
-
-    yield ToggleBioAuthSettingState(settingValue: settingValue);
+      emit(ToggleBioAuthSettingState(settingValue: settingValue));
+    });
   }
 }
