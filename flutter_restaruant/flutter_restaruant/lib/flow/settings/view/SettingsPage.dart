@@ -5,6 +5,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/flow/settings/bloc/SettingsBloc.dart';
 import 'package:flutter_restaruant/flow/signinup/view/SignInPage.dart';
 import 'package:flutter_restaruant/manager/BiometricSignInManager.dart';
+import 'package:flutter_restaruant/utils/Constants.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -82,7 +83,7 @@ class _SettingsPageState extends State<SettingsPage> {
         SettingsTile(
           leading: Icon(Icons.info),
           title: PlatformText(AppLocalizations?.of(context)?.version_tile_title ?? ""),
-          value: PlatformText('1.2.3'),
+          value: PlatformText(Constants.VERSION),
         ),
         // TODO:判斷生物辨識
         // SettingsTile.switchTile(

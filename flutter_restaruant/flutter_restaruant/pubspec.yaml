@@ -36,6 +36,7 @@ dependencies:
   fluttertoast: ^8.0.9
   settings_ui: ^2.0.2
   local_auth: ^1.1.11
+  package_info_plus: ^1.4.0
 
   bloc: ^8.0.3
   flutter_bloc: ^8.0.1
