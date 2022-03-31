@@ -1,8 +1,14 @@
+import 'package:package_info_plus/package_info_plus.dart';
+
 class Constants {
 
+  /// [Version]
+  static late PackageInfo _sPackageInfo;
+  static String get VERSION => _sPackageInfo.version;
+
+  /// [SharedPreference]
   static const PREF_KEY_ACCOUNT_INFO = "account_info";
   static const PREF_KEY_BIOMETRIC_AUTH_SETTING = "biometric_auth_setting";
-
 
   /// [AD]
   // PROD AD banner id
@@ -26,4 +32,8 @@ class Constants {
   static const int CONNECTION_TIEMOUT = 30000;
   static const int RECEIVE_TIEMOUT = 30000;
   static const int PAGE_ITEM_COUNT = 50;
+
+  static void init() async {
+    _sPackageInfo = await PackageInfo.fromPlatform();
+  }
 }
