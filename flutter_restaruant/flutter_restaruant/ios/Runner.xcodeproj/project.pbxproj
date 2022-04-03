@@ -15,6 +15,9 @@
 		97C146FE1CF9000F007C117D /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FD1CF9000F007C117D /* Assets.xcassets */; };
 		97C147011CF9000F007C117D /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 97C146FF1CF9000F007C117D /* LaunchScreen.storyboard */; };
 		ED291F62276DAA31002371C3 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = ED291F61276DAA31002371C3 /* GoogleService-Info.plist */; };
+		ED812E6927F82A6200C7A3B3 /* FLNativeViewFactory.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED812E6827F82A6200C7A3B3 /* FLNativeViewFactory.swift */; };
+		ED812E6B27F82DF000C7A3B3 /* FLNativeView.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED812E6A27F82DF000C7A3B3 /* FLNativeView.swift */; };
+		ED812E6D27F8340500C7A3B3 /* FLPlugin.swift in Sources */ = {isa = PBXBuildFile; fileRef = ED812E6C27F8340500C7A3B3 /* FLPlugin.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXCopyFilesBuildPhase section */
@@ -50,6 +53,9 @@
 		DC6A96B3BF111E95C2F8E867 /* Pods_Runner.framework */ = {isa = PBXFileReference; explicitFileType = wrapper.framework; includeInIndex = 0; path = Pods_Runner.framework; sourceTree = BUILT_PRODUCTS_DIR; };
 		ED291F61276DAA31002371C3 /* GoogleService-Info.plist */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 		ED41732E27494FF40037A1AF /* Runner.entitlements */ = {isa = PBXFileReference; lastKnownFileType = text.plist.entitlements; path = Runner.entitlements; sourceTree = "<group>"; };
+		ED812E6827F82A6200C7A3B3 /* FLNativeViewFactory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FLNativeViewFactory.swift; sourceTree = "<group>"; };
+		ED812E6A27F82DF000C7A3B3 /* FLNativeView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FLNativeView.swift; sourceTree = "<group>"; };
+		ED812E6C27F8340500C7A3B3 /* FLPlugin.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = FLPlugin.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -123,6 +129,9 @@
 				97C147021CF9000F007C117D /* Info.plist */,
 				1498D2321E8E86230040F4C2 /* GeneratedPluginRegistrant.h */,
 				1498D2331E8E89220040F4C2 /* GeneratedPluginRegistrant.m */,
+				ED812E6827F82A6200C7A3B3 /* FLNativeViewFactory.swift */,
+				ED812E6A27F82DF000C7A3B3 /* FLNativeView.swift */,
+				ED812E6C27F8340500C7A3B3 /* FLPlugin.swift */,
 				74858FAE1ED2DC5600515810 /* AppDelegate.swift */,
 				74858FAD1ED2DC5600515810 /* Runner-Bridging-Header.h */,
 			);
@@ -296,7 +305,10 @@
 			buildActionMask = 2147483647;
 			files = (
 				74858FAF1ED2DC5600515810 /* AppDelegate.swift in Sources */,
+				ED812E6B27F82DF000C7A3B3 /* FLNativeView.swift in Sources */,
+				ED812E6D27F8340500C7A3B3 /* FLPlugin.swift in Sources */,
 				1498D2341E8E89220040F4C2 /* GeneratedPluginRegistrant.m in Sources */,
+				ED812E6927F82A6200C7A3B3 /* FLNativeViewFactory.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
