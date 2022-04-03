@@ -48,6 +48,9 @@
             android:name="com.google.android.gms.ads.APPLICATION_ID"
             android:value="ca-app-pub-7910179918263365~5206283588"/>
 
+        <meta-data android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyAazLGDNd0sM6ixVxEIx0kSgRuJU1iAB4w"/>
+
         <activity
             android:name=".MainActivity"
             android:exported="true"
