@@ -1,7 +1,10 @@
+import 'dart:io';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 import 'package:package_info_plus/package_info_plus.dart';
 import 'component/ad/BannerADState.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
@@ -20,15 +23,20 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
+  // MobileAds init
+  final initFuture = MobileAds.instance.initialize();
+  final adState = BannerADState(initFuture);
+  // GoogleMap init
+  if (Platform.isAndroid) {
+    AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
+  }
+  // Constants init
   Constants.init();
-
+  // Firebase Init
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
   FcmManager().init();
-
-  final initFuture = MobileAds.instance.initialize();
-  final adState = BannerADState(initFuture);
 
   runApp(Provider.value(
     value: adState,
