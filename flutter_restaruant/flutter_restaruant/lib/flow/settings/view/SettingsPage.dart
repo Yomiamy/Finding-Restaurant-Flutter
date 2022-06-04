@@ -53,7 +53,7 @@ class _SettingsPageState extends State<SettingsPage> {
           bool bioAuthSettingSwitchValue = false;
 
           if(state is LogoutSuccess) {
-            WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
               // Waiting building is finish and run.
               Navigator.of(context).pushNamedAndRemoveUntil(SignInPage.ROUTE_NAME, ModalRoute.withName('/'));
             });

@@ -7,7 +7,7 @@ class ViewUtils {
     context:BuildContext,
     title:String,
     msg:String,
-    confirmStr:String}) => WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+    confirmStr:String}) => WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
     showPlatformDialog(
         context: context,
         builder: (context) => PlatformAlertDialog(
