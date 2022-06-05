@@ -56,3 +56,11 @@ class ToggleFavor extends MainEvent {
   String toString() => "ToggleFavor event.";
 }
 
+// 請求FCM
+class NotificationSetup extends MainEvent {
+
+  const NotificationSetup();
+
+  @override
+  String toString() => "NotificationSetup event.";
+}
