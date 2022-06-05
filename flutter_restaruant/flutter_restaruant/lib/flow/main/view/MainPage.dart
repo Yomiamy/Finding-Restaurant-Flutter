@@ -125,6 +125,10 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                           int? openAt = this._configs.openAtInSec;
                           String? sortBy = this._configs.sortBy;
 
+                          if(state is MainInitial) {
+                            // Request FCM
+                            this._mainBloc.add(NotificationSetup());
+                          }
                           this._mainBloc.add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
                         }
                         return Center(child: LoadingWidget());
