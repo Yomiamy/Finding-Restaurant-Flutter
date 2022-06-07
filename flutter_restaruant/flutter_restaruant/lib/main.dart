@@ -7,20 +7,12 @@ import 'component/ad/BannerADState.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'firebase_options.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'manager/FcmManager.dart';
 import 'routes/RoutesTable.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'utils/UIConstants.dart';
-
-
-Future<void> _firebaseMessagingOpenHandler(RemoteMessage message) async {
-  print("Handling a message open: ${message.messageId}");
-}
-
-void _firebaseMessagingForgroundHandler(RemoteMessage message) {
-  print("Handling a foreground message: ${message.messageId}");
-}
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -30,8 +22,7 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
-  FirebaseMessaging.onMessage.listen(_firebaseMessagingForgroundHandler);
-  FirebaseMessaging.onMessageOpenedApp.listen(_firebaseMessagingOpenHandler);
+  FcmManager().init();
 
   final initFuture = MobileAds.instance.initialize();
   final adState = BannerADState(initFuture);
