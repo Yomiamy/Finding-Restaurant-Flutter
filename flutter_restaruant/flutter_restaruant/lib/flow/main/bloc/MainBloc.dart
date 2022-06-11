@@ -2,6 +2,7 @@ import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_restaruant/flow/main/repository/MainRepository.dart';
+import 'package:flutter_restaruant/manager/FcmManager.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/model/YelpSearchInfo.dart';
 import 'package:flutter_restaruant/utils/Utils.dart';
@@ -14,6 +15,7 @@ part 'MainState.dart';
 
 class MainBloc extends Bloc<MainEvent, MainState> {
 
+  static const TAG = "MainBloc";
   final MainRepository _mainRepository;
 
   MainBloc({required MainRepository repository}) : this._mainRepository = repository, super(MainInitial()) {
@@ -75,22 +77,11 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     });
 
     on<NotificationSetup>((event, emit) async {
-      try {
-        FirebaseMessaging messaging = FirebaseMessaging.instance;
-        NotificationSettings settings = await messaging.requestPermission(
-          alert: true,
-          announcement: false,
-          badge: true,
-          carPlay: false,
-          criticalAlert: false,
-          provisional: false,
-          sound: true,
-        );
-        String? token = await messaging.getToken();
-        print('User granted permission: ${settings.authorizationStatus}, token is = $token');
-      } on Exception catch(_) {
-        print('FCM request fail');
-      }
+      FcmManager fcmManager = FcmManager();
+
+      fcmManager.requestPermission();
+      String fcmToken = await fcmManager.fcmToken;
+      print("$TAG, fcm Token is $fcmToken");
     });
   }
 }
