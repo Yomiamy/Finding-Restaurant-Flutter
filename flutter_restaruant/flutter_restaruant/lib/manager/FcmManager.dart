@@ -8,7 +8,9 @@ import 'package:flutter_restaruant/firebase_options.dart';
 import 'package:flutter_restaruant/flow/main/view/MainPage.dart';
 import 'package:flutter_restaruant/flow/splash/view/SplashPage.dart';
 import 'package:flutter_restaruant/main.dart';
+import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
+import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -40,7 +42,16 @@ class FcmManager {
     if(context == null) {
       return;
     }
-    Navigator.of(context).pushNamedAndRemoveUntil(MainPage.ROUTE_NAME, ModalRoute.withName(SplashPage.ROUTE_NAME));
+
+    YelpRestaurantSummaryInfo summaryInfo = (){
+      String storeId = message.data[Constants.FCM_NOTIFICATION_PAYLOAD_KEY_STORE_ID];
+      YelpRestaurantSummaryInfo summaryInfo = YelpRestaurantSummaryInfo();
+
+      summaryInfo.id = storeId;
+      return summaryInfo;
+    }();
+    Tuple2 arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(summaryInfo, null);
+    Navigator.of(context).pushNamedAndRemoveUntil(MainPage.ROUTE_NAME, ModalRoute.withName(SplashPage.ROUTE_NAME), arguments: arguments);
   }
 
   void _firebaseMessagingForgroundHandler(RemoteMessage message) {

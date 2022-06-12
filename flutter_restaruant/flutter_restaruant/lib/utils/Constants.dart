@@ -7,6 +7,8 @@ class Constants {
   static const FCM_NOTIFICATION_CHANNEL_NAME = "fcm_notification_channel_name";
   static const FCM_NOTIFICATION_CHANNEL_DESCRIPTION = "Android Notification Channel";
 
+  static const FCM_NOTIFICATION_PAYLOAD_KEY_STORE_ID = "store_id";
+
   /// [Version]
   static late PackageInfo _sPackageInfo;
   static String get VERSION => _sPackageInfo.version;
