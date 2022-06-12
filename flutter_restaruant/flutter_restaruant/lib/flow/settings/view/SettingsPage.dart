@@ -4,6 +4,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/flow/settings/bloc/SettingsBloc.dart';
 import 'package:flutter_restaruant/flow/signinup/view/SignInPage.dart';
+import 'package:flutter_restaruant/flow/splash/view/SplashPage.dart';
 import 'package:flutter_restaruant/manager/BiometricSignInManager.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
 import 'package:flutter_restaruant/utils/Dimens.dart';
@@ -55,7 +56,7 @@ class _SettingsPageState extends State<SettingsPage> {
           if(state is LogoutSuccess) {
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
               // Waiting building is finish and run.
-              Navigator.of(context).pushNamedAndRemoveUntil(SignInPage.ROUTE_NAME, ModalRoute.withName('/'));
+              Navigator.of(context).pushNamedAndRemoveUntil(SignInPage.ROUTE_NAME, ModalRoute.withName(SplashPage.ROUTE_NAME));
             });
           } else if (state is ToggleBioAuthSettingState) {
             bioAuthSettingSwitchValue = state.settingValue;

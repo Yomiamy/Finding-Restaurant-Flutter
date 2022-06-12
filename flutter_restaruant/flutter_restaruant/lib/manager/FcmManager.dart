@@ -2,8 +2,12 @@ import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_restaruant/firebase_options.dart';
+import 'package:flutter_restaruant/flow/main/view/MainPage.dart';
+import 'package:flutter_restaruant/flow/splash/view/SplashPage.dart';
+import 'package:flutter_restaruant/main.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 
@@ -28,7 +32,15 @@ class FcmManager {
   late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   void _firebaseMessagingOpenHandler(RemoteMessage message) async {
+    //debugPrint("Handling a message open: ${message.messageId}");
     print("Handling a message open: ${message.messageId}");
+
+    final BuildContext? context = navigatorKey.currentContext;
+
+    if(context == null) {
+      return;
+    }
+    Navigator.of(context).pushNamedAndRemoveUntil(MainPage.ROUTE_NAME, ModalRoute.withName(SplashPage.ROUTE_NAME));
   }
 
   void _firebaseMessagingForgroundHandler(RemoteMessage message) {
