@@ -4,6 +4,8 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import 'package:flutter_restaruant/firebase_options.dart';
+import 'package:flutter_restaruant/utils/Constants.dart';
+import 'package:flutter_restaruant/utils/UIConstants.dart';
 
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
@@ -15,20 +17,15 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 class FcmManager {
-  static const FCM_NOTIFICATION_CHANNEL_ID = "fcm_notification_channel_id";
-  static const FCM_NOTIFICATION_CHANNEL_NAME = "fcm_notification_channel_name";
-  static const FCM_NOTIFICATION_CHANNEL_DESCRIPTION =
-      "Android Notification Channel";
+
   static final FcmManager _singleton = FcmManager._internal();
 
   FcmManager._internal();
 
   factory FcmManager() => _singleton;
 
-  Future<String> get fcmToken async =>
-      await FirebaseMessaging.instance.getToken() ?? "";
-  late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  Future<String> get fcmToken async => await FirebaseMessaging.instance.getToken() ?? "";
+  late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   void _firebaseMessagingOpenHandler(RemoteMessage message) async {
     print("Handling a message open: ${message.messageId}");
@@ -48,9 +45,9 @@ class FcmManager {
               notification.body,
               NotificationDetails(
                 android: AndroidNotificationDetails(
-                  FCM_NOTIFICATION_CHANNEL_ID,
-                  FCM_NOTIFICATION_CHANNEL_NAME,
-                  channelDescription: FCM_NOTIFICATION_CHANNEL_DESCRIPTION,
+                  Constants.FCM_NOTIFICATION_CHANNEL_ID,
+                  Constants.FCM_NOTIFICATION_CHANNEL_NAME,
+                  channelDescription: Constants.FCM_NOTIFICATION_CHANNEL_DESCRIPTION,
                   icon: android.smallIcon,
                   importance: Importance.max,
                   priority: Priority.high,
@@ -71,7 +68,7 @@ class FcmManager {
           alert: true, badge: true, sound: true);
     }
 
-    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings(UIConstants.FCM_NOTIFICATION_ICON);
     final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
     _flutterLocalNotificationsPlugin.initialize(initializationSettings);
 

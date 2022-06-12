@@ -2,6 +2,11 @@ import 'package:package_info_plus/package_info_plus.dart';
 
 class Constants {
 
+  /// [FCM]
+  static const FCM_NOTIFICATION_CHANNEL_ID = "fcm_notification_channel_id";
+  static const FCM_NOTIFICATION_CHANNEL_NAME = "fcm_notification_channel_name";
+  static const FCM_NOTIFICATION_CHANNEL_DESCRIPTION = "Android Notification Channel";
+
   /// [Version]
   static late PackageInfo _sPackageInfo;
   static String get VERSION => _sPackageInfo.version;
