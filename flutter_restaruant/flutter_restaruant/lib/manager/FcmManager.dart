@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'dart:io';
 
 import 'package:firebase_core/firebase_core.dart';
@@ -34,7 +35,6 @@ class FcmManager {
   late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
 
   void _firebaseMessagingOpenHandler(RemoteMessage message) async {
-    //debugPrint("Handling a message open: ${message.messageId}");
     print("Handling a message open: ${message.messageId}");
 
     final BuildContext? context = navigatorKey.currentContext;
@@ -54,7 +54,19 @@ class FcmManager {
     Navigator.of(context).pushNamedAndRemoveUntil(MainPage.ROUTE_NAME, ModalRoute.withName(SplashPage.ROUTE_NAME), arguments: arguments);
   }
 
-  void _firebaseMessagingForgroundHandler(RemoteMessage message) {
+  void _firebaseForegroundMessagingOpenHandler(String? payload) async {
+    print("Handling a message open: $payload");
+
+    if(payload == null || payload.isEmpty) {
+      return;
+    }
+
+    Map<String, dynamic> data = JsonDecoder().convert(payload) as Map<String, dynamic>;
+    RemoteMessage message = RemoteMessage(data: data);
+    _firebaseMessagingOpenHandler(message);
+  }
+
+  void _firebaseMessagingForegroundHandler(RemoteMessage message) {
     print("Handling a foreground message: ${message.messageId}");
 
     RemoteNotification? notification = message.notification;
@@ -76,7 +88,8 @@ class FcmManager {
                   priority: Priority.high,
                   // other properties...
                 ),
-              ))
+              ),
+              payload: JsonEncoder().convert(message.data))
           .onError((error, stackTrace) =>
               {
                 print("Handling a foreground message error: $error")
@@ -93,11 +106,13 @@ class FcmManager {
 
     const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings(UIConstants.FCM_NOTIFICATION_ICON);
     final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
-    _flutterLocalNotificationsPlugin.initialize(initializationSettings);
-
+    _flutterLocalNotificationsPlugin.initialize(
+        initializationSettings,
+        onSelectNotification:_firebaseForegroundMessagingOpenHandler
+    );
 
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
-    FirebaseMessaging.onMessage.listen(_firebaseMessagingForgroundHandler);
+    FirebaseMessaging.onMessage.listen(_firebaseMessagingForegroundHandler);
     FirebaseMessaging.onMessageOpenedApp.listen(_firebaseMessagingOpenHandler);
     FirebaseMessaging.instance.getInitialMessage().then((message) {
         print("Handling a init message: $message");
