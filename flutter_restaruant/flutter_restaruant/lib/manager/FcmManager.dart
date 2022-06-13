@@ -95,9 +95,20 @@ class FcmManager {
     final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
     _flutterLocalNotificationsPlugin.initialize(initializationSettings);
 
+
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     FirebaseMessaging.onMessage.listen(_firebaseMessagingForgroundHandler);
     FirebaseMessaging.onMessageOpenedApp.listen(_firebaseMessagingOpenHandler);
+    FirebaseMessaging.instance.getInitialMessage().then((message) {
+        print("Handling a init message: $message");
+        if(message == null) {
+          return;
+        }
+
+        Future.delayed(Duration(seconds: 8), () {
+          _firebaseMessagingOpenHandler(message);
+        });
+    });
   }
 
   void requestPermission() async {
