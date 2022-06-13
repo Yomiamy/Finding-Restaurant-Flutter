@@ -4,6 +4,9 @@ import 'package:flutter/widgets.dart';
 
 class UIConstants {
 
+  /// [FCM]
+  static const FCM_NOTIFICATION_ICON = "@mipmap/ic_launcher";
+
   /// [UI]
   static const APP_TITLE = "尋找餐廳";
   static const LOGIN_TITLE = "登入";

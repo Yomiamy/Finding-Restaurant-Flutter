@@ -49,7 +49,7 @@ class _SignInPageState extends State<SignInPage> {
           if (state is SignInSuccess) {
             Fluttertoast.showToast(msg: AppLocalizations?.of(context)?.signin_success_msg ?? "");
 
-            WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
               // Waiting building is finish and run.
               Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME);
             });

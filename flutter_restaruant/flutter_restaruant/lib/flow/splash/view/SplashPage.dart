@@ -16,7 +16,7 @@ class _SplashPageState extends State<SplashPage> {
 
   @override
   Widget build(BuildContext context) {
-      WidgetsBinding.instance?.addPostFrameCallback((timeStamp) {
+      WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       // Waiting building is finish and run.
       Future.delayed(Duration(seconds: 3)).then((value) => Navigator.of(context).pushReplacementNamed(SignInPage.ROUTE_NAME));
     });
