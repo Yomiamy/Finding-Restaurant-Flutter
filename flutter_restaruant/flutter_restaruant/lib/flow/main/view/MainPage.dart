@@ -18,7 +18,6 @@ import 'package:flutter_restaruant/main.dart';
 import 'package:flutter_restaruant/model/FilterConfigs.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:provider/provider.dart';
-import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -72,7 +71,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                       largeTitle: Text(AppLocalizations?.of(context)?.main_page_title ?? "",
                           style: TextStyle(
                               color: Colors.white,
-                              fontSize: Dimens.xxxxhFontSize)
+                              fontSize: UIConstants.xxxxhFontSize)
                       ),
                       backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR),
                   )
@@ -165,7 +164,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                                           title: PlatformText(
                                             AppLocalizations?.of(context)?.keyword_search ?? "",
                                             style: TextStyle(
-                                              fontSize: Dimens.xxhFontSize,
+                                              fontSize: UIConstants.xxhFontSize,
                                               fontWeight: FontWeight.bold
                                             ),
                                           ),

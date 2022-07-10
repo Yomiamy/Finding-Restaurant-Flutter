@@ -5,7 +5,6 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/LoadingWidget.dart';
 import 'package:flutter_restaruant/flow/main/view/MainPage.dart';
 import 'package:flutter_restaruant/flow/signinup/bloc/SignInBloc.dart';
-import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_restaruant/utils/ViewUtils.dart';
 import 'package:flutter_signin_button/button_list.dart';
@@ -43,7 +42,7 @@ class _SignInPageState extends State<SignInPage> {
         appBar: PlatformAppBar(
             title: Text(AppLocalizations?.of(context)?.signin_page_title ?? "",
                 style: TextStyle(
-                    color: Colors.white, fontSize: Dimens.xxxhFontSize)),
+                    color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: BlocBuilder<SignInBloc, SignInState>(builder: (context, state) {
           if (state is SignInSuccess) {
@@ -80,7 +79,7 @@ class _SignInPageState extends State<SignInPage> {
                     child: Text("---------OR---------",
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                            fontSize: Dimens.xxxhFontSize,
+                            fontSize: UIConstants.xxxhFontSize,
                             color: Colors.grey)))),
             show3rdSignInUpBtns()
           ]);
@@ -161,7 +160,7 @@ class _SignInPageState extends State<SignInPage> {
             PlatformElevatedButton(
                 child: Text(AppLocalizations?.of(context)?.signin_btn_title ?? "",
                     style: TextStyle(
-                        fontSize: Dimens.xhFontSize,
+                        fontSize: UIConstants.xhFontSize,
                         fontWeight: FontWeight.bold,
                         color: Colors.white)),
                 onPressed: () {
@@ -174,7 +173,7 @@ class _SignInPageState extends State<SignInPage> {
                 child: Text(
                     AppLocalizations?.of(context)?.signup_title ?? "",
                     style: TextStyle(
-                        fontSize: Dimens.mFontSize,
+                        fontSize: UIConstants.mFontSize,
                         color: Colors.grey)),
                 onPressed: () {
                   if (this._formKey.currentState != null && this._formKey.currentState!.validate()) {

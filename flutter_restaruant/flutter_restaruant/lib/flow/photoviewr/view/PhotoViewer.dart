@@ -1,7 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -36,7 +35,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
             title: Text(AppLocalizations?.of(context)?.photo_viewer_title ?? "",
                     style: TextStyle(
                         color: Colors.white,
-                        fontSize: Dimens.xxxhFontSize)),
+                        fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: InteractiveViewer(
           // Set it to false

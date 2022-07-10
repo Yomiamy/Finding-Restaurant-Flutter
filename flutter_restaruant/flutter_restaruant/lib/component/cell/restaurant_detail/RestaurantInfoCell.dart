@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantDetailInfo.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
-import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_restaruant/utils/Utils.dart';
 import 'package:sprintf/sprintf.dart';
@@ -84,7 +83,7 @@ class RestaurantInfoCell extends StatelessWidget {
                             .getRatingImage(this._detailInfo.rating.toString()),
                         Text("${this._detailInfo.review_count}${AppLocalizations?.of(context)?.review_count_suffix ?? ""}",
                             style: TextStyle(
-                                fontSize: Dimens.mFontSize,
+                                fontSize: UIConstants.mFontSize,
                                 color: Colors.grey)),
                         DecoratedBox(
                             decoration: BoxDecoration(
@@ -95,7 +94,7 @@ class RestaurantInfoCell extends StatelessWidget {
                                 padding: EdgeInsets.all(3),
                                 child: Text(openStatus,
                                     style: TextStyle(
-                                        fontSize: Dimens.lFontSize,
+                                        fontSize: UIConstants.lFontSize,
                                         color: Colors.white
                                     ))))
                       ])))

@@ -7,7 +7,6 @@ import 'package:flutter_restaruant/flow/signinup/view/SignInPage.dart';
 import 'package:flutter_restaruant/flow/splash/view/SplashPage.dart';
 import 'package:flutter_restaruant/manager/BiometricSignInManager.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
-import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -48,7 +47,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     color: Color(UIConstants.BACK_BTN_COLOR))),
             title: PlatformText(AppLocalizations?.of(context)?.settings_title ?? "",
                 style: TextStyle(
-                    color: Colors.white, fontSize: Dimens.xxxhFontSize)),
+                    color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: BlocBuilder<SettingsBloc, SettingsState>(builder: (context, state) {
           bool bioAuthSettingSwitchValue = false;
@@ -105,7 +104,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   color: Colors.red,
                   child: Text(AppLocalizations?.of(context)?.logout_section_title ?? "",
                       style: TextStyle(
-                          fontSize: Dimens.xhFontSize,
+                          fontSize: UIConstants.xhFontSize,
                           fontWeight: FontWeight.bold,
                           color: Colors.white)),
                   onPressed: () {

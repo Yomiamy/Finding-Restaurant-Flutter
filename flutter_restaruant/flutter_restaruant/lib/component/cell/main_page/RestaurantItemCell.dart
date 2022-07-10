@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
-import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:sprintf/sprintf.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -58,7 +57,7 @@ class RestaurantItemCell extends StatelessWidget {
                                           sprintf("%.2fm",
                                               [this._summaryInfo.distance]),
                                           style: TextStyle(
-                                              fontSize: Dimens.mFontSize,
+                                              fontSize: UIConstants.mFontSize,
                                               color: Colors.grey))
                                     ]),
                                 Flex(direction: Axis.horizontal, children: <
@@ -72,7 +71,7 @@ class RestaurantItemCell extends StatelessWidget {
                                           child: Text(
                                               "${this._summaryInfo.review_count}${AppLocalizations?.of(context)?.review_count_suffix ?? ""}",
                                               style: TextStyle(
-                                                  fontSize: Dimens.mFontSize,
+                                                  fontSize: UIConstants.mFontSize,
                                                   color: Colors.grey)),
                                           alignment: Alignment.centerRight),
                                       flex: 1),
@@ -81,7 +80,7 @@ class RestaurantItemCell extends StatelessWidget {
                                           child: Text(
                                               this._summaryInfo.price ?? "",
                                               style: TextStyle(
-                                                  fontSize: Dimens.mFontSize,
+                                                  fontSize: UIConstants.mFontSize,
                                                   color: Colors.grey)),
                                           alignment: Alignment.centerRight),
                                       flex: 1)
@@ -92,7 +91,7 @@ class RestaurantItemCell extends StatelessWidget {
                                 Text(category,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
-                                        fontSize: Dimens.mFontSize,
+                                        fontSize: UIConstants.mFontSize,
                                         color: Colors.grey))
                               ])
                       )

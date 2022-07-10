@@ -10,7 +10,6 @@ import 'package:flutter_restaruant/flow/favor/bloc/FavorBloc.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
 import 'package:flutter_restaruant/manager/SignInManager.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
-import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 
@@ -50,7 +49,7 @@ class _FavorPageState extends State<FavorPage> {
             title: Text(UIConstants.FAVOR_TITLE,
                 style: TextStyle(
                 color: Colors.white,
-                fontSize: Dimens.xxxxhFontSize)),
+                fontSize: UIConstants.xxxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: BlocBuilder<FavorBloc, FavorState>(
             bloc: this._favorBloc,
