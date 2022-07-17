@@ -7,18 +7,14 @@ import 'package:flutter_restaruant/component/EmptyDataWidget.dart';
 import 'package:flutter_restaruant/component/ExpandableFabButton.dart';
 import 'package:flutter_restaruant/component/LoadingWidget.dart';
 import 'package:flutter_restaruant/component/ad/AppOpenAdState.dart';
-import 'package:flutter_restaruant/component/ad/BannerADState.dart';
-import 'package:flutter_restaruant/component/ad/BannerAD.dart';
-import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.dart';
 import 'package:flutter_restaruant/flow/favor/view/FavorPage.dart';
 import 'package:flutter_restaruant/flow/filter/view/FilterPage.dart';
+import 'package:flutter_restaruant/flow/main/view/MapWidget.dart';
 import 'package:flutter_restaruant/flow/main/view/RestaurantInfoListWidget.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
 import 'package:flutter_restaruant/flow/settings/view/SettingsPage.dart';
-import 'package:flutter_restaruant/main.dart';
 import 'package:flutter_restaruant/model/FilterConfigs.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
-import 'package:provider/provider.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -40,6 +36,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
 
   FilterConfigs _configs = FilterConfigs();
   String _filterKeyword = "";
+  bool _isListMode = true;
   late MainBloc _mainBloc;
   late List<YelpRestaurantSummaryInfo> _summaryInfos;
 
@@ -83,7 +80,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                           this._summaryInfos = (state is Success) ? state.summaryInfos : (state as LoadMoreSuccess).summaryInfos;
                         }
                         // display restaurant list
-                        return RestaurantInfoListWidget(this._summaryInfos, this._configs);
+                        return _isListMode ? RestaurantInfoListWidget(this._summaryInfos, this._configs) : MapWidget();
                       } else if(state is InProgress || state is MainInitial || state is ResetSuccess) {
                         if(state is MainInitial || state is ResetSuccess) {
                           int? price = this._configs.price;
@@ -123,6 +120,12 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                         childrenPressActions: [
                               () => Navigator.of(context).pushNamed(SettingsPage.ROUTE_NAME),
                               () => Navigator.of(context).pushNamed(FavorPage.ROUTE_NAME),
+                              () {
+                                this._isListMode = !_isListMode;
+
+                                this._mainBloc.add(Reset());
+                                print("Open map page");
+                              },
                               () => this._mainBloc.add(Reset()),
                               () {
                                     showPlatformDialog(
