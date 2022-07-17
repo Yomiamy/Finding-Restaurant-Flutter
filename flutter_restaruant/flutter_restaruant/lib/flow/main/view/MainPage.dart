@@ -12,6 +12,7 @@ import 'package:flutter_restaruant/component/ad/BannerAD.dart';
 import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.dart';
 import 'package:flutter_restaruant/flow/favor/view/FavorPage.dart';
 import 'package:flutter_restaruant/flow/filter/view/FilterPage.dart';
+import 'package:flutter_restaruant/flow/main/view/RestaurantInfoListWidget.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
 import 'package:flutter_restaruant/flow/settings/view/SettingsPage.dart';
 import 'package:flutter_restaruant/main.dart';
@@ -38,7 +39,6 @@ class MainPage extends StatefulWidget {
 class MainPageState extends State<MainPage> implements AppOpenADEvent {
 
   FilterConfigs _configs = FilterConfigs();
-  ScrollController _scrollController = ScrollController();
   String _filterKeyword = "";
   late MainBloc _mainBloc;
   late List<YelpRestaurantSummaryInfo> _summaryInfos;
@@ -82,41 +82,8 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                         if(state is Success || state is LoadMoreSuccess) {
                           this._summaryInfos = (state is Success) ? state.summaryInfos : (state as LoadMoreSuccess).summaryInfos;
                         }
-
-                        return NotificationListener<ScrollEndNotification>(
-                          onNotification: (notification) {
-                            if(this._scrollController.position.atEdge) {
-                              int? price = this._configs.price;
-                              int? openAt = this._configs.openAtInSec;
-                              String? sortBy = this._configs.sortBy;
-
-                              // Load more when scrolling reach the edge of ListView
-                              this._mainBloc.add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
-                            }
-                            return true;
-                          },
-                          child: ListView.builder(
-                              padding: EdgeInsets.only(top: 0, bottom: 0),
-                              controller: this._scrollController,
-                              itemCount: this._summaryInfos.length + 2 ,
-                              itemBuilder: (context, index) {
-                                if(index == 0) {
-                                  final adState = Provider.of<BannerADState>(context);
-
-                                  return BannerAD(adState: adState);
-                                } else if(index == 1) {
-                                  return FilterTagsWidget(filterConfigs: this._configs);
-                                } else {
-                                  YelpRestaurantSummaryInfo summaryInfo = this._summaryInfos[index - 2];
-
-                                  return GestureDetector(
-                                      child: RestaurantItemCell(summaryInfo: summaryInfo),
-                                      onTap: () async {
-                                        goRestaurantDetail(summaryInfo);
-                                      });
-                                }
-                              })
-                        );
+                        // display restaurant list
+                        return RestaurantInfoListWidget(this._summaryInfos, this._configs);
                       } else if(state is InProgress || state is MainInitial || state is ResetSuccess) {
                         if(state is MainInitial || state is ResetSuccess) {
                           int? price = this._configs.price;
@@ -211,6 +178,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
     );
   }
 
+  /// --- FCM notification
   void handleNotificationData() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       // Waiting building is finish and run.
@@ -220,17 +188,14 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
       if(summaryInfoFromNotification == null) {
         return;
       }
-      goRestaurantDetail(summaryInfoFromNotification);
+
+      Tuple2 arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(summaryInfoFromNotification, null);
+      // Avoid duplicate push, use pushNamedAndRemoveUntil instead of push
+      Navigator.of(context).pushNamedAndRemoveUntil(RestaurantDetailPage.ROUTE_NAME, ModalRoute.withName(MainPage.ROUTE_NAME), arguments: arguments);
     });
   }
 
-  void goRestaurantDetail(YelpRestaurantSummaryInfo summaryInfo) {
-    Tuple2 arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(summaryInfo, null);
-
-    // Avoid duplicate push, use pushNamedAndRemoveUntil instead of push
-    Navigator.of(context).pushNamedAndRemoveUntil(RestaurantDetailPage.ROUTE_NAME, ModalRoute.withName(MainPage.ROUTE_NAME), arguments: arguments);
-  }
-
+  /// --- AD
   Future<AnchoredAdaptiveBannerAdSize?> _anchoredAdaptiveBannerAdSize(
       BuildContext context) async {
     return await AdSize.getAnchoredAdaptiveBannerAdSize(
