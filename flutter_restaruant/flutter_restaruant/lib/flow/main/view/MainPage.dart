@@ -110,11 +110,12 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                     padding: EdgeInsets.only(right: 30, bottom: 50),
                     child: ExpandableFabButton(
                         initialOpen: false,
-                        distance: 170,
+                        distance: 190,
                         mainIcon: Icon(Icons.menu),
                         children: [
                           const Icon(Icons.settings),
                           const Icon(Icons.favorite),
+                          const Icon(Icons.map),
                           const Icon(Icons.navigation),
                           const Icon(Icons.search),
                           const Icon(Icons.filter_list),
