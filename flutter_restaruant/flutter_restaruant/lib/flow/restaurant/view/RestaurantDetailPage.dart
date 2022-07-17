@@ -12,7 +12,6 @@ import 'package:flutter_restaruant/component/ad/InterstitialADState.dart';
 import 'package:flutter_restaruant/component/cell/restaurant_detail/RestaurantDetailCellCollection.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantDetailInfo.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
-import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:fluttertoast/fluttertoast.dart';
@@ -70,7 +69,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                   return Text(state.detailInfo.name ?? "",
                           style: TextStyle(
                           color: Colors.white,
-                          fontSize: Dimens.xxxhFontSize
+                          fontSize: UIConstants.xxxhFontSize
                       ));
                 } else {
                   return Text("");

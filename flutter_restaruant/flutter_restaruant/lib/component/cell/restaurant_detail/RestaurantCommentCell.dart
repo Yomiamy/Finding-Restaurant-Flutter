@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/model/YelpReviewDetailInfo.dart';
-import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
@@ -83,7 +82,7 @@ class RestaurantCommentCell extends StatelessWidget {
                                   Text(name,
                                       style: TextStyle(
                                           fontWeight: FontWeight.w700,
-                                          fontSize: Dimens.hFontSize),
+                                          fontSize: UIConstants.hFontSize),
                                       overflow: TextOverflow.ellipsis),
                                   SizedBox(
                                       height:

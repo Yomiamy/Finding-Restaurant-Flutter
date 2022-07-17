@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_restaruant/utils/Dimens.dart';
+import 'package:flutter_restaruant/utils/UIConstants.dart';
 
 class ViewUtils {
   static void showPromptDialog({
@@ -15,7 +15,7 @@ class ViewUtils {
           title: PlatformText(
             title,
             style: TextStyle(
-                fontSize: Dimens.xxhFontSize,
+                fontSize: UIConstants.xxhFontSize,
                 fontWeight: FontWeight.bold
             ),
           ),

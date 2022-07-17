@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_restaruant/flow/main/bloc/MainBloc.dart';
 import 'package:flutter_restaruant/model/FilterConfigs.dart';
-import 'package:flutter_restaruant/utils/Dimens.dart';
+import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_tags/flutter_tags.dart';
 
 import 'MainPage.dart';
@@ -41,7 +41,7 @@ class FilterTagsWidget extends StatelessWidget {
               key: Key(index.toString()),
               index: index,
               title: this._filterConfigsMap.values.toList()[index],
-              textStyle: TextStyle( fontSize: Dimens.xhFontSize),
+              textStyle: TextStyle( fontSize: UIConstants.xhFontSize),
               customData: this._filterConfigsMap.keys.toList()[index],
               combine: ItemTagsCombine.withTextBefore,
               color: Theme.of(context).primaryColor,

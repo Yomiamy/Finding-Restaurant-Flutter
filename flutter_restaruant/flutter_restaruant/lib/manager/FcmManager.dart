@@ -105,7 +105,8 @@ class FcmManager {
     }
 
     const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings(UIConstants.FCM_NOTIFICATION_ICON);
-    final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid);
+    const IOSInitializationSettings initializationSettingsIos = IOSInitializationSettings();
+    final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIos);
     _flutterLocalNotificationsPlugin.initialize(
         initializationSettings,
         onSelectNotification:_firebaseForegroundMessagingOpenHandler

@@ -2,7 +2,6 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/model/FilterConfigs.dart';
-import 'package:flutter_restaruant/utils/Dimens.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
@@ -52,11 +51,11 @@ class _FilterPageState extends State<FilterPage> {
                   child: Text(AppLocalizations?.of(context)?.apply ?? "",
                       style: TextStyle(
                           color: Colors.white,
-                          fontSize: Dimens.xhFontSize)))
+                          fontSize: UIConstants.xhFontSize)))
             ],
             title: Text(AppLocalizations?.of(context)?.filter_rules ?? "",
                 style: TextStyle(
-                    color: Colors.white, fontSize: Dimens.xxxhFontSize)),
+                    color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: ListView(children: <Widget>[
           // Price level
@@ -65,7 +64,7 @@ class _FilterPageState extends State<FilterPage> {
               child: Text(AppLocalizations?.of(context)?.filter_price ?? "",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: Dimens.xxxhFontSize))),
+                      fontSize: UIConstants.xxxhFontSize))),
           this._createSegmentWidget(
               initValue: this._priceIndex,
               segmentItems: ['\$', '\$\$', '\$\$\$', '\$\$\$\$'],
@@ -79,7 +78,7 @@ class _FilterPageState extends State<FilterPage> {
               child: Text(AppLocalizations?.of(context)?.filter_business_hour ?? "",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: Dimens.xxxhFontSize))),
+                      fontSize: UIConstants.xxxhFontSize))),
           SizedBox(
             width: MediaQuery.of(context).size.width.toInt() - 20,
             height: 200,
@@ -98,7 +97,7 @@ class _FilterPageState extends State<FilterPage> {
               child: Text(AppLocalizations?.of(context)?.filter_sorting_rule ?? "",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      fontSize: Dimens.xxxhFontSize))),
+                      fontSize: UIConstants.xxxhFontSize))),
           this._createSegmentWidget(
               initValue: this._sortByIndex,
               segmentItems: [
