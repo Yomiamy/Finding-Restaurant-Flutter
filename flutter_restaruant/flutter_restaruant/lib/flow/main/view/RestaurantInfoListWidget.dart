@@ -14,11 +14,11 @@ import 'package:provider/provider.dart';
 
 class RestaurantInfoListWidget extends StatelessWidget {
 
-  ScrollController _scrollController = ScrollController();
-  List<YelpRestaurantSummaryInfo> _summaryInfos;
-  FilterConfigs _configs;
+  final ScrollController _scrollController = ScrollController();
+  final List<YelpRestaurantSummaryInfo> _summaryInfos;
+  final FilterConfigs _configs;
 
-  RestaurantInfoListWidget(this._summaryInfos, this._configs);
+  RestaurantInfoListWidget(this._summaryInfos, this._configs, {Key? key}):super(key: key);
 
   @override
   Widget build(BuildContext context) {
