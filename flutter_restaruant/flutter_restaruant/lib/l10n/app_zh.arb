@@ -21,6 +21,7 @@
   "main_page_title": "尋找餐廳",
   "keyword_search": "關鍵字過濾",
   "keyword_search_hint": "店名/分類/地區/路",
+  "map_my_loc_title": "我的位置",
 
   "@==== PhotoViewer ====": {},
   "photo_viewer_title": "預覽",

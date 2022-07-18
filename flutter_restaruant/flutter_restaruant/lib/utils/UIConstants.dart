@@ -22,6 +22,7 @@ class UIConstants {
   static const BACK_BTN_COLOR = 0xffffffff;
 
   static const EMPTY_WIDGET = SizedBox(height: 0);
+  static const MAP_MY_LOCATION_MARK_ID = "MAP_MY_LOCATION_MARK_ID";
 
   static int InterstitialADCountDown = 3;
 
