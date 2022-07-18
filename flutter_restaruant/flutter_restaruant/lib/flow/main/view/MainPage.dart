@@ -80,7 +80,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                           this._summaryInfos = (state is Success) ? state.summaryInfos : (state as LoadMoreSuccess).summaryInfos;
                         }
                         // display restaurant list
-                        return _isListMode ? RestaurantInfoListWidget(this._summaryInfos, this._configs) : MapWidget();
+                        return _isListMode ? RestaurantInfoListWidget(this._summaryInfos, this._configs) : MapWidget(this._summaryInfos);
                       } else if(state is InProgress || state is MainInitial || state is ResetSuccess) {
                         if(state is MainInitial || state is ResetSuccess) {
                           int? price = this._configs.price;
@@ -124,7 +124,6 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                                 this._isListMode = !_isListMode;
 
                                 this._mainBloc.add(Reset());
-                                print("Open map page");
                               },
                               () => this._mainBloc.add(Reset()),
                               () {

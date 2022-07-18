@@ -1,58 +1,68 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/widgets.dart';
+import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
+import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class MapWidget extends StatefulWidget {
-  const MapWidget({Key? key}) : super(key: key);
+  final List<YelpRestaurantSummaryInfo> _summaryInfos;
+
+  const MapWidget(this._summaryInfos);
 
   @override
   State<MapWidget> createState() => _MapPageState();
 }
 
 class _MapPageState extends State<MapWidget> {
-  final _markers = {
-    Marker(
-        position: LatLng(51.178883, -1.826215),
-        markerId: MarkerId('1'),
-        infoWindow: InfoWindow(title: "Stonehenge"),
-        icon: BitmapDescriptor.defaultMarker),
-    Marker(
-        position: LatLng(41.890209, 12.492231),
-        markerId: MarkerId('2'),
-        infoWindow: InfoWindow(title: "Colosseum"),
-        icon: BitmapDescriptor.defaultMarker),
-    Marker(
-        position: LatLng(36.106964, -112.112999),
-        markerId: MarkerId('3'),
-        infoWindow: InfoWindow(title: "Grand Canyon"),
-        icon: BitmapDescriptor.defaultMarker)
-  };
 
-  CameraPosition? _mapCenterPos = null;
-  GoogleMapController? _mapController = null;
+  CameraPosition? _currentPos;
+  GoogleMapController? _mapController;
+  Marker? _myLocMarker;
+  Set<Marker> _markers = {};
 
+  @override
+  void initState() {
+    super.initState();
+
+    Iterable<Marker> ite = widget._summaryInfos.map((summaryInfo) => Marker(
+        markerId: MarkerId(summaryInfo.id!),
+        position: LatLng(summaryInfo.coordinates!.latitude!, summaryInfo.coordinates!.longitude!),
+        infoWindow: InfoWindow(title: summaryInfo.name),
+        icon: BitmapDescriptor.defaultMarker));
+    this._markers = (){
+      Set<Marker> markers = Set();
+
+      markers.addAll(ite);
+      return markers;
+    }();
+  }
 
   @override
   Widget build(BuildContext context) {
-    return  GoogleMap(
-        initialCameraPosition:
-        CameraPosition(target: LatLng(51.178883, -1.826215)),
+    return GoogleMap(
+        initialCameraPosition: CameraPosition(target: UIConstants.MAP_DEFAULT_LOCATION),
         markers: this._markers,
         myLocationEnabled: true,
         onCameraMove: (position) {
-          this._mapCenterPos = position;
+          this._currentPos = position;
         },
         onMapCreated: (controller) {
           this._mapController = controller;
         },
         onCameraIdle: () {
+          if(_myLocMarker != null) {
+            this._markers.remove(this._myLocMarker);
+          }
+
           setState(() {
-            this._markers.add(Marker(
-                position: this._mapCenterPos!.target,
-                markerId: MarkerId('${this._markers.length + 1}'),
-                infoWindow:
-                InfoWindow(title: "Moved ${this._markers.length + 1}"),
-                icon: BitmapDescriptor.defaultMarker));
+            this._myLocMarker = Marker(
+                position: this._currentPos!.target,
+                markerId: MarkerId(UIConstants.MAP_MY_LOCATION_MARK_ID),
+                infoWindow: InfoWindow(title: AppLocalizations?.of(context)?.map_my_loc_title ?? ""),
+                icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow));
+
+            this._markers.add(this._myLocMarker!);
           });
         });
   }
