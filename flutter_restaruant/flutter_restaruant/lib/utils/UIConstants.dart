@@ -1,6 +1,7 @@
 import 'dart:ui';
 
 import 'package:flutter/widgets.dart';
+import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class UIConstants {
 
@@ -22,8 +23,11 @@ class UIConstants {
   static const BACK_BTN_COLOR = 0xffffffff;
 
   static const EMPTY_WIDGET = SizedBox(height: 0);
+  
+  static const MAP_DEFAULT_LOCATION = LatLng(25.048036, 121.517063);
   static const MAP_MY_LOCATION_MARK_ID = "MAP_MY_LOCATION_MARK_ID";
 
+  // AD
   static int InterstitialADCountDown = 3;
 
   // Dimens
