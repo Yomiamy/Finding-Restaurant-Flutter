@@ -145,7 +145,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                                               },
                                           ),
                                           actions: [
-                                            PlatformButton(
+                                            PlatformElevatedButton(
                                                 onPressed: () {
                                                   this._mainBloc.add(FilterListByKeyword(keyword: this._filterKeyword, sortByStr: this._configs.sortBy));
                                                   this._filterKeyword = "";
@@ -154,7 +154,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                                                 },
                                                 child: PlatformText(AppLocalizations?.of(context)?.confirm ?? "")
                                             ),
-                                            PlatformButton(
+                                            PlatformElevatedButton(
                                                 onPressed: () {
                                                   Navigator.pop(context);
                                                 },
