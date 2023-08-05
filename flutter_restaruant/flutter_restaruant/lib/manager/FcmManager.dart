@@ -54,8 +54,10 @@ class FcmManager {
     Navigator.of(context).pushNamedAndRemoveUntil(MainPage.ROUTE_NAME, ModalRoute.withName(SplashPage.ROUTE_NAME), arguments: arguments);
   }
 
-  void _firebaseForegroundMessagingOpenHandler(String? payload) async {
-    print("Handling a message open: $payload");
+  void _firebaseForegroundMessagingOpenHandler(NotificationResponse? notificationResponse) async {
+    String? payload = notificationResponse?.payload;
+
+    print("Handling a message open: ${payload}");
 
     if(payload == null || payload.isEmpty) {
       return;
@@ -105,11 +107,11 @@ class FcmManager {
     }
 
     const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings(UIConstants.FCM_NOTIFICATION_ICON);
-    const IOSInitializationSettings initializationSettingsIos = IOSInitializationSettings();
+    const DarwinInitializationSettings initializationSettingsIos = DarwinInitializationSettings();
     final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIos);
     _flutterLocalNotificationsPlugin.initialize(
         initializationSettings,
-        onSelectNotification:_firebaseForegroundMessagingOpenHandler
+        onDidReceiveNotificationResponse: _firebaseForegroundMessagingOpenHandler
     );
 
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
