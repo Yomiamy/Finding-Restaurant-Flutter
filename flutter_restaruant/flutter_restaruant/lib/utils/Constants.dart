@@ -25,6 +25,7 @@ class Constants {
   static const AD_IOS_INTERSTITAL_ID = "ca-app-pub-7910179918263365/7956300504";
 
   /// [API]
+  static const STATIC_MAP_API_KEY = "AIzaSyAfe5kOHB_-GPPNovB8iCDimCBnTsW6OYQ";
   static const BASE_URL = "https://api.yelp.com";
   static const GOOGLE_MAP_API_URL = "https://maps.googleapis.com/maps/api";
   static const GOOGLE_STATIC_MAP = "$GOOGLE_MAP_API_URL/staticmap";

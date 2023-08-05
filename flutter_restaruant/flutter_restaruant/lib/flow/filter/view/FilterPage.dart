@@ -39,7 +39,7 @@ class _FilterPageState extends State<FilterPage> {
                 cupertinoIcon: Icon(CupertinoIcons.back,
                     color: Color(UIConstants.BACK_BTN_COLOR))),
             trailingActions: [
-              PlatformButton(
+              PlatformElevatedButton(
                   color: Color(UIConstants.APP_PRIMARY_COLOR),
                   padding: EdgeInsets.all(0),
                   onPressed: () {

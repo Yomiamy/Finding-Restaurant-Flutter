@@ -21,6 +21,7 @@
   "main_page_title": "FindRestaurant",
   "keyword_search": "Keyword Search",
   "keyword_search_hint": "Store/Category/Street...",
+  "map_my_loc_title": "I am here",
 
   "@==== Restaurant Detail Page ====": {},
   "photo_viewer_title": "Photo Viewer",
