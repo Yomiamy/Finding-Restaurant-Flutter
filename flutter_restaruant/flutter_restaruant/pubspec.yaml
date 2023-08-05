@@ -23,7 +23,6 @@ environment:
 dependencies:
   flutter_platform_widgets: ^3.3.5
   event_bus: ^2.0.0
-  geolocator: ^8.2.0
   image_picker: ^0.8.4+11
   camera: ^0.9.4+18
   sprintf: ^6.0.0
@@ -34,6 +33,7 @@ dependencies:
   path_provider: ^2.0.15
   shared_preferences: ^2.2.0
   sqflite: ^2.3.0
+  geolocator: ^9.0.2
   settings_ui: ^2.0.2
   local_auth: ^2.1.6
   package_info_plus: ^1.4.0
