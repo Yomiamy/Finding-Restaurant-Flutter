@@ -15,6 +15,30 @@
       },
       "oauth_client": [
         {
+          "client_id": "35224406241-6hursinnrblkjo76gp1mlvppsddul6vu.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yomi.flutter_restaruant",
+            "certificate_hash": "3be649c191df4d0fa98fa1e8e8501d4476867b98"
+          }
+        },
+        {
+          "client_id": "35224406241-90ngfgnmbfukjfedo8faa34kpt10vg46.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yomi.flutter_restaruant",
+            "certificate_hash": "8733f8c160073b24083442fc4af4e2e66e633b3a"
+          }
+        },
+        {
+          "client_id": "35224406241-ammrtmudg86rikltarbdt1fig35kko50.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.yomi.flutter_restaruant",
+            "certificate_hash": "518c5748c5b5e079949b33cb30d35d1a95de218a"
+          }
+        },
+        {
           "client_id": "35224406241-hve1g7v9c5neh8vcrtjfv5h4agbr6kf3.apps.googleusercontent.com",
           "client_type": 1,
           "android_info": {
@@ -48,7 +72,8 @@
             }
           ]
         }
-      }
+      },
+      "admob_app_id": "ca-app-pub-7910179918263365~5206283588"
     }
   ],
   "configuration_version": "1"
