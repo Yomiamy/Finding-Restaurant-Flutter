@@ -11,8 +11,8 @@ class DioClient {
          List<InterceptorsWrapper>? interceptWraps}) {
      BaseOptions options = () {
       BaseOptions options = BaseOptions();
-      options.connectTimeout = connectionTimeout;
-      options.receiveTimeout = receiveTimeout;
+      options.connectTimeout = Duration(milliseconds: connectionTimeout);
+      options.receiveTimeout = Duration(milliseconds: receiveTimeout);
 
       return options;
     }();
