@@ -4,10 +4,10 @@ import 'package:flutter_restaruant/utils/UIConstants.dart';
 
 class ViewUtils {
   static void showPromptDialog({
-    context:BuildContext,
-    title:String,
-    msg:String,
-    confirmStr:String}) => WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    required BuildContext context,
+    required String title,
+    required String msg,
+    required String confirmStr}) => WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
     showPlatformDialog(
         context: context,
         builder: (context) => PlatformAlertDialog(
