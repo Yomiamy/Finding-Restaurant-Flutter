@@ -36,8 +36,8 @@ dependencies:
   fluttertoast: ^8.2.2
   settings_ui: ^2.0.2
   local_auth: ^2.1.6
-  package_info_plus: ^1.4.0
   google_maps_flutter: ^2.1.8
+  package_info_plus: ^4.1.0
 
   bloc: ^8.0.3
   flutter_bloc: ^8.0.1
