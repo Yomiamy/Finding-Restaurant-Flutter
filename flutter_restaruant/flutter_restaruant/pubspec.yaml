@@ -49,12 +49,12 @@ dependencies:
 
   firebase_core: ^2.15.0
   google_mobile_ads: ^3.0.0
-  cloud_firestore: ^4.7.1
   firebase_storage: ^11.0.2
   firebase_auth: ^4.6.1
   firebase_messaging: ^14.6.1
   flutter_local_notifications: ^9.6.0
   firebase_analytics: ^10.4.4
+  cloud_firestore: ^4.8.4
 
   google_sign_in: ^5.2.4
   sign_in_with_apple: ^4.3.0
