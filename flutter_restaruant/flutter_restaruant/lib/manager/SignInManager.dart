@@ -24,7 +24,7 @@ class SignInManager {
   BiometricSignInManager _biometricAuthManager = BiometricSignInManager();
   AutoSignInManager _autoSignInManager = AutoSignInManager();
 
-  Future<Tuple2<AccountInfo?, String>> signIn(AccountType accountType, {mail:String, passwd:String}) async {
+  Future<Tuple2<AccountInfo?, String>> signIn(AccountType accountType, {String mail = "", String passwd = ""}) async {
     Tuple2<AccountInfo?, String> signInResult = Tuple2(null, "");
 
     switch(accountType) {
@@ -37,14 +37,15 @@ class SignInManager {
       case AccountType.FACEBOOK:
         signInResult = await this._facebookSignInManager.signInWithFB();
         break;
-      case AccountType.MAIL:
-        signInResult = await this._mailSignInUpManager.signInWithMail(mail, passwd);
-        break;
       case AccountType.BIOMETRIC:
         signInResult = await this._biometricAuthManager.signInWithBiometric();
         break;
       case AccountType.AUTO:
         signInResult = await this._autoSignInManager.signInWithAuto();
+        break;
+      case AccountType.MAIL:
+      default:
+        signInResult = await this._mailSignInUpManager.signInWithMail(mail, passwd);
         break;
     }
     this.accountInfo = signInResult.item1;
@@ -52,11 +53,12 @@ class SignInManager {
     return signInResult;
   }
 
-  Future<Tuple2<AccountInfo?, String>> signUp(AccountType accountType, {mail:String, passwd:String}) async {
+  Future<Tuple2<AccountInfo?, String>> signUp(AccountType accountType, {required String mail, required String passwd}) async {
     Tuple2<AccountInfo?, String> signUpResult = Tuple2(null, "");
 
     switch(accountType) {
       case AccountType.MAIL:
+      default:
         signUpResult = await this._mailSignInUpManager.signUpWithMail(mail, passwd);
         break;
     }
@@ -77,6 +79,7 @@ class SignInManager {
         this._facebookSignInManager.signOutWithFB();
         break;
       case AccountType.MAIL:
+      default:
         this._mailSignInUpManager.signOutWithMail();
         break;
     }

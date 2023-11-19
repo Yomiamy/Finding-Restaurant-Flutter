@@ -37,10 +37,15 @@ class FacebookSignInManager {
       print("FacebookSignInManager, error = $e");
       if (e.code == "account-exists-with-different-credential") {
         String email = e.email ?? "";
-        List<String> signInMethods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
-        String signInMethodsStr = signInMethods.join("/");
 
-        return Tuple2(null, "Account already created by ($signInMethodsStr), please use $signInMethodsStr account to sign in");
+        if(email.isNotEmpty) {
+          List<String> signInMethods = await FirebaseAuth.instance.fetchSignInMethodsForEmail(email);
+          String signInMethodsStr = signInMethods.join("/");
+
+          return Tuple2(null, "Account already created by ($signInMethodsStr), please use $signInMethodsStr account to sign in");
+        } else {
+          return Tuple2(null, "FB sign in fail, please retry again\n${e.toString()}");
+        }
       } else {
         return Tuple2(null, "FB sign in fail, please retry again\n${e.toString()}");
       }

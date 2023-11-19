@@ -103,8 +103,9 @@ class MainRepository {
           double rating2 = info2.rating ?? 0;
 
           return rating2.compareTo(rating1);
+        default:
+          return 0;
       }
-      return 0;
     });
 
     return summaryInfos;
