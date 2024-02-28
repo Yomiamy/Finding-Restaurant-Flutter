@@ -8,6 +8,7 @@ import 'package:flutter_restaruant/flow/splash/view/SplashPage.dart';
 import 'package:flutter_restaruant/manager/BiometricSignInManager.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
+import 'package:flutter_restaruant/utils/Utils.dart';
 import 'package:settings_ui/settings_ui.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
@@ -21,7 +22,6 @@ class SettingsPage extends StatefulWidget {
 }
 
 class _SettingsPageState extends State<SettingsPage> {
-
   late SettingsBloc _settingsBloc;
 
   @override
@@ -34,7 +34,8 @@ class _SettingsPageState extends State<SettingsPage> {
   @override
   Widget build(BuildContext context) {
     this._settingsBloc.add(InitBioAuthSettingEvent());
-    bool isSupportBiometricAuth = BiometricSignInManager().isSupportBiometricAuth;
+    bool isSupportBiometricAuth =
+        BiometricSignInManager().isSupportBiometricAuth;
 
     return PlatformScaffold(
         appBar: PlatformAppBar(
@@ -45,71 +46,106 @@ class _SettingsPageState extends State<SettingsPage> {
                     color: Color(UIConstants.BACK_BTN_COLOR)),
                 cupertinoIcon: Icon(CupertinoIcons.back,
                     color: Color(UIConstants.BACK_BTN_COLOR))),
-            title: PlatformText(AppLocalizations?.of(context)?.settings_title ?? "",
+            title: PlatformText(
+                AppLocalizations?.of(context)?.settings_title ?? "",
                 style: TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
-        body: BlocBuilder<SettingsBloc, SettingsState>(builder: (context, state) {
+        body:
+            BlocBuilder<SettingsBloc, SettingsState>(builder: (context, state) {
           bool bioAuthSettingSwitchValue = false;
 
-          if(state is LogoutSuccess) {
+          if (state is LogoutSuccess) {
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
               // Waiting building is finish and run.
-              Navigator.of(context).pushNamedAndRemoveUntil(SignInPage.ROUTE_NAME, ModalRoute.withName(SplashPage.ROUTE_NAME));
+              Navigator.of(context).pushNamedAndRemoveUntil(
+                  SignInPage.ROUTE_NAME,
+                  ModalRoute.withName(SplashPage.ROUTE_NAME));
             });
           } else if (state is ToggleBioAuthSettingState) {
             bioAuthSettingSwitchValue = state.settingValue;
           } else if (state is InitBioAuthSettingState) {
             bioAuthSettingSwitchValue = state.settingValue;
+          } else if(state is AccountRemovalSuccessState) {
+            // Logout after request AccountRemovalEvent
+            this._settingsBloc.add(LogoutEvent());
           }
 
-          return SettingsList(
-            sections: [
-              this.createHeadSection(),
-              this.createInfoSettingsSection(bioAuthSettingSwitchValue, isSupportBiometricAuth),
-              this.createLogoutSection(),
-            ]
-          );
+          return SettingsList(sections: [
+            this.createHeadSection(),
+            this.createInfoSettingsSection(
+                bioAuthSettingSwitchValue, isSupportBiometricAuth),
+            this.createLogoutSection(),
+          ]);
         }));
   }
 
   AbstractSettingsSection createHeadSection() => CustomSettingsSection(
-      child: Image.asset("images/icon_setting_icon.gif",
+      child: Image.asset(
+          "images/icon_setting_icon.gif",
           height: 230.0,
-          width: 230.0));
+          width: 230.0
+      )
+  );
 
-  AbstractSettingsSection createInfoSettingsSection(bool bioAuthSettingSwitchValue, bool isSupportBiometricAuth) =>
-      SettingsSection(title: PlatformText(AppLocalizations?.of(context)?.information_section_title ?? ""), tiles: <SettingsTile>[
-        SettingsTile(
-          leading: Icon(Icons.info),
-          title: PlatformText(AppLocalizations?.of(context)?.version_tile_title ?? ""),
-          value: PlatformText(Constants.VERSION),
-        ),
-        // TODO:判斷生物辨識
-        // SettingsTile.switchTile(
-        //     leading: Icon(Icons.fingerprint),
-        //     title: PlatformText('生物辨識'),
-        //     initialValue: bioAuthSettingSwitchValue,
-        //     onToggle: (value) {
-        //       this._settingsBloc.add(ToggleBioAuthSettingEvent());
-        //     })
-      ]);
+  AbstractSettingsSection createInfoSettingsSection(
+          bool bioAuthSettingSwitchValue, bool isSupportBiometricAuth) =>
+      SettingsSection(
+          title: PlatformText(
+              AppLocalizations?.of(context)?.information_section_title ?? ""),
+          tiles: <SettingsTile>[
+            SettingsTile(
+              leading: Icon(Icons.info),
+              title: PlatformText(
+                  AppLocalizations?.of(context)?.version_tile_title ?? ""),
+              value: PlatformText(Constants.VERSION),
+            ),
+            // TODO:判斷生物辨識
+            // SettingsTile.switchTile(
+            //     leading: Icon(Icons.fingerprint),
+            //     title: PlatformText('生物辨識'),
+            //     initialValue: bioAuthSettingSwitchValue,
+            //     onToggle: (value) {
+            //       this._settingsBloc.add(ToggleBioAuthSettingEvent());
+            //     })
+          ]);
 
   AbstractSettingsSection createLogoutSection() => CustomSettingsSection(
       child: Padding(
-          padding: EdgeInsets.only(left: 20, top: 50, right: 20),
-          child: SizedBox(
-              height: 60,
-              child: PlatformElevatedButton(
-                  color: Colors.red,
-                  child: Text(AppLocalizations?.of(context)?.logout_section_title ?? "",
+          padding: EdgeInsets.only(left: 25, top: 50, right: 25),
+          child: Column(mainAxisSize: MainAxisSize.min, children: [
+                SizedBox(
+                  height: 50,
+                  child: PlatformElevatedButton(
+                      color: Colors.red,
+                      child: Text(
+                          AppLocalizations?.of(context)?.logout_section_title ?? "",
+                          style: TextStyle(
+                              fontSize: UIConstants.xhFontSize,
+                              fontWeight: FontWeight.bold,
+                              color: Colors.white
+                          )
+                      ),
+                      onPressed: () {
+                        this._settingsBloc.add(LogoutEvent());
+                      }),
+                ),
+                SizedBox(height: 20),
+                GestureDetector(
+                  onTap: () {
+                    this._settingsBloc.add(AccountRemovalEvent(
+                        subject: AppLocalizations?.of(context)?.delete_account_email_subject ?? "",
+                        bodyPrefix: AppLocalizations?.of(context)?.delete_account_email_body ?? ""
+                    ));
+                  },
+                  child: Text(
+                      AppLocalizations?.of(context)?.delete_account_title ?? "",
                       style: TextStyle(
-                          fontSize: UIConstants.xhFontSize,
+                          fontSize: UIConstants.hFontSize,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white)),
-                  onPressed: () {
-                    this._settingsBloc.add(LogoutEvent());
-                  })
-          )
-      ));
+                          color: Colors.red)),
+                )
+              ])
+      )
+  );
 }

@@ -37,6 +37,8 @@ class Constants {
   static const GOOGLE_MAP_STREETVIEW_LATLNG = "cbll";
   static const AUTH_TOKEN = "Bearer 4htbz9nLozJ_-Xw-13LpeVWrEIRWZt4IrgTOQXstx7M1DCVeUIoxIZkQ0XVLVEtD2Gy2Vp1FjA2WRz5DOpZMSxHfXVBLR3gi0DeMXIV3X1bCHYoMoJ-_TZLfBn0ZWnYx";
   static const LOCALE = "zh_TW";
+  static const EMAIL_SUBJEC = "subject";
+  static const EMAIL_BODY = "body";
   static const int CONNECTION_TIEMOUT = 30000;
   static const int RECEIVE_TIEMOUT = 30000;
   static const int PAGE_ITEM_COUNT = 50;

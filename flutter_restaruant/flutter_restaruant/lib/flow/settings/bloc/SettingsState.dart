@@ -39,6 +39,17 @@ class LogoutSuccess extends SettingsState {
   List<Object> get props => [];
 }
 
+class AccountRemovalSuccessState extends SettingsState {
+
+  const AccountRemovalSuccessState();
+
+  @override
+  String toString() => "AccountRemovalSuccess";
+
+  @override
+  List<Object> get props => [];
+}
+
 class InitBioAuthSettingState extends SettingsState {
 
   final bool settingValue;

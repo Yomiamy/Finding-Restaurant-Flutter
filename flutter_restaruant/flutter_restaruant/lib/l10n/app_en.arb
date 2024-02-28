@@ -39,6 +39,9 @@
   "information_section_title": "Information",
   "version_tile_title": "Version",
   "logout_section_title": "Logout",
+  "delete_account_title": "Delete Account",
+  "delete_account_email_subject": "Request for Account Deletion and Data Removal",
+  "delete_account_email_body": "Dear Team, I am writing to formally request the deletion of my account and all associated personal data. Please find the details of my account:",
 
   "@==== SignIn Page ====": {},
   "signin_page_title": "SignIn/SignUp",

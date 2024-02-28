@@ -4,8 +4,11 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_restaruant/flow/settings/repository/SettingsRepository.dart';
 
+import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+
 part 'SettingsEvent.dart';
 part 'SettingsState.dart';
+
 
 class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
 
@@ -22,6 +25,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       emit(InitBioAuthSettingState(settingValue: settingValue));
     });
 
+    on<ToggleBioAuthSettingEvent>((event, emit) async {
+      bool settingValue = await _settingsRepository.toggleBioAuthSetting();
+
+      emit(ToggleBioAuthSettingState(settingValue: settingValue));
+    });
+
     on<LogoutEvent>((event, emit) async {
       emit(InProgress());
 
@@ -30,10 +39,12 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
       emit(LogoutSuccess());
     });
 
-    on<ToggleBioAuthSettingEvent>((event, emit) async {
-      bool settingValue = await _settingsRepository.toggleBioAuthSetting();
+    on<AccountRemovalEvent>((event, emit) async {
+      emit(InProgress());
 
-      emit(ToggleBioAuthSettingState(settingValue: settingValue));
+      await _settingsRepository.removeAccount(event.subject, event.bodyPrefix);
+
+      emit(AccountRemovalSuccessState());
     });
   }
 }
