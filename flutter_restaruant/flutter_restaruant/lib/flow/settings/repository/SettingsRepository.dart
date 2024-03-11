@@ -1,7 +1,9 @@
+import 'dart:convert';
 import 'dart:ffi';
 
 import 'package:flutter_restaruant/manager/SignInManager.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
+import 'package:flutter_restaruant/utils/Utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsRepository {
@@ -31,6 +33,17 @@ class SettingsRepository {
     prefs.setBool(Constants.PREF_KEY_BIOMETRIC_AUTH_SETTING, newBiometricAuthSetting);
 
     return newBiometricAuthSetting;
+  }
+
+  Future<bool> removeAccount(String subject, String bodyPrefix) async {
+    String account = SignInManager().accountInfo?.account ?? "";
+
+    if(account.isEmpty) {
+      return false;
+    }
+
+    Utils.openUrl(rawUrl: "mailto:o1984531@gmail.com?subject=${subject}&body=${bodyPrefix + account}");
+    return true;
   }
 
 }

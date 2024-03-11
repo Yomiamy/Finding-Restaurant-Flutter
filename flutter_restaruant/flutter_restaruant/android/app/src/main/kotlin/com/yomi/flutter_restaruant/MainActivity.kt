@@ -1,5 +1,7 @@
 package com.yomi.flutter_restaruant
 
+import android.os.Bundle
+import com.google.android.gms.common.GoogleApiAvailability
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.android.FlutterFragmentActivity
 import io.flutter.embedding.engine.FlutterEngine
@@ -11,6 +13,12 @@ class MainActivity: FlutterFragmentActivity() {
 //        GeneratedPluginRegistrant.registerWith(flutterEngine)
 //        MethodChannel(flutterEngine.dartExecutor.binaryMessenger, "").setMethodCallHandler { call, result ->  }
 //    }
+
+    override fun onCreate(savedInstanceState: Bundle?) {
+        super.onCreate(savedInstanceState)
+
+        GoogleApiAvailability.getInstance().makeGooglePlayServicesAvailable(this);
+    }
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
         GeneratedPluginRegistrant.registerWith(flutterEngine)

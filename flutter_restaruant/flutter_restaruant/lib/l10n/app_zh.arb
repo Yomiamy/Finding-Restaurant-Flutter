@@ -39,6 +39,9 @@
   "information_section_title": "資訊",
   "version_tile_title": "版本",
   "logout_section_title": "登出",
+  "delete_account_title": "刪除帳戶",
+  "delete_account_email_subject": "請求刪除我的帳號及相關數據",
+  "delete_account_email_body": "敬愛的團隊，我希望透過這封信來正式請求刪除我的帳號，以及與該帳號相關的所有個人資料和數據。帳號詳細資訊為:",
 
   "@==== SignIn Page ====": {},
   "signin_page_title": "登入/註冊",

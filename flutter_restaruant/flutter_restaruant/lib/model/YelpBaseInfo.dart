@@ -24,7 +24,13 @@ class YelpBaseInfo {
 
   YelpBaseInfo();
 
-  Image getRatingImage(String rating) => YelpBaseInfo._sRatingImgMap[rating];
+  Image getRatingImage(String rating) {
+    int dotIndex = rating.indexOf(".");
+    String ratingBeforeDotStr = rating.substring(0, dotIndex);
+    String ratingAfterDotStr = (rating.substring(dotIndex, rating.length).compareTo(".5") < 1) ? ".0" : ".5";
+
+    return _sRatingImgMap["${ratingBeforeDotStr}${ratingAfterDotStr}"];
+  }
 
   String getWeekDayStrByIndex(int day) {
     bool isLocaleZh = Utils.isLocaleZh();

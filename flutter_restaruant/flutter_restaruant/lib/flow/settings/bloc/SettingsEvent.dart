@@ -30,3 +30,14 @@ class LogoutEvent extends SettingsEvent {
   @override
   List<Object> get props => [];
 }
+
+class AccountRemovalEvent extends SettingsEvent {
+
+  final String subject;
+  final String bodyPrefix;
+
+  const AccountRemovalEvent({required this.subject, required this.bodyPrefix});
+
+  @override
+  List<Object> get props => [];
+}

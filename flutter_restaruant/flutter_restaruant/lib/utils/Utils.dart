@@ -2,6 +2,7 @@ import 'dart:io';
 
 import 'package:geolocator/geolocator.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:url_launcher/url_launcher_string.dart';
 
 class Utils {
   static String? encodeQueryParameters(Map<String, String> params) => params
@@ -10,20 +11,31 @@ class Utils {
           '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
       .join('&');
 
-  static void openUrl({ required String scheme,
-    required String host, String path = "",
-    Map<String, String> parameters = const <String, String>{}}) async {
+  static void openUrl({
+    String? rawUrl = null,
+    String? scheme = null,
+    String? host = null,
+    String path = "",
+    Map<String, String> parameters = const <String, String>{}
+  }) async {
 
-    final Uri uri = Uri(
-      scheme: scheme,
-      host: host,
-      path: path,
-      query: encodeQueryParameters(parameters),
-    );
+    if(rawUrl != null && rawUrl.isNotEmpty) {
+      launchUrlString(rawUrl);
+    } else if(scheme != null
+        && host != null
+        && scheme.isNotEmpty
+        && host.isNotEmpty) {
+      final Uri uri = Uri(
+        scheme: scheme,
+        host: host,
+        path: path,
+        query: encodeQueryParameters(parameters),
+      );
 
-    bool isCanLaunch = await canLaunch(uri.toString());
-    if(isCanLaunch) {
-      launch(uri.toString());
+      bool isCanLaunch = await canLaunch(uri.toString());
+      if(isCanLaunch) {
+        launchUrl(uri);
+      }
     }
   }
 
