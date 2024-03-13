@@ -92,9 +92,8 @@ class FcmManager {
                 ),
               ),
               payload: JsonEncoder().convert(message.data))
-          .onError((error, stackTrace) =>
-              {
-                print("Handling a foreground message error: $error")
+          .onError((error, stackTrace) {
+                print("Handling a foreground message error: $error");
               });
     }
   }
@@ -129,7 +128,7 @@ class FcmManager {
     });
   }
 
-  void requestPermission() async {
+  Future<void> requestPermission() async {
     try {
       NotificationSettings settings =
           await FirebaseMessaging.instance.requestPermission(
