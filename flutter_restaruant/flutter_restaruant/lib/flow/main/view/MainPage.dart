@@ -90,7 +90,6 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                           if(state is MainInitial) {
                             // Request FCM
                             this._mainBloc.add(NotificationSetup());
-                            this.handleNotificationData();
                           }
                           this._mainBloc.add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
                         }
@@ -179,23 +178,6 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           ]
         )
     );
-  }
-
-  /// --- FCM notification
-  void handleNotificationData() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      // Waiting building is finish and run.
-      final args = ModalRoute.of(context)?.settings.arguments as Tuple2<YelpRestaurantSummaryInfo, dynamic>?;
-      YelpRestaurantSummaryInfo? summaryInfoFromNotification = args?.item1;
-
-      if(summaryInfoFromNotification == null) {
-        return;
-      }
-
-      Tuple2 arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(summaryInfoFromNotification, null);
-      // Avoid duplicate push, use pushNamedAndRemoveUntil instead of push
-      Navigator.of(context).pushNamedAndRemoveUntil(RestaurantDetailPage.ROUTE_NAME, ModalRoute.withName(MainPage.ROUTE_NAME), arguments: arguments);
-    });
   }
 
   /// --- AD
