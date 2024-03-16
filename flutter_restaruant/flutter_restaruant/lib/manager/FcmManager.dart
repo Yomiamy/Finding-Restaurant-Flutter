@@ -58,7 +58,10 @@ class FcmManager {
       arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(summaryInfo, null);
     }
 
-    Navigator.of(context).pushNamedAndRemoveUntil(MainPage.ROUTE_NAME, ModalRoute.withName(SplashPage.ROUTE_NAME), arguments: arguments);
+    // Delay navigation
+    Future.delayed(Duration(seconds: 8), () {
+      Navigator.of(context).pushNamedAndRemoveUntil(MainPage.ROUTE_NAME, ModalRoute.withName(MainPage.ROUTE_NAME), arguments: arguments);
+    });
   }
 
   void _firebaseForegroundMessagingOpenHandler(NotificationResponse? notificationResponse) async {
@@ -138,9 +141,7 @@ class FcmManager {
           return;
         }
 
-        Future.delayed(Duration(seconds: 8), () {
-          _firebaseMessagingOpenHandler(message);
-        });
+        _firebaseMessagingOpenHandler(message);
     });
   }
 
