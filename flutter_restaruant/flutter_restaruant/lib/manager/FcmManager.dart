@@ -60,7 +60,7 @@ class FcmManager {
 
     // Delay navigation
     Future.delayed(Duration(seconds: 8), () {
-      Navigator.of(context).pushNamedAndRemoveUntil(MainPage.ROUTE_NAME, ModalRoute.withName(MainPage.ROUTE_NAME), arguments: arguments);
+      Navigator.of(context).pushNamedAndRemoveUntil(MainPage.ROUTE_NAME, ModalRoute.withName(SplashPage.ROUTE_NAME), arguments: arguments);
     });
   }
 
