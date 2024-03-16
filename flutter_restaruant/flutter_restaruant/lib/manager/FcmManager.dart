@@ -115,12 +115,18 @@ class FcmManager {
         onDidReceiveNotificationResponse: _firebaseForegroundMessagingOpenHandler
     );
 
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    // Foreground messages
     FirebaseMessaging.onMessage.listen(_firebaseMessagingForegroundHandler);
+    //
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    //  A Stream which posts a RemoteMessage when the application is opened from a background state.
     FirebaseMessaging.onMessageOpenedApp.listen(_firebaseMessagingOpenHandler);
+    // If the application is opened from a terminated state a Future containing a RemoteMessage will be returned.
+    // Once consumed, the RemoteMessage will be removed.
     FirebaseMessaging.instance.getInitialMessage().then((message) {
         print("Handling a init message: $message");
         if(message == null) {
+          print("Handling a init message: message == null");
           return;
         }
 
@@ -143,8 +149,8 @@ class FcmManager {
         sound: true,
       );
       print('User granted permission: ${settings.authorizationStatus}');
-    } on Exception catch (_) {
-      print('FCM request fail');
+    } on Exception catch (e) {
+      print('FCM request fail, ${e.toString()}');
     }
   }
 }
