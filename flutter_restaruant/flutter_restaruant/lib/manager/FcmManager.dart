@@ -86,7 +86,7 @@ class FcmManager {
                   Constants.FCM_NOTIFICATION_CHANNEL_ID,
                   Constants.FCM_NOTIFICATION_CHANNEL_NAME,
                   channelDescription: Constants.FCM_NOTIFICATION_CHANNEL_DESCRIPTION,
-                  icon: android.smallIcon,
+                  icon: android?.smallIcon,
                   importance: Importance.max,
                   priority: Priority.high,
                   // other properties...
@@ -109,6 +109,7 @@ class FcmManager {
     const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings(UIConstants.FCM_NOTIFICATION_ICON);
     const DarwinInitializationSettings initializationSettingsIos = DarwinInitializationSettings();
     final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIos);
+
     _flutterLocalNotificationsPlugin.initialize(
         initializationSettings,
         onDidReceiveNotificationResponse: _firebaseForegroundMessagingOpenHandler
