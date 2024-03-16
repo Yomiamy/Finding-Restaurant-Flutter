@@ -44,14 +44,20 @@ class FcmManager {
       return;
     }
 
-    YelpRestaurantSummaryInfo summaryInfo = (){
-      String storeId = message.data[Constants.FCM_NOTIFICATION_PAYLOAD_KEY_STORE_ID];
-      YelpRestaurantSummaryInfo summaryInfo = YelpRestaurantSummaryInfo();
+    String? storeId = message.data[Constants.FCM_NOTIFICATION_PAYLOAD_KEY_STORE_ID];
+    Tuple2? arguments = null;
 
-      summaryInfo.id = storeId;
-      return summaryInfo;
-    }();
-    Tuple2 arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(summaryInfo, null);
+    if(storeId != null && storeId.isNotEmpty) {
+      YelpRestaurantSummaryInfo summaryInfo = (){
+
+        YelpRestaurantSummaryInfo summaryInfo = YelpRestaurantSummaryInfo();
+
+        summaryInfo.id = storeId;
+        return summaryInfo;
+      }();
+      arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(summaryInfo, null);
+    }
+
     Navigator.of(context).pushNamedAndRemoveUntil(MainPage.ROUTE_NAME, ModalRoute.withName(SplashPage.ROUTE_NAME), arguments: arguments);
   }
 
