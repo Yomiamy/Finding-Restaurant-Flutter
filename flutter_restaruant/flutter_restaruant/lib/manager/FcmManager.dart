@@ -110,17 +110,19 @@ class FcmManager {
     const DarwinInitializationSettings initializationSettingsIos = DarwinInitializationSettings();
     final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIos);
 
+    // Foreground messages opened
     _flutterLocalNotificationsPlugin.initialize(
         initializationSettings,
         onDidReceiveNotificationResponse: _firebaseForegroundMessagingOpenHandler
     );
-
-    // Foreground messages
+    // Foreground messages display
     FirebaseMessaging.onMessage.listen(_firebaseMessagingForegroundHandler);
-    //
+
+    // Background Message
     FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
     //  A Stream which posts a RemoteMessage when the application is opened from a background state.
     FirebaseMessaging.onMessageOpenedApp.listen(_firebaseMessagingOpenHandler);
+
     // If the application is opened from a terminated state a Future containing a RemoteMessage will be returned.
     // Once consumed, the RemoteMessage will be removed.
     FirebaseMessaging.instance.getInitialMessage().then((message) {
