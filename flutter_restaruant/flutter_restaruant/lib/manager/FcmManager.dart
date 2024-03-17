@@ -14,6 +14,7 @@ import 'package:flutter_restaruant/utils/Constants.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 
+@pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
@@ -43,15 +44,24 @@ class FcmManager {
       return;
     }
 
-    YelpRestaurantSummaryInfo summaryInfo = (){
-      String storeId = message.data[Constants.FCM_NOTIFICATION_PAYLOAD_KEY_STORE_ID];
-      YelpRestaurantSummaryInfo summaryInfo = YelpRestaurantSummaryInfo();
+    String? storeId = message.data[Constants.FCM_NOTIFICATION_PAYLOAD_KEY_STORE_ID];
+    Tuple2? arguments = null;
 
-      summaryInfo.id = storeId;
-      return summaryInfo;
-    }();
-    Tuple2 arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(summaryInfo, null);
-    Navigator.of(context).pushNamedAndRemoveUntil(MainPage.ROUTE_NAME, ModalRoute.withName(SplashPage.ROUTE_NAME), arguments: arguments);
+    if(storeId != null && storeId.isNotEmpty) {
+      YelpRestaurantSummaryInfo summaryInfo = (){
+
+        YelpRestaurantSummaryInfo summaryInfo = YelpRestaurantSummaryInfo();
+
+        summaryInfo.id = storeId;
+        return summaryInfo;
+      }();
+      arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(summaryInfo, null);
+    }
+
+    // Delay navigation
+    Future.delayed(Duration(seconds: 8), () {
+      Navigator.of(context).pushNamedAndRemoveUntil(MainPage.ROUTE_NAME, ModalRoute.withName(SplashPage.ROUTE_NAME), arguments: arguments);
+    });
   }
 
   void _firebaseForegroundMessagingOpenHandler(NotificationResponse? notificationResponse) async {
@@ -85,16 +95,15 @@ class FcmManager {
                   Constants.FCM_NOTIFICATION_CHANNEL_ID,
                   Constants.FCM_NOTIFICATION_CHANNEL_NAME,
                   channelDescription: Constants.FCM_NOTIFICATION_CHANNEL_DESCRIPTION,
-                  icon: android.smallIcon,
+                  icon: android?.smallIcon,
                   importance: Importance.max,
                   priority: Priority.high,
                   // other properties...
                 ),
               ),
               payload: JsonEncoder().convert(message.data))
-          .onError((error, stackTrace) =>
-              {
-                print("Handling a foreground message error: $error")
+          .onError((error, stackTrace) {
+                print("Handling a foreground message error: $error");
               });
     }
   }
@@ -109,27 +118,34 @@ class FcmManager {
     const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings(UIConstants.FCM_NOTIFICATION_ICON);
     const DarwinInitializationSettings initializationSettingsIos = DarwinInitializationSettings();
     final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIos);
+
+    // Foreground messages opened
     _flutterLocalNotificationsPlugin.initialize(
         initializationSettings,
         onDidReceiveNotificationResponse: _firebaseForegroundMessagingOpenHandler
     );
-
-    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    // Foreground messages display
     FirebaseMessaging.onMessage.listen(_firebaseMessagingForegroundHandler);
+
+    // Background Message
+    FirebaseMessaging.onBackgroundMessage(_firebaseMessagingBackgroundHandler);
+    //  A Stream which posts a RemoteMessage when the application is opened from a background state.
     FirebaseMessaging.onMessageOpenedApp.listen(_firebaseMessagingOpenHandler);
+
+    // If the application is opened from a terminated state a Future containing a RemoteMessage will be returned.
+    // Once consumed, the RemoteMessage will be removed.
     FirebaseMessaging.instance.getInitialMessage().then((message) {
         print("Handling a init message: $message");
         if(message == null) {
+          print("Handling a init message: message == null");
           return;
         }
 
-        Future.delayed(Duration(seconds: 8), () {
-          _firebaseMessagingOpenHandler(message);
-        });
+        _firebaseMessagingOpenHandler(message);
     });
   }
 
-  void requestPermission() async {
+  Future<void> requestPermission() async {
     try {
       NotificationSettings settings =
           await FirebaseMessaging.instance.requestPermission(
@@ -142,8 +158,8 @@ class FcmManager {
         sound: true,
       );
       print('User granted permission: ${settings.authorizationStatus}');
-    } on Exception catch (_) {
-      print('FCM request fail');
+    } on Exception catch (e) {
+      print('FCM request fail, ${e.toString()}');
     }
   }
 }

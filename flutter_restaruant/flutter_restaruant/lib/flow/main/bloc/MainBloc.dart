@@ -79,7 +79,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     on<NotificationSetup>((event, emit) async {
       FcmManager fcmManager = FcmManager();
 
-      fcmManager.requestPermission();
+      await fcmManager.requestPermission();
       String fcmToken = await fcmManager.fcmToken;
       print("$TAG, fcm Token is $fcmToken");
     });
