@@ -84,7 +84,7 @@ class FcmManager {
     RemoteNotification? notification = message.notification;
     AndroidNotification? android = message.notification?.android;
 
-    if (notification != null) {
+    if (notification != null && android != null) {
       // Android app 前景顯示通知
       _flutterLocalNotificationsPlugin.show(
               notification.hashCode,
