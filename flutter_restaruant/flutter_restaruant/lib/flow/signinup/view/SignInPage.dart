@@ -201,21 +201,18 @@ class _SignInPageState extends State<SignInPage> {
 
   Widget show3rdSignInUpBtns() => Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
     SignInButton(
-      Buttons.Google,
-      elevation: 3.0,
-      text: AppLocalizations?.of(context)?.signinup_with_google ?? "",
-      onPressed: () {
-        this._signInBloc.add(GoogleSignInEvent());
-        Fluttertoast.showToast(msg: AppLocalizations?.of(context)?.signinup_with_google_hint_msg ?? "");
-      },
-    ),
-    SizedBox(height: 10),
-    SignInButton(Buttons.FacebookNew, elevation: 3.0, text: AppLocalizations?.of(context)?.signinup_with_fb ?? "",
-        onPressed: () {
-          this._signInBloc.add(FacebookSignInEvent());
-          Fluttertoast.showToast(msg: AppLocalizations?.of(context)?.signinup_with_fb_hint_msg ?? "");
-        }),
-    SizedBox(height: 10),
+          Buttons.Google,
+          elevation: 3.0,
+          text: AppLocalizations?.of(context)?.signinup_with_google ?? "",
+          onPressed: () {
+            this._signInBloc.add(GoogleSignInEvent());
+            Fluttertoast.showToast(
+                msg: AppLocalizations?.of(context)
+                        ?.signinup_with_google_hint_msg ??
+                    "");
+          },
+        ),
+        SizedBox(height: 10),
     (Platform.isIOS)
             ? SignInButton(Buttons.Apple,
                 elevation: 3.0,
