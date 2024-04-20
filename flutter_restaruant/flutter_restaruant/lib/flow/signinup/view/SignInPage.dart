@@ -56,16 +56,32 @@ class _SignInPageState extends State<SignInPage> {
             ViewUtils.showPromptDialog(
                 context: context,
                 title: AppLocalizations?.of(context)?.email_signup_success_hint_title ?? "",
-                msg: AppLocalizations?.of(context)?.email_signup_success_hint_msg ?? "",
-                confirmStr: AppLocalizations?.of(context)?.confirm ?? ""
+                msgWidget: PlatformText(AppLocalizations?.of(context)?.email_signup_success_hint_msg ?? ""),
+                actions: [
+                  PlatformTextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: PlatformText(
+                        AppLocalizations?.of(context)?.confirm ?? ""),
+                  )
+                ]
             );
           } else if (state is Failure && state.errorMsg.isNotEmpty) {
             // Waiting building is finish and run.
             ViewUtils.showPromptDialog(
                 context: context,
                 title: AppLocalizations?.of(context)?.error ?? "",
-                msg: state.errorMsg,
-                confirmStr: AppLocalizations?.of(context)?.confirm ?? ""
+                msgWidget: PlatformText(state.errorMsg),
+                actions: [
+                  PlatformTextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                    },
+                    child: PlatformText(
+                        AppLocalizations?.of(context)?.confirm ?? ""),
+                  )
+                ]
             );
           }
 
@@ -201,11 +217,16 @@ class _SignInPageState extends State<SignInPage> {
         }),
     SizedBox(height: 10),
     (Platform.isIOS)
-        ? SignInButton(Buttons.Apple, elevation: 3.0, text: AppLocalizations?.of(context)?.signinup_with_apple ?? "",
-        onPressed: () {
-          this._signInBloc.add(AppleSignInEvent());
-          Fluttertoast.showToast(msg: AppLocalizations?.of(context)?.signinup_with_apple_hint_msg ?? "");
-        })
-        : UIConstants.EMPTY_WIDGET
+            ? SignInButton(Buttons.Apple,
+                elevation: 3.0,
+                text: AppLocalizations?.of(context)?.signinup_with_apple ?? "",
+                onPressed: () {
+                this._signInBloc.add(AppleSignInEvent());
+                Fluttertoast.showToast(
+                    msg: AppLocalizations?.of(context)
+                            ?.signinup_with_apple_hint_msg ??
+                        "");
+              })
+            : UIConstants.EMPTY_WIDGET
   ]);
 }

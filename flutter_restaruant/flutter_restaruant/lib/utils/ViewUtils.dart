@@ -6,8 +6,9 @@ class ViewUtils {
   static void showPromptDialog({
     required BuildContext context,
     required String title,
-    required String msg,
-    required String confirmStr}) => WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+    required Widget msgWidget,
+    required List<Widget> actions
+  }) => WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
     showPlatformDialog(
         context: context,
         builder: (context) => PlatformAlertDialog(
@@ -19,17 +20,9 @@ class ViewUtils {
                 fontWeight: FontWeight.bold
             ),
           ),
-          content: PlatformText(msg),
-          actions: [
-            PlatformTextButton(
-                onPressed: () => Navigator.pop(context),
-                child: PlatformText(confirmStr)
-            )
-          ],
+          content: msgWidget,
+          actions: actions,
         )
     );
   });
-
-
-
 }
