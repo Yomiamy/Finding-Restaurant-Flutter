@@ -5,9 +5,9 @@ import 'package:sprintf/sprintf.dart';
 import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RestaurantItemCell extends StatelessWidget {
-  static const int IMAGE_H = 100;
-  static const int IMAGE_W = 100;
-  static const double ITEM_H = 100;
+  static const int IMAGE_H = 110;
+  static const int IMAGE_W = 110;
+  static const double ITEM_H = 110;
 
   final YelpRestaurantSummaryInfo _summaryInfo;
 
@@ -20,7 +20,7 @@ class RestaurantItemCell extends StatelessWidget {
     String category = this._summaryInfo.categoriesStr;
 
     return SizedBox(
-        height: 100,
+        height: ITEM_H,
         child: Container(
             padding: EdgeInsets.only(left: 10, right: 5, top: 10, bottom: 0),
             child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
