@@ -35,7 +35,7 @@ class Constants {
   static const GOOGLE_MAP_NAVIGATION_LATLNG = "q";
   static const GOOGLE_MAP_STREETVIEW_LAYER = "layer";
   static const GOOGLE_MAP_STREETVIEW_LATLNG = "cbll";
-  static const AUTH_TOKEN = "Bearer 4htbz9nLozJ_-Xw-13LpeVWrEIRWZt4IrgTOQXstx7M1DCVeUIoxIZkQ0XVLVEtD2Gy2Vp1FjA2WRz5DOpZMSxHfXVBLR3gi0DeMXIV3X1bCHYoMoJ-_TZLfBn0ZWnYx";
+  static const AUTH_TOKEN = "Bearer 7W-eBLLJ3ij1hx8nKfbihuC9rB-xxX9Uu0c3xmbOgaJMd8p4N0_OXtvmJkKRSiCEd5dhOThCdmudbrqga4ONcugF3GW8I8TaX_Gh6VH1cdUyDdWLNF7mwBv1zROpZnYx";
   static const LOCALE = "zh_TW";
   static const EMAIL_SUBJEC = "subject";
   static const EMAIL_BODY = "body";
