@@ -38,7 +38,6 @@ dependencies:
   local_auth: ^2.1.6
   package_info_plus: ^4.1.0
   google_maps_flutter: ^2.4.0
-  quiver: ^3.2.1
 
   bloc: ^8.1.2
   flutter_bloc: ^8.1.3
