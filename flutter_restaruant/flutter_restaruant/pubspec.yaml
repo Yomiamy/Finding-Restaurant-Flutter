@@ -77,9 +77,9 @@ dependencies:
 
 dev_dependencies:
   equatable: any
-  json_serializable: ^6.7.1
   retrofit_generator: ^8.2.0
   build_runner: ^2.4.12
+  json_serializable: ^6.8.0
 
   flutter_test:
     sdk: flutter
