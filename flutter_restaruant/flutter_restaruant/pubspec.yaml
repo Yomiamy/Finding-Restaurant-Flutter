@@ -56,7 +56,7 @@ dependencies:
   firebase_auth: ^5.1.4
   firebase_messaging: ^15.0.4
 
-  google_sign_in: ^6.1.4
+  google_sign_in: ^6.2.1
   sign_in_with_apple: ^5.0.0
   crypto: ^3.0.3
   flutter_facebook_auth: ^6.0.1
