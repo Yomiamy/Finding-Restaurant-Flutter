@@ -11,7 +11,7 @@ class AppOpenAD {
   void loadAd() {
     AppOpenAd.load(
         adUnitId: adState.adUnitId,
-        orientation: AppOpenAd.orientationPortrait,
+        // orientation: AppOpenAd.orientationPortrait,
         request: AdRequest(),
         adLoadCallback: AppOpenAdLoadCallback(
             onAdLoaded: (ad) {
