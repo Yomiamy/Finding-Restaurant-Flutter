@@ -21,7 +21,6 @@ class FavorPage extends StatefulWidget {
 }
 
 class _FavorPageState extends State<FavorPage> {
-
   late FavorBloc _favorBloc;
 
   @override
@@ -46,8 +45,7 @@ class _FavorPageState extends State<FavorPage> {
                     color: Color(UIConstants.BACK_BTN_COLOR))),
             title: Text(UIConstants.FAVOR_TITLE,
                 style: TextStyle(
-                color: Colors.white,
-                fontSize: UIConstants.xxxxhFontSize)),
+                    color: Colors.white, fontSize: UIConstants.xxxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: BlocBuilder<FavorBloc, FavorState>(
             bloc: this._favorBloc,
@@ -66,8 +64,12 @@ class _FavorPageState extends State<FavorPage> {
                       return GestureDetector(
                           child: RestaurantItemCell(summaryInfo: favorInfo),
                           onTap: () async {
-                            Tuple2 arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(favorInfo, null);
-                            await Navigator.of(context).pushNamed(RestaurantDetailPage.ROUTE_NAME, arguments: arguments);
+                            Tuple2 arguments =
+                                Tuple2<YelpRestaurantSummaryInfo, dynamic>(
+                                    favorInfo, null);
+                            await Navigator.of(context).pushNamed(
+                                RestaurantDetailPage.ROUTE_NAME,
+                                arguments: arguments);
 
                             this._favorBloc.add(FetchFavorInfoEvent(true));
                           });

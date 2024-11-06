@@ -65,7 +65,7 @@ class _SettingsPageState extends State<SettingsPage> {
             bioAuthSettingSwitchValue = state.settingValue;
           } else if (state is InitBioAuthSettingState) {
             bioAuthSettingSwitchValue = state.settingValue;
-          } else if(state is AccountRemovalSuccessState) {
+          } else if (state is AccountRemovalSuccessState) {
             // Logout after request AccountRemovalEvent
             this._settingsBloc.add(LogoutEvent());
           }
@@ -80,12 +80,8 @@ class _SettingsPageState extends State<SettingsPage> {
   }
 
   AbstractSettingsSection createHeadSection() => CustomSettingsSection(
-      child: Image.asset(
-          "images/icon_setting_icon.gif",
-          height: 230.0,
-          width: 230.0
-      )
-  );
+      child: Image.asset("images/icon_setting_icon.gif",
+          height: 230.0, width: 230.0));
 
   AbstractSettingsSection createInfoSettingsSection(
           bool bioAuthSettingSwitchValue, bool isSupportBiometricAuth) =>
@@ -113,38 +109,37 @@ class _SettingsPageState extends State<SettingsPage> {
       child: Padding(
           padding: EdgeInsets.only(left: 25, top: 50, right: 25),
           child: Column(mainAxisSize: MainAxisSize.min, children: [
-                SizedBox(
-                  height: 50,
-                  child: PlatformElevatedButton(
-                      color: Colors.red,
-                      child: Text(
-                          AppLocalizations.of(context)?.logout_section_title ?? "",
-                          style: TextStyle(
-                              fontSize: UIConstants.xhFontSize,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white
-                          )
-                      ),
-                      onPressed: () {
-                        this._settingsBloc.add(LogoutEvent());
-                      }),
-                ),
-                SizedBox(height: 20),
-                GestureDetector(
-                  onTap: () {
-                    this._settingsBloc.add(AccountRemovalEvent(
-                        subject: AppLocalizations.of(context)?.delete_account_email_subject ?? "",
-                        bodyPrefix: AppLocalizations.of(context)?.delete_account_email_body ?? ""
-                    ));
-                  },
+            SizedBox(
+              height: 50,
+              child: PlatformElevatedButton(
+                  color: Colors.red,
                   child: Text(
-                      AppLocalizations.of(context)?.delete_account_title ?? "",
+                      AppLocalizations.of(context)?.logout_section_title ?? "",
                       style: TextStyle(
-                          fontSize: UIConstants.hFontSize,
+                          fontSize: UIConstants.xhFontSize,
                           fontWeight: FontWeight.bold,
-                          color: Colors.red)),
-                )
-              ])
-      )
-  );
+                          color: Colors.white)),
+                  onPressed: () {
+                    this._settingsBloc.add(LogoutEvent());
+                  }),
+            ),
+            SizedBox(height: 20),
+            GestureDetector(
+              onTap: () {
+                this._settingsBloc.add(AccountRemovalEvent(
+                    subject: AppLocalizations.of(context)
+                            ?.delete_account_email_subject ??
+                        "",
+                    bodyPrefix: AppLocalizations.of(context)
+                            ?.delete_account_email_body ??
+                        ""));
+              },
+              child: Text(
+                  AppLocalizations.of(context)?.delete_account_title ?? "",
+                  style: TextStyle(
+                      fontSize: UIConstants.hFontSize,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.red)),
+            )
+          ])));
 }

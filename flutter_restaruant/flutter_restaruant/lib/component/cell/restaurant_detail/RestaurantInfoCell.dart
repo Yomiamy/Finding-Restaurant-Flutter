@@ -9,7 +9,6 @@ import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RestaurantInfoCell extends StatelessWidget {
-
   static const int _MAP_IMAGE_W = 140;
   static const int _MAP_IMAGE_H = 140;
 
@@ -29,8 +28,10 @@ class RestaurantInfoCell extends StatelessWidget {
             ._detailInfo
             .categories
             ?.map((category) => category.title ?? "")
-            .join(" ") ?? "";
-    String openStatus = (this._detailInfo.hours?[0].is_open_now ?? false) ? "OPEN" : "CLOSE";
+            .join(" ") ??
+        "";
+    String openStatus =
+        (this._detailInfo.hours?[0].is_open_now ?? false) ? "OPEN" : "CLOSE";
 
     return Padding(
         padding: EdgeInsets.only(left: 5, right: 5, top: 10),
@@ -61,7 +62,12 @@ class RestaurantInfoCell extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                            this._detailInfo.location?.display_address?.join("") ?? "",
+                            this
+                                    ._detailInfo
+                                    .location
+                                    ?.display_address
+                                    ?.join("") ??
+                                "",
                             style: TextStyle(fontWeight: FontWeight.w700),
                             overflow: TextOverflow.ellipsis),
                         Row(children: <Widget>[
@@ -81,7 +87,8 @@ class RestaurantInfoCell extends StatelessWidget {
                         this
                             ._detailInfo
                             .getRatingImage(this._detailInfo.rating.toString()),
-                        Text("${this._detailInfo.review_count}${AppLocalizations.of(context)?.review_count_suffix ?? ""}",
+                        Text(
+                            "${this._detailInfo.review_count}${AppLocalizations.of(context)?.review_count_suffix ?? ""}",
                             style: TextStyle(
                                 fontSize: UIConstants.mFontSize,
                                 color: Colors.grey)),
@@ -95,8 +102,7 @@ class RestaurantInfoCell extends StatelessWidget {
                                 child: Text(openStatus,
                                     style: TextStyle(
                                         fontSize: UIConstants.lFontSize,
-                                        color: Colors.white
-                                    ))))
+                                        color: Colors.white))))
                       ])))
         ]));
   }
@@ -112,7 +118,8 @@ class RestaurantInfoCell extends StatelessWidget {
               }),
           actions: [
             CupertinoActionSheetAction(
-                child: Text(AppLocalizations.of(context)?.route_navigation ?? ""),
+                child:
+                    Text(AppLocalizations.of(context)?.route_navigation ?? ""),
                 onPressed: () {
                   double lat = this._detailInfo.coordinates?.latitude ?? 0;
                   double lng = this._detailInfo.coordinates?.longitude ?? 0;
@@ -120,9 +127,11 @@ class RestaurantInfoCell extends StatelessWidget {
                   Utils.openUrl(
                       scheme: Constants.HTTPS_SCHEME,
                       host: Constants.GOOGLE_MAP_HOST,
-                      path: Constants.GOOGLE_MAP_NAVIGATION_PATH, parameters: <String, String> {
-                        Constants.GOOGLE_MAP_NAVIGATION_LATLNG : sprintf("%f,%f", [lat, lng]),
-                  });
+                      path: Constants.GOOGLE_MAP_NAVIGATION_PATH,
+                      parameters: <String, String>{
+                        Constants.GOOGLE_MAP_NAVIGATION_LATLNG:
+                            sprintf("%f,%f", [lat, lng]),
+                      });
                   Navigator.pop(context);
                 }),
             CupertinoActionSheetAction(
@@ -135,11 +144,13 @@ class RestaurantInfoCell extends StatelessWidget {
                   Utils.openUrl(
                       scheme: Constants.HTTPS_SCHEME,
                       host: Constants.GOOGLE_MAP_HOST,
-                      path: Constants.GOOGLE_MAP_NAVIGATION_PATH, parameters: <String, String> {
-                        Constants.GOOGLE_MAP_NAVIGATION_LATLNG : "",
-                        Constants.GOOGLE_MAP_STREETVIEW_LAYER : "c",
-                        Constants.GOOGLE_MAP_STREETVIEW_LATLNG : sprintf("%f,%f", [lat, lng])
-                  });
+                      path: Constants.GOOGLE_MAP_NAVIGATION_PATH,
+                      parameters: <String, String>{
+                        Constants.GOOGLE_MAP_NAVIGATION_LATLNG: "",
+                        Constants.GOOGLE_MAP_STREETVIEW_LAYER: "c",
+                        Constants.GOOGLE_MAP_STREETVIEW_LATLNG:
+                            sprintf("%f,%f", [lat, lng])
+                      });
                   Navigator.pop(context);
                 })
           ]);

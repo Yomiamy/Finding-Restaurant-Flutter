@@ -8,7 +8,7 @@ class YelpReviewerInfo extends YelpBaseInfo {
   String? name;
   String? image_url;
 
-  YelpReviewerInfo():super();
+  YelpReviewerInfo() : super();
 
   factory YelpReviewerInfo.fromJson(Map<String, dynamic> json) =>
       _$YelpReviewerInfoFromJson(json);

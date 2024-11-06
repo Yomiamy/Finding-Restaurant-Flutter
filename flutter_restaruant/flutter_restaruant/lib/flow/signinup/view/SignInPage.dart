@@ -46,17 +46,22 @@ class _SignInPageState extends State<SignInPage> {
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: BlocBuilder<SignInBloc, SignInState>(builder: (context, state) {
           if (state is SignInSuccess) {
-            Fluttertoast.showToast(msg: AppLocalizations.of(context)?.signin_success_msg ?? "");
+            Fluttertoast.showToast(
+                msg: AppLocalizations.of(context)?.signin_success_msg ?? "");
 
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
               // Waiting building is finish and run.
               Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME);
             });
-          } else if(state is SignUpSuccess) {
+          } else if (state is SignUpSuccess) {
             ViewUtils.showPromptDialog(
                 context: context,
-                title: AppLocalizations.of(context)?.email_signup_success_hint_title ?? "",
-                msgWidget: PlatformText(AppLocalizations.of(context)?.email_signup_success_hint_msg ?? ""),
+                title: AppLocalizations.of(context)
+                        ?.email_signup_success_hint_title ??
+                    "",
+                msgWidget: PlatformText(AppLocalizations.of(context)
+                        ?.email_signup_success_hint_msg ??
+                    ""),
                 actions: [
                   PlatformTextButton(
                     onPressed: () {
@@ -65,8 +70,7 @@ class _SignInPageState extends State<SignInPage> {
                     child: PlatformText(
                         AppLocalizations.of(context)?.confirm ?? ""),
                   )
-                ]
-            );
+                ]);
           } else if (state is Failure && state.errorMsg.isNotEmpty) {
             // Waiting building is finish and run.
             ViewUtils.showPromptDialog(
@@ -81,8 +85,7 @@ class _SignInPageState extends State<SignInPage> {
                     child: PlatformText(
                         AppLocalizations.of(context)?.confirm ?? ""),
                   )
-                ]
-            );
+                ]);
           }
 
           return ListView(children: <Widget>[
@@ -103,12 +106,12 @@ class _SignInPageState extends State<SignInPage> {
   }
 
   Widget showLogo(SignInState state) => Column(children: <Widget>[
-    Image.asset("images/icon_signinup_icon.gif",
-        height: 230.0, width: 230.0),
-    (state is InProgress)
-        ? LoadingWidget(text: "")
-        : UIConstants.EMPTY_WIDGET
-  ]);
+        Image.asset("images/icon_signinup_icon.gif",
+            height: 230.0, width: 230.0),
+        (state is InProgress)
+            ? LoadingWidget(text: "")
+            : UIConstants.EMPTY_WIDGET
+      ]);
 
   Widget showInput(SignInState state) => Container(
       child: Form(
@@ -128,18 +131,23 @@ class _SignInPageState extends State<SignInPage> {
             child: Padding(
                 padding: EdgeInsets.only(left: 10),
                 child: PlatformTextFormField(
-                  maxLines: 1,
-                  autofocus: false,
-                  autovalidateMode: AutovalidateMode.onUserInteraction,
-                  validator: (value) =>
-                      (value == null || value.isEmpty) ? AppLocalizations.of(context)?.email_invalid_hint_msg ?? "": null,
-                  onSaved: (value) => this._email = value!,
-                  hintText: AppLocalizations.of(context)?.email_invalid_hint_title ?? "",
-                  cupertino: (_, __) => CupertinoTextFormFieldData(
-                    // Assign a default cupertino decoration
-                    decoration: PlatformTextField().createCupertinoWidget(context).decoration
-                  )
-                )))
+                    maxLines: 1,
+                    autofocus: false,
+                    autovalidateMode: AutovalidateMode.onUserInteraction,
+                    validator: (value) => (value == null || value.isEmpty)
+                        ? AppLocalizations.of(context)
+                                ?.email_invalid_hint_msg ??
+                            ""
+                        : null,
+                    onSaved: (value) => this._email = value!,
+                    hintText: AppLocalizations.of(context)
+                            ?.email_invalid_hint_title ??
+                        "",
+                    cupertino: (_, __) => CupertinoTextFormFieldData(
+                        // Assign a default cupertino decoration
+                        decoration: PlatformTextField()
+                            .createCupertinoWidget(context)
+                            .decoration))))
       ]));
 
   Widget showPasswordInput() => Padding(
@@ -157,50 +165,56 @@ class _SignInPageState extends State<SignInPage> {
                     obscureText: true,
                     autofocus: false,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) =>
-                    (value == null || value.isEmpty) ? AppLocalizations.of(context)?.passwd_invalid_hint_msg ?? "" : null,
+                    validator: (value) => (value == null || value.isEmpty)
+                        ? AppLocalizations.of(context)
+                                ?.passwd_invalid_hint_msg ??
+                            ""
+                        : null,
                     onSaved: (value) => this._passwd = value!,
-                    hintText: AppLocalizations.of(context)?.passwd_invalid_hint_title ?? "",
+                    hintText: AppLocalizations.of(context)
+                            ?.passwd_invalid_hint_title ??
+                        "",
                     cupertino: (_, __) => CupertinoTextFormFieldData(
-                      // Assign a default cupertino decoration
-                        decoration: PlatformTextField().createCupertinoWidget(context).decoration
-                    )
-                )))
+                        // Assign a default cupertino decoration
+                        decoration: PlatformTextField()
+                            .createCupertinoWidget(context)
+                            .decoration))))
       ]));
 
   Widget showSignInUpBtns() => Padding(
       padding: EdgeInsets.only(top: 15),
-      child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[
-            PlatformElevatedButton(
-                child: Text(AppLocalizations.of(context)?.signin_btn_title ?? "",
-                    style: TextStyle(
-                        fontSize: UIConstants.xhFontSize,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white)),
-                onPressed: () {
-                  if(this._formKey.currentState != null && this._formKey.currentState!.validate()) {
-                    this._formKey.currentState!.save();
-                    this._signInBloc.add(MailSignInEvent(mail: this._email, passwd: this._passwd));
-                  }
-                }),
-            PlatformTextButton(
-                child: Text(
-                    AppLocalizations.of(context)?.signup_title ?? "",
-                    style: TextStyle(
-                        fontSize: UIConstants.mFontSize,
-                        color: Colors.grey)),
-                onPressed: () {
-                  if (this._formKey.currentState != null && this._formKey.currentState!.validate()) {
-                    this._formKey.currentState!.save();
-                    this._signInBloc.add(MailSignUpEvent(mail: this._email, passwd: this._passwd));
-                  }
+      child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+        PlatformElevatedButton(
+            child: Text(AppLocalizations.of(context)?.signin_btn_title ?? "",
+                style: TextStyle(
+                    fontSize: UIConstants.xhFontSize,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.white)),
+            onPressed: () {
+              if (this._formKey.currentState != null &&
+                  this._formKey.currentState!.validate()) {
+                this._formKey.currentState!.save();
+                this._signInBloc.add(
+                    MailSignInEvent(mail: this._email, passwd: this._passwd));
+              }
+            }),
+        PlatformTextButton(
+            child: Text(AppLocalizations.of(context)?.signup_title ?? "",
+                style: TextStyle(
+                    fontSize: UIConstants.mFontSize, color: Colors.grey)),
+            onPressed: () {
+              if (this._formKey.currentState != null &&
+                  this._formKey.currentState!.validate()) {
+                this._formKey.currentState!.save();
+                this._signInBloc.add(
+                    MailSignUpEvent(mail: this._email, passwd: this._passwd));
+              }
             })
-          ]));
+      ]));
 
-  Widget show3rdSignInUpBtns() => Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-    SignInButton(
+  Widget show3rdSignInUpBtns() =>
+      Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+        SignInButton(
           Buttons.Google,
           elevation: 3.0,
           text: AppLocalizations.of(context)?.signinup_with_google ?? "",
@@ -213,7 +227,7 @@ class _SignInPageState extends State<SignInPage> {
           },
         ),
         SizedBox(height: 10),
-    (Platform.isIOS)
+        (Platform.isIOS)
             ? SignInButton(Buttons.Apple,
                 elevation: 3.0,
                 text: AppLocalizations.of(context)?.signinup_with_apple ?? "",
@@ -225,5 +239,5 @@ class _SignInPageState extends State<SignInPage> {
                         "");
               })
             : UIConstants.EMPTY_WIDGET
-  ]);
+      ]);
 }

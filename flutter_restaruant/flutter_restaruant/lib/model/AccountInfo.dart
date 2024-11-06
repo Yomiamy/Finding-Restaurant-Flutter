@@ -15,7 +15,6 @@ enum AccountType {
 
 @JsonSerializable()
 class AccountInfo {
-
   String? uid;
   String? account;
   AccountType type;

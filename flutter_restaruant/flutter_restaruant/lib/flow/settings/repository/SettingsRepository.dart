@@ -1,11 +1,9 @@
-
 import 'package:flutter_restaruant/manager/SignInManager.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
 import 'package:flutter_restaruant/utils/Utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsRepository {
-
   const SettingsRepository();
 
   Future<void> logout() async {
@@ -18,17 +16,20 @@ class SettingsRepository {
 
   Future<bool> initBioAuthSetting() async {
     final prefs = await SharedPreferences.getInstance();
-    bool oldBiometricAuthSetting = prefs.getBool(Constants.PREF_KEY_BIOMETRIC_AUTH_SETTING) ?? false;
+    bool oldBiometricAuthSetting =
+        prefs.getBool(Constants.PREF_KEY_BIOMETRIC_AUTH_SETTING) ?? false;
 
     return oldBiometricAuthSetting;
   }
 
   Future<bool> toggleBioAuthSetting() async {
     final prefs = await SharedPreferences.getInstance();
-    bool oldBiometricAuthSetting = prefs.getBool(Constants.PREF_KEY_BIOMETRIC_AUTH_SETTING) ?? false;
+    bool oldBiometricAuthSetting =
+        prefs.getBool(Constants.PREF_KEY_BIOMETRIC_AUTH_SETTING) ?? false;
     bool newBiometricAuthSetting = !oldBiometricAuthSetting;
 
-    prefs.setBool(Constants.PREF_KEY_BIOMETRIC_AUTH_SETTING, newBiometricAuthSetting);
+    prefs.setBool(
+        Constants.PREF_KEY_BIOMETRIC_AUTH_SETTING, newBiometricAuthSetting);
 
     return newBiometricAuthSetting;
   }
@@ -36,12 +37,13 @@ class SettingsRepository {
   Future<bool> removeAccount(String subject, String bodyPrefix) async {
     String account = SignInManager().accountInfo?.account ?? "";
 
-    if(account.isEmpty) {
+    if (account.isEmpty) {
       return false;
     }
 
-    Utils.openUrl(rawUrl: "mailto:o1984531@gmail.com?subject=${subject}&body=${bodyPrefix + account}");
+    Utils.openUrl(
+        rawUrl:
+            "mailto:o1984531@gmail.com?subject=${subject}&body=${bodyPrefix + account}");
     return true;
   }
-
 }

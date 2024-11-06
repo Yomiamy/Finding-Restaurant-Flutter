@@ -3,7 +3,6 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'BannerADState.dart';
 
 class BannerAD extends StatefulWidget {
-
   final BannerADState adState;
 
   const BannerAD({Key? key, required this.adState}) : super(key: key);
@@ -39,7 +38,7 @@ class _BannerADState extends State<BannerAD> {
   @override
   Widget build(BuildContext context) {
     return banner ==
-        null //banner is only null for a very less time //don't think that banner will be null if ads fails loads
+            null //banner is only null for a very less time //don't think that banner will be null if ads fails loads
         ? SizedBox()
         : Container(
             color: Colors.grey,
@@ -48,7 +47,7 @@ class _BannerADState extends State<BannerAD> {
             child: AdWidget(
               ad: banner!,
             ),
-    );
+          );
   }
 
   Future<AnchoredAdaptiveBannerAdSize?> anchoredAdaptiveBannerAdSize(

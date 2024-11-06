@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({key}):super(key: key);
+  const MyApp({key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({key, required this.title}):super(key: key);
+  const MyHomePage({key, required this.title}) : super(key: key);
 
   final String title;
 

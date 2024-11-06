@@ -4,7 +4,6 @@ import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class GoogleSignInManager {
-
   static final GoogleSignInManager _singleton = GoogleSignInManager._internal();
 
   GoogleSignInManager._internal();
@@ -17,11 +16,13 @@ class GoogleSignInManager {
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
 
       // Obtain the auth details from the request
-      final GoogleSignInAuthentication? googleAuth = await googleUser?.authentication;
+      final GoogleSignInAuthentication? googleAuth =
+          await googleUser?.authentication;
 
-      if(googleAuth?.accessToken == null && googleAuth?.idToken == null) {
+      if (googleAuth?.accessToken == null && googleAuth?.idToken == null) {
         // 未登入
-        return Tuple2<AccountInfo?, String>(null, "Error occurred, please retry again");
+        return Tuple2<AccountInfo?, String>(
+            null, "Error occurred, please retry again");
       }
 
       // Create a new credential
@@ -31,18 +32,19 @@ class GoogleSignInManager {
       );
 
       // Once signed in, return the UserCredential
-      UserCredential userCredential = await FirebaseAuth.instance.signInWithCredential(credential);
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
       AccountInfo accountInfo = AccountInfo(
           type: AccountType.GOOGLE,
           uid: userCredential.user?.uid ?? "",
-          account: userCredential.user?.email ?? ""
-      );
+          account: userCredential.user?.email ?? "");
 
       return Tuple2(accountInfo, "");
-    } on Exception catch(e) {
+    } on Exception catch (e) {
       // 登入錯誤
-       print("GoogleSignInManager, error = $e");
-       return Tuple2(null, "Google sign in fail, please retry again\n${e.toString()}");
+      print("GoogleSignInManager, error = $e");
+      return Tuple2(
+          null, "Google sign in fail, please retry again\n${e.toString()}");
     }
   }
 
@@ -50,5 +52,4 @@ class GoogleSignInManager {
     await GoogleSignIn().signOut();
     await FirebaseAuth.instance.signOut();
   }
-
 }

@@ -22,8 +22,8 @@ abstract class APIClz {
       @Field("client_secret") String? clientSecret);
 
   @GET("/v3/businesses/search")
-  Future<YelpSearchInfo> businessesSearch({
-      @Query("term") String? term,
+  Future<YelpSearchInfo> businessesSearch(
+      {@Query("term") String? term,
       @Query("latitude") double? latitude,
       @Query("longitude") double? longitude,
       @Query("locale") String? locale,
@@ -35,12 +35,11 @@ abstract class APIClz {
 
   @GET("/v3/businesses/{id}")
   Future<YelpRestaurantDetailInfo> business(
-      @Path() String? id,
-      @Query("locale") String? locale);
+      @Path() String? id, @Query("locale") String? locale);
 
   @GET("/v3/businesses/{id}/reviews")
-  Future<YelpReviewInfo> review(@Path() String? id,
-      @Query("locale") String? locale);
+  Future<YelpReviewInfo> review(
+      @Path() String? id, @Query("locale") String? locale);
 }
 
 final dioClient = DioClient(

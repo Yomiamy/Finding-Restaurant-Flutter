@@ -25,31 +25,32 @@ Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
 }
 
 class FcmManager {
-
   static final FcmManager _singleton = FcmManager._internal();
 
   FcmManager._internal();
 
   factory FcmManager() => _singleton;
 
-  Future<String> get fcmToken async => await FirebaseMessaging.instance.getToken() ?? "";
-  late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin = FlutterLocalNotificationsPlugin();
+  Future<String> get fcmToken async =>
+      await FirebaseMessaging.instance.getToken() ?? "";
+  late FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
+      FlutterLocalNotificationsPlugin();
 
   void _firebaseMessagingOpenHandler(RemoteMessage message) async {
     print("Handling a message open: ${message.messageId}");
 
     final BuildContext? context = navigatorKey.currentContext;
 
-    if(context == null) {
+    if (context == null) {
       return;
     }
 
-    String? storeId = message.data[Constants.FCM_NOTIFICATION_PAYLOAD_KEY_STORE_ID];
+    String? storeId =
+        message.data[Constants.FCM_NOTIFICATION_PAYLOAD_KEY_STORE_ID];
     Tuple2? arguments = null;
 
-    if(storeId != null && storeId.isNotEmpty) {
-      YelpRestaurantSummaryInfo summaryInfo = (){
-
+    if (storeId != null && storeId.isNotEmpty) {
+      YelpRestaurantSummaryInfo summaryInfo = () {
         YelpRestaurantSummaryInfo summaryInfo = YelpRestaurantSummaryInfo();
 
         summaryInfo.id = storeId;
@@ -60,20 +61,24 @@ class FcmManager {
 
     // Delay navigation
     Future.delayed(Duration(seconds: 8), () {
-      Navigator.of(context).pushNamedAndRemoveUntil(MainPage.ROUTE_NAME, ModalRoute.withName(SplashPage.ROUTE_NAME), arguments: arguments);
+      Navigator.of(context).pushNamedAndRemoveUntil(
+          MainPage.ROUTE_NAME, ModalRoute.withName(SplashPage.ROUTE_NAME),
+          arguments: arguments);
     });
   }
 
-  void _firebaseForegroundMessagingOpenHandler(NotificationResponse? notificationResponse) async {
+  void _firebaseForegroundMessagingOpenHandler(
+      NotificationResponse? notificationResponse) async {
     String? payload = notificationResponse?.payload;
 
     print("Handling a message open: ${payload}");
 
-    if(payload == null || payload.isEmpty) {
+    if (payload == null || payload.isEmpty) {
       return;
     }
 
-    Map<String, dynamic> data = JsonDecoder().convert(payload) as Map<String, dynamic>;
+    Map<String, dynamic> data =
+        JsonDecoder().convert(payload) as Map<String, dynamic>;
     RemoteMessage message = RemoteMessage(data: data);
     _firebaseMessagingOpenHandler(message);
   }
@@ -86,7 +91,8 @@ class FcmManager {
 
     if (notification != null && android != null) {
       // Android app 前景顯示通知
-      _flutterLocalNotificationsPlugin.show(
+      _flutterLocalNotificationsPlugin
+          .show(
               notification.hashCode,
               notification.title,
               notification.body,
@@ -94,7 +100,8 @@ class FcmManager {
                 android: AndroidNotificationDetails(
                   Constants.FCM_NOTIFICATION_CHANNEL_ID,
                   Constants.FCM_NOTIFICATION_CHANNEL_NAME,
-                  channelDescription: Constants.FCM_NOTIFICATION_CHANNEL_DESCRIPTION,
+                  channelDescription:
+                      Constants.FCM_NOTIFICATION_CHANNEL_DESCRIPTION,
                   icon: android.smallIcon,
                   importance: Importance.max,
                   priority: Priority.high,
@@ -103,8 +110,8 @@ class FcmManager {
               ),
               payload: JsonEncoder().convert(message.data))
           .onError((error, stackTrace) {
-                print("Handling a foreground message error: $error");
-              });
+        print("Handling a foreground message error: $error");
+      });
     }
   }
 
@@ -115,15 +122,19 @@ class FcmManager {
           alert: true, badge: true, sound: true);
     }
 
-    const AndroidInitializationSettings initializationSettingsAndroid = AndroidInitializationSettings(UIConstants.FCM_NOTIFICATION_ICON);
-    const DarwinInitializationSettings initializationSettingsIos = DarwinInitializationSettings();
-    final InitializationSettings initializationSettings = InitializationSettings(android: initializationSettingsAndroid, iOS: initializationSettingsIos);
+    const AndroidInitializationSettings initializationSettingsAndroid =
+        AndroidInitializationSettings(UIConstants.FCM_NOTIFICATION_ICON);
+    const DarwinInitializationSettings initializationSettingsIos =
+        DarwinInitializationSettings();
+    final InitializationSettings initializationSettings =
+        InitializationSettings(
+            android: initializationSettingsAndroid,
+            iOS: initializationSettingsIos);
 
     // Foreground messages opened
-    _flutterLocalNotificationsPlugin.initialize(
-        initializationSettings,
-        onDidReceiveNotificationResponse: _firebaseForegroundMessagingOpenHandler
-    );
+    _flutterLocalNotificationsPlugin.initialize(initializationSettings,
+        onDidReceiveNotificationResponse:
+            _firebaseForegroundMessagingOpenHandler);
     // Foreground messages display
     FirebaseMessaging.onMessage.listen(_firebaseMessagingForegroundHandler);
 
@@ -135,13 +146,13 @@ class FcmManager {
     // If the application is opened from a terminated state a Future containing a RemoteMessage will be returned.
     // Once consumed, the RemoteMessage will be removed.
     FirebaseMessaging.instance.getInitialMessage().then((message) {
-        print("Handling a init message: $message");
-        if(message == null) {
-          print("Handling a init message: message == null");
-          return;
-        }
+      print("Handling a init message: $message");
+      if (message == null) {
+        print("Handling a init message: message == null");
+        return;
+      }
 
-        _firebaseMessagingOpenHandler(message);
+      _firebaseMessagingOpenHandler(message);
     });
   }
 

@@ -36,9 +36,7 @@ void main() async {
   FcmManager().init();
 
   runApp(Provider.value(
-    value: adState,
-    builder: (context, child) => FindingRestaruantApp()
-  ));
+      value: adState, builder: (context, child) => FindingRestaruantApp()));
 }
 
 class FindingRestaruantApp extends StatelessWidget {
@@ -49,9 +47,6 @@ class FindingRestaruantApp extends StatelessWidget {
       localizationsDelegates: AppLocalizations.localizationsDelegates,
       supportedLocales: AppLocalizations.supportedLocales,
       debugShowCheckedModeBanner: false,
-      title:  UIConstants.APP_TITLE,
-      routes: ROUTES_TABLE
-  );
+      title: UIConstants.APP_TITLE,
+      routes: ROUTES_TABLE);
 }
-
-

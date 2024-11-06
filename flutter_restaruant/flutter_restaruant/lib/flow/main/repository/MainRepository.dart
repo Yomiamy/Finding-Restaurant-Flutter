@@ -9,7 +9,6 @@ import 'package:flutter_restaruant/model/YelpSearchInfo.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
 
 class MainRepository {
-
   static const int _MAX_ITEMS_COUNT_IN_LIST = 50;
   static const String FAVOR_COLLECTION_NAME = "favors";
 
@@ -33,8 +32,9 @@ class MainRepository {
     this.summaryInfoSet.clear();
   }
 
-  Future<List<YelpRestaurantSummaryInfo>> fetchYelpSearchInfo(double lat, double lng, int? price, int? openAt, String? sortByStr) async {
-    if(this._isLoading) {
+  Future<List<YelpRestaurantSummaryInfo>> fetchYelpSearchInfo(double lat,
+      double lng, int? price, int? openAt, String? sortByStr) async {
+    if (this._isLoading) {
       // If new items is loading, then don't handle new fetching request until the old one completed.
       return await this.filterByKeyword(this._keyword, sortByStr);
     }
@@ -63,14 +63,16 @@ class MainRepository {
     return await this.filterByKeyword(this._keyword, sortByStr);
   }
 
-  Future<List<YelpRestaurantSummaryInfo>> filterByKeyword(String keyword, String? sortByStr) async {
+  Future<List<YelpRestaurantSummaryInfo>> filterByKeyword(
+      String keyword, String? sortByStr) async {
     this._keyword = keyword;
 
-    if(keyword.isNotEmpty) {
-      List<YelpRestaurantSummaryInfo> filteredList = this.summaryInfoSet.where((element) {
-        return (element.name?.contains(keyword) ?? false)
-            || (element.categoriesStr.contains(keyword))
-            || (element.location?.displayAddressStr.contains(keyword) ?? false);
+    if (keyword.isNotEmpty) {
+      List<YelpRestaurantSummaryInfo> filteredList =
+          this.summaryInfoSet.where((element) {
+        return (element.name?.contains(keyword) ?? false) ||
+            (element.categoriesStr.contains(keyword)) ||
+            (element.location?.displayAddressStr.contains(keyword) ?? false);
       }).toList();
 
       return this._getSortedInfoList(sortByStr, filteredList);
@@ -79,12 +81,14 @@ class MainRepository {
     }
   }
 
-  List<YelpRestaurantSummaryInfo> _getSortedInfoList(String? sortByStr, List<YelpRestaurantSummaryInfo> summaryInfos) {
+  List<YelpRestaurantSummaryInfo> _getSortedInfoList(
+      String? sortByStr, List<YelpRestaurantSummaryInfo> summaryInfos) {
     sortByStr = sortByStr ?? SortBy.best_match.toShortString();
-    SortBy sortBy = SortBy.values.firstWhere((element) => element.toShortString() == sortByStr);
+    SortBy sortBy = SortBy.values
+        .firstWhere((element) => element.toShortString() == sortByStr);
 
     summaryInfos.sort((info1, info2) {
-      switch(sortBy) {
+      switch (sortBy) {
         case SortBy.distance:
           double dist1 = info1.distance ?? 0;
           double dist2 = info2.distance ?? 0;
@@ -126,15 +130,21 @@ class MainRepository {
   }
 
   Future<Map<String, dynamic>> _fetchFavorsMap() async {
-    DocumentReference ref = FirebaseFirestore.instance.collection(FAVOR_COLLECTION_NAME).doc(this._uid);
+    DocumentReference ref = FirebaseFirestore.instance
+        .collection(FAVOR_COLLECTION_NAME)
+        .doc(this._uid);
     DocumentSnapshot snapshots = await ref.get();
-    Map<String, dynamic> favorsMap = (snapshots.data() != null) ? snapshots.data() as Map<String, dynamic> : Map<String, dynamic>();
+    Map<String, dynamic> favorsMap = (snapshots.data() != null)
+        ? snapshots.data() as Map<String, dynamic>
+        : Map<String, dynamic>();
 
     return favorsMap;
   }
 
   Future<void> _updateFavorsMap(Map<String, dynamic> favorsMap) async {
-    DocumentReference ref = FirebaseFirestore.instance.collection(FAVOR_COLLECTION_NAME).doc(this._uid);
+    DocumentReference ref = FirebaseFirestore.instance
+        .collection(FAVOR_COLLECTION_NAME)
+        .doc(this._uid);
 
     ref.set(favorsMap, SetOptions(merge: false));
   }

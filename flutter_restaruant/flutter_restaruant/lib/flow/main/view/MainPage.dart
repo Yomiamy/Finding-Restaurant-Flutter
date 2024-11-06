@@ -1,4 +1,3 @@
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -133,12 +132,11 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                     () {
                       ViewUtils.showPromptDialog(
                           context: context,
-                          title: AppLocalizations.of(context)
-                              ?.keyword_search ??
+                          title: AppLocalizations.of(context)?.keyword_search ??
                               "",
                           msgWidget: PlatformTextField(
                             hintText: AppLocalizations.of(context)
-                                ?.keyword_search_hint ??
+                                    ?.keyword_search_hint ??
                                 "",
                             onChanged: (keyword) {
                               this._filterKeyword = keyword;
@@ -147,28 +145,21 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                           actions: [
                             PlatformTextButton(
                                 onPressed: () {
-                                  this._mainBloc.add(
-                                      FilterListByKeyword(
-                                          keyword:
-                                          this._filterKeyword,
-                                          sortByStr:
-                                          this._configs.sortBy));
+                                  this._mainBloc.add(FilterListByKeyword(
+                                      keyword: this._filterKeyword,
+                                      sortByStr: this._configs.sortBy));
                                   this._filterKeyword = "";
                                   Navigator.pop(context);
                                 },
                                 child: PlatformText(
-                                    AppLocalizations.of(context)
-                                        ?.confirm ??
+                                    AppLocalizations.of(context)?.confirm ??
                                         "")),
                             PlatformTextButton(
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
                                 child: PlatformText(
-                                    AppLocalizations.of(context)
-                                        ?.cancel ??
-                                        "")
-                            )
+                                    AppLocalizations.of(context)?.cancel ?? ""))
                           ]);
                     },
                     () async {

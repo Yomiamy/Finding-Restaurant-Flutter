@@ -2,7 +2,6 @@ part of 'MainBloc.dart';
 
 @immutable
 abstract class MainState extends Equatable {
-
   const MainState();
 
   @override
@@ -10,7 +9,6 @@ abstract class MainState extends Equatable {
 }
 
 class MainInitial extends MainState {
-
   const MainInitial();
 
   @override
@@ -18,7 +16,6 @@ class MainInitial extends MainState {
 }
 
 class InProgress extends MainState {
-
   const InProgress();
 
   @override
@@ -26,7 +23,6 @@ class InProgress extends MainState {
 }
 
 class Success extends MainState {
-
   final List<YelpRestaurantSummaryInfo> summaryInfos;
 
   const Success({required this.summaryInfos});
@@ -39,7 +35,6 @@ class Success extends MainState {
 }
 
 class Failure extends MainState {
-
   const Failure();
 
   @override
@@ -53,9 +48,7 @@ class ResetSuccess extends MainState {
   String toString() => "Sucess reset offset";
 }
 
-
 class LoadMoreSuccess extends MainState {
-
   final List<YelpRestaurantSummaryInfo> summaryInfos = [];
 
   LoadMoreSuccess({required List<YelpRestaurantSummaryInfo> summaryInfos}) {

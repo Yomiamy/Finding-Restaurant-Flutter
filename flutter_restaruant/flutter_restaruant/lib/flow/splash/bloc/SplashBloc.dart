@@ -5,6 +5,5 @@ part 'SplashEvent.dart';
 part 'SplashState.dart';
 
 class SplashBloc extends Bloc<SplashEvent, SplashState> {
-
   SplashBloc() : super(SplashInitial());
 }
