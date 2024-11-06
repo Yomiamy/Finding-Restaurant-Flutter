@@ -3,7 +3,6 @@ import 'dart:convert';
 import 'package:flutter_restaruant/model/AccountInfo.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
-import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AutoSignInManager {

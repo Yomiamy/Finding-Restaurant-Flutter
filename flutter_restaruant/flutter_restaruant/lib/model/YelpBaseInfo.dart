@@ -2,7 +2,6 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_restaruant/utils/Utils.dart';
 import 'package:json_annotation/json_annotation.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 part 'YelpBaseInfo.g.dart';
 

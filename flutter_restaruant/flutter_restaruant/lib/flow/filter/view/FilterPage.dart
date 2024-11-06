@@ -48,12 +48,12 @@ class _FilterPageState extends State<FilterPage> {
                     Navigator.pop(context, result);
                   },
 
-                  child: Text(AppLocalizations?.of(context)?.apply ?? "",
+                  child: Text(AppLocalizations.of(context)?.apply ?? "",
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: UIConstants.xhFontSize)))
             ],
-            title: Text(AppLocalizations?.of(context)?.filter_rules ?? "",
+            title: Text(AppLocalizations.of(context)?.filter_rules ?? "",
                 style: TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
@@ -61,7 +61,7 @@ class _FilterPageState extends State<FilterPage> {
           // Price level
           Padding(
               padding: EdgeInsets.only(left: 20, top: 15),
-              child: Text(AppLocalizations?.of(context)?.filter_price ?? "",
+              child: Text(AppLocalizations.of(context)?.filter_price ?? "",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: UIConstants.xxxhFontSize))),
@@ -75,7 +75,7 @@ class _FilterPageState extends State<FilterPage> {
           // Business hour
           Padding(
               padding: EdgeInsets.only(left: 20, top: 15, right: 20),
-              child: Text(AppLocalizations?.of(context)?.filter_business_hour ?? "",
+              child: Text(AppLocalizations.of(context)?.filter_business_hour ?? "",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: UIConstants.xxxhFontSize))),
@@ -94,17 +94,17 @@ class _FilterPageState extends State<FilterPage> {
           // Sorting rule
           Padding(
               padding: EdgeInsets.only(left: 20, top: 15),
-              child: Text(AppLocalizations?.of(context)?.filter_sorting_rule ?? "",
+              child: Text(AppLocalizations.of(context)?.filter_sorting_rule ?? "",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: UIConstants.xxxhFontSize))),
           this._createSegmentWidget(
               initValue: this._sortByIndex,
               segmentItems: [
-                AppLocalizations?.of(context)?.filter_sorting_rule_best_match ?? "",
-                AppLocalizations?.of(context)?.filter_sorting_rule_distance ?? "",
-                AppLocalizations?.of(context)?.filter_sorting_rating ?? "",
-                AppLocalizations?.of(context)?.filter_sorting_review_count ?? ""],
+                AppLocalizations.of(context)?.filter_sorting_rule_best_match ?? "",
+                AppLocalizations.of(context)?.filter_sorting_rule_distance ?? "",
+                AppLocalizations.of(context)?.filter_sorting_rating ?? "",
+                AppLocalizations.of(context)?.filter_sorting_review_count ?? ""],
               valueChange: (i) {
                 this._sortByIndex = i;
               })

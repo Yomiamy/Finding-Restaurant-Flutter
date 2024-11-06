@@ -56,7 +56,7 @@ class RestaurantBusinessHourCell extends StatelessWidget {
               child: DecoratedBox(
                   decoration: BoxDecoration(color: Colors.grey),
                   child: Center(
-                      child: Text(AppLocalizations?.of(context)?.business_hour ?? "" ,
+                      child: Text(AppLocalizations.of(context)?.business_hour ?? "" ,
                           style: TextStyle(
                               fontSize: UIConstants.xhFontSize,
                               fontWeight: FontWeight.bold))))),

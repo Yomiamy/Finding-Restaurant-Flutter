@@ -60,7 +60,7 @@ class _MapPageState extends State<MapWidget> {
             this._myLocMarker = Marker(
                 position: this._currentPos!.target,
                 markerId: MarkerId(UIConstants.MAP_MY_LOCATION_MARK_ID),
-                infoWindow: InfoWindow(title: AppLocalizations?.of(context)?.map_my_loc_title ?? ""),
+                infoWindow: InfoWindow(title: AppLocalizations.of(context)?.map_my_loc_title ?? ""),
                 icon: BitmapDescriptor.defaultMarkerWithHue(BitmapDescriptor.hueYellow));
 
             this._markers.add(this._myLocMarker!);

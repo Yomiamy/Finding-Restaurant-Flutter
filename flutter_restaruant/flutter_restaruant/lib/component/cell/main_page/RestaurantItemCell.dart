@@ -69,7 +69,7 @@ class RestaurantItemCell extends StatelessWidget {
                                   Expanded(
                                       child: Align(
                                           child: Text(
-                                              "${this._summaryInfo.review_count}${AppLocalizations?.of(context)?.review_count_suffix ?? ""}",
+                                              "${this._summaryInfo.review_count}${AppLocalizations.of(context)?.review_count_suffix ?? ""}",
                                               style: TextStyle(
                                                   fontSize: UIConstants.mFontSize,
                                                   color: Colors.grey)),

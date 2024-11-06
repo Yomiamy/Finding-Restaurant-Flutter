@@ -1,8 +1,6 @@
-import 'dart:io';
 
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/EmptyDataWidget.dart';
@@ -10,7 +8,6 @@ import 'package:flutter_restaruant/component/LoadingWidget.dart';
 import 'package:flutter_restaruant/component/ad/InterstitialAD.dart';
 import 'package:flutter_restaruant/component/ad/InterstitialADState.dart';
 import 'package:flutter_restaruant/component/cell/restaurant_detail/RestaurantDetailCellCollection.dart';
-import 'package:flutter_restaruant/model/YelpRestaurantDetailInfo.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
@@ -85,7 +82,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
               builder: (context, state) {
                 if (state is InProgress || state is ToggleFavorSuccess) {
                   if(state is ToggleFavorSuccess) {
-                    String favorToggleMsg = this._summaryInfo.favor ? AppLocalizations?.of(context)?.favorite_store_add ?? "" : AppLocalizations?.of(context)?.favorite_store_remove ?? "";
+                    String favorToggleMsg = this._summaryInfo.favor ? AppLocalizations.of(context)?.favorite_store_add ?? "" : AppLocalizations.of(context)?.favorite_store_remove ?? "";
 
                     Fluttertoast.showToast(msg: favorToggleMsg);
                     // Re-fetch detail and build detail page

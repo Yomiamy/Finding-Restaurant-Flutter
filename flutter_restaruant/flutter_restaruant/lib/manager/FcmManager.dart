@@ -95,7 +95,7 @@ class FcmManager {
                   Constants.FCM_NOTIFICATION_CHANNEL_ID,
                   Constants.FCM_NOTIFICATION_CHANNEL_NAME,
                   channelDescription: Constants.FCM_NOTIFICATION_CHANNEL_DESCRIPTION,
-                  icon: android?.smallIcon,
+                  icon: android.smallIcon,
                   importance: Importance.max,
                   priority: Priority.high,
                   // other properties...

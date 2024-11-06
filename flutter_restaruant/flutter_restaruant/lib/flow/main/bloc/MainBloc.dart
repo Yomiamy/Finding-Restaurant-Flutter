@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_restaruant/flow/main/repository/MainRepository.dart';
 import 'package:flutter_restaruant/manager/FcmManager.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
-import 'package:flutter_restaruant/model/YelpSearchInfo.dart';
 import 'package:flutter_restaruant/utils/Utils.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:meta/meta.dart';

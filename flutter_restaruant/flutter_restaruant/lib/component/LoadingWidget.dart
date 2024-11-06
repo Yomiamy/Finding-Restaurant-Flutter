@@ -1,9 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_restaruant/component/PlatformWidget.dart';
 
 class LoadingWidget extends StatelessWidget {
 
-  String text;
+  final String text;
 
   LoadingWidget({Key? key, this.text = "Loading..."}) : super(key: key);
 

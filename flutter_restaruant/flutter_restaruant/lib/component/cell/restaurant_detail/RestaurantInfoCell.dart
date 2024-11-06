@@ -65,7 +65,7 @@ class RestaurantInfoCell extends StatelessWidget {
                             style: TextStyle(fontWeight: FontWeight.w700),
                             overflow: TextOverflow.ellipsis),
                         Row(children: <Widget>[
-                          Text(AppLocalizations?.of(context)?.store_phone ?? "",
+                          Text(AppLocalizations.of(context)?.store_phone ?? "",
                               style: TextStyle(fontWeight: FontWeight.w700)),
                           SizedBox(width: 10),
                           GestureDetector(
@@ -81,7 +81,7 @@ class RestaurantInfoCell extends StatelessWidget {
                         this
                             ._detailInfo
                             .getRatingImage(this._detailInfo.rating.toString()),
-                        Text("${this._detailInfo.review_count}${AppLocalizations?.of(context)?.review_count_suffix ?? ""}",
+                        Text("${this._detailInfo.review_count}${AppLocalizations.of(context)?.review_count_suffix ?? ""}",
                             style: TextStyle(
                                 fontSize: UIConstants.mFontSize,
                                 color: Colors.grey)),
@@ -103,16 +103,16 @@ class RestaurantInfoCell extends StatelessWidget {
 
   CupertinoActionSheet buildNavigationActionSheet(BuildContext context) =>
       CupertinoActionSheet(
-          title: Text(AppLocalizations?.of(context)?.navigation_choice ?? ""),
+          title: Text(AppLocalizations.of(context)?.navigation_choice ?? ""),
           cancelButton: CupertinoActionSheetAction(
               isDestructiveAction: true,
-              child: Text(AppLocalizations?.of(context)?.cancel ?? ""),
+              child: Text(AppLocalizations.of(context)?.cancel ?? ""),
               onPressed: () {
                 Navigator.pop(context);
               }),
           actions: [
             CupertinoActionSheetAction(
-                child: Text(AppLocalizations?.of(context)?.route_navigation ?? ""),
+                child: Text(AppLocalizations.of(context)?.route_navigation ?? ""),
                 onPressed: () {
                   double lat = this._detailInfo.coordinates?.latitude ?? 0;
                   double lng = this._detailInfo.coordinates?.longitude ?? 0;
@@ -127,7 +127,7 @@ class RestaurantInfoCell extends StatelessWidget {
                 }),
             CupertinoActionSheetAction(
                 isDefaultAction: false,
-                child: Text(AppLocalizations?.of(context)?.street_view ?? ""),
+                child: Text(AppLocalizations.of(context)?.street_view ?? ""),
                 onPressed: () {
                   double lat = this._detailInfo.coordinates?.latitude ?? 0;
                   double lng = this._detailInfo.coordinates?.longitude ?? 0;

@@ -32,7 +32,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
                     color: Color(UIConstants.BACK_BTN_COLOR)),
                 cupertinoIcon: Icon(CupertinoIcons.back,
                     color: Color(UIConstants.BACK_BTN_COLOR))),
-            title: Text(AppLocalizations?.of(context)?.photo_viewer_title ?? "",
+            title: Text(AppLocalizations.of(context)?.photo_viewer_title ?? "",
                     style: TextStyle(
                         color: Colors.white,
                         fontSize: UIConstants.xxxhFontSize)),
