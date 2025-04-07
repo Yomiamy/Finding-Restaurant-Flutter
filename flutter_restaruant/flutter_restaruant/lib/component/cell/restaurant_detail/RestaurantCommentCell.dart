@@ -47,7 +47,7 @@ class RestaurantCommentCell extends StatelessWidget {
           onTap: () {
             debugPrint("Comment Url = $commentUrl");
             this._browser.open(
-                url: Uri.parse(commentUrl),
+                url: WebUri(commentUrl),
                 options: ChromeSafariBrowserClassOptions(
                     android: AndroidChromeCustomTabsOptions(),
                     ios: IOSSafariOptions(barCollapsingEnabled: true)));
