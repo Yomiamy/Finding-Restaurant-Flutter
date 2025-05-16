@@ -30,10 +30,11 @@ void main() async {
   // Constants init
   Constants.init();
   // Firebase Init
-  await Firebase.initializeApp(
+  Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
-  );
-  FcmManager().init();
+  ).then((_) {
+    FcmManager().init();
+  });
 
   runApp(Provider.value(
       value: adState, builder: (context, child) => FindingRestaruantApp()));

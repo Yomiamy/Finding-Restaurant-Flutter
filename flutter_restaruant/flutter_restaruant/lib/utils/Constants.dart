@@ -46,6 +46,8 @@ class Constants {
   static const int PAGE_ITEM_COUNT = 50;
 
   static void init() async {
-    _sPackageInfo = await PackageInfo.fromPlatform();
+    PackageInfo.fromPlatform().then((packageInfo) {
+      _sPackageInfo = packageInfo;
+    });
   }
 }
