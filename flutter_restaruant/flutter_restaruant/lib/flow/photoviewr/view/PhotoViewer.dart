@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_restaruant/l10n/app_localizations.dart';
 
 class PhotoViewer extends StatefulWidget {
   static const ROUTE_NAME = "/PhotoViewer";
@@ -32,10 +32,9 @@ class _PhotoViewerState extends State<PhotoViewer> {
                     color: Color(UIConstants.BACK_BTN_COLOR)),
                 cupertinoIcon: Icon(CupertinoIcons.back,
                     color: Color(UIConstants.BACK_BTN_COLOR))),
-            title: Text(AppLocalizations?.of(context)?.photo_viewer_title ?? "",
-                    style: TextStyle(
-                        color: Colors.white,
-                        fontSize: UIConstants.xxxhFontSize)),
+            title: Text(AppLocalizations.of(context)?.photo_viewer_title ?? "",
+                style: TextStyle(
+                    color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: InteractiveViewer(
           // Set it to false

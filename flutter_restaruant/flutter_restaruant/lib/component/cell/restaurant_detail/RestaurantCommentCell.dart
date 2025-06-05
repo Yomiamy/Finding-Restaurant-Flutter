@@ -4,7 +4,6 @@ import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class RestaurantCommentCell extends StatelessWidget {
-
   static const int _IMAGE_W = 100;
   static const int _IMAGE_H = 100;
   static const double _RATING_IMAGE_H = 20;
@@ -12,7 +11,10 @@ class RestaurantCommentCell extends StatelessWidget {
   final List<Widget> _commentWidgets = <Widget>[];
   final ChromeSafariBrowser _browser = ChromeSafariBrowser();
 
-  RestaurantCommentCell({Key? key = const Key("RestaurantCommentCell"), required List<YelpReviewDetailInfo> reviewInfos}): super(key: key) {
+  RestaurantCommentCell(
+      {Key? key = const Key("RestaurantCommentCell"),
+      required List<YelpReviewDetailInfo> reviewInfos})
+      : super(key: key) {
     this._initBusinessTimeWidgets(reviewInfos);
   }
 
@@ -20,7 +22,8 @@ class RestaurantCommentCell extends StatelessWidget {
     reviewInfos.forEach((reviewInfo) {
       String headImgUrl = reviewInfo.user?.image_url ?? "";
       String name = reviewInfo.user?.name ?? "";
-      Image rateAsset = reviewInfo.getRatingImage(reviewInfo.rating?.toString() ?? "");
+      Image rateAsset =
+          reviewInfo.getRatingImage(reviewInfo.rating?.toString() ?? "");
       String comment = reviewInfo.text ?? "";
       String commentUrl = reviewInfo.url ?? "";
 
@@ -44,12 +47,10 @@ class RestaurantCommentCell extends StatelessWidget {
           onTap: () {
             debugPrint("Comment Url = $commentUrl");
             this._browser.open(
-                url: Uri.parse(commentUrl),
+                url: WebUri(commentUrl),
                 options: ChromeSafariBrowserClassOptions(
                     android: AndroidChromeCustomTabsOptions(),
-                    ios: IOSSafariOptions(barCollapsingEnabled: true)
-                )
-            );
+                    ios: IOSSafariOptions(barCollapsingEnabled: true)));
           },
           child: Padding(
               padding: EdgeInsets.only(bottom: 10),
@@ -100,6 +101,5 @@ class RestaurantCommentCell extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: this._commentWidgets,
-      )
-  );
+      ));
 }

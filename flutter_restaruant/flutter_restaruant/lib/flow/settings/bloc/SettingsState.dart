@@ -1,7 +1,6 @@
 part of 'SettingsBloc.dart';
 
 abstract class SettingsState extends Equatable {
-
   const SettingsState();
 
   @override
@@ -9,7 +8,6 @@ abstract class SettingsState extends Equatable {
 }
 
 class SettingsInitial extends SettingsState {
-
   @override
   String toString() => "SettingsInitial";
 
@@ -18,7 +16,6 @@ class SettingsInitial extends SettingsState {
 }
 
 class InProgress extends SettingsState {
-
   const InProgress();
 
   @override
@@ -29,7 +26,6 @@ class InProgress extends SettingsState {
 }
 
 class LogoutSuccess extends SettingsState {
-
   const LogoutSuccess();
 
   @override
@@ -40,7 +36,6 @@ class LogoutSuccess extends SettingsState {
 }
 
 class AccountRemovalSuccessState extends SettingsState {
-
   const AccountRemovalSuccessState();
 
   @override
@@ -51,7 +46,6 @@ class AccountRemovalSuccessState extends SettingsState {
 }
 
 class InitBioAuthSettingState extends SettingsState {
-
   final bool settingValue;
 
   const InitBioAuthSettingState({required this.settingValue});
@@ -64,7 +58,6 @@ class InitBioAuthSettingState extends SettingsState {
 }
 
 class ToggleBioAuthSettingState extends SettingsState {
-
   final bool settingValue;
 
   const ToggleBioAuthSettingState({required this.settingValue});

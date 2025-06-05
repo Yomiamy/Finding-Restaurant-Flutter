@@ -26,10 +26,8 @@ class RestaurantImageCell extends StatelessWidget {
                   String photoUrl = this._photos[index];
                   Tuple2 arguments = Tuple2<String, dynamic>(photoUrl, null);
 
-                  Navigator.of(context).pushNamed(
-                      PhotoViewer.ROUTE_NAME,
-                      arguments: arguments
-                  );
+                  Navigator.of(context)
+                      .pushNamed(PhotoViewer.ROUTE_NAME, arguments: arguments);
                 },
                 child: FadeInImage.assetNetwork(
                     placeholder: UIConstants.NO_IMAGE,
@@ -42,8 +40,5 @@ class RestaurantImageCell extends StatelessWidget {
                     fit: BoxFit.fill,
                     width: MediaQuery.of(context).size.width / 3,
                     height: MediaQuery.of(context).size.width / 3),
-              )
-          )
-      )
-  );
+              ))));
 }

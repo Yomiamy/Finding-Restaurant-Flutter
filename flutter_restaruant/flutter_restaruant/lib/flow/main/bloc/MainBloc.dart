@@ -1,10 +1,8 @@
 import 'dart:async';
 import 'package:bloc/bloc.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter_restaruant/flow/main/repository/MainRepository.dart';
 import 'package:flutter_restaruant/manager/FcmManager.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
-import 'package:flutter_restaruant/model/YelpSearchInfo.dart';
 import 'package:flutter_restaruant/utils/Utils.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:meta/meta.dart';
@@ -14,11 +12,12 @@ part 'MainEvent.dart';
 part 'MainState.dart';
 
 class MainBloc extends Bloc<MainEvent, MainState> {
-
   static const TAG = "MainBloc";
   final MainRepository _mainRepository;
 
-  MainBloc({required MainRepository repository}) : this._mainRepository = repository, super(MainInitial()) {
+  MainBloc({required MainRepository repository})
+      : this._mainRepository = repository,
+        super(MainInitial()) {
     on<FetchSearchInfo>((event, emit) async {
       try {
         final Position currentPos = await Utils.getCurrentPosition();
@@ -29,13 +28,15 @@ class MainBloc extends Bloc<MainEvent, MainState> {
         int? openAt = event.openAt;
         String? sortBy = event.sortBy;
 
-        if(!isLoadMore) {
+        if (!isLoadMore) {
           // If it is first loading, then display loading progress.
           emit(InProgress());
         }
-        final List<YelpRestaurantSummaryInfo> summaryInfos =  await this._mainRepository.fetchYelpSearchInfo(lat, lng, price, openAt, sortBy);
+        final List<YelpRestaurantSummaryInfo> summaryInfos = await this
+            ._mainRepository
+            .fetchYelpSearchInfo(lat, lng, price, openAt, sortBy);
 
-        if(isLoadMore) {
+        if (isLoadMore) {
           emit(LoadMoreSuccess(summaryInfos: summaryInfos));
         } else {
           emit(Success(summaryInfos: summaryInfos));
@@ -54,9 +55,11 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       emit(InProgress());
 
       await Future.delayed(Duration(seconds: 2));
-      final List<YelpRestaurantSummaryInfo> filterInfos = await this._mainRepository.filterByKeyword(event.keyword, event.sortByStr);
+      final List<YelpRestaurantSummaryInfo> filterInfos = await this
+          ._mainRepository
+          .filterByKeyword(event.keyword, event.sortByStr);
 
-      if(filterInfos.isNotEmpty) {
+      if (filterInfos.isNotEmpty) {
         emit(Success(summaryInfos: filterInfos));
       } else {
         emit(Failure());
@@ -71,7 +74,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
         await this._mainRepository.toggleFavor(summary);
 
         emit(ToggleFavorSuccess());
-      } on Exception catch(_) {
+      } on Exception catch (_) {
         emit(Failure());
       }
     });
@@ -85,5 +88,3 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     });
   }
 }
-
-

@@ -1,3 +1,1 @@
-class Dimens {
-
-}
+class Dimens {}

@@ -9,7 +9,6 @@ import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'MailSignInUpManager.dart';
 
 class SignInManager {
-
   static final SignInManager _singleton = SignInManager._internal();
 
   SignInManager._internal();
@@ -24,10 +23,11 @@ class SignInManager {
   BiometricSignInManager _biometricAuthManager = BiometricSignInManager();
   AutoSignInManager _autoSignInManager = AutoSignInManager();
 
-  Future<Tuple2<AccountInfo?, String>> signIn(AccountType accountType, {String mail = "", String passwd = ""}) async {
+  Future<Tuple2<AccountInfo?, String>> signIn(AccountType accountType,
+      {String mail = "", String passwd = ""}) async {
     Tuple2<AccountInfo?, String> signInResult = Tuple2(null, "");
 
-    switch(accountType) {
+    switch (accountType) {
       case AccountType.GOOGLE:
         signInResult = await this._googleSignInManager.signInWithGoogle();
         break;
@@ -45,7 +45,8 @@ class SignInManager {
         break;
       case AccountType.MAIL:
       default:
-        signInResult = await this._mailSignInUpManager.signInWithMail(mail, passwd);
+        signInResult =
+            await this._mailSignInUpManager.signInWithMail(mail, passwd);
         break;
     }
     this.accountInfo = signInResult.item1;
@@ -53,13 +54,15 @@ class SignInManager {
     return signInResult;
   }
 
-  Future<Tuple2<AccountInfo?, String>> signUp(AccountType accountType, {required String mail, required String passwd}) async {
+  Future<Tuple2<AccountInfo?, String>> signUp(AccountType accountType,
+      {required String mail, required String passwd}) async {
     Tuple2<AccountInfo?, String> signUpResult = Tuple2(null, "");
 
-    switch(accountType) {
+    switch (accountType) {
       case AccountType.MAIL:
       default:
-        signUpResult = await this._mailSignInUpManager.signUpWithMail(mail, passwd);
+        signUpResult =
+            await this._mailSignInUpManager.signUpWithMail(mail, passwd);
         break;
     }
     this.accountInfo = signUpResult.item1;
@@ -68,7 +71,7 @@ class SignInManager {
   }
 
   Future<void> signOut() async {
-    switch(this.accountInfo?.type) {
+    switch (this.accountInfo?.type) {
       case AccountType.GOOGLE:
         this._googleSignInManager.signOutWithGoogle();
         break;

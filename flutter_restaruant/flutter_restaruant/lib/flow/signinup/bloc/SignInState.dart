@@ -10,7 +10,6 @@ abstract class SignInState extends Equatable {
 class SignInInitial extends SignInState {}
 
 class InProgress extends SignInState {
-
   const InProgress();
 
   @override
@@ -18,7 +17,6 @@ class InProgress extends SignInState {
 }
 
 class SignInSuccess extends SignInState {
-
   final AccountInfo accountInfo;
 
   SignInSuccess({required this.accountInfo});
@@ -28,7 +26,6 @@ class SignInSuccess extends SignInState {
 }
 
 class SignUpSuccess extends SignInState {
-
   final AccountInfo accountInfo;
 
   SignUpSuccess({required this.accountInfo});

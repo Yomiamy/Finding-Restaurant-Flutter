@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_restaruant/l10n/app_localizations.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:sprintf/sprintf.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
 
 class RestaurantItemCell extends StatelessWidget {
   static const int IMAGE_H = 110;
@@ -11,8 +11,7 @@ class RestaurantItemCell extends StatelessWidget {
 
   final YelpRestaurantSummaryInfo _summaryInfo;
 
-  const RestaurantItemCell(
-      { required YelpRestaurantSummaryInfo summaryInfo})
+  const RestaurantItemCell({required YelpRestaurantSummaryInfo summaryInfo})
       : this._summaryInfo = summaryInfo;
 
   @override
@@ -60,45 +59,52 @@ class RestaurantItemCell extends StatelessWidget {
                                               fontSize: UIConstants.mFontSize,
                                               color: Colors.grey))
                                     ]),
-                                Flex(direction: Axis.horizontal, children: <
-                                    Widget>[
-                                  Expanded(
-                                      child: this._summaryInfo.getRatingImage(
-                                          this._summaryInfo.rating.toString()),
-                                      flex: 1),
-                                  Expanded(
-                                      child: Align(
-                                          child: Text(
-                                              "${this._summaryInfo.review_count}${AppLocalizations?.of(context)?.review_count_suffix ?? ""}",
-                                              style: TextStyle(
-                                                  fontSize: UIConstants.mFontSize,
-                                                  color: Colors.grey)),
-                                          alignment: Alignment.centerRight),
-                                      flex: 1),
-                                  Expanded(
-                                      child: Align(
-                                          child: Text(
-                                              this._summaryInfo.price ?? "",
-                                              style: TextStyle(
-                                                  fontSize: UIConstants.mFontSize,
-                                                  color: Colors.grey)),
-                                          alignment: Alignment.centerRight),
-                                      flex: 1)
-                                ]),
+                                Flex(
+                                    direction: Axis.horizontal,
+                                    children: <Widget>[
+                                      Expanded(
+                                          child: this
+                                              ._summaryInfo
+                                              .getRatingImage(this
+                                                  ._summaryInfo
+                                                  .rating
+                                                  .toString()),
+                                          flex: 1),
+                                      Expanded(
+                                          child: Align(
+                                              child: Text(
+                                                  "${this._summaryInfo.review_count}${AppLocalizations.of(context)?.review_count_suffix ?? ""}",
+                                                  style: TextStyle(
+                                                      fontSize:
+                                                          UIConstants.mFontSize,
+                                                      color: Colors.grey)),
+                                              alignment: Alignment.centerRight),
+                                          flex: 1),
+                                      Expanded(
+                                          child: Align(
+                                              child: Text(
+                                                  this._summaryInfo.price ?? "",
+                                                  style: TextStyle(
+                                                      fontSize:
+                                                          UIConstants.mFontSize,
+                                                      color: Colors.grey)),
+                                              alignment: Alignment.centerRight),
+                                          flex: 1)
+                                    ]),
                                 Text(
-                                    this._summaryInfo.location?.display_address?.join("") ?? "",
+                                    this
+                                            ._summaryInfo
+                                            .location
+                                            ?.display_address
+                                            ?.join("") ??
+                                        "",
                                     overflow: TextOverflow.ellipsis),
                                 Text(category,
                                     overflow: TextOverflow.ellipsis,
                                     style: TextStyle(
                                         fontSize: UIConstants.mFontSize,
                                         color: Colors.grey))
-                              ])
-                      )
-                  )
-              )
-            ])
-        )
-    );
+                              ]))))
+            ])));
   }
 }

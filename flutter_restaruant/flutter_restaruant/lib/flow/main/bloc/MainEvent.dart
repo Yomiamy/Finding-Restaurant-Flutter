@@ -2,7 +2,6 @@ part of 'MainBloc.dart';
 
 @immutable
 abstract class MainEvent extends Equatable {
-
   const MainEvent();
 
   @override
@@ -10,7 +9,6 @@ abstract class MainEvent extends Equatable {
 }
 
 class FetchSearchInfo extends MainEvent {
-
   final int? price;
   final int? openAt;
   final String? sortBy;
@@ -36,7 +34,6 @@ class LoadMore extends MainEvent {
 }
 
 class FilterListByKeyword extends MainEvent {
-
   final String keyword;
   final String? sortByStr;
 
@@ -58,7 +55,6 @@ class ToggleFavor extends MainEvent {
 
 // 請求FCM
 class NotificationSetup extends MainEvent {
-
   const NotificationSetup();
 
   @override

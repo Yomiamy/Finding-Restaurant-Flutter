@@ -9,8 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/component/LoadingWidget.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-import 'package:flutter_restaruant/main.dart';
-
 void main() {
   testWidgets('LoadingWidget Test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
@@ -29,9 +27,6 @@ class LoadingTestApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      home: Container(child: LoadingWidget())
-    );
+    return MaterialApp(home: Container(child: LoadingWidget()));
   }
 }
-

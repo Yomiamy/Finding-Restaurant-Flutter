@@ -1,7 +1,7 @@
 part of 'RestaurantDetailBloc.dart';
 
 @immutable
-abstract class RestaurantDetailState extends Equatable  {
+abstract class RestaurantDetailState extends Equatable {
   const RestaurantDetailState();
 
   @override
@@ -9,7 +9,6 @@ abstract class RestaurantDetailState extends Equatable  {
 }
 
 class RestaurantDetailInitial extends RestaurantDetailState {
-
   const RestaurantDetailInitial();
 
   @override
@@ -17,7 +16,6 @@ class RestaurantDetailInitial extends RestaurantDetailState {
 }
 
 class InProgress extends RestaurantDetailState {
-
   const InProgress();
 
   @override
@@ -25,12 +23,14 @@ class InProgress extends RestaurantDetailState {
 }
 
 class Success extends RestaurantDetailState {
-
   final YelpRestaurantDetailInfo detailInfo;
   final YelpReviewInfo reviewInfo;
   final String staticMapUrl;
 
-  const Success({required this.detailInfo, required this.reviewInfo, required this.staticMapUrl});
+  const Success(
+      {required this.detailInfo,
+      required this.reviewInfo,
+      required this.staticMapUrl});
 
   @override
   List<Object> get props => [detailInfo.hashCode, reviewInfo.hashCode];
@@ -40,7 +40,6 @@ class Success extends RestaurantDetailState {
 }
 
 class Failure extends RestaurantDetailState {
-
   const Failure();
 
   @override

@@ -9,7 +9,6 @@ import 'package:flutter_restaruant/model/YelpReviewInfo.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
 
 class RestaurantDetailRepository {
-
   static const String FAVOR_COLLECTION_NAME = "favors";
 
   String _uid = "";
@@ -18,15 +17,12 @@ class RestaurantDetailRepository {
     this._uid = SignInManager().accountInfo?.uid ?? "";
   }
 
-  Future<YelpRestaurantDetailInfo> fetchYelpRestaurantDetailInfo(String id) async => apiInstance.business(
-      id,
-      Constants.LOCALE
-  );
+  Future<YelpRestaurantDetailInfo> fetchYelpRestaurantDetailInfo(
+          String id) async =>
+      apiInstance.business(id, Constants.LOCALE);
 
-  Future<YelpReviewInfo> fetchYelpRestaurantReviewInfo(String id) async => apiInstance.review(
-      id,
-      Constants.LOCALE
-  );
+  Future<YelpReviewInfo> fetchYelpRestaurantReviewInfo(String id) async =>
+      apiInstance.review(id, Constants.LOCALE);
 
   Future<void> toggleFavor(YelpRestaurantSummaryInfo summaryInfo) async {
     Map<String, dynamic> favorsMap = await this._fetchFavorsMap();
@@ -46,15 +42,21 @@ class RestaurantDetailRepository {
   }
 
   Future<Map<String, dynamic>> _fetchFavorsMap() async {
-    DocumentReference ref = FirebaseFirestore.instance.collection(FAVOR_COLLECTION_NAME).doc(this._uid);
+    DocumentReference ref = FirebaseFirestore.instance
+        .collection(FAVOR_COLLECTION_NAME)
+        .doc(this._uid);
     DocumentSnapshot snapshots = await ref.get();
-    Map<String, dynamic> favorsMap = (snapshots.data() != null) ? snapshots.data() as Map<String, dynamic> : Map<String, dynamic>();
+    Map<String, dynamic> favorsMap = (snapshots.data() != null)
+        ? snapshots.data() as Map<String, dynamic>
+        : Map<String, dynamic>();
 
     return favorsMap;
   }
 
   Future<void> _updateFavorsMap(Map<String, dynamic> favorsMap) async {
-    DocumentReference ref = FirebaseFirestore.instance.collection(FAVOR_COLLECTION_NAME).doc(this._uid);
+    DocumentReference ref = FirebaseFirestore.instance
+        .collection(FAVOR_COLLECTION_NAME)
+        .doc(this._uid);
 
     ref.set(favorsMap, SetOptions(merge: false));
   }

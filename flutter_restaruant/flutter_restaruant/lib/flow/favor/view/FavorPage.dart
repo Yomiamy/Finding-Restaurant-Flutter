@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/EmptyDataWidget.dart';
@@ -8,7 +7,6 @@ import 'package:flutter_restaruant/component/LoadingWidget.dart';
 import 'package:flutter_restaruant/component/cell/main_page/RestaurantItemCell.dart';
 import 'package:flutter_restaruant/flow/favor/bloc/FavorBloc.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/RestaurantDetailPage.dart';
-import 'package:flutter_restaruant/manager/SignInManager.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
@@ -23,7 +21,6 @@ class FavorPage extends StatefulWidget {
 }
 
 class _FavorPageState extends State<FavorPage> {
-
   late FavorBloc _favorBloc;
 
   @override
@@ -48,8 +45,7 @@ class _FavorPageState extends State<FavorPage> {
                     color: Color(UIConstants.BACK_BTN_COLOR))),
             title: Text(UIConstants.FAVOR_TITLE,
                 style: TextStyle(
-                color: Colors.white,
-                fontSize: UIConstants.xxxxhFontSize)),
+                    color: Colors.white, fontSize: UIConstants.xxxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: BlocBuilder<FavorBloc, FavorState>(
             bloc: this._favorBloc,
@@ -68,8 +64,12 @@ class _FavorPageState extends State<FavorPage> {
                       return GestureDetector(
                           child: RestaurantItemCell(summaryInfo: favorInfo),
                           onTap: () async {
-                            Tuple2 arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(favorInfo, null);
-                            await Navigator.of(context).pushNamed(RestaurantDetailPage.ROUTE_NAME, arguments: arguments);
+                            Tuple2 arguments =
+                                Tuple2<YelpRestaurantSummaryInfo, dynamic>(
+                                    favorInfo, null);
+                            await Navigator.of(context).pushNamed(
+                                RestaurantDetailPage.ROUTE_NAME,
+                                arguments: arguments);
 
                             this._favorBloc.add(FetchFavorInfoEvent(true));
                           });

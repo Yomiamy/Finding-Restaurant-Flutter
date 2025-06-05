@@ -4,7 +4,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/model/FilterConfigs.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_restaruant/l10n/app_localizations.dart';
 
 class FilterPage extends StatefulWidget {
   static const ROUTE_NAME = "/FilterPage";
@@ -16,14 +16,14 @@ class FilterPage extends StatefulWidget {
 }
 
 class _FilterPageState extends State<FilterPage> {
-
   int _priceIndex = 0;
   DateTime _openAtDateTime = DateTime.now();
   int _sortByIndex = 0;
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments as Tuple2<FilterConfigs, dynamic>;
+    final args = ModalRoute.of(context)!.settings.arguments
+        as Tuple2<FilterConfigs, dynamic>;
     FilterConfigs configs = args.item1;
     this._priceIndex = configs.priceIndex;
     this._openAtDateTime = configs.openAtDateTime;
@@ -43,17 +43,20 @@ class _FilterPageState extends State<FilterPage> {
                   color: Color(UIConstants.APP_PRIMARY_COLOR),
                   padding: EdgeInsets.all(0),
                   onPressed: () {
-                    FilterConfigs configs = FilterConfigs.fromUI(priceIndex: this._priceIndex, openAtDate: this._openAtDateTime, sortingRuleIndex: this._sortByIndex);
-                    Tuple2<FilterConfigs, dynamic> result = Tuple2(configs, null);
+                    FilterConfigs configs = FilterConfigs.fromUI(
+                        priceIndex: this._priceIndex,
+                        openAtDate: this._openAtDateTime,
+                        sortingRuleIndex: this._sortByIndex);
+                    Tuple2<FilterConfigs, dynamic> result =
+                        Tuple2(configs, null);
                     Navigator.pop(context, result);
                   },
-
-                  child: Text(AppLocalizations?.of(context)?.apply ?? "",
+                  child: Text(AppLocalizations.of(context)?.apply ?? "",
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: UIConstants.xhFontSize)))
             ],
-            title: Text(AppLocalizations?.of(context)?.filter_rules ?? "",
+            title: Text(AppLocalizations.of(context)?.filter_rules ?? "",
                 style: TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
@@ -61,7 +64,7 @@ class _FilterPageState extends State<FilterPage> {
           // Price level
           Padding(
               padding: EdgeInsets.only(left: 20, top: 15),
-              child: Text(AppLocalizations?.of(context)?.filter_price ?? "",
+              child: Text(AppLocalizations.of(context)?.filter_price ?? "",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: UIConstants.xxxhFontSize))),
@@ -75,49 +78,53 @@ class _FilterPageState extends State<FilterPage> {
           // Business hour
           Padding(
               padding: EdgeInsets.only(left: 20, top: 15, right: 20),
-              child: Text(AppLocalizations?.of(context)?.filter_business_hour ?? "",
+              child: Text(
+                  AppLocalizations.of(context)?.filter_business_hour ?? "",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: UIConstants.xxxhFontSize))),
           SizedBox(
-            width: MediaQuery.of(context).size.width.toInt() - 20,
-            height: 200,
-            child: CupertinoDatePicker(
-                initialDateTime: this._openAtDateTime,
-                use24hFormat: true,
-                mode: CupertinoDatePickerMode.dateAndTime,
-                onDateTimeChanged: (dateTime) {
-                  this._openAtDateTime = dateTime;
-                })
-          ),
+              width: MediaQuery.of(context).size.width.toInt() - 20,
+              height: 200,
+              child: CupertinoDatePicker(
+                  initialDateTime: this._openAtDateTime,
+                  use24hFormat: true,
+                  mode: CupertinoDatePickerMode.dateAndTime,
+                  onDateTimeChanged: (dateTime) {
+                    this._openAtDateTime = dateTime;
+                  })),
 
           // Sorting rule
           Padding(
               padding: EdgeInsets.only(left: 20, top: 15),
-              child: Text(AppLocalizations?.of(context)?.filter_sorting_rule ?? "",
+              child: Text(
+                  AppLocalizations.of(context)?.filter_sorting_rule ?? "",
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: UIConstants.xxxhFontSize))),
           this._createSegmentWidget(
               initValue: this._sortByIndex,
               segmentItems: [
-                AppLocalizations?.of(context)?.filter_sorting_rule_best_match ?? "",
-                AppLocalizations?.of(context)?.filter_sorting_rule_distance ?? "",
-                AppLocalizations?.of(context)?.filter_sorting_rating ?? "",
-                AppLocalizations?.of(context)?.filter_sorting_review_count ?? ""],
+                AppLocalizations.of(context)?.filter_sorting_rule_best_match ??
+                    "",
+                AppLocalizations.of(context)?.filter_sorting_rule_distance ??
+                    "",
+                AppLocalizations.of(context)?.filter_sorting_rating ?? "",
+                AppLocalizations.of(context)?.filter_sorting_review_count ?? ""
+              ],
               valueChange: (i) {
                 this._sortByIndex = i;
               })
         ]));
   }
 
-  Widget _createSegmentWidget({required int initValue,
-    required List<String> segmentItems,
-    required ValueChanged<int> valueChange}) {
-
+  Widget _createSegmentWidget(
+      {required int initValue,
+      required List<String> segmentItems,
+      required ValueChanged<int> valueChange}) {
     Map<int, Widget> children = <int, Widget>{};
 
-    for(int i = 0; i < segmentItems.length; i++) {
+    for (int i = 0; i < segmentItems.length; i++) {
       children[i] = Text(segmentItems[i]);
     }
     return StatefulBuilder(

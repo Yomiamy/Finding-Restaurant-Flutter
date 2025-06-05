@@ -6,13 +6,13 @@ part 'YelpSearchInfo.g.dart';
 
 @JsonSerializable()
 class YelpSearchInfo extends YelpBaseInfo {
- List<YelpRestaurantSummaryInfo>? businesses;
- int? total;
+  List<YelpRestaurantSummaryInfo>? businesses;
+  int? total;
 
- YelpSearchInfo():super();
+  YelpSearchInfo() : super();
 
- factory YelpSearchInfo.fromJson(Map<String, dynamic> json) =>
-     _$YelpSearchInfoFromJson(json);
+  factory YelpSearchInfo.fromJson(Map<String, dynamic> json) =>
+      _$YelpSearchInfoFromJson(json);
 
- Map<String, dynamic> toJson() => _$YelpSearchInfoToJson(this);
+  Map<String, dynamic> toJson() => _$YelpSearchInfoToJson(this);
 }

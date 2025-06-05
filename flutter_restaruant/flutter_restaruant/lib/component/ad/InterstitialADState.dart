@@ -3,7 +3,6 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'dart:io';
 
 class InterstitialADState {
-
   String? get interstitialAdUnitId => Platform.isAndroid
       ? Constants.AD_ANDROID_INTERSTITAL_ID
       : Constants.AD_IOS_INTERSTITAL_ID;

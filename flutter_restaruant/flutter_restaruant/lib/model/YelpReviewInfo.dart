@@ -10,7 +10,7 @@ class YelpReviewInfo extends YelpBaseInfo {
   List<String>? possible_languages;
   List<YelpReviewDetailInfo>? reviews;
 
-  YelpReviewInfo():super();
+  YelpReviewInfo() : super();
 
   factory YelpReviewInfo.fromJson(Map<String, dynamic> json) =>
       _$YelpReviewInfoFromJson(json);

@@ -11,7 +11,6 @@ abstract class FavorState extends Equatable {
 class FavorInitial extends FavorState {}
 
 class InProgress extends FavorState {
-
   const InProgress();
 
   @override
@@ -19,7 +18,6 @@ class InProgress extends FavorState {
 }
 
 class Success extends FavorState {
-
   final List<YelpRestaurantSummaryInfo> favorInfos;
 
   const Success({required this.favorInfos});
@@ -28,12 +26,12 @@ class Success extends FavorState {
   List<Object> get props => this.favorInfos;
 
   @override
-  String toString() =>  "Get favor store info successfully";
+  String toString() => "Get favor store info successfully";
 }
 
 class Failure extends FavorState {
   const Failure();
 
   @override
-  String toString() =>  "Fail get favor store info";
+  String toString() => "Fail get favor store info";
 }

@@ -65,8 +65,10 @@ class DefaultFirebaseOptions {
     projectId: 'findrestaurant-c80ea',
     databaseURL: 'https://findrestaurant-c80ea.firebaseio.com',
     storageBucket: 'findrestaurant-c80ea.appspot.com',
-    androidClientId: '35224406241-6hursinnrblkjo76gp1mlvppsddul6vu.apps.googleusercontent.com',
-    iosClientId: '35224406241-8bh7hq1e07129nav2gcme5n9p565su7k.apps.googleusercontent.com',
+    androidClientId:
+        '35224406241-6hursinnrblkjo76gp1mlvppsddul6vu.apps.googleusercontent.com',
+    iosClientId:
+        '35224406241-8bh7hq1e07129nav2gcme5n9p565su7k.apps.googleusercontent.com',
     iosBundleId: 'com.yomi.find-restaurant',
   );
 }

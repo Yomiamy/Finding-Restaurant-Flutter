@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter_restaruant/flow/signinup/repository/SignInRepository.dart';
@@ -10,7 +9,6 @@ part 'SignInEvent.dart';
 part 'SignInState.dart';
 
 class SignInBloc extends Bloc<SignInEvent, SignInState> {
-
   final SignInRepository _signInRepository;
 
   SignInBloc({required SignInRepository repository})
@@ -19,7 +17,8 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
     on<SignInEvent>((event, emit) async {
       emit(InProgress());
 
-      Tuple2<AccountInfo?, String> result = await this._signInRepository.signInUp(event);
+      Tuple2<AccountInfo?, String> result =
+          await this._signInRepository.signInUp(event);
       AccountInfo? accountInfo = result.item1;
 
       if (accountInfo != null) {
