@@ -12,7 +12,7 @@ import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../bloc/RestaurantDetailBloc.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_restaruant/l10n/app_localizations.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   static const ROUTE_NAME = "/RestaurantDetailPage";

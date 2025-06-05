@@ -9,7 +9,7 @@ import 'package:flutter_restaruant/manager/BiometricSignInManager.dart';
 import 'package:flutter_restaruant/utils/Constants.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:settings_ui/settings_ui.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_restaruant/l10n/app_localizations.dart';
 
 class SettingsPage extends StatefulWidget {
   static const ROUTE_NAME = "/SettingsPage";

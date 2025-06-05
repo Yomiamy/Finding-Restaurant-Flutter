@@ -10,7 +10,7 @@ import 'package:flutter_restaruant/utils/ViewUtils.dart';
 import 'package:flutter_signin_button/button_list.dart';
 import 'package:flutter_signin_button/button_view.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_restaruant/l10n/app_localizations.dart';
 
 class SignInPage extends StatefulWidget {
   static const ROUTE_NAME = "/SignInPage";

@@ -5,7 +5,7 @@ import 'package:flutter_restaruant/utils/Constants.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_restaruant/utils/Utils.dart';
 import 'package:sprintf/sprintf.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_restaruant/l10n/app_localizations.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RestaurantInfoCell extends StatelessWidget {

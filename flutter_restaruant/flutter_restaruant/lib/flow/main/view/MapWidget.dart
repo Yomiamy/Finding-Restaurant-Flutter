@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_restaruant/l10n/app_localizations.dart';
 
 class MapWidget extends StatefulWidget {
   final List<YelpRestaurantSummaryInfo> _summaryInfos;
