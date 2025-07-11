@@ -1,3 +1,19 @@
+## Get pub packages.
+get: 
+	@flutter pub get
+	@flutter precache --ios
+	@cd ios && pod install
+
+## Run app.
+run_debug_all:
+	@flutter run --debug -d all
+
+run_profile_all:
+	@flutter run --profile -d all
+
+run_release_all:
+	@flutter run --release -d all
+
 ## Clean the environment.
 clean: 
 	@echo "⚡︎Cleaning the project..."
@@ -13,22 +29,6 @@ clean:
 
 	@echo "⚡︎Project clean successfully!"
 
-## Get pub packages.
-get: 
-	@flutter pub get
-	@flutter precache --ios
-	@cd ios && pod install
-
-## Run app.
-run_dev_debug: 
-	@flutter run --debug --flavor dev --target ./lib/main_dev.dart || (echo "Error in running dev."; exit 99)
-
-run_dev_profile: 
-	@flutter run --profile --flavor dev --target ./lib/main_dev.dart || (echo "Error in running dev."; exit 99)
-
-run_dev_prod: 
-	@flutter run --release --flavor dev --target ./lib/main_dev.dart || (echo "Error in running dev."; exit 99)
-
 ## Run build_runner and generate files automatically.
 build_runner: 
 	@dart run build_runner build -d
@@ -36,6 +36,9 @@ build_runner:
 ## Run build_runner and generate files automatically.
 build_watch: 
 	@dart run build_runner watch -d
+
+build_clean: 
+	@dart run build_runner clean
 
 ## Analyze the code and find issues.
 analyze_lint: 
