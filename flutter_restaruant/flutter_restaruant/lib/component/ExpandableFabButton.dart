@@ -3,14 +3,14 @@ import 'package:flutter_restaruant/component/ExpandFabActionButton.dart';
 
 @immutable
 class ExpandableFabButton extends StatefulWidget {
-  const ExpandableFabButton({
-    Key? key,
-    this.initialOpen,
-    required this.distance,
-    required this.children,
-    required this.mainIcon,
-    required this.childrenPressActions
-  }) : super(key: key);
+  const ExpandableFabButton(
+      {Key? key,
+      this.initialOpen,
+      required this.distance,
+      required this.children,
+      required this.mainIcon,
+      required this.childrenPressActions})
+      : super(key: key);
 
   final bool? initialOpen;
   final double distance;
@@ -22,8 +22,8 @@ class ExpandableFabButton extends StatefulWidget {
   _ExpandableFabButtonState createState() => _ExpandableFabButtonState();
 }
 
-class _ExpandableFabButtonState extends State<ExpandableFabButton> with SingleTickerProviderStateMixin {
-
+class _ExpandableFabButtonState extends State<ExpandableFabButton>
+    with SingleTickerProviderStateMixin {
   late final AnimationController _controller;
   late final Animation<double> _expandAnimation;
   bool _open = false;
@@ -130,9 +130,10 @@ class _ExpandableFabButtonState extends State<ExpandableFabButton> with SingleTi
     final children = <Widget>[];
     final count = widget.children.length;
     final step = 90.0 / (count - 1);
-    for (var i = 0, angleInDegrees = 0.0; i < count; i++, angleInDegrees += step) {
-      children.add(
-        ExpandFabActionButton(
+    for (var i = 0, angleInDegrees = 0.0;
+        i < count;
+        i++, angleInDegrees += step) {
+      children.add(ExpandFabActionButton(
           directionInDegrees: angleInDegrees,
           maxDistance: widget.distance,
           progress: _expandAnimation,
@@ -140,11 +141,8 @@ class _ExpandableFabButtonState extends State<ExpandableFabButton> with SingleTi
           onActionPressed: () {
             widget.childrenPressActions[i]();
             this._toggle();
-            }
-        )
-      );
+          }));
     }
     return children;
   }
-
 }

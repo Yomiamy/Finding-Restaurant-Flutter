@@ -1,8 +1,5 @@
-import 'dart:io';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/EmptyDataWidget.dart';
@@ -22,8 +19,7 @@ import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_restaruant/utils/ViewUtils.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../bloc/MainBloc.dart';
-import 'FilterTagsWidget.dart';
-import 'package:flutter_gen/gen_l10n/app_localizations.dart';
+import 'package:flutter_restaruant/l10n/app_localizations.dart';
 
 class MainPage extends StatefulWidget {
   static const ROUTE_NAME = "/MainPage";
@@ -66,7 +62,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                 CupertinoSliverNavigationBar(
                   automaticallyImplyLeading: false,
                   largeTitle: Text(
-                      AppLocalizations?.of(context)?.main_page_title ?? "",
+                      AppLocalizations.of(context)?.main_page_title ?? "",
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: UIConstants.xxxxhFontSize)),
@@ -136,12 +132,11 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                     () {
                       ViewUtils.showPromptDialog(
                           context: context,
-                          title: AppLocalizations?.of(context)
-                              ?.keyword_search ??
+                          title: AppLocalizations.of(context)?.keyword_search ??
                               "",
                           msgWidget: PlatformTextField(
-                            hintText: AppLocalizations?.of(context)
-                                ?.keyword_search_hint ??
+                            hintText: AppLocalizations.of(context)
+                                    ?.keyword_search_hint ??
                                 "",
                             onChanged: (keyword) {
                               this._filterKeyword = keyword;
@@ -150,28 +145,21 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                           actions: [
                             PlatformTextButton(
                                 onPressed: () {
-                                  this._mainBloc.add(
-                                      FilterListByKeyword(
-                                          keyword:
-                                          this._filterKeyword,
-                                          sortByStr:
-                                          this._configs.sortBy));
+                                  this._mainBloc.add(FilterListByKeyword(
+                                      keyword: this._filterKeyword,
+                                      sortByStr: this._configs.sortBy));
                                   this._filterKeyword = "";
                                   Navigator.pop(context);
                                 },
                                 child: PlatformText(
-                                    AppLocalizations?.of(context)
-                                        ?.confirm ??
+                                    AppLocalizations.of(context)?.confirm ??
                                         "")),
                             PlatformTextButton(
                                 onPressed: () {
                                   Navigator.pop(context);
                                 },
                                 child: PlatformText(
-                                    AppLocalizations?.of(context)
-                                        ?.cancel ??
-                                        "")
-                            )
+                                    AppLocalizations.of(context)?.cancel ?? ""))
                           ]);
                     },
                     () async {

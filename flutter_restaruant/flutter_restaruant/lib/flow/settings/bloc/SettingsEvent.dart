@@ -8,7 +8,6 @@ abstract class SettingsEvent extends Equatable {
 }
 
 class InitBioAuthSettingEvent extends SettingsEvent {
-
   const InitBioAuthSettingEvent();
 
   @override
@@ -16,7 +15,6 @@ class InitBioAuthSettingEvent extends SettingsEvent {
 }
 
 class ToggleBioAuthSettingEvent extends SettingsEvent {
-
   const ToggleBioAuthSettingEvent();
 
   @override
@@ -24,7 +22,6 @@ class ToggleBioAuthSettingEvent extends SettingsEvent {
 }
 
 class LogoutEvent extends SettingsEvent {
-
   const LogoutEvent();
 
   @override
@@ -32,7 +29,6 @@ class LogoutEvent extends SettingsEvent {
 }
 
 class AccountRemovalEvent extends SettingsEvent {
-
   final String subject;
   final String bodyPrefix;
 

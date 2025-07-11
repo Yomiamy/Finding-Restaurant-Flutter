@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:bloc/bloc.dart';
 import 'package:flutter_restaruant/api/GoogleApiUtil.dart';
 import 'package:flutter_restaruant/flow/restaurant/repository/RestaurantDetailRepository.dart';
@@ -15,7 +13,6 @@ part 'RestaurantDetailState.dart';
 
 class RestaurantDetailBloc
     extends Bloc<RestaurantDetailEvent, RestaurantDetailState> {
-
   final RestaurantDetailRepository _detailRepository;
 
   RestaurantDetailBloc({required RestaurantDetailRepository repository})
@@ -25,15 +22,17 @@ class RestaurantDetailBloc
       try {
         emit(InProgress());
 
-        final YelpRestaurantDetailInfo detailInfo =
-        await this._detailRepository.fetchYelpRestaurantDetailInfo(event.id);
-        final YelpReviewInfo reviewInfo =
-        await this._detailRepository.fetchYelpRestaurantReviewInfo(event.id);
+        final YelpRestaurantDetailInfo detailInfo = await this
+            ._detailRepository
+            .fetchYelpRestaurantDetailInfo(event.id);
+        final YelpReviewInfo reviewInfo = await this
+            ._detailRepository
+            .fetchYelpRestaurantReviewInfo(event.id);
 
         double lat = detailInfo.coordinates?.latitude ?? 0;
         double lng = detailInfo.coordinates?.longitude ?? 0;
         final String staticMapUrl =
-        GoogleApiUtil.createStaticMapUrl(lat: lat, lng: lng);
+            GoogleApiUtil.createStaticMapUrl(lat: lat, lng: lng);
 
         emit(Success(
             detailInfo: detailInfo,
@@ -52,7 +51,7 @@ class RestaurantDetailBloc
         await this._detailRepository.toggleFavor(summary);
 
         emit(ToggleFavorSuccess());
-      } on Exception catch(_) {
+      } on Exception catch (_) {
         emit(Failure());
       }
     });

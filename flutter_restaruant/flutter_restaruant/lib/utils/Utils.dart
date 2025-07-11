@@ -11,20 +11,18 @@ class Utils {
           '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
       .join('&');
 
-  static void openUrl({
-    String? rawUrl = null,
-    String? scheme = null,
-    String? host = null,
-    String path = "",
-    Map<String, String> parameters = const <String, String>{}
-  }) async {
-
-    if(rawUrl != null && rawUrl.isNotEmpty) {
+  static void openUrl(
+      {String? rawUrl = null,
+      String? scheme = null,
+      String? host = null,
+      String path = "",
+      Map<String, String> parameters = const <String, String>{}}) async {
+    if (rawUrl != null && rawUrl.isNotEmpty) {
       launchUrlString(rawUrl);
-    } else if(scheme != null
-        && host != null
-        && scheme.isNotEmpty
-        && host.isNotEmpty) {
+    } else if (scheme != null &&
+        host != null &&
+        scheme.isNotEmpty &&
+        host.isNotEmpty) {
       final Uri uri = Uri(
         scheme: scheme,
         host: host,
@@ -33,7 +31,7 @@ class Utils {
       );
 
       bool isCanLaunch = await canLaunch(uri.toString());
-      if(isCanLaunch) {
+      if (isCanLaunch) {
         launchUrl(uri);
       }
     }
@@ -57,10 +55,12 @@ class Utils {
 
     if (permission == LocationPermission.deniedForever) {
       // Permissions are denied forever, handle appropriately.
-      throw Exception('Location permissions are permanently denied, we cannot request permissions.');
+      throw Exception(
+          'Location permissions are permanently denied, we cannot request permissions.');
     }
 
-    return Geolocator.getCurrentPosition(desiredAccuracy: LocationAccuracy.high);
+    return Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high);
   }
 
   static bool isLocaleZh() => Platform.localeName.contains("zh");

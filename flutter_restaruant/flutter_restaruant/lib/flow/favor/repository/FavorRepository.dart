@@ -5,7 +5,6 @@ import 'package:flutter_restaruant/manager/SignInManager.dart';
 import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 
 class FavorRepository {
-  
   static const String FAVOR_COLLECTION_NAME = "favors";
 
   String _uid = "";
@@ -14,18 +13,23 @@ class FavorRepository {
   FavorRepository() {
     this._uid = SignInManager().accountInfo?.uid ?? "";
   }
-  
-  Future<List<YelpRestaurantSummaryInfo>> fetchFavorInfos(bool isRefreshLocalOnly) async {
-    if(isRefreshLocalOnly) {
-      this._favorInfos = this._favorInfos.where((element) => element.favor).toList();
+
+  Future<List<YelpRestaurantSummaryInfo>> fetchFavorInfos(
+      bool isRefreshLocalOnly) async {
+    if (isRefreshLocalOnly) {
+      this._favorInfos =
+          this._favorInfos.where((element) => element.favor).toList();
     } else {
       DocumentSnapshot snapshots = await FirebaseFirestore.instance
           .collection(FAVOR_COLLECTION_NAME)
           .doc(this._uid)
           .get();
-      Map<String, dynamic> favorMap = (snapshots.data() != null) ? snapshots.data() as Map<String, dynamic> : Map<String, dynamic>();
+      Map<String, dynamic> favorMap = (snapshots.data() != null)
+          ? snapshots.data() as Map<String, dynamic>
+          : Map<String, dynamic>();
       this._favorInfos = favorMap.values.map((value) {
-        YelpRestaurantSummaryInfo summaryInfo = YelpRestaurantSummaryInfo.fromJson(jsonDecode(value));
+        YelpRestaurantSummaryInfo summaryInfo =
+            YelpRestaurantSummaryInfo.fromJson(jsonDecode(value));
         summaryInfo.favor = true;
 
         return summaryInfo;
@@ -36,9 +40,13 @@ class FavorRepository {
   }
 
   Future<void> toggleFavor(YelpRestaurantSummaryInfo summaryInfo) async {
-    DocumentReference ref = FirebaseFirestore.instance.collection(FAVOR_COLLECTION_NAME).doc(this._uid);
+    DocumentReference ref = FirebaseFirestore.instance
+        .collection(FAVOR_COLLECTION_NAME)
+        .doc(this._uid);
     DocumentSnapshot snapshots = await ref.get();
-    Map<String, dynamic> favorsMap = (snapshots.data() != null) ? snapshots.data() as Map<String, dynamic> : Map<String, dynamic>();
+    Map<String, dynamic> favorsMap = (snapshots.data() != null)
+        ? snapshots.data() as Map<String, dynamic>
+        : Map<String, dynamic>();
     summaryInfo.favor = !summaryInfo.favor;
 
     if (summaryInfo.favor) {

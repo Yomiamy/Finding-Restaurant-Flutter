@@ -8,7 +8,6 @@ abstract class SignInEvent extends Equatable {
 }
 
 class MailSignInEvent extends SignInEvent {
-
   final String mail;
   final String passwd;
 
@@ -19,7 +18,6 @@ class MailSignInEvent extends SignInEvent {
 }
 
 class MailSignUpEvent extends SignInEvent {
-
   final String mail;
   final String passwd;
 

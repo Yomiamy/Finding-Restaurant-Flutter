@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 void main() => runApp(const MyApp());
 
 class MyApp extends StatelessWidget {
-  const MyApp({key}):super(key: key);
+  const MyApp({key}) : super(key: key);
 
   @override
   Widget build(BuildContext context) {
@@ -15,7 +15,7 @@ class MyApp extends StatelessWidget {
 }
 
 class MyHomePage extends StatefulWidget {
-  const MyHomePage({key, required this.title}):super(key: key);
+  const MyHomePage({key, required this.title}) : super(key: key);
 
   final String title;
 
@@ -51,7 +51,7 @@ class _MyHomePageState extends State<MyHomePage> {
               // identifying the widget from inside the test suite,
               // and reading the text.
               key: const Key('counter'),
-              style: Theme.of(context).textTheme.headline4,
+              style: Theme.of(context).textTheme.headlineSmall,
             ),
           ],
         ),

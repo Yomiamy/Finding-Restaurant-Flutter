@@ -19,26 +19,26 @@ class YelpRestaurantSummaryInfo extends YelpBaseInfo {
   double? distance;
   List<YelpRestaurantCategory>? categories;
   @JsonKey(ignore: true)
-  String get categoriesStr => categories?.map((category) => category.title ?? "").join(" ") ?? "";
+  String get categoriesStr =>
+      categories?.map((category) => category.title ?? "").join(" ") ?? "";
   YelpRestaurantLocation? location;
   YelpRestaurantCoordinates? coordinates;
   @JsonKey(ignore: true)
   bool favor = false;
 
-  YelpRestaurantSummaryInfo():super();
+  YelpRestaurantSummaryInfo() : super();
 
   factory YelpRestaurantSummaryInfo.fromJson(Map<String, dynamic> json) =>
       _$YelpRestaurantSummaryInfoFromJson(json);
 
   Map<String, dynamic> toJson() => _$YelpRestaurantSummaryInfoToJson(this);
 
-
   @override
   int get hashCode => this.id.hashCode;
 
   @override
   bool operator ==(Object other) {
-    if(other is! YelpRestaurantSummaryInfo) return false;
+    if (other is! YelpRestaurantSummaryInfo) return false;
 
     return this.id!.compareTo(other.id!) == 0;
   }

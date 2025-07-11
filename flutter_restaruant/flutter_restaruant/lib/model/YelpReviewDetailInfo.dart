@@ -13,7 +13,7 @@ class YelpReviewDetailInfo extends YelpBaseInfo {
   String? time_created;
   String? url;
 
-  YelpReviewDetailInfo():super();
+  YelpReviewDetailInfo() : super();
 
   factory YelpReviewDetailInfo.fromJson(Map<String, dynamic> json) =>
       _$YelpReviewDetailInfoFromJson(json);

@@ -7,7 +7,7 @@ class YelpRestaurantCategory {
   String? alias;
   String? title;
 
-  YelpRestaurantCategory():super();
+  YelpRestaurantCategory() : super();
 
   factory YelpRestaurantCategory.fromJson(Map<String, dynamic> json) =>
       _$YelpRestaurantCategoryFromJson(json);
