@@ -78,10 +78,18 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         headerSliverBuilder: (BuildContext context, bool isBoxIsScrolled) => <Widget>[
               CupertinoSliverNavigationBar(
                   automaticallyImplyLeading: false,
-                  largeTitle: Text(AppLocalizations.of(context)?.main_page_title ?? "",
-                      style: TextStyle(color: Colors.white, fontSize: UIConstants.xxxxhFontSize)),
+                  largeTitle: Align(
+                    alignment: Alignment.topCenter,
+                    child: Padding(
+                      padding: const EdgeInsets.only(bottom: 15),
+                      child: Text(
+                        AppLocalizations.of(context)?.main_page_title ?? "",
+                        style: TextStyle(color: Colors.white, fontSize: UIConstants.xxxxhFontSize),
+                      ),
+                    ),
+                  ),
                   backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR),
-                  trailing: PlatformIconButton(
+                  leading: PlatformIconButton(
                       padding: EdgeInsets.zero,
                       onPressed: () => _openDrawer(),
                       materialIcon: Icon(Icons.menu, color: Colors.white),
