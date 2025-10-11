@@ -7,11 +7,10 @@ part of 'YelpRestaurantCategory.dart';
 // **************************************************************************
 
 YelpRestaurantCategory _$YelpRestaurantCategoryFromJson(
-    Map<String, dynamic> json) {
-  return YelpRestaurantCategory()
-    ..alias = json['alias'] as String?
-    ..title = json['title'] as String?;
-}
+        Map<String, dynamic> json) =>
+    YelpRestaurantCategory()
+      ..alias = json['alias'] as String?
+      ..title = json['title'] as String?;
 
 Map<String, dynamic> _$YelpRestaurantCategoryToJson(
         YelpRestaurantCategory instance) =>

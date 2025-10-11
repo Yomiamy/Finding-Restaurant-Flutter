@@ -6,11 +6,10 @@ part of 'YelpReviewerInfo.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-YelpReviewerInfo _$YelpReviewerInfoFromJson(Map<String, dynamic> json) {
-  return YelpReviewerInfo()
-    ..name = json['name'] as String?
-    ..image_url = json['image_url'] as String?;
-}
+YelpReviewerInfo _$YelpReviewerInfoFromJson(Map<String, dynamic> json) =>
+    YelpReviewerInfo()
+      ..name = json['name'] as String?
+      ..image_url = json['image_url'] as String?;
 
 Map<String, dynamic> _$YelpReviewerInfoToJson(YelpReviewerInfo instance) =>
     <String, dynamic>{

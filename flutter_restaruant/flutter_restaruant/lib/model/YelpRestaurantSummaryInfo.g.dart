@@ -7,28 +7,28 @@ part of 'YelpRestaurantSummaryInfo.dart';
 // **************************************************************************
 
 YelpRestaurantSummaryInfo _$YelpRestaurantSummaryInfoFromJson(
-    Map<String, dynamic> json) {
-  return YelpRestaurantSummaryInfo()
-    ..id = json['id'] as String?
-    ..name = json['name'] as String?
-    ..image_url = json['image_url'] as String?
-    ..review_count = json['review_count'] as int?
-    ..rating = (json['rating'] as num?)?.toDouble()
-    ..price = json['price'] as String?
-    ..phone = json['phone'] as String?
-    ..distance = (json['distance'] as num?)?.toDouble()
-    ..categories = (json['categories'] as List<dynamic>?)
-        ?.map((e) => YelpRestaurantCategory.fromJson(e as Map<String, dynamic>))
-        .toList()
-    ..location = json['location'] == null
-        ? null
-        : YelpRestaurantLocation.fromJson(
-            json['location'] as Map<String, dynamic>)
-    ..coordinates = json['coordinates'] == null
-        ? null
-        : YelpRestaurantCoordinates.fromJson(
-            json['coordinates'] as Map<String, dynamic>);
-}
+        Map<String, dynamic> json) =>
+    YelpRestaurantSummaryInfo()
+      ..id = json['id'] as String?
+      ..name = json['name'] as String?
+      ..image_url = json['image_url'] as String?
+      ..review_count = (json['review_count'] as num?)?.toInt()
+      ..rating = (json['rating'] as num?)?.toDouble()
+      ..price = json['price'] as String?
+      ..phone = json['phone'] as String?
+      ..distance = (json['distance'] as num?)?.toDouble()
+      ..categories = (json['categories'] as List<dynamic>?)
+          ?.map(
+              (e) => YelpRestaurantCategory.fromJson(e as Map<String, dynamic>))
+          .toList()
+      ..location = json['location'] == null
+          ? null
+          : YelpRestaurantLocation.fromJson(
+              json['location'] as Map<String, dynamic>)
+      ..coordinates = json['coordinates'] == null
+          ? null
+          : YelpRestaurantCoordinates.fromJson(
+              json['coordinates'] as Map<String, dynamic>);
 
 Map<String, dynamic> _$YelpRestaurantSummaryInfoToJson(
         YelpRestaurantSummaryInfo instance) =>
