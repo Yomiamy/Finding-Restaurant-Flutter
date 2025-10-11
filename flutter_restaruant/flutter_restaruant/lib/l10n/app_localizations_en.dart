@@ -60,6 +60,12 @@ class AppLocalizationsEn extends AppLocalizations {
   String get map_my_loc_title => 'I am here';
 
   @override
+  String get map_mode => '地圖模式';
+
+  @override
+  String get list_mode => '列表模式';
+
+  @override
   String get photo_viewer_title => 'Photo Viewer';
 
   @override
