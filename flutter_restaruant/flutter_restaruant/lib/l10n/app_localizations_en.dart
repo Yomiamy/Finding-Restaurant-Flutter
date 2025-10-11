@@ -1,5 +1,6 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
+
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -60,10 +61,10 @@ class AppLocalizationsEn extends AppLocalizations {
   String get map_my_loc_title => 'I am here';
 
   @override
-  String get map_mode => '地圖模式';
+  String get map_mode => 'Map Mode';
 
   @override
-  String get list_mode => '列表模式';
+  String get list_mode => 'List Mode';
 
   @override
   String get photo_viewer_title => 'Photo Viewer';
@@ -108,8 +109,7 @@ class AppLocalizationsEn extends AppLocalizations {
   String get delete_account_title => 'Delete Account';
 
   @override
-  String get delete_account_email_subject =>
-      'Request for Account Deletion and Data Removal';
+  String get delete_account_email_subject => 'Request for Account Deletion and Data Removal';
 
   @override
   String get delete_account_email_body =>
