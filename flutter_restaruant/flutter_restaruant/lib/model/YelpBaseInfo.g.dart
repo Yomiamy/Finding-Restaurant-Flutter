@@ -6,9 +6,8 @@ part of 'YelpBaseInfo.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-YelpBaseInfo _$YelpBaseInfoFromJson(Map<String, dynamic> json) {
-  return YelpBaseInfo();
-}
+YelpBaseInfo _$YelpBaseInfoFromJson(Map<String, dynamic> json) =>
+    YelpBaseInfo();
 
 Map<String, dynamic> _$YelpBaseInfoToJson(YelpBaseInfo instance) =>
     <String, dynamic>{};

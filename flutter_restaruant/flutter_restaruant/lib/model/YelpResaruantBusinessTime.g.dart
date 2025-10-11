@@ -7,13 +7,12 @@ part of 'YelpResaruantBusinessTime.dart';
 // **************************************************************************
 
 YelpResaruantBusinessTime _$YelpResaruantBusinessTimeFromJson(
-    Map<String, dynamic> json) {
-  return YelpResaruantBusinessTime()
-    ..is_overnight = json['is_overnight'] as bool?
-    ..start = json['start'] as String?
-    ..end = json['end'] as String?
-    ..day = json['day'] as int?;
-}
+        Map<String, dynamic> json) =>
+    YelpResaruantBusinessTime()
+      ..is_overnight = json['is_overnight'] as bool?
+      ..start = json['start'] as String?
+      ..end = json['end'] as String?
+      ..day = (json['day'] as num?)?.toInt();
 
 Map<String, dynamic> _$YelpResaruantBusinessTimeToJson(
         YelpResaruantBusinessTime instance) =>

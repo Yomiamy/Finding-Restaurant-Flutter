@@ -7,18 +7,17 @@ part of 'YelpRestaurantLocation.dart';
 // **************************************************************************
 
 YelpRestaurantLocation _$YelpRestaurantLocationFromJson(
-    Map<String, dynamic> json) {
-  return YelpRestaurantLocation()
-    ..address1 = json['address1'] as String?
-    ..address2 = json['address2'] as String?
-    ..address3 = json['address3'] as String?
-    ..city = json['city'] as String?
-    ..country = json['country'] as String?
-    ..state = json['state'] as String?
-    ..display_address = (json['display_address'] as List<dynamic>?)
-        ?.map((e) => e as String)
-        .toList();
-}
+        Map<String, dynamic> json) =>
+    YelpRestaurantLocation()
+      ..address1 = json['address1'] as String?
+      ..address2 = json['address2'] as String?
+      ..address3 = json['address3'] as String?
+      ..city = json['city'] as String?
+      ..country = json['country'] as String?
+      ..state = json['state'] as String?
+      ..display_address = (json['display_address'] as List<dynamic>?)
+          ?.map((e) => e as String)
+          .toList();
 
 Map<String, dynamic> _$YelpRestaurantLocationToJson(
         YelpRestaurantLocation instance) =>

@@ -7,15 +7,14 @@ part of 'YelpRestaurantHoursInfo.dart';
 // **************************************************************************
 
 YelpRestaurantHoursInfo _$YelpRestaurantHoursInfoFromJson(
-    Map<String, dynamic> json) {
-  return YelpRestaurantHoursInfo()
-    ..is_open_now = json['is_open_now'] as bool?
-    ..hours_type = json['hours_type'] as String?
-    ..open = (json['open'] as List<dynamic>?)
-        ?.map((e) =>
-            YelpResaruantBusinessTime.fromJson(e as Map<String, dynamic>))
-        .toList();
-}
+        Map<String, dynamic> json) =>
+    YelpRestaurantHoursInfo()
+      ..is_open_now = json['is_open_now'] as bool?
+      ..hours_type = json['hours_type'] as String?
+      ..open = (json['open'] as List<dynamic>?)
+          ?.map((e) =>
+              YelpResaruantBusinessTime.fromJson(e as Map<String, dynamic>))
+          .toList();
 
 Map<String, dynamic> _$YelpRestaurantHoursInfoToJson(
         YelpRestaurantHoursInfo instance) =>

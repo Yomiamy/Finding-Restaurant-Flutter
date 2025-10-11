@@ -6,13 +6,11 @@ part of 'ResultVo.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-ResultVo _$ResultVoFromJson(Map<String, dynamic> json) {
-  return ResultVo(
-    code: json['code'] as int,
-    msg: json['msg'] as String,
-    obj: json['obj'],
-  );
-}
+ResultVo _$ResultVoFromJson(Map<String, dynamic> json) => ResultVo(
+      code: (json['code'] as num?)?.toInt() ?? -1,
+      msg: json['msg'] as String? ?? "N/A",
+      obj: json['obj'],
+    );
 
 Map<String, dynamic> _$ResultVoToJson(ResultVo instance) => <String, dynamic>{
       'code': instance.code,
