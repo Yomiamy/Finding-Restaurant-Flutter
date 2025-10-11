@@ -22,6 +22,8 @@
   "keyword_search": "關鍵字過濾",
   "keyword_search_hint": "店名/分類/地區/路",
   "map_my_loc_title": "我的位置",
+  "map_mode": "地圖模式",
+  "list_mode": "列表模式",
 
   "@==== PhotoViewer ====": {},
   "photo_viewer_title": "預覽",

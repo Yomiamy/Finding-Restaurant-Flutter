@@ -200,6 +200,18 @@ abstract class AppLocalizations {
   /// **'我的位置'**
   String get map_my_loc_title;
 
+  /// No description provided for @map_mode.
+  ///
+  /// In zh, this message translates to:
+  /// **'地圖模式'**
+  String get map_mode;
+
+  /// No description provided for @list_mode.
+  ///
+  /// In zh, this message translates to:
+  /// **'列表模式'**
+  String get list_mode;
+
   /// No description provided for @photo_viewer_title.
   ///
   /// In zh, this message translates to:
