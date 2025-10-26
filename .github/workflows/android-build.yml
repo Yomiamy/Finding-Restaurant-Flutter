@@ -47,14 +47,14 @@ jobs:
 
       # 5. 進入專案目錄並獲取依賴
       - name: Install Flutter dependencies
-        working-directory: flutter_restaruant
+        working-directory: flutter_restaruant/flutter_restaruant
         run: |
           flutter pub get
           flutter pub run build_runner build --delete-conflicting-outputs
 
       # 6. 配置 Android 簽名
       - name: Configure Android signing
-        working-directory: flutter_restaruant/android
+        working-directory: flutter_restaruant/flutter_restaruant/android
         env:
           KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
@@ -79,21 +79,21 @@ jobs:
 
       # 7. 構建 Release APK
       - name: Build Release APK
-        working-directory: flutter_restaruant
+        working-directory: flutter_restaruant/flutter_restaruant
         run: |
           flutter build apk --release --verbose
           echo "✅ APK build completed"
 
       # 8. 構建 Release AAB (App Bundle)
       - name: Build Release AAB
-        working-directory: flutter_restaruant
+        working-directory: flutter_restaruant/flutter_restaruant
         run: |
           flutter build appbundle --release --verbose
           echo "✅ AAB build completed"
 
       # 9. 重命名構建產物（包含版本號）
       - name: Rename build artifacts
-        working-directory: flutter_restaruant
+        working-directory: flutter_restaruant/flutter_restaruant
         run: |
           # 獲取版本號（從 tag 移除 'v' 前綴）
           VERSION=${GITHUB_REF#refs/tags/v}
@@ -155,7 +155,7 @@ jobs:
       # 13. 清理敏感文件
       - name: Cleanup sensitive files
         if: always()
-        working-directory: flutter_restaruant/android
+        working-directory: flutter_restaruant/flutter_restaruant/android
         run: |
           rm -f app/release-keystore.jks
           rm -f key.properties
