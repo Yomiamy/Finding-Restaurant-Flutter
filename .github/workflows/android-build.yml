@@ -113,7 +113,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: flutter-restaruant-apk-${{ github.ref_name }}
-          path: build/app/outputs/flutter-apk/flutter-restaruant-*.apk
+          path: flutter_restaruant/build/app/outputs/flutter-apk/flutter-restaruant-*.apk
           retention-days: 7
 
       # 11. 上傳 AAB 到 Artifacts
@@ -121,7 +121,7 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: flutter-restaruant-aab-${{ github.ref_name }}
-          path: build/app/outputs/bundle/release/flutter-restaruant-*.aab
+          path: flutter_restaruant/build/app/outputs/bundle/release/flutter-restaruant-*.aab
           retention-days: 7
 
       # 12. 創建 GitHub Release
@@ -130,8 +130,8 @@ jobs:
         if: startsWith(github.ref, 'refs/tags/')
         with:
           files: |
-            build/app/outputs/flutter-apk/flutter-restaruant-*.apk
-            build/app/outputs/bundle/release/flutter-restaruant-*.aab
+            flutter_restaruant/build/app/outputs/flutter-apk/flutter-restaruant-*.apk
+            flutter_restaruant/build/app/outputs/bundle/release/flutter-restaruant-*.aab
           draft: false
           prerelease: false
           generate_release_notes: true
