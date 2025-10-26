@@ -13,6 +13,12 @@ if (localPropertiesFile.exists()) {
     }
 }
 
+def keystoreProperties = new Properties()
+def keystorePropertiesFile = rootProject.file('key.properties')
+if (keystorePropertiesFile.exists()) {
+    keystoreProperties.load(new FileInputStream(keystorePropertiesFile))
+}
+
 def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
 if (flutterVersionCode == null) {
     flutterVersionCode = '1'
@@ -28,10 +34,10 @@ android {
 
     signingConfigs {
         release {
-            def storeFilePath = localProperties['storeFile'] ?: System.getenv("STORE_FILE")
-            def storePassword = localProperties['storePassword'] ?: System.getenv("STORE_PASSWORD")
-            def keyAlias = localProperties['keyAlias'] ?: System.getenv("KEY_ALIAS")
-            def keyPassword = localProperties['keyPassword'] ?: System.getenv("KEY_PASSWORD")
+            def storeFilePath = keystoreProperties['storeFile'] ?: System.getenv("STORE_FILE")
+            def storePassword = keystoreProperties['storePassword'] ?: System.getenv("STORE_PASSWORD")
+            def keyAlias = keystoreProperties['keyAlias'] ?: System.getenv("KEY_ALIAS")
+            def keyPassword = keystoreProperties['keyPassword'] ?: System.getenv("KEY_PASSWORD")
 
             if (storeFilePath) {
                 storeFile file(storeFilePath)
