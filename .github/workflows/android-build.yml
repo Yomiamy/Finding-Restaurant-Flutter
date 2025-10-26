@@ -66,6 +66,13 @@ jobs:
 
           # 解碼 keystore 文件
           echo "$KEYSTORE_BASE64" | base64 -d > app/release-keystore.jks
+          
+          # 檢查檔案是否存在
+          if [ -f "app/release-keystore.jks" ]; then
+            echo "✅ Keystore file exists"
+          else
+            echo "❌ Keystore file not found"
+          fi
 
           # 創建 key.properties 文件
           cat > key.properties << EOF
