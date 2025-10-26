@@ -28,10 +28,23 @@ android {
 
     signingConfigs {
         release {
-            keyAlias localProperties['keyAlias']
-            keyPassword localProperties['keyPassword']
-            storeFile file(localProperties['storeFile'])
-            storePassword localProperties['storePassword']
+            def storeFilePath = localProperties['storeFile'] ?: System.getenv("STORE_FILE")
+            def storePassword = localProperties['storePassword'] ?: System.getenv("STORE_PASSWORD")
+            def keyAlias = localProperties['keyAlias'] ?: System.getenv("KEY_ALIAS")
+            def keyPassword = localProperties['keyPassword'] ?: System.getenv("KEY_PASSWORD")
+
+            if (storeFilePath) {
+                storeFile file(storeFilePath)
+            }
+            if (storePassword) {
+                storePassword storePassword
+            }
+            if (keyAlias) {
+                keyAlias keyAlias
+            }
+            if (keyPassword) {
+                keyPassword keyPassword
+            }
         }
     }
 
