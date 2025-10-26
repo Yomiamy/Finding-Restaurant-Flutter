@@ -1,0 +1,162 @@
+name: Android Build CI/CD
+
+# 當創建 Git Tag 時觸發構建
+on:
+  push:
+    tags:
+      - 'v*'  # 匹配所有 v 開頭的標籤，如 v1.3.0, v1.3.1
+
+# 定義環境變數
+env:
+  FLUTTER_VERSION: '3.24.5'  # 根據你的專案需求調整
+  JAVA_VERSION: '17'
+
+jobs:
+  build:
+    name: Build Android APK and AAB
+    runs-on: ubuntu-latest
+
+    steps:
+      # 1. 檢出代碼
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: true
+
+      # 2. 設置 Java 環境
+      - name: Setup Java JDK
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: ${{ env.JAVA_VERSION }}
+          cache: 'gradle'
+
+      # 3. 設置 Flutter SDK
+      - name: Setup Flutter SDK
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: ${{ env.FLUTTER_VERSION }}
+          channel: 'stable'
+          cache: true
+
+      # 4. 驗證 Flutter 安裝
+      - name: Verify Flutter installation
+        run: |
+          flutter --version
+          flutter doctor -v
+
+      # 5. 進入專案目錄並獲取依賴
+      - name: Install Flutter dependencies
+        working-directory: flutter_restaruant
+        run: |
+          flutter pub get
+          flutter pub run build_runner build --delete-conflicting-outputs
+
+      # 6. 配置 Android 簽名
+      - name: Configure Android signing
+        working-directory: flutter_restaruant/android
+        env:
+          KEYSTORE_BASE64: ${{ secrets.KEYSTORE_BASE64 }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          STORE_PASSWORD: ${{ secrets.STORE_PASSWORD }}
+        run: |
+          # 創建 keystore 目錄
+          mkdir -p app
+
+          # 解碼 keystore 文件
+          echo "$KEYSTORE_BASE64" | base64 -d > app/release-keystore.jks
+
+          # 創建 key.properties 文件
+          cat > key.properties << EOF
+          storePassword=$STORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=release-keystore.jks
+          EOF
+
+          echo "✅ Signing configuration completed"
+
+      # 7. 構建 Release APK
+      - name: Build Release APK
+        working-directory: flutter_restaruant
+        run: |
+          flutter build apk --release --verbose
+          echo "✅ APK build completed"
+
+      # 8. 構建 Release AAB (App Bundle)
+      - name: Build Release AAB
+        working-directory: flutter_restaruant
+        run: |
+          flutter build appbundle --release --verbose
+          echo "✅ AAB build completed"
+
+      # 9. 重命名構建產物（包含版本號）
+      - name: Rename build artifacts
+        working-directory: flutter_restaruant
+        run: |
+          # 獲取版本號（從 tag 移除 'v' 前綴）
+          VERSION=${GITHUB_REF#refs/tags/v}
+
+          # 重命名 APK
+          cp build/app/outputs/flutter-apk/app-release.apk \
+             build/app/outputs/flutter-apk/flutter-restaruant-v${VERSION}.apk
+
+          # 重命名 AAB
+          cp build/app/outputs/bundle/release/app-release.aab \
+             build/app/outputs/bundle/release/flutter-restaruant-v${VERSION}.aab
+
+          echo "✅ Artifacts renamed with version: $VERSION"
+
+      # 10. 上傳 APK 到 Artifacts
+      - name: Upload APK to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-restaruant-apk-${{ github.ref_name }}
+          path: build/app/outputs/flutter-apk/flutter-restaruant-*.apk
+          retention-days: 7
+
+      # 11. 上傳 AAB 到 Artifacts
+      - name: Upload AAB to Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: flutter-restaruant-aab-${{ github.ref_name }}
+          path: build/app/outputs/bundle/release/flutter-restaruant-*.aab
+          retention-days: 7
+
+      # 12. 創建 GitHub Release
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v1
+        if: startsWith(github.ref, 'refs/tags/')
+        with:
+          files: |
+            build/app/outputs/flutter-apk/flutter-restaruant-*.apk
+            build/app/outputs/bundle/release/flutter-restaruant-*.aab
+          draft: false
+          prerelease: false
+          generate_release_notes: true
+          body: |
+            ## 📱 Flutter Restaurant App - Release ${{ github.ref_name }}
+
+            ### 📦 下載構建產物
+            - **APK**: 直接安裝到 Android 設備進行測試
+            - **AAB**: 上傳到 Google Play Console 進行發佈
+
+            ### 🔧 構建資訊
+            - Flutter Version: ${{ env.FLUTTER_VERSION }}
+            - Build Date: ${{ github.event.head_commit.timestamp }}
+            - Commit: ${{ github.sha }}
+
+            ---
+            *自動生成於 GitHub Actions*
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+      # 13. 清理敏感文件
+      - name: Cleanup sensitive files
+        if: always()
+        working-directory: flutter_restaruant/android
+        run: |
+          rm -f app/release-keystore.jks
+          rm -f key.properties
+          echo "✅ Cleanup completed"
