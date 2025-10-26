@@ -86,7 +86,7 @@ jobs:
         env:
           GRADLE_OPTS: ${{ env.GRADLE_OPTS }}
         run: |
-          flutter build apk --release --verbose
+          flutter build apk --release --no-shrink --verbose
           echo "✅ APK build completed"
 
       # 9. 構建 AAB
@@ -95,7 +95,7 @@ jobs:
         env:
           GRADLE_OPTS: ${{ env.GRADLE_OPTS }}
         run: |
-          flutter build appbundle --release --verbose
+          flutter build appbundle --release --no-shrink --verbose
           echo "✅ AAB build completed"
 
       # 10. 重命名
