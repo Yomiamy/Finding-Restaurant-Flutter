@@ -15,7 +15,11 @@ platform :android do
     prepare
     gradle(
       task: "clean assembleRelease",
-      properties: { "applicationId" => "com.yomi.flutter_restaruant" }
+      properties: {
+      "applicationId" => "com.yomi.flutter_restaruant",
+      "versionName" => "1.3.0",
+      "versionCode" => "26"
+      }
     )
     # crashlytics
     # sh "your_script.sh"
