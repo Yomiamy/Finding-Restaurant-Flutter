@@ -1,0 +1,68 @@
+default_platform(:android)
+
+platform :android do
+
+  desc "Clean and fetch dependencies"
+  lane :prepare do
+    sh "echo '>>>>>>>>>> prepare... <<<<<<<<<<'"
+    sh "flutter clean"
+    sh "flutter pub get"
+  end
+
+  desc "Build a release apk"
+  lane :build_apk do
+    sh "echo '>>>>>>>>>> Building release APK... <<<<<<<<<<'"
+    prepare
+    gradle(
+      task: "clean assembleRelease",
+      properties: {
+      "applicationId" => "com.yomi.flutter_restaruant",
+      "versionName" => "1.3.0",
+      "versionCode" => "26"
+      }
+    )
+    # crashlytics
+    # sh "your_script.sh"
+  end
+
+  desc "Build a release aab"
+  lane :build_aab do
+    sh "echo '>>>>>>>>>> Building release AAB... <<<<<<<<<<'"
+    prepare
+    gradle(
+      task: "clean bundleRelease",
+      properties: { "applicationId" => "com.yomi.flutter_restaruant" }
+    )
+    # crashlytics
+    # sh "your_script.sh"
+  end
+
+  desc "Deploy to Firebase App Distribution"
+  lane :deploy_firebase_app_distribution do
+    firebase_app_distribution(
+      app: "1:35224406241:android:00f352bb5d635a1b924fa0",
+      service_credentials_file: "fastlane/findrestaurant_credentials.json",
+      apk_path: "../build/app/outputs/flutter-apk/app-release.apk",
+      release_notes: "This is a beta build upload by Fastlane"
+    )
+  end
+
+  desc "Build apk & Upload"
+  lane :build_apk_and_upload do
+    sh "echo '>>>>>>>>>> Build apk & Upload... <<<<<<<<<<'"
+    build_apk
+    deploy_firebase_app_distribution
+  end
+
+  desc "Deploy a new version to the Google Play"
+  lane :deploy do
+    # Google Play 建議/強制使用 AAB 格式上傳
+    prepare
+    gradle(
+      task: "clean bundleRelease",
+      properties: { "applicationId" => "com.yomi.flutter_restaruant" }
+    )
+    upload_to_play_store
+  end
+
+end
