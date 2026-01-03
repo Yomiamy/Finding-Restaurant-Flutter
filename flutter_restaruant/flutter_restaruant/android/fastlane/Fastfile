@@ -1,16 +1,15 @@
 default_platform(:android)
 
 platform :android do
-  desc "Runs all the tests"
-  lane :test do
-    gradle(task: "test")
-  end
-
-  desc "Submit a new Beta Build to Crashlytics Beta"
+  desc "Build a release apk"
   lane :beta do
+    sh "echo '>>>>>>>>>> Building release APK... <<<<<<<<<<'"
     sh "flutter clean"
     sh "flutter pub get"
-    gradle(task: "clean assembleRelease")
+    gradle(
+      task: "clean assembleRelease",
+      properties: {"applicationId" => "com.yomi.flutter_restaruant"}
+      )
     # crashlytics
     # sh "your_script.sh"
     # You can also use other beta testing services here
