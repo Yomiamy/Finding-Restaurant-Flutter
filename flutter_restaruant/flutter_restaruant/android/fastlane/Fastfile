@@ -2,11 +2,17 @@ default_platform(:android)
 
 platform :android do
 
+  desc "Clean and fetch dependencies"
+  lane :prepare do
+    sh "echo '>>>>>>>>>> prepare... <<<<<<<<<<'"
+    sh "flutter clean"
+    sh "flutter pub get"
+  end
+
   desc "Build a release apk"
   lane :build_apk do
     sh "echo '>>>>>>>>>> Building release APK... <<<<<<<<<<'"
-    sh "flutter clean"
-    sh "flutter pub get"
+    prepare
     gradle(
       task: "clean assembleRelease",
       properties: { "applicationId" => "com.yomi.flutter_restaruant" }
@@ -18,8 +24,7 @@ platform :android do
   desc "Build a release aab"
   lane :build_aab do
     sh "echo '>>>>>>>>>> Building release AAB... <<<<<<<<<<'"
-    sh "flutter clean"
-    sh "flutter pub get"
+    prepare
     gradle(
       task: "clean bundleRelease",
       properties: { "applicationId" => "com.yomi.flutter_restaruant" }
