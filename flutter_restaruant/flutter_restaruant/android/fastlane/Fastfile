@@ -33,6 +33,16 @@ platform :android do
     # sh "your_script.sh"
   end
 
+    desc "Deploy to Firebase App Distribution"
+    lane :deploy_firebase_app_distribution do
+        firebase_app_distribution(
+            app: "1:35224406241:android:00f352bb5d635a1b924fa0",
+            service_credentials_file: "fastlane/findrestaurant_credentials.json",
+            apk_path: "../build/app/outputs/flutter-apk/app-release.apk",
+            release_notes: "This is a beta build upload by Fastlane"
+        )
+    end
+
   desc "Deploy a new version to the Google Play"
   lane :deploy do
     # Google Play 建議/強制使用 AAB 格式上傳
