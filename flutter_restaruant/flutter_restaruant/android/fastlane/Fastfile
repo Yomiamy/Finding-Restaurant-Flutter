@@ -1,23 +1,41 @@
 default_platform(:android)
 
 platform :android do
+
   desc "Build a release apk"
-  lane :beta do
+  lane :build_apk do
     sh "echo '>>>>>>>>>> Building release APK... <<<<<<<<<<'"
     sh "flutter clean"
     sh "flutter pub get"
     gradle(
       task: "clean assembleRelease",
-      properties: {"applicationId" => "com.yomi.flutter_restaruant"}
-      )
+      properties: { "applicationId" => "com.yomi.flutter_restaruant" }
+    )
     # crashlytics
     # sh "your_script.sh"
-    # You can also use other beta testing services here
+  end
+
+  desc "Build a release aab"
+  lane :build_aab do
+    sh "echo '>>>>>>>>>> Building release AAB... <<<<<<<<<<'"
+    sh "flutter clean"
+    sh "flutter pub get"
+    gradle(
+      task: "clean bundleRelease",
+      properties: { "applicationId" => "com.yomi.flutter_restaruant" }
+    )
+    # crashlytics
+    # sh "your_script.sh"
   end
 
   desc "Deploy a new version to the Google Play"
   lane :deploy do
-    gradle(task: "clean assembleRelease")
+    # Google Play 建議/強制使用 AAB 格式上傳
+    gradle(
+      task: "clean bundleRelease",
+      properties: { "applicationId" => "com.yomi.flutter_restaruant" }
+    )
     upload_to_play_store
   end
+
 end
