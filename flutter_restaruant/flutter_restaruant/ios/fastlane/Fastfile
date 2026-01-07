@@ -1,0 +1,208 @@
+default_platform(:ios)
+
+platform :ios do
+
+  desc "Clean and fetch dependencies"
+  lane :prepare do
+    sh "echo '>>>>>>>>>> prepare... <<<<<<<<<<'"
+    sh "flutter clean"
+    sh "flutter pub get"
+    sh "cd .."
+    sh "rm -f Podfile.lock"
+    sh "pod repo update"
+    sh "pod install"
+  end
+
+  desc "Build the iOS app"
+  lane :beta_build do
+    bundle_id = "com.yomi.find-restaurant"
+
+    # --- 1. 路徑與檔案檢查 ---
+    fastlane_dir = File.expand_path(File.dirname(__FILE__))
+    profile_path = File.expand_path(File.join(fastlane_dir, "adhoc_provision_profile.mobileprovision"))
+    cert_path = File.expand_path(File.join(fastlane_dir, "distribution_cert.p12"))
+
+    UI.important("=== Checking files ===")
+    UI.message("Profile path: #{profile_path}")
+    UI.message("Cert path: #{cert_path}")
+    UI.message("Profile exists: #{File.exist?(profile_path)}")
+    UI.message("Certificate exists: #{File.exist?(cert_path)}")
+
+    unless File.exist?(profile_path)
+      UI.user_error!("❌ Profile not found: #{profile_path}")
+    end
+
+    unless File.exist?(cert_path)
+      UI.user_error!("❌ Certificate not found: #{cert_path}")
+    end
+
+    # --- 2. 創建與設定 Keychain ---
+    keychain_name = "fastlane-temp-keychain"
+    keychain_password = SecureRandom.base64
+    UI.message("Keychain_name: #{keychain_name}")
+    UI.message("Keychain_password: #{keychain_password}")
+
+    create_keychain(
+      name: keychain_name,
+      password: keychain_password,
+      default_keychain: false,
+      unlock: true,
+      timeout: 3600,
+      lock_when_sleeps: false
+    )
+
+    # --- 3. 導入憑證 ---
+    UI.important("=== Importing certificate ===")
+    UI.message("Importing from: #{cert_path}")
+    UI.message("Use keychain_name: #{keychain_name}")
+    UI.message("Use keychain_password: #{keychain_password}")
+
+    import_certificate(
+      certificate_path: cert_path,
+      certificate_password: ENV["CERTIFICATE_PASSWORD"] || "yomiamy0330",
+      keychain_name: keychain_name,
+      keychain_password: keychain_password,
+      log_output: true
+    )
+
+    # 驗證憑證
+    UI.important("=== Verifying certificate in keychain ===")
+    sh("security find-identity -v -p codesigning #{keychain_name}")
+
+    # --- 4. 解析 Provisioning Profile ---
+    UI.important("=== Reading provisioning profile ===")
+    profile_content = sh("security cms -D -i #{profile_path}")
+
+    # 用 Ruby 解析 plist
+    require 'plist'
+    profile_plist = Plist.parse_xml(profile_content)
+
+    profile_name = profile_plist['Name']
+    profile_uuid = profile_plist['UUID']
+    team_id      = profile_plist['TeamIdentifier'].first
+    app_id_full  = profile_plist['Entitlements']['application-identifier']
+    app_id_prefix = profile_plist['ApplicationIdentifierPrefix'].first
+
+    UI.message("Profile Name: #{profile_name}")
+    UI.message("Profile UUID: #{profile_uuid}")
+    UI.message("Team ID: #{team_id}")
+    UI.message("App ID (full): #{app_id_full}")
+    UI.message("App ID (prefix): #{app_id_prefix}")
+
+    # --- 5. 安裝 Profile 與 專案簽名設定 ---
+    UI.important("=== Installing provisioning profile ===")
+    install_provisioning_profile(path: profile_path)
+
+    # 檢查安裝路徑 (偵錯用)
+    profiles_path = File.expand_path("~/Library/MobileDevice/Provisioning Profiles")
+    UI.message("Installed profiles:")
+    sh("ls -la '#{profiles_path}'") if File.exist?(profiles_path)
+
+    UI.important("=== Configuring code signing settings ===")
+
+    # 禁用自動簽名
+    disable_automatic_code_signing(
+      path: "Runner.xcodeproj",
+      targets: ["Runner"],
+      code_sign_identity: "Apple Distribution"
+    )
+
+    # 更新專案 Provisioning
+    update_project_provisioning(
+      xcodeproj: "Runner.xcodeproj",
+      profile: profile_path,
+      target_filter: "Runner",
+      build_configuration: "Release"
+    )
+
+    # 強制指定簽名設定
+    update_code_signing_settings(
+      use_automatic_signing: false,
+      path: "Runner.xcodeproj",
+      targets: ["Runner"],
+      code_sign_identity: "Apple Distribution",
+      profile_uuid: profile_uuid,
+      bundle_identifier: bundle_id,
+      build_configurations: ["Release"]
+    )
+
+    # --- 6. 構建 APP ---
+    export_options = {
+      method: "ad-hoc",
+      signingStyle: "manual",
+      teamID: team_id,
+      provisioningProfiles: {
+        bundle_id => profile_uuid
+      }
+    }
+
+    UI.message("Export options: #{export_options}")
+    UI.important("=== Building app ===")
+
+    begin
+      build_app(
+        scheme: "Runner",
+        workspace: "Runner.xcworkspace",
+        configuration: "Release",
+        export_method: "ad-hoc",
+        include_bitcode: true,
+        export_options: export_options,
+        output_directory: "./build",
+        output_name: "Runner.ipa",
+        clean: true
+      )
+      UI.success("✅ Build successful!")
+    rescue => ex
+      UI.error("Build failed: #{ex.message}")
+
+      # 輸出詳細 Xcode 錯誤日誌
+      UI.important("=== Checking Xcode logs ===")
+      log_path = "~/Library/Logs/gym/Runner-Runner.log"
+      if File.exist?(File.expand_path(log_path))
+        UI.message("Last 50 lines of build log:")
+        sh("tail -50 #{log_path}")
+      end
+      raise ex
+    ensure
+      # --- 7. 清理工作 ---
+      UI.message("Cleaning up temporary keychain...")
+      delete_keychain(name: keychain_name)
+    end
+  end
+
+  desc "Deploy to Firebase App Distribution"
+  lane :beta_deploy do
+    firebase_app_distribution(
+      app: "1:35224406241:ios:d8eb3d68795bc2d1924fa0",
+      service_credentials_file: "fastlane/findrestaurant_credentials.json",
+      ipa_path: "./build/Runner.ipa",
+      release_notes: "This is a beta build upload by Fastlane"
+    )
+  end
+
+  desc "Submit a new Beta Build to Firebase App Distribution"
+  lane :build_ipa_and_upload do
+    sh "echo '>>>>>>>>>> Build ipa & Upload... <<<<<<<<<<'"
+    beta_build
+    beta_deploy
+  end
+end
+
+# --- Helper Methods ---
+
+def get_provisioning_profile_name(path:)
+  require 'plist'
+
+  # 解碼 mobileprovision 文件
+  content = File.read(path)
+  start_marker = '<?xml version'
+  end_marker = '</plist>'
+
+  start_index = content.index(start_marker)
+  end_index = content.index(end_marker) + end_marker.length
+
+  plist_content = content[start_index...end_index]
+  plist = Plist.parse_xml(plist_content)
+
+  return plist['Name']
+end
