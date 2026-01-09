@@ -39,6 +39,7 @@ jobs:
           cache: true
 
       - name: Get Flutter dependencies
+        working-directory: flutter_restaruant/flutter_restaruant
         run: flutter pub get
 
       - name: Setup Ruby
@@ -46,10 +47,10 @@ jobs:
         with:
           ruby-version: '3.2'
           bundler-cache: true
-          working-directory: android
+          working-directory: flutter_restaruant/flutter_restaruant/android
 
       - name: Install Fastlane
-        working-directory: android
+        working-directory: flutter_restaruant/flutter_restaruant/android
         run: |
           gem install bundler
           bundle install
@@ -57,7 +58,7 @@ jobs:
       - name: Decode signing keystore
         env:
           ANDROID_KEYSTORE_BASE64: ${{ secrets.ANDROID_KEYSTORE_BASE64 }}
-        working-directory: android
+        working-directory: flutter_restaruant/flutter_restaruant/android
         run: |
           echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > app/release-keystore.jks
 
@@ -66,7 +67,7 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        working-directory: android
+        working-directory: flutter_restaruant/flutter_restaruant/android
         run: |
           cat > key.properties << EOF
           storePassword=$KEYSTORE_PASSWORD
@@ -78,7 +79,7 @@ jobs:
       - name: Decode Firebase credentials
         env:
           FIREBASE_CREDENTIALS_BASE64: ${{ secrets.FIREBASE_CREDENTIALS_BASE64 }}
-        working-directory: android/fastlane
+        working-directory: flutter_restaruant/flutter_restaruant/android/fastlane
         run: |
           echo "$FIREBASE_CREDENTIALS_BASE64" | base64 -d > findrestaurant_credentials.json
 
@@ -96,7 +97,7 @@ jobs:
           echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
 
       - name: Build and Upload to Firebase
-        working-directory: android
+        working-directory: flutter_restaruant/flutter_restaruant/android
         env:
           RELEASE_NOTES: ${{ github.event.inputs.release_notes || format('Release {0} - Build from tag {1}', steps.version.outputs.version, steps.version.outputs.tag) }}
         run: |
@@ -106,12 +107,12 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: app-release-firebase-${{ steps.version.outputs.version }}
-          path: build/app/outputs/flutter-apk/app-release.apk
+          path: flutter_restaruant/flutter_restaruant/build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
 
       - name: Cleanup sensitive files
         if: always()
-        working-directory: android
+        working-directory: flutter_restaruant/flutter_restaruant/android
         run: |
           rm -f app/release-keystore.jks
           rm -f key.properties
