@@ -1,0 +1,6 @@
+# GitHub Actions 本地測試檔案
+act/
+
+# Secrets 測試檔案 (不要 commit!)
+*.env.local
+secrets.json
