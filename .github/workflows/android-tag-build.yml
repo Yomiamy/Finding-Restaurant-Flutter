@@ -68,21 +68,6 @@ jobs:
         run: |
           echo "$ANDROID_KEYSTORE_BASE64" | base64 -d > app/release-keystore.jks
 
-      - name: Create key.properties
-        if: env.KEYSTORE_PASSWORD != ''
-        env:
-          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
-          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
-          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-        working-directory: flutter_restaruant/flutter_restaruant/android
-        run: |
-          cat > key.properties << EOF
-          storePassword=$KEYSTORE_PASSWORD
-          keyPassword=$KEY_PASSWORD
-          keyAlias=$KEY_ALIAS
-          storeFile=release-keystore.jks
-          EOF
-
       - name: Decode Firebase credentials
         if: github.event.inputs.deploy_to_firebase == 'true' || github.event_name == 'push'
         env:
@@ -108,8 +93,15 @@ jobs:
         if: github.event.inputs.deploy_to_firebase == 'true' || github.event_name == 'push'
         working-directory: flutter_restaruant/flutter_restaruant/android
         env:
+          KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
+          KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
+          KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
           RELEASE_NOTES: ${{ github.event.inputs.release_notes || format('Release {0} - Build from tag {1}', steps.version.outputs.version, steps.version.outputs.tag) }}
         run: |
+          storePassword=$KEYSTORE_PASSWORD
+          keyPassword=$KEY_PASSWORD
+          keyAlias=$KEY_ALIAS
+          storeFile=release-keystore.jks
           bundle exec fastlane build_apk_and_upload
 
       - name: Upload APK artifact
