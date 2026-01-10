@@ -96,12 +96,9 @@ jobs:
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
+          KEYSTORE_FILE: release-keystore.jks 
           RELEASE_NOTES: ${{ github.event.inputs.release_notes || format('Release {0} - Build from tag {1}', steps.version.outputs.version, steps.version.outputs.tag) }}
         run: |
-          storePassword=$KEYSTORE_PASSWORD
-          keyPassword=$KEY_PASSWORD
-          keyAlias=$KEY_ALIAS
-          storeFile=release-keystore.jks
           bundle exec fastlane build_apk_and_upload
 
       - name: Upload APK artifact
