@@ -104,11 +104,6 @@ jobs:
           echo "version=$VERSION" >> $GITHUB_OUTPUT
           echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
 
-      - name: Build APK with Fastlane
-        if: github.event.inputs.deploy_to_firebase != 'true' && github.event_name != 'push'
-        working-directory: flutter_restaruant/flutter_restaruant/android
-        run: bundle exec fastlane build_apk
-
       - name: Build and Upload to Firebase
         if: github.event.inputs.deploy_to_firebase == 'true' || github.event_name == 'push'
         working-directory: flutter_restaruant/flutter_restaruant/android
