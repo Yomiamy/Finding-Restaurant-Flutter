@@ -23,15 +23,19 @@ if (flutterVersionName == null) {
     flutterVersionName = '1.0'
 }
 
+def KEY_ALIAS = System.getenv("KEY_ALIAS") ?: project.findProperty("keyAlias")
+def KEY_PASSWORD = System.getenv("KEY_PASSWORD") ?: project.findProperty("keyPassword")
+def STORE_FILE = System.getenv("KEYSTORE_FILE") ?: project.findProperty("storeFile")
+def STORE_PASSWORD = System.getenv("KEYSTORE_PASSWORD") ?: project.findProperty("storePassword")
 
 android {
 
     signingConfigs {
         release {
-            keyAlias project.property("keyAlias")
-            keyPassword project.property("keyPassword")
-            storeFile file(project.property("storeFile"))
-            storePassword project.property("storePassword")
+            keyAlias KEY_ALIAS
+            keyPassword KEY_PASSWORD
+            storeFile file(STORE_FILE)
+            storePassword STORE_PASSWORD
         }
     }
 
