@@ -1,12 +1,26 @@
-gradle-wrapper.jar
 /.gradle
 /captures/
-/gradlew
-/gradlew.bat
 /local.properties
+/gradle.properties
 GeneratedPluginRegistrant.java
 app/.cxx
 
 # Remember to never publicly share your keystore.
 # See https://flutter.dev/docs/deployment/android#reference-the-keystore-from-the-app
 key.properties
+*.jks
+*.keystore
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots
+fastlane/test_output
+fastlane/*.json
+!fastlane/Fastfile
+!fastlane/Appfile
+
+# Ruby
+Gemfile.lock
+.bundle/
+vendor/bundle/

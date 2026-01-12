@@ -17,8 +17,8 @@ platform :android do
       task: "clean assembleRelease",
       properties: {
       "applicationId" => "com.yomi.flutter_restaruant",
-      "versionName" => "1.3.0",
-      "versionCode" => "26"
+#       "versionName" => "1.3.0",
+#       "versionCode" => "26"
       }
     )
     # crashlytics
@@ -39,11 +39,14 @@ platform :android do
 
   desc "Deploy to Firebase App Distribution"
   lane :deploy_firebase_app_distribution do
+    # 支援從環境變數讀取 release notes
+    release_notes_text = ENV["RELEASE_NOTES"] || "This is a beta build upload by Fastlane"
+
     firebase_app_distribution(
       app: "1:35224406241:android:00f352bb5d635a1b924fa0",
       service_credentials_file: "fastlane/findrestaurant_credentials.json",
       apk_path: "../build/app/outputs/flutter-apk/app-release.apk",
-      release_notes: "This is a beta build upload by Fastlane"
+      release_notes: release_notes_text
     )
   end
 
