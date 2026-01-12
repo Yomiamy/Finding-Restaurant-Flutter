@@ -17,8 +17,8 @@ platform :android do
       task: "clean assembleRelease",
       properties: {
       "applicationId" => "com.yomi.flutter_restaruant",
-      "versionName" => "1.3.0",
-      "versionCode" => "26"
+#       "versionName" => "1.3.0",
+#       "versionCode" => "26"
       }
     )
     # crashlytics
