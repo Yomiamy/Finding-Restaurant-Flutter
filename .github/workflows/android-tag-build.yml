@@ -3,11 +3,11 @@ name: Android Build & Deploy
 on:
   push:
     tags:
-      - 'rc/android-*.*.*'
+      - 'rc/android-**'
   workflow_dispatch:
     inputs:
       version:
-        description: 'Version tag (e.g., rc/android-1.3.0)'
+        description: 'Version in format x.y.z(code), e.g., 1.3.0(123)'
         required: false
       deploy_to_firebase:
         description: 'Deploy to Firebase App Distribution'
@@ -80,31 +80,60 @@ jobs:
         id: version
         run: |
           if [ "${{ github.event_name }}" == "push" ]; then
-            VERSION=${GITHUB_REF#refs/tags/rc/android-}
+            # 從 tag 格式 rc/android-x.y.z(oooo) 中提取
             TAG_NAME=${GITHUB_REF#refs/tags/}
+            VERSION_FULL=${GITHUB_REF#refs/tags/rc/android-}
+
+            # 使用正則表達式提取 version name (x.y.z) 和 version code (oooo)
+            if [[ $VERSION_FULL =~ ^([0-9]+\.[0-9]+\.[0-9]+)\(([0-9]+)\)$ ]]; then
+              VERSION_NAME="${BASH_REMATCH[1]}"
+              VERSION_CODE="${BASH_REMATCH[2]}"
+            else
+              echo "❌ Tag 格式錯誤: 應該是 rc/android-x.y.z(oooo)"
+              exit 1
+            fi
           else
-            VERSION="${{ github.event.inputs.version || 'manual' }}"
+            # 手動觸發時使用輸入值或預設值
+            VERSION_INPUT="${{ github.event.inputs.version || 'manual' }}"
             TAG_NAME="manual-build"
+
+            if [[ $VERSION_INPUT =~ ^([0-9]+\.[0-9]+\.[0-9]+)\(([0-9]+)\)$ ]]; then
+              VERSION_NAME="${BASH_REMATCH[1]}"
+              VERSION_CODE="${BASH_REMATCH[2]}"
+            else
+              VERSION_NAME="1.0.0"
+              VERSION_CODE="1"
+            fi
           fi
-          echo "version=$VERSION" >> $GITHUB_OUTPUT
+
+          echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "version_code=$VERSION_CODE" >> $GITHUB_OUTPUT
           echo "tag=$TAG_NAME" >> $GITHUB_OUTPUT
+
+          echo "✅ 提取版本資訊:"
+          echo "   Version Name: $VERSION_NAME"
+          echo "   Version Code: $VERSION_CODE"
+          echo "   Tag: $TAG_NAME"
 
       - name: Build and Upload to Firebase
         if: github.event.inputs.deploy_to_firebase == 'true' || github.event_name == 'push'
         working-directory: flutter_restaruant/flutter_restaruant/android
         env:
+          VERSION_NAME: ${{ steps.version.outputs.version_name }}
+          VERSION_CODE: ${{ steps.version.outputs.version_code }}
           KEYSTORE_PASSWORD: ${{ secrets.KEYSTORE_PASSWORD }}
           KEY_ALIAS: ${{ secrets.KEY_ALIAS }}
           KEY_PASSWORD: ${{ secrets.KEY_PASSWORD }}
-          KEYSTORE_FILE: release-keystore.jks 
-          RELEASE_NOTES: ${{ github.event.inputs.release_notes || format('Release {0} - Build from tag {1}', steps.version.outputs.version, steps.version.outputs.tag) }}
+          KEYSTORE_FILE: release-keystore.jks
+          RELEASE_NOTES: ${{ github.event.inputs.release_notes || format('Release {0}({1}) - Build from tag {2}', steps.version.outputs.version_name, steps.version.outputs.version_code, steps.version.outputs.tag) }}
         run: |
+          echo "🚀 開始建置 APK - Version: $VERSION_NAME ($VERSION_CODE)"
           bundle exec fastlane build_apk_and_upload
 
       - name: Upload APK artifact
         uses: actions/upload-artifact@v4
         with:
-          name: app-release-${{ steps.version.outputs.version }}
+          name: app-release-${{ steps.version.outputs.version_name }}-${{ steps.version.outputs.version_code }}
           path: flutter_restaruant/flutter_restaruant/build/app/outputs/flutter-apk/app-release.apk
           retention-days: 30
 
@@ -121,7 +150,8 @@ jobs:
           echo "🎉 Android Build Complete!" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Tag**: ${{ steps.version.outputs.tag }}" >> $GITHUB_STEP_SUMMARY
-          echo "**Version**: ${{ steps.version.outputs.version }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Version Name**: ${{ steps.version.outputs.version_name }}" >> $GITHUB_STEP_SUMMARY
+          echo "**Version Code**: ${{ steps.version.outputs.version_code }}" >> $GITHUB_STEP_SUMMARY
           echo "**Commit**: ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           if [ "${{ github.event.inputs.deploy_to_firebase }}" == "true" ] || [ "${{ github.event_name }}" == "push" ]; then
