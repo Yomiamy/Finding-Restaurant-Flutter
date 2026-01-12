@@ -16,10 +16,10 @@ if (localPropertiesFile.exists()) {
 def flutterApplicationId = project.findProperty("applicationId") ?: "com.yomi.flutter_restaruant"
 def flutterVersionCode = System.getenv("VERSION_CODE") ?: localProperties.getProperty('flutter.versionCode')
 def flutterVersionName = System.getenv("VERSION_NAME") ?: localProperties.getProperty('flutter.versionName')
-def KEY_ALIAS = System.getenv("KEY_ALIAS") ?: project.findProperty("keyAlias")
-def KEY_PASSWORD = System.getenv("KEY_PASSWORD") ?: project.findProperty("keyPassword")
-def STORE_FILE = System.getenv("KEYSTORE_FILE") ?: project.findProperty("storeFile")
-def STORE_PASSWORD = System.getenv("KEYSTORE_PASSWORD") ?: project.findProperty("storePassword")
+def KEY_ALIAS = System.getenv("KEY_ALIAS") ?: localProperties.getProperty("keyAlias")
+def KEY_PASSWORD = System.getenv("KEY_PASSWORD") ?: localProperties.getProperty("keyPassword")
+def STORE_FILE = System.getenv("KEYSTORE_FILE") ?: localProperties.getProperty("storeFile")
+def STORE_PASSWORD = System.getenv("KEYSTORE_PASSWORD") ?: localProperties.getProperty("storePassword")
 
 android {
 
