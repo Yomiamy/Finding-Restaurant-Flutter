@@ -13,16 +13,9 @@ if (localPropertiesFile.exists()) {
     }
 }
 
-def flutterVersionCode = localProperties.getProperty('flutter.versionCode')
-if (flutterVersionCode == null) {
-    flutterVersionCode = '1'
-}
-
-def flutterVersionName = localProperties.getProperty('flutter.versionName')
-if (flutterVersionName == null) {
-    flutterVersionName = '1.0'
-}
-
+def flutterApplicationId = project.findProperty("applicationId") ?: "com.yomi.flutter_restaruant"
+def flutterVersionCode = System.getenv("VERSION_CODE") ?: localProperties.getProperty('flutter.versionCode')
+def flutterVersionName = System.getenv("VERSION_NAME") ?: localProperties.getProperty('flutter.versionName')
 def KEY_ALIAS = System.getenv("KEY_ALIAS") ?: project.findProperty("keyAlias")
 def KEY_PASSWORD = System.getenv("KEY_PASSWORD") ?: project.findProperty("keyPassword")
 def STORE_FILE = System.getenv("KEYSTORE_FILE") ?: project.findProperty("storeFile")
@@ -32,14 +25,18 @@ android {
 
     signingConfigs {
         release {
-            keyAlias KEY_ALIAS
-            keyPassword KEY_PASSWORD
-            storeFile file(STORE_FILE)
-            storePassword STORE_PASSWORD
+            if(STORE_FILE != null) {
+                keyAlias KEY_ALIAS
+                keyPassword KEY_PASSWORD
+                storeFile file(STORE_FILE)
+                storePassword STORE_PASSWORD
+            }
         }
     }
 
     buildTypes {
+        debug {
+        }
         release {
             signingConfig signingConfigs.release
         }
@@ -51,7 +48,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId "com.yomi.flutter_restaruant"
+        applicationId flutterApplicationId
         minSdkVersion flutter.minSdkVersion
         targetSdkVersion flutter.targetSdkVersion
         versionCode flutterVersionCode.toInteger()
