@@ -22,6 +22,8 @@
   "keyword_search": "Keyword Search",
   "keyword_search_hint": "Store/Category/Street...",
   "map_my_loc_title": "I am here",
+  "map_mode": "Map Mode",
+  "list_mode": "List Mode",
 
   "@==== Restaurant Detail Page ====": {},
   "photo_viewer_title": "Photo Viewer",
