@@ -1,6 +1,5 @@
 // ignore: unused_import
 import 'package:intl/intl.dart' as intl;
-
 import 'app_localizations.dart';
 
 // ignore_for_file: type=lint
@@ -109,7 +108,8 @@ class AppLocalizationsEn extends AppLocalizations {
   String get delete_account_title => 'Delete Account';
 
   @override
-  String get delete_account_email_subject => 'Request for Account Deletion and Data Removal';
+  String get delete_account_email_subject =>
+      'Request for Account Deletion and Data Removal';
 
   @override
   String get delete_account_email_body =>

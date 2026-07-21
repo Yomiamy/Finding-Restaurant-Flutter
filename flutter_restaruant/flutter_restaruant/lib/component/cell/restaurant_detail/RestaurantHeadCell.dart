@@ -9,8 +9,6 @@ class RestaurantHeadCell extends StatelessWidget {
 
   final String _imageUrl;
   final YelpRestaurantSummaryInfo _summaryInfo;
-  late RestaurantDetailBloc _bloc;
-
   RestaurantHeadCell(
       {Key? key = const Key("RestaurantHeadCell"),
       required String imageUrl,
@@ -21,7 +19,7 @@ class RestaurantHeadCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    this._bloc = BlocProvider.of<RestaurantDetailBloc>(context);
+    final bloc = BlocProvider.of<RestaurantDetailBloc>(context);
 
     return Stack(
       children: <Widget>[
@@ -40,7 +38,7 @@ class RestaurantHeadCell extends StatelessWidget {
         StatefulBuilder(builder: (context, setState) {
           return GestureDetector(
               onTap: () {
-                this._bloc.add(ToggleFavor(summaryInfo: this._summaryInfo));
+                bloc.add(ToggleFavor(summaryInfo: this._summaryInfo));
               },
               child: Align(
                   alignment: Alignment.topRight,

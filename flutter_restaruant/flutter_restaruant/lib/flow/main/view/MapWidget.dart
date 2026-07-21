@@ -16,7 +16,6 @@ class MapWidget extends StatefulWidget {
 
 class _MapPageState extends State<MapWidget> {
   CameraPosition? _currentPos;
-  GoogleMapController? _mapController;
   Marker? _myLocMarker;
   Set<Marker> _markers = {};
 
@@ -48,9 +47,6 @@ class _MapPageState extends State<MapWidget> {
         myLocationEnabled: true,
         onCameraMove: (position) {
           this._currentPos = position;
-        },
-        onMapCreated: (controller) {
-          this._mapController = controller;
         },
         onCameraIdle: () {
           if (_myLocMarker != null) {

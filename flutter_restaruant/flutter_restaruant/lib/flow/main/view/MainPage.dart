@@ -17,7 +17,6 @@ import 'package:flutter_restaruant/model/YelpRestaurantSummaryInfo.dart';
 import 'package:flutter_restaruant/utils/Tuple.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_restaruant/utils/ViewUtils.dart';
-import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../bloc/MainBloc.dart';
 
@@ -285,14 +284,8 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
     });
   }
 
-  /// --- AD
-  Future<AnchoredAdaptiveBannerAdSize?> _anchoredAdaptiveBannerAdSize(BuildContext context) async {
-    return await AdSize.getAnchoredAdaptiveBannerAdSize(
-      MediaQuery.of(context).orientation == Orientation.portrait
-          ? Orientation.portrait
-          : Orientation.landscape,
-      MediaQuery.of(context).size.width.toInt(),
-    );
+  void updateState(VoidCallback fn) {
+    setState(fn);
   }
 
   /// [AppOpenADEvent]
