@@ -90,13 +90,13 @@ class FcmManager {
     AndroidNotification? android = message.notification?.android;
 
     if (notification != null && android != null) {
-      // Android app 前景顯示通知
+      // Android app 前判顯示通知
       _flutterLocalNotificationsPlugin
           .show(
-              notification.hashCode,
-              notification.title,
-              notification.body,
-              NotificationDetails(
+              id: notification.hashCode,
+              title: notification.title,
+              body: notification.body,
+              notificationDetails: NotificationDetails(
                 android: AndroidNotificationDetails(
                   Constants.FCM_NOTIFICATION_CHANNEL_ID,
                   Constants.FCM_NOTIFICATION_CHANNEL_NAME,
@@ -132,7 +132,8 @@ class FcmManager {
             iOS: initializationSettingsIos);
 
     // Foreground messages opened
-    _flutterLocalNotificationsPlugin.initialize(initializationSettings,
+    _flutterLocalNotificationsPlugin.initialize(
+        settings: initializationSettings,
         onDidReceiveNotificationResponse:
             _firebaseForegroundMessagingOpenHandler);
     // Foreground messages display
