@@ -5,101 +5,97 @@ description: Yelp restaurant searching in Flutter
 # pub.dev using `pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-# The following defines the version and build number for your application.
-# A version number is three numbers separated by dots, like 1.2.43
-# followed by an optional build number separated by a +.
-# Both the version and the builder number may be overridden in flutter
-# build by specifying --build-name and --build-number, respectively.
-# In Android, build-name is used as versionName while build-number used as versionCode.
-# Read more about Android versioning at https://developer.android.com/studio/publish/versioning
-# In iOS, build-name is used as CFBundleShortVersionString while build-number used as CFBundleVersion.
-# Read more about iOS versioning at
-# https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CoreFoundationKeys.html
 version: 1.3.0+25
 
 environment:
   sdk: '>=3.5.0 <4.0.0'
 
 dependencies:
-  flutter_platform_widgets: ^9.0.0
-  event_bus: ^2.0.0
-  path_provider: ^2.1.3
-  shared_preferences: ^2.2.0
-  sqflite: ^2.3.0
-  geolocator: ^9.0.2
-  image_picker: ^1.0.2
-  camera: ^0.11.2
-  sprintf: ^7.0.0
-  flutter_inappwebview: ^6.1.5
-  url_launcher: ^6.1.12
-  fluttertoast: ^8.2.12
-  settings_ui: ^2.0.2
-  local_auth: ^2.1.6
-  package_info_plus: ^4.1.0
-  google_maps_flutter: ^2.4.0
+  # UI 元件與介面元件 (UI Components & Layouts)
+  flutter_platform_widgets: ^10.0.1   # 跨平台 UI 元件 (依據 iOS/Android 自動切換原生風格)
+  settings_ui: ^3.0.1                 # 設定頁面選單佈局套件
+  fluttertoast: ^9.1.0               # 原生 Toast 快顯訊息提示
 
-  bloc: ^8.1.4
-  flutter_bloc: ^8.1.6
-  rxdart: ^0.28.0
+  # 狀態管理與非同步 (State Management & Reactive Programming)
+  bloc: ^9.2.1                        # BLoC 狀態管理核心庫
+  flutter_bloc: ^9.1.1                # Flutter 的 BLoC 狀態管理整合套件
+  rxdart: ^0.28.0                     # ReactiveX 響應式擴充庫 (Observable/Subject)
+  event_bus: ^2.0.0                   # 跨組件事件總線 (Event Bus) 傳遞廣播訊息
 
-  dio: ^5.6.0
-  retrofit: ^4.2.0
-  logger: ^2.4.0
+  # 網路請求與 API (Networking & API Services)
+  dio: ^5.6.0                         # 強大的 HTTP Client (支援攔截器、請求取消等)
+  retrofit: ^4.2.0                    # REST API Client 型別安全程式碼生成架構
 
-  firebase_core: ^3.3.0
-  google_mobile_ads: ^5.3.1
-  flutter_local_notifications: ^19.2.1
-  firebase_analytics: ^11.2.1
-  cloud_firestore: ^5.2.1
-  firebase_storage: ^12.1.3
-  firebase_auth: ^5.1.4
-  firebase_messaging: ^15.0.4
+  # 本地資料儲存與檔案 (Local Data Storage & File System)
+  sqflite: ^2.3.0                     # SQLite 本地資料庫套件
+  shared_preferences: ^2.2.0          # 輕量級 Key-Value 本地偏好設定儲存
+  path_provider: ^2.1.3               # 獲取裝置常用目錄路徑 (如 Documents, Temp)
 
-  google_sign_in: ^6.2.1
-  sign_in_with_apple: ^6.1.1
-  crypto: ^3.0.3
-  flutter_facebook_auth: ^6.0.1
-  sign_in_button: ^3.2.0
+  # 裝置功能與感測器 (Device Features & Hardware)
+  geolocator: ^14.0.3                 # GPS 定位與地理位置服務
+  image_picker: ^1.0.2                # 圖片/影片選擇器 (相簿與相機)
+  camera: ^0.12.0+2                   # 相機鏡頭控制與拍照功能
+  local_auth: ^3.0.2                  # 生物識別認證 (指紋 / Face ID)
+  package_info_plus: ^10.2.1          # 獲取應用程式 App 版本號與包名等資訊
+  url_launcher: ^6.1.12               # 啟動外部 URL (瀏覽器、電話、郵件)
+  flutter_inappwebview: ^6.1.5        # 內嵌 WebView 網頁瀏覽器元件
+
+  # 地圖服務 (Maps & Navigation)
+  google_maps_flutter: ^2.4.0         # Google Maps 地圖 SDK
+
+  # Firebase 雲端服務 (Firebase Backend Services)
+  firebase_core: ^4.12.1              # Firebase 核心初始化套件
+  cloud_firestore: ^6.7.1             # Cloud Firestore NoSQL 實時資料庫
+  firebase_storage: ^13.4.5           # Firebase Cloud Storage 檔案儲存
+  firebase_auth: ^6.5.6               # Firebase 身分驗證系統
+  firebase_messaging: ^16.4.3         # Firebase Cloud Messaging (FCM) 推播通知
+  firebase_analytics: ^12.4.5         # Firebase 數據統計與分析服務
+
+  # 第三方身分驗證與登入 (Third-Party Authentication)
+  google_sign_in: ^6.3.0              # Google 帳號登入 SDK
+  sign_in_with_apple: ^8.1.0          # Sign in with Apple 蘋果登入 SDK
+  flutter_facebook_auth: ^7.2.0       # Facebook 帳號登入 SDK
+  sign_in_button: ^5.0.0              # 社群登入按鈕 UI 元件庫
+
+  # 推播與廣告 (Push Notifications & Monetization)
+  flutter_local_notifications: ^22.1.0 # 本地推播通知服務
+  google_mobile_ads: ^9.0.0           # Google AdMob 廣告 SDK
+
+  # 工具類與加密 (Utilities & Cryptography)
+  sprintf: ^7.0.0                     # 字串格式化工具
+  logger: ^2.4.0                      # 多層級日誌紀錄工具 (Logger)
+  crypto: ^3.0.3                      # 加密與雜湊演算法 (MD5, SHA-256 等)
 
 dependency_overrides:
-  # For Tuple dependency
+  # For Tuple dependency (解 Quiver 版本相依衝突)
   quiver: ^3.2.1
 
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  intl: ^0.20.2
+  intl: ^0.20.2                       # 多國語言與日期數字格式化
 
-  # The following adds the Cupertino Icons font to your application.
-  # Use with the CupertinoIcons class for iOS style icons.
+  # iOS 風格 Icon 圖示
   cupertino_icons: ^1.0.8
 
 dev_dependencies:
-  equatable: any
-  retrofit_generator: ^8.2.0
-  build_runner: ^2.4.12
-  json_serializable: ^6.8.0
+  # 開發與程式碼生成工具 (Development & Code Generation Tools)
+  build_runner: ^2.4.12               # Dart 程式碼生成器執行工具
+  retrofit_generator: ^10.2.8          # Retrofit API 程式碼生成器
+  json_serializable: ^6.8.0           # JSON 序列化/反序列化程式碼生成器
+  equatable: any                      # 物件相等性比較工具
 
+  # 測試工具 (Testing Framework)
   flutter_test:
     sdk: flutter
   integration_test:
     sdk: flutter
 
-
-# For information on the generic Dart part of this file, see the
-# following page: https://dart.dev/tools/pub/pubspec
-
-# The following section is specific to Flutter.
 flutter:
   generate: true
-
-  # The following line ensures that the Material Icons font is
-  # included with your application, so that you can use the icons in
-  # the material Icons class.
   uses-material-design: true
 
-  # To add assets to your application, add an assets section, like this:
   assets:
     - images/empty.png
     - images/icon_signinup_icon.gif
@@ -118,30 +114,3 @@ flutter:
     - images/launch_image.png
     - images/ic_favor_empty.png
     - images/ic_favor_fill.png
-
-
-  # An image asset can refer to one or more resolution-specific "variants", see
-  # https://flutter.dev/assets-and-images/#resolution-aware.
-
-  # For details regarding adding assets from package dependencies, see
-  # https://flutter.dev/assets-and-images/#from-packages
-
-  # To add custom fonts to your application, add a fonts section here,
-  # in this "flutter" section. Each entry in this list should have a
-  # "family" key with the font family name, and a "fonts" key with a
-  # list giving the asset and other descriptors for the font. For
-  # example:
-  # fonts:
-  #   - family: Schyler
-  #     fonts:
-  #       - asset: fonts/Schyler-Regular.ttf
-  #       - asset: fonts/Schyler-Italic.ttf
-  #         style: italic
-  #   - family: Trajan Pro
-  #     fonts:
-  #       - asset: fonts/TrajanPro.ttf
-  #       - asset: fonts/TrajanPro_Bold.ttf
-  #         weight: 700
-  #
-  # For details regarding fonts from package dependencies,
-  # see https://flutter.dev/custom-fonts/#from-packages
