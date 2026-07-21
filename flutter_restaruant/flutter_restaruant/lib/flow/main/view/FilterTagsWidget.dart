@@ -55,7 +55,7 @@ class FilterTagsWidget extends StatelessWidget {
                   onPressed: (item) {
                     context
                         .findAncestorStateOfType<MainPageState>()
-                        ?.setState(() {
+                        ?.updateState(() {
                       MainBloc mainBloc = BlocProvider.of<MainBloc>(context);
 
                       this
