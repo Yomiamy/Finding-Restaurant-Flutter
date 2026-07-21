@@ -6,7 +6,7 @@
 // tree, read text, and verify that the values of widget properties are correct.
 
 import 'package:flutter/material.dart';
-import 'package:flutter_restaruant/component/LoadingWidget.dart';
+import 'package:flutter_restaruant/component/loading_widget.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -17,8 +17,8 @@ void main() {
     //await tester.pumpAndSettle(Duration(seconds: 2));
     await tester.pump();
 
-    // Verify that our counter starts at 0.
-    expect(find.byType(LoadingWidget), findsNothing);
+    // Verify that LoadingWidget is found.
+    expect(find.byType(LoadingWidget), findsOneWidget);
   });
 }
 
