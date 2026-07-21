@@ -1,0 +1,59 @@
+import 'package:flutter_restaruant/api/dio/dio_client.dart';
+import 'package:flutter_restaruant/model/yelp_restaurant_detail_info.dart';
+import 'package:flutter_restaruant/model/yelp_review_info.dart';
+import 'package:flutter_restaruant/model/yelp_search_info.dart';
+import 'package:flutter_restaruant/utils/constants.dart';
+import 'package:logger/logger.dart';
+import 'package:retrofit/retrofit.dart';
+import 'package:dio/dio.dart' hide Headers;
+import 'package:retrofit/http.dart';
+
+part 'api_clz.g.dart';
+
+@RestApi(baseUrl: Constants.BASE_URL)
+abstract class APIClz {
+  factory APIClz(Dio dio, {String? baseUrl}) = _APIClz;
+
+  @POST("/oauth2/token")
+  @FormUrlEncoded()
+  Future<String> fetchToken(
+      @Field("grant_type") String? grantType,
+      @Field("client_id") String? clientId,
+      @Field("client_secret") String? clientSecret);
+
+  @GET("/v3/businesses/search")
+  Future<YelpSearchInfo> businessesSearch(
+      {@Query("term") String? term,
+      @Query("latitude") double? latitude,
+      @Query("longitude") double? longitude,
+      @Query("locale") String? locale,
+      @Query("limit") int? limit,
+      @Query("offset") int? offset,
+      @Query("open_at") int? openAt,
+      @Query("sort_by") String? sortBy,
+      @Query("price") int? price});
+
+  @GET("/v3/businesses/{id}")
+  Future<YelpRestaurantDetailInfo> business(
+      @Path() String? id, @Query("locale") String? locale);
+
+  @GET("/v3/businesses/{id}/reviews")
+  Future<YelpReviewInfo> review(
+      @Path() String? id, @Query("locale") String? locale);
+}
+
+final dioClient = DioClient(
+    connectionTimeout: Constants.CONNECTION_TIEMOUT,
+    receiveTimeout: Constants.RECEIVE_TIEMOUT,
+    interceptWraps: [
+      InterceptorsWrapper(onRequest: (options, handler) async {
+        var customHeaders = {
+          "Content-Type": "application/json",
+          "Authorization": Constants.AUTH_TOKEN
+        };
+        options.headers.addAll(customHeaders);
+        handler.next(options);
+      })
+    ]);
+final apiInstance = APIClz(dioClient.dio);
+final logger = Logger();
