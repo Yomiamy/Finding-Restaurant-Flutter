@@ -9,8 +9,7 @@ import 'package:flutter_restaruant/flow/signinup/bloc/SignInBloc.dart';
 import 'package:flutter_restaruant/l10n/app_localizations.dart';
 import 'package:flutter_restaruant/utils/UIConstants.dart';
 import 'package:flutter_restaruant/utils/ViewUtils.dart';
-import 'package:flutter_signin_button/button_list.dart';
-import 'package:flutter_signin_button/button_view.dart';
+import 'package:sign_in_button/sign_in_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 
 class SignInPage extends StatefulWidget {
@@ -189,7 +188,7 @@ class _SignInPageState extends State<SignInPage> {
 
   Widget show3rdSignInUpBtns() => Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
         SignInButton(
-          Buttons.Google,
+          Buttons.google,
           elevation: 3.0,
           text: AppLocalizations.of(context)?.signinup_with_google ?? "",
           onPressed: () {
@@ -200,7 +199,7 @@ class _SignInPageState extends State<SignInPage> {
         ),
         SizedBox(height: 10),
         (Platform.isIOS)
-            ? SignInButton(Buttons.Apple,
+            ? SignInButton(Buttons.apple,
                 elevation: 3.0,
                 text: AppLocalizations.of(context)?.signinup_with_apple ?? "", onPressed: () {
                 this._signInBloc.add(AppleSignInEvent());
