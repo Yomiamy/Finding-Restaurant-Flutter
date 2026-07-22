@@ -1,5 +1,5 @@
 import 'dart:io';
-
+import 'dart:ui' as ui;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -11,7 +11,8 @@ import 'package:provider/provider.dart';
 
 import 'component/ad/banner_ad_state.dart';
 import 'firebase_options.dart';
-import 'l10n/app_localizations.dart';
+import 'generated/l10n.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'manager/fcm_manager.dart';
 import 'routes/routes_table.dart';
 
@@ -34,7 +35,8 @@ void main() async {
     // Firebase Init
     Firebase.initializeApp(
       options: DefaultFirebaseOptions.currentPlatform,
-    )
+    ),
+    S.load(ui.PlatformDispatcher.instance.locale),
   ]).then((_) {
     FcmManager().init();
 
@@ -47,8 +49,14 @@ class FindingRestaruantApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => PlatformApp(
       navigatorKey: navigatorKey,
-      localizationsDelegates: AppLocalizations.localizationsDelegates,
-      supportedLocales: AppLocalizations.supportedLocales,
+      locale: const Locale('zh', 'TW'),
+      localizationsDelegates: const [
+        S.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+        GlobalMaterialLocalizations.delegate,
+      ],
+      supportedLocales: S.delegate.supportedLocales,
       debugShowCheckedModeBanner: false,
       title: UIConstants.APP_TITLE,
       routes: ROUTES_TABLE);
