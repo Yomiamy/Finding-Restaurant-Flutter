@@ -85,6 +85,7 @@ dev_dependencies:
   retrofit_generator: ^10.2.8          # Retrofit API 程式碼生成器
   json_serializable: ^6.8.0           # JSON 序列化/反序列化程式碼生成器
   equatable: any                      # 物件相等性比較工具
+  intl_utils: ^2.8.11                  # intl_utils 多國語言程式碼生成工具
 
   # 測試工具 (Testing Framework)
   flutter_test:
@@ -93,7 +94,7 @@ dev_dependencies:
     sdk: flutter
 
 flutter:
-  generate: true
+  generate: false
   uses-material-design: true
 
   assets:
@@ -114,3 +115,8 @@ flutter:
     - images/launch_image.png
     - images/ic_favor_empty.png
     - images/ic_favor_fill.png
+
+flutter_intl:
+  enabled: true
+  arb-dir: lib/l10n
+  output-dir: lib/generated
