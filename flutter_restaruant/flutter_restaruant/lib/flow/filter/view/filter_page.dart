@@ -4,7 +4,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/model/filter_configs.dart';
 import 'package:flutter_restaruant/utils/tuple.dart';
 import 'package:flutter_restaruant/utils/ui_constants.dart';
-import 'package:flutter_restaruant/l10n/app_localizations.dart';
+import 'package:flutter_restaruant/generated/l10n.dart';
 
 class FilterPage extends StatefulWidget {
   static const ROUTE_NAME = "/FilterPage";
@@ -51,12 +51,12 @@ class _FilterPageState extends State<FilterPage> {
                         Tuple2(configs, null);
                     Navigator.pop(context, result);
                   },
-                  child: Text(AppLocalizations.of(context)?.apply ?? "",
+                  child: Text(S.current.apply,
                       style: TextStyle(
                           color: Colors.white,
                           fontSize: UIConstants.xhFontSize)))
             ],
-            title: Text(AppLocalizations.of(context)?.filter_rules ?? "",
+            title: Text(S.current.filter_rules,
                 style: TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
@@ -64,7 +64,7 @@ class _FilterPageState extends State<FilterPage> {
           // Price level
           Padding(
               padding: EdgeInsets.only(left: 20, top: 15),
-              child: Text(AppLocalizations.of(context)?.filter_price ?? "",
+              child: Text(S.current.filter_price,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: UIConstants.xxxhFontSize))),
@@ -79,7 +79,7 @@ class _FilterPageState extends State<FilterPage> {
           Padding(
               padding: EdgeInsets.only(left: 20, top: 15, right: 20),
               child: Text(
-                  AppLocalizations.of(context)?.filter_business_hour ?? "",
+                  S.current.filter_business_hour,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: UIConstants.xxxhFontSize))),
@@ -98,19 +98,17 @@ class _FilterPageState extends State<FilterPage> {
           Padding(
               padding: EdgeInsets.only(left: 20, top: 15),
               child: Text(
-                  AppLocalizations.of(context)?.filter_sorting_rule ?? "",
+                  S.current.filter_sorting_rule,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: UIConstants.xxxhFontSize))),
           this._createSegmentWidget(
               initValue: this._sortByIndex,
               segmentItems: [
-                AppLocalizations.of(context)?.filter_sorting_rule_best_match ??
-                    "",
-                AppLocalizations.of(context)?.filter_sorting_rule_distance ??
-                    "",
-                AppLocalizations.of(context)?.filter_sorting_rating ?? "",
-                AppLocalizations.of(context)?.filter_sorting_review_count ?? ""
+                S.current.filter_sorting_rule_best_match,
+                S.current.filter_sorting_rule_distance,
+                S.current.filter_sorting_rating,
+                S.current.filter_sorting_review_count
               ],
               valueChange: (i) {
                 this._sortByIndex = i;

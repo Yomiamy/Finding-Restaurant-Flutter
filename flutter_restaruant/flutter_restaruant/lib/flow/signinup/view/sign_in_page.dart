@@ -6,7 +6,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/loading_widget.dart';
 import 'package:flutter_restaruant/flow/main/view/main_page.dart';
 import 'package:flutter_restaruant/flow/signinup/bloc/sign_in_bloc.dart';
-import 'package:flutter_restaruant/l10n/app_localizations.dart';
+import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_restaruant/utils/ui_constants.dart';
 import 'package:flutter_restaruant/utils/view_utils.dart';
 import 'package:sign_in_button/sign_in_button.dart';
@@ -40,12 +40,12 @@ class _SignInPageState extends State<SignInPage> {
 
     return PlatformScaffold(
         appBar: PlatformAppBar(
-            title: Text(AppLocalizations.of(context)?.signin_page_title ?? "",
+            title: Text(S.current.signin_page_title,
                 style: TextStyle(color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
         body: BlocBuilder<SignInBloc, SignInState>(builder: (context, state) {
           if (state is SignInSuccess) {
-            Fluttertoast.showToast(msg: AppLocalizations.of(context)?.signin_success_msg ?? "");
+            Fluttertoast.showToast(msg: S.current.signin_success_msg);
 
             WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
               // Waiting building is finish and run.
@@ -54,29 +54,29 @@ class _SignInPageState extends State<SignInPage> {
           } else if (state is SignUpSuccess) {
             ViewUtils.showPromptDialog(
                 context: context,
-                title: AppLocalizations.of(context)?.email_signup_success_hint_title ?? "",
+                title: S.current.email_signup_success_hint_title,
                 msgWidget:
-                    PlatformText(AppLocalizations.of(context)?.email_signup_success_hint_msg ?? ""),
+                    PlatformText(S.current.email_signup_success_hint_msg),
                 actions: [
                   PlatformTextButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: PlatformText(AppLocalizations.of(context)?.confirm ?? ""),
+                    child: PlatformText(S.current.confirm),
                   )
                 ]);
           } else if (state is Failure && state.errorMsg.isNotEmpty) {
             // Waiting building is finish and run.
             ViewUtils.showPromptDialog(
                 context: context,
-                title: AppLocalizations.of(context)?.error ?? "",
+                title: S.current.error,
                 msgWidget: PlatformText(state.errorMsg),
                 actions: [
                   PlatformTextButton(
                     onPressed: () {
                       Navigator.pop(context);
                     },
-                    child: PlatformText(AppLocalizations.of(context)?.confirm ?? ""),
+                    child: PlatformText(S.current.confirm),
                   )
                 ]);
           }
@@ -123,10 +123,10 @@ class _SignInPageState extends State<SignInPage> {
                     autofocus: false,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) => (value == null || value.isEmpty)
-                        ? AppLocalizations.of(context)?.email_invalid_hint_msg ?? ""
+                        ? S.current.email_invalid_hint_msg
                         : null,
                     onSaved: (value) => this._email = value!,
-                    hintText: AppLocalizations.of(context)?.email_invalid_hint_title ?? "",
+                    hintText: S.current.email_invalid_hint_title,
                     cupertino: (_, __) => CupertinoTextFormFieldData(
                         // Assign a default cupertino decoration
                         decoration:
@@ -149,10 +149,10 @@ class _SignInPageState extends State<SignInPage> {
                     autofocus: false,
                     autovalidateMode: AutovalidateMode.onUserInteraction,
                     validator: (value) => (value == null || value.isEmpty)
-                        ? AppLocalizations.of(context)?.passwd_invalid_hint_msg ?? ""
+                        ? S.current.passwd_invalid_hint_msg
                         : null,
                     onSaved: (value) => this._passwd = value!,
-                    hintText: AppLocalizations.of(context)?.passwd_invalid_hint_title ?? "",
+                    hintText: S.current.passwd_invalid_hint_title,
                     cupertino: (_, __) => CupertinoTextFormFieldData(
                         // Assign a default cupertino decoration
                         decoration:
@@ -164,7 +164,7 @@ class _SignInPageState extends State<SignInPage> {
       child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
         PlatformElevatedButton(
             color: Color.fromARGB(255, 5, 97, 245),
-            child: Text(AppLocalizations.of(context)?.signin_btn_title ?? "",
+            child: Text(S.current.signin_btn_title,
                 style: TextStyle(
                     fontSize: UIConstants.xhFontSize,
                     fontWeight: FontWeight.bold,
@@ -176,7 +176,7 @@ class _SignInPageState extends State<SignInPage> {
               }
             }),
         PlatformTextButton(
-            child: Text(AppLocalizations.of(context)?.signup_title ?? "",
+            child: Text(S.current.signup_title,
                 style: TextStyle(fontSize: UIConstants.mFontSize, color: Colors.grey)),
             onPressed: () {
               if (this._formKey.currentState != null && this._formKey.currentState!.validate()) {
@@ -190,21 +190,21 @@ class _SignInPageState extends State<SignInPage> {
         SignInButton(
           Buttons.google,
           elevation: 3.0,
-          text: AppLocalizations.of(context)?.signinup_with_google ?? "",
+          text: S.current.signinup_with_google,
           onPressed: () {
             this._signInBloc.add(GoogleSignInEvent());
             Fluttertoast.showToast(
-                msg: AppLocalizations.of(context)?.signinup_with_google_hint_msg ?? "");
+                msg: S.current.signinup_with_google_hint_msg);
           },
         ),
         SizedBox(height: 10),
         (Platform.isIOS)
             ? SignInButton(Buttons.apple,
                 elevation: 3.0,
-                text: AppLocalizations.of(context)?.signinup_with_apple ?? "", onPressed: () {
+                text: S.current.signinup_with_apple, onPressed: () {
                 this._signInBloc.add(AppleSignInEvent());
                 Fluttertoast.showToast(
-                    msg: AppLocalizations.of(context)?.signinup_with_apple_hint_msg ?? "");
+                    msg: S.current.signinup_with_apple_hint_msg);
               })
             : UIConstants.EMPTY_WIDGET
       ]);
