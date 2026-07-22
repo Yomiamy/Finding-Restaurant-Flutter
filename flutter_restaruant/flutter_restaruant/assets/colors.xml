@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- App Colors -->
+    <color name="app_primary_color">#FFD84A20</color>
+    <color name="back_btn_color">#FFFFFFFF</color>
+</resources>

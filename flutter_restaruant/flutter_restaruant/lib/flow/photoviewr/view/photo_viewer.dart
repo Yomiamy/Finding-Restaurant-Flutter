@@ -4,6 +4,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/utils/tuple.dart';
 import 'package:flutter_restaruant/utils/ui_constants.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
+import 'package:flutter_restaruant/gen/colors.gen.dart';
 
 class PhotoViewer extends StatefulWidget {
   static const ROUTE_NAME = "/PhotoViewer";
@@ -29,13 +30,13 @@ class _PhotoViewerState extends State<PhotoViewer> {
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
                 materialIcon: Icon(Icons.arrow_back,
-                    color: Color(UIConstants.BACK_BTN_COLOR)),
+                    color: ColorName.backBtnColor),
                 cupertinoIcon: Icon(CupertinoIcons.back,
-                    color: Color(UIConstants.BACK_BTN_COLOR))),
+                    color: ColorName.backBtnColor)),
             title: Text(S.current.photo_viewer_title,
                 style: TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
-            backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
+            backgroundColor: ColorName.appPrimaryColor),
         body: InteractiveViewer(
           // Set it to false
           boundaryMargin: EdgeInsets.all(100),

@@ -5,6 +5,7 @@ import 'package:flutter_restaruant/model/filter_configs.dart';
 import 'package:flutter_restaruant/utils/tuple.dart';
 import 'package:flutter_restaruant/utils/ui_constants.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
+import 'package:flutter_restaruant/gen/colors.gen.dart';
 
 class FilterPage extends StatefulWidget {
   static const ROUTE_NAME = "/FilterPage";
@@ -35,12 +36,12 @@ class _FilterPageState extends State<FilterPage> {
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
                 materialIcon: Icon(Icons.arrow_back,
-                    color: Color(UIConstants.BACK_BTN_COLOR)),
+                    color: ColorName.backBtnColor),
                 cupertinoIcon: Icon(CupertinoIcons.back,
-                    color: Color(UIConstants.BACK_BTN_COLOR))),
+                    color: ColorName.backBtnColor)),
             trailingActions: [
               PlatformElevatedButton(
-                  color: Color(UIConstants.APP_PRIMARY_COLOR),
+                  color: ColorName.appPrimaryColor,
                   padding: EdgeInsets.all(0),
                   onPressed: () {
                     FilterConfigs configs = FilterConfigs.fromUI(
@@ -59,7 +60,7 @@ class _FilterPageState extends State<FilterPage> {
             title: Text(S.current.filter_rules,
                 style: TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
-            backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
+            backgroundColor: ColorName.appPrimaryColor),
         body: ListView(children: <Widget>[
           // Price level
           Padding(
