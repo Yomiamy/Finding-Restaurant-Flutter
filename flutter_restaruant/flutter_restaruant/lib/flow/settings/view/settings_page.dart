@@ -9,7 +9,7 @@ import 'package:flutter_restaruant/manager/biometric_sign_in_manager.dart';
 import 'package:flutter_restaruant/utils/constants.dart';
 import 'package:flutter_restaruant/utils/ui_constants.dart';
 import 'package:settings_ui/settings_ui.dart';
-import 'package:flutter_restaruant/l10n/app_localizations.dart';
+import 'package:flutter_restaruant/generated/l10n.dart';
 
 class SettingsPage extends StatefulWidget {
   static const ROUTE_NAME = "/SettingsPage";
@@ -46,7 +46,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 cupertinoIcon: Icon(CupertinoIcons.back,
                     color: Color(UIConstants.BACK_BTN_COLOR))),
             title: PlatformText(
-                AppLocalizations.of(context)?.settings_title ?? "",
+                S.current.settings_title,
                 style: TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
@@ -87,12 +87,12 @@ class _SettingsPageState extends State<SettingsPage> {
           bool bioAuthSettingSwitchValue, bool isSupportBiometricAuth) =>
       SettingsSection(
           title: PlatformText(
-              AppLocalizations.of(context)?.information_section_title ?? ""),
+              S.current.information_section_title),
           tiles: <SettingsTile>[
             SettingsTile(
               leading: Icon(Icons.info),
               title: PlatformText(
-                  AppLocalizations.of(context)?.version_tile_title ?? ""),
+                  S.current.version_tile_title),
               value: PlatformText(Constants.VERSION),
             ),
             // TODO:判斷生物辨識
@@ -114,7 +114,7 @@ class _SettingsPageState extends State<SettingsPage> {
               child: PlatformElevatedButton(
                   color: Colors.red,
                   child: Text(
-                      AppLocalizations.of(context)?.logout_section_title ?? "",
+                      S.current.logout_section_title,
                       style: TextStyle(
                           fontSize: UIConstants.xhFontSize,
                           fontWeight: FontWeight.bold,
@@ -127,15 +127,11 @@ class _SettingsPageState extends State<SettingsPage> {
             GestureDetector(
               onTap: () {
                 this._settingsBloc.add(AccountRemovalEvent(
-                    subject: AppLocalizations.of(context)
-                            ?.delete_account_email_subject ??
-                        "",
-                    bodyPrefix: AppLocalizations.of(context)
-                            ?.delete_account_email_body ??
-                        ""));
+                    subject: S.current.delete_account_email_subject,
+                    bodyPrefix: S.current.delete_account_email_body));
               },
               child: Text(
-                  AppLocalizations.of(context)?.delete_account_title ?? "",
+                  S.current.delete_account_title,
                   style: TextStyle(
                       fontSize: UIConstants.hFontSize,
                       fontWeight: FontWeight.bold,

@@ -3,7 +3,7 @@ import 'package:flutter/widgets.dart';
 import 'package:flutter_restaruant/model/yelp_restaurant_summary_info.dart';
 import 'package:flutter_restaruant/utils/ui_constants.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_restaruant/l10n/app_localizations.dart';
+import 'package:flutter_restaruant/generated/l10n.dart';
 
 class MapWidget extends StatefulWidget {
   final List<YelpRestaurantSummaryInfo> _summaryInfos;
@@ -59,7 +59,7 @@ class _MapPageState extends State<MapWidget> {
                 markerId: MarkerId(UIConstants.MAP_MY_LOCATION_MARK_ID),
                 infoWindow: InfoWindow(
                     title:
-                        AppLocalizations.of(context)?.map_my_loc_title ?? ""),
+                        S.current.map_my_loc_title),
                 icon: BitmapDescriptor.defaultMarkerWithHue(
                     BitmapDescriptor.hueYellow));
 

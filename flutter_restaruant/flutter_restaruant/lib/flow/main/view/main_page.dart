@@ -11,7 +11,7 @@ import 'package:flutter_restaruant/flow/main/view/map_widget.dart';
 import 'package:flutter_restaruant/flow/main/view/restaurant_info_list_widget.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/restaurant_detail_page.dart';
 import 'package:flutter_restaruant/flow/settings/view/settings_page.dart';
-import 'package:flutter_restaruant/l10n/app_localizations.dart';
+import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_restaruant/model/filter_configs.dart';
 import 'package:flutter_restaruant/model/yelp_restaurant_summary_info.dart';
 import 'package:flutter_restaruant/utils/tuple.dart';
@@ -82,7 +82,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                     child: Padding(
                       padding: const EdgeInsets.only(bottom: 15),
                       child: Text(
-                        AppLocalizations.of(context)?.main_page_title ?? "",
+                        S.current.main_page_title,
                         style: TextStyle(color: Colors.white, fontSize: UIConstants.xxxxhFontSize),
                       ),
                     ),
@@ -125,7 +125,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
   }
 
   Drawer _buildDrawer(BuildContext context) {
-    final appLocalizations = AppLocalizations.of(context);
+    final appLocalizations = S.current;
 
     return Drawer(
         child: SafeArea(
@@ -134,14 +134,14 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           decoration: BoxDecoration(color: Color(UIConstants.APP_PRIMARY_COLOR)),
           child: Align(
               alignment: Alignment.bottomLeft,
-              child: Text(appLocalizations?.main_page_title ?? "",
+              child: Text(appLocalizations.main_page_title,
                   style: TextStyle(
                       color: Colors.white,
                       fontSize: UIConstants.xxxhFontSize,
                       fontWeight: FontWeight.bold)))),
       ListTile(
           leading: Icon(Icons.settings, color: Color(UIConstants.APP_PRIMARY_COLOR)),
-          title: Text(appLocalizations?.settings_title ?? "Settings"),
+          title: Text(appLocalizations.settings_title),
           onTap: () {
             Navigator.of(context).pop();
             _runAfterDrawerClosed(() {
@@ -150,7 +150,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           }),
       ListTile(
           leading: Icon(Icons.favorite, color: Color(UIConstants.APP_PRIMARY_COLOR)),
-          title: Text(appLocalizations?.favorite_store_add ?? "Favorites"),
+          title: Text(appLocalizations.favorite_store_add),
           onTap: () {
             Navigator.of(context).pop();
             _runAfterDrawerClosed(() {
@@ -161,8 +161,8 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           leading: Icon(Icons.map, color: Color(UIConstants.APP_PRIMARY_COLOR)),
           title: Text(
             _isListMode
-                ? (appLocalizations?.map_mode ?? 'Map Mode')
-                : (appLocalizations?.list_mode ?? 'List Mode'),
+                ? appLocalizations.map_mode
+                : appLocalizations.list_mode,
           ),
           onTap: () {
             Navigator.of(context).pop();
@@ -176,7 +176,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           }),
       ListTile(
           leading: Icon(Icons.navigation, color: Color(UIConstants.APP_PRIMARY_COLOR)),
-          title: Text(appLocalizations?.map_my_loc_title ?? "Reset Location"),
+          title: Text(appLocalizations.map_my_loc_title),
           onTap: () {
             Navigator.of(context).pop();
             _runAfterDrawerClosed(() {
@@ -185,7 +185,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           }),
       ListTile(
           leading: Icon(Icons.search, color: Color(UIConstants.APP_PRIMARY_COLOR)),
-          title: Text(appLocalizations?.keyword_search ?? "Keyword Search"),
+          title: Text(appLocalizations.keyword_search),
           onTap: () {
             Navigator.of(context).pop();
             _runAfterDrawerClosed(() {
@@ -194,7 +194,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           }),
       ListTile(
           leading: Icon(Icons.filter_list, color: Color(UIConstants.APP_PRIMARY_COLOR)),
-          title: Text(appLocalizations?.filter_rules ?? "Filter"),
+          title: Text(appLocalizations.filter_rules),
           onTap: () {
             Navigator.of(context).pop();
             _runAfterDrawerClosed(() {
@@ -218,9 +218,9 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
 
     ViewUtils.showPromptDialog(
         context: context,
-        title: AppLocalizations.of(context)?.keyword_search ?? "",
+        title: S.current.keyword_search,
         msgWidget: PlatformTextField(
-          hintText: AppLocalizations.of(context)?.keyword_search_hint ?? "",
+          hintText: S.current.keyword_search_hint,
           onChanged: (keyword) {
             this._filterKeyword = keyword;
           },
@@ -233,12 +233,12 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                 this._filterKeyword = "";
                 Navigator.pop(context);
               },
-              child: PlatformText(AppLocalizations.of(context)?.confirm ?? "")),
+              child: PlatformText(S.current.confirm)),
           PlatformTextButton(
               onPressed: () {
                 Navigator.pop(context);
               },
-              child: PlatformText(AppLocalizations.of(context)?.cancel ?? ""))
+              child: PlatformText(S.current.cancel))
         ]);
   }
 

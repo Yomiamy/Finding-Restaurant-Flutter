@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_restaruant/l10n/app_localizations.dart';
+import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_restaruant/model/yelp_restaurant_summary_info.dart';
 import 'package:flutter_restaruant/utils/ui_constants.dart';
 import 'package:sprintf/sprintf.dart';
@@ -73,7 +73,7 @@ class RestaurantItemCell extends StatelessWidget {
                                       Expanded(
                                           child: Align(
                                               child: Text(
-                                                  "${this._summaryInfo.review_count}${AppLocalizations.of(context)?.review_count_suffix ?? ""}",
+                                                  "${this._summaryInfo.review_count}${S.current.review_count_suffix}",
                                                   style: TextStyle(
                                                       fontSize:
                                                           UIConstants.mFontSize,
