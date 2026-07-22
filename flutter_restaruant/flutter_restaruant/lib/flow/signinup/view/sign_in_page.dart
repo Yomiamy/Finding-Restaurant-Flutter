@@ -11,6 +11,7 @@ import 'package:flutter_restaruant/utils/ui_constants.dart';
 import 'package:flutter_restaruant/utils/view_utils.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
+import 'package:flutter_restaruant/gen/colors.gen.dart';
 
 class SignInPage extends StatefulWidget {
   static const ROUTE_NAME = "/SignInPage";
@@ -42,7 +43,7 @@ class _SignInPageState extends State<SignInPage> {
         appBar: PlatformAppBar(
             title: Text(S.current.signin_page_title,
                 style: TextStyle(color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
-            backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
+            backgroundColor: ColorName.appPrimaryColor),
         body: BlocBuilder<SignInBloc, SignInState>(builder: (context, state) {
           if (state is SignInSuccess) {
             Fluttertoast.showToast(msg: S.current.signin_success_msg);

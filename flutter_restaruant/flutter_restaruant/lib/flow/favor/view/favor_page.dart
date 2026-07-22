@@ -10,6 +10,7 @@ import 'package:flutter_restaruant/flow/restaurant/view/restaurant_detail_page.d
 import 'package:flutter_restaruant/model/yelp_restaurant_summary_info.dart';
 import 'package:flutter_restaruant/utils/tuple.dart';
 import 'package:flutter_restaruant/utils/ui_constants.dart';
+import 'package:flutter_restaruant/gen/colors.gen.dart';
 
 class FavorPage extends StatefulWidget {
   static const ROUTE_NAME = "/FavorPage";
@@ -40,13 +41,13 @@ class _FavorPageState extends State<FavorPage> {
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
                 materialIcon: Icon(Icons.arrow_back,
-                    color: Color(UIConstants.BACK_BTN_COLOR)),
+                    color: ColorName.backBtnColor),
                 cupertinoIcon: Icon(CupertinoIcons.back,
-                    color: Color(UIConstants.BACK_BTN_COLOR))),
+                    color: ColorName.backBtnColor)),
             title: Text(UIConstants.FAVOR_TITLE,
                 style: TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxxhFontSize)),
-            backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
+            backgroundColor: ColorName.appPrimaryColor),
         body: BlocBuilder<FavorBloc, FavorState>(
             bloc: this._favorBloc,
             builder: (context, state) {

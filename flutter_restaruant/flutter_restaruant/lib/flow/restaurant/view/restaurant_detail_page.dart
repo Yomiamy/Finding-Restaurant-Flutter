@@ -13,6 +13,7 @@ import 'package:flutter_restaruant/utils/ui_constants.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../bloc/restaurant_detail_bloc.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
+import 'package:flutter_restaruant/gen/colors.gen.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   static const ROUTE_NAME = "/RestaurantDetailPage";
@@ -54,9 +55,9 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
                 materialIcon: Icon(Icons.arrow_back,
-                    color: Color(UIConstants.BACK_BTN_COLOR)),
+                    color: ColorName.backBtnColor),
                 cupertinoIcon: Icon(CupertinoIcons.back,
-                    color: Color(UIConstants.BACK_BTN_COLOR))),
+                    color: ColorName.backBtnColor)),
             title: BlocBuilder<RestaurantDetailBloc, RestaurantDetailState>(
                 bloc: this._bloc,
                 builder: (context, state) {
@@ -69,7 +70,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                     return Text("");
                   }
                 }),
-            backgroundColor: Color(UIConstants.APP_PRIMARY_COLOR)),
+            backgroundColor: ColorName.appPrimaryColor),
         body: Padding(
             padding: EdgeInsets.only(bottom: 10),
             child: BlocBuilder<RestaurantDetailBloc, RestaurantDetailState>(
