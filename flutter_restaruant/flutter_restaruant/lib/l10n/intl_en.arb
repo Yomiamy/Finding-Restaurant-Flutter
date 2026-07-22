@@ -6,7 +6,6 @@
   "confirm": "Ok",
   "cancel": "Cancel",
 
-  "@==== Filter Page ====": {},
   "apply": "Apply",
   "filter_rules": "Filter Rules",
   "filter_price": "Price Rule",
@@ -17,7 +16,6 @@
   "filter_sorting_rating": "Rating",
   "filter_sorting_review_count": "Review Count",
 
-  "@==== Main Page ====": {},
   "main_page_title": "FindRestaurant",
   "keyword_search": "Keyword Search",
   "keyword_search_hint": "Store/Category/Street...",
@@ -25,7 +23,6 @@
   "map_mode": "Map Mode",
   "list_mode": "List Mode",
 
-  "@==== Restaurant Detail Page ====": {},
   "photo_viewer_title": "Photo Viewer",
   "store_phone": "Phone:",
   "review_count_suffix": " reviews",
@@ -36,7 +33,6 @@
   "favorite_store_remove": "Remove from favorite list",
   "business_hour": "Business Hour",
 
-  "@==== Settings Page ====": {},
   "settings_title": "Settings",
   "information_section_title": "Information",
   "version_tile_title": "Version",
@@ -45,7 +41,6 @@
   "delete_account_email_subject": "Request for Account Deletion and Data Removal",
   "delete_account_email_body": "Dear Team, I am writing to formally request the deletion of my account and all associated personal data. Please find the details of my account:",
 
-  "@==== SignIn Page ====": {},
   "signin_page_title": "SignIn/SignUp",
   "signin_success_msg": "SignIn successfully",
   "email_signup_success_hint_title": "Email signup successfully",
