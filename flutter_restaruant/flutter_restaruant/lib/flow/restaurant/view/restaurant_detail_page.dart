@@ -1,7 +1,5 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/component/empty_data_widget.dart';
 import 'package:flutter_restaruant/component/loading_widget.dart';
 import 'package:flutter_restaruant/component/ad/interstitial_ad.dart';
@@ -49,15 +47,12 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
     this._summaryInfo = args.item1;
 
     this._bloc.add(FetchDetailInfo(id: this._summaryInfo.id!));
-    return PlatformScaffold(
-        appBar: PlatformAppBar(
-            leading: PlatformIconButton(
+    return Scaffold(
+        appBar: AppBar(
+            leading: IconButton(
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
-                materialIcon: Icon(Icons.arrow_back,
-                    color: ColorName.backBtnColor),
-                cupertinoIcon: Icon(CupertinoIcons.back,
-                    color: ColorName.backBtnColor)),
+                icon: Icon(Icons.arrow_back, color: ColorName.backBtnColor)),
             title: BlocBuilder<RestaurantDetailBloc, RestaurantDetailState>(
                 bloc: this._bloc,
                 builder: (context, state) {
