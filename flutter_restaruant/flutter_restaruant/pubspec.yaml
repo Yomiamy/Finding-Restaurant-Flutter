@@ -65,6 +65,8 @@ dependencies:
   sprintf: ^7.0.0                     # 字串格式化工具
   logger: ^2.4.0                      # 多層級日誌紀錄工具 (Logger)
   crypto: ^3.0.3                      # 加密與雜湊演算法 (MD5, SHA-256 等)
+  integration_test:
+    sdk: flutter
 
 dependency_overrides:
   # For Tuple dependency (解 Quiver 版本相依衝突)
@@ -90,8 +92,6 @@ dev_dependencies:
 
   # 測試工具 (Testing Framework)
   flutter_test:
-    sdk: flutter
-  integration_test:
     sdk: flutter
 
 flutter:
