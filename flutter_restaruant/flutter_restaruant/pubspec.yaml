@@ -12,61 +12,59 @@ environment:
 
 dependencies:
   # UI 元件與介面元件 (UI Components & Layouts)
-  flutter_platform_widgets: ^10.0.1   # 跨平台 UI 元件 (依據 iOS/Android 自動切換原生風格)
-  settings_ui: ^3.0.1                 # 設定頁面選單佈局套件
-  fluttertoast: ^9.1.0               # 原生 Toast 快顯訊息提示
+  flutter_platform_widgets: ^10.0.1 # 跨平台 UI 元件 (依據 iOS/Android 自動切換原生風格)
+  settings_ui: ^3.0.1 # 設定頁面選單佈局套件
+  fluttertoast: ^9.1.0 # 原生 Toast 快顯訊息提示
 
   # 狀態管理與非同步 (State Management & Reactive Programming)
-  bloc: ^9.2.1                        # BLoC 狀態管理核心庫
-  flutter_bloc: ^9.1.1                # Flutter 的 BLoC 狀態管理整合套件
-  rxdart: ^0.28.0                     # ReactiveX 響應式擴充庫 (Observable/Subject)
-  event_bus: ^2.0.0                   # 跨組件事件總線 (Event Bus) 傳遞廣播訊息
+  bloc: ^9.2.1 # BLoC 狀態管理核心庫
+  flutter_bloc: ^9.1.1 # Flutter 的 BLoC 狀態管理整合套件
+  rxdart: ^0.28.0 # ReactiveX 響應式擴充庫 (Observable/Subject)
+  event_bus: ^2.0.0 # 跨組件事件總線 (Event Bus) 傳遞廣播訊息
 
   # 網路請求與 API (Networking & API Services)
-  dio: ^5.6.0                         # 強大的 HTTP Client (支援攔截器、請求取消等)
-  retrofit: ^4.2.0                    # REST API Client 型別安全程式碼生成架構
+  dio: ^5.6.0 # 強大的 HTTP Client (支援攔截器、請求取消等)
+  retrofit: ^4.2.0 # REST API Client 型別安全程式碼生成架構
 
   # 本地資料儲存與檔案 (Local Data Storage & File System)
-  sqflite: ^2.3.0                     # SQLite 本地資料庫套件
-  shared_preferences: ^2.2.0          # 輕量級 Key-Value 本地偏好設定儲存
-  path_provider: ^2.1.3               # 獲取裝置常用目錄路徑 (如 Documents, Temp)
+  sqflite: ^2.3.0 # SQLite 本地資料庫套件
+  shared_preferences: ^2.2.0 # 輕量級 Key-Value 本地偏好設定儲存
+  path_provider: ^2.1.3 # 獲取裝置常用目錄路徑 (如 Documents, Temp)
 
   # 裝置功能與感測器 (Device Features & Hardware)
-  geolocator: ^14.0.3                 # GPS 定位與地理位置服務
-  image_picker: ^1.0.2                # 圖片/影片選擇器 (相簿與相機)
-  camera: ^0.12.0+2                   # 相機鏡頭控制與拍照功能
-  local_auth: ^3.0.2                  # 生物識別認證 (指紋 / Face ID)
-  package_info_plus: ^10.2.1          # 獲取應用程式 App 版本號與包名等資訊
-  url_launcher: ^6.1.12               # 啟動外部 URL (瀏覽器、電話、郵件)
-  flutter_inappwebview: ^6.1.5        # 內嵌 WebView 網頁瀏覽器元件
+  geolocator: ^14.0.3 # GPS 定位與地理位置服務
+  image_picker: ^1.0.2 # 圖片/影片選擇器 (相簿與相機)
+  camera: ^0.12.0+2 # 相機鏡頭控制與拍照功能
+  local_auth: ^3.0.2 # 生物識別認證 (指紋 / Face ID)
+  package_info_plus: ^10.2.1 # 獲取應用程式 App 版本號與包名等資訊
+  url_launcher: ^6.1.12 # 啟動外部 URL (瀏覽器、電話、郵件)
+  flutter_inappwebview: ^6.1.5 # 內嵌 WebView 網頁瀏覽器元件
 
   # 地圖服務 (Maps & Navigation)
-  google_maps_flutter: ^2.4.0         # Google Maps 地圖 SDK
+  google_maps_flutter: ^2.4.0 # Google Maps 地圖 SDK
 
   # Firebase 雲端服務 (Firebase Backend Services)
-  firebase_core: ^4.12.1              # Firebase 核心初始化套件
-  cloud_firestore: ^6.7.1             # Cloud Firestore NoSQL 實時資料庫
-  firebase_storage: ^13.4.5           # Firebase Cloud Storage 檔案儲存
-  firebase_auth: ^6.5.6               # Firebase 身分驗證系統
-  firebase_messaging: ^16.4.3         # Firebase Cloud Messaging (FCM) 推播通知
-  firebase_analytics: ^12.4.5         # Firebase 數據統計與分析服務
+  firebase_core: ^4.12.1 # Firebase 核心初始化套件
+  cloud_firestore: ^6.7.1 # Cloud Firestore NoSQL 實時資料庫
+  firebase_storage: ^13.4.5 # Firebase Cloud Storage 檔案儲存
+  firebase_auth: ^6.5.6 # Firebase 身分驗證系統
+  firebase_messaging: ^16.4.3 # Firebase Cloud Messaging (FCM) 推播通知
+  firebase_analytics: ^12.4.5 # Firebase 數據統計與分析服務
 
   # 第三方身分驗證與登入 (Third-Party Authentication)
-  google_sign_in: ^6.3.0              # Google 帳號登入 SDK
-  sign_in_with_apple: ^8.1.0          # Sign in with Apple 蘋果登入 SDK
-  flutter_facebook_auth: ^7.2.0       # Facebook 帳號登入 SDK
-  sign_in_button: ^5.0.0              # 社群登入按鈕 UI 元件庫
+  google_sign_in: ^6.3.0 # Google 帳號登入 SDK
+  sign_in_with_apple: ^8.1.0 # Sign in with Apple 蘋果登入 SDK
+  flutter_facebook_auth: ^7.2.0 # Facebook 帳號登入 SDK
+  sign_in_button: ^5.0.0 # 社群登入按鈕 UI 元件庫
 
   # 推播與廣告 (Push Notifications & Monetization)
   flutter_local_notifications: ^22.1.0 # 本地推播通知服務
-  google_mobile_ads: ^9.0.0           # Google AdMob 廣告 SDK
+  google_mobile_ads: ^9.0.0 # Google AdMob 廣告 SDK
 
   # 工具類與加密 (Utilities & Cryptography)
-  sprintf: ^7.0.0                     # 字串格式化工具
-  logger: ^2.4.0                      # 多層級日誌紀錄工具 (Logger)
-  crypto: ^3.0.3                      # 加密與雜湊演算法 (MD5, SHA-256 等)
-  integration_test:
-    sdk: flutter
+  sprintf: ^7.0.0 # 字串格式化工具
+  logger: ^2.4.0 # 多層級日誌紀錄工具 (Logger)
+  crypto: ^3.0.3 # 加密與雜湊演算法 (MD5, SHA-256 等)
 
 dependency_overrides:
   # For Tuple dependency (解 Quiver 版本相依衝突)
@@ -76,21 +74,24 @@ dependency_overrides:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  intl: ^0.20.2                       # 多國語言與日期數字格式化
+  intl: ^0.20.2 # 多國語言與日期數字格式化
 
   # iOS 風格 Icon 圖示
   cupertino_icons: ^1.0.8
 
+  # 測試工具 (Testing Framework)
+  integration_test:
+    sdk: flutter
+
 dev_dependencies:
   # 開發與程式碼生成工具 (Development & Code Generation Tools)
-  build_runner: ^2.4.12               # Dart 程式碼生成器執行工具
-  retrofit_generator: ^10.2.8          # Retrofit API 程式碼生成器
-  json_serializable: ^6.8.0           # JSON 序列化/反序列化程式碼生成器
-  equatable: any                      # 物件相等性比較工具
-  intl_utils: ^2.8.11                  # intl_utils 多國語言程式碼生成工具
-  flutter_gen_runner: ^5.8.0          # 資源程式碼生成工具
+  build_runner: ^2.4.12 # Dart 程式碼生成器執行工具
+  retrofit_generator: ^10.2.8 # Retrofit API 程式碼生成器
+  json_serializable: ^6.8.0 # JSON 序列化/反序列化程式碼生成器
+  equatable: any # 物件相等性比較工具
+  intl_utils: ^2.8.11 # intl_utils 多國語言程式碼生成工具
+  flutter_gen_runner: ^5.8.0 # 資源程式碼生成工具
 
-  # 測試工具 (Testing Framework)
   flutter_test:
     sdk: flutter
 
@@ -99,24 +100,24 @@ flutter:
   uses-material-design: true
 
   assets:
-    - assets/colors.xml
-    - images/empty.png
-    - images/icon_signinup_icon.gif
-    - images/icon_setting_icon.gif
-    - images/Star_rating_0.5_of_5.png
-    - images/Star_rating_0_of_5.png
-    - images/Star_rating_1.5_of_5.png
-    - images/Star_rating_1_of_5.png
-    - images/Star_rating_2.5_of_5.png
-    - images/Star_rating_2_of_5.png
-    - images/Star_rating_3.5_of_5.png
-    - images/Star_rating_3_of_5.png
-    - images/Star_rating_4.5_of_5.png
-    - images/Star_rating_4_of_5.png
-    - images/Star_rating_5_of_5.png
-    - images/launch_image.png
-    - images/ic_favor_empty.png
-    - images/ic_favor_fill.png
+  - assets/colors.xml
+  - images/empty.png
+  - images/icon_signinup_icon.gif
+  - images/icon_setting_icon.gif
+  - images/Star_rating_0.5_of_5.png
+  - images/Star_rating_0_of_5.png
+  - images/Star_rating_1.5_of_5.png
+  - images/Star_rating_1_of_5.png
+  - images/Star_rating_2.5_of_5.png
+  - images/Star_rating_2_of_5.png
+  - images/Star_rating_3.5_of_5.png
+  - images/Star_rating_3_of_5.png
+  - images/Star_rating_4.5_of_5.png
+  - images/Star_rating_4_of_5.png
+  - images/Star_rating_5_of_5.png
+  - images/launch_image.png
+  - images/ic_favor_empty.png
+  - images/ic_favor_fill.png
 
 flutter_intl:
   enabled: true
@@ -126,4 +127,4 @@ flutter_intl:
 flutter_gen:
   colors:
     inputs:
-      - assets/colors.xml
+    - assets/colors.xml
