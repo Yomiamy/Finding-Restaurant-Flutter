@@ -1,4 +1,3 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
@@ -57,45 +56,41 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
   Widget build(BuildContext context) {
     final Widget content = Builder(builder: (innerContext) => _buildContent(innerContext));
 
+    // 兩個平台都靠內層 Material Scaffold 承載 appBar 與 drawer；
+    // PlatformScaffold 只作為平台外殼，避免 iOS 疊出第二層 navbar。
     return PlatformScaffold(
-      body: content,
-      material: (_, __) => MaterialScaffoldData(
-        widgetKey: _scaffoldKey,
-        drawer: _buildDrawer(context),
-      ),
       cupertino: (_, __) => CupertinoPageScaffoldData(
-        body: Scaffold(
-          key: _scaffoldKey,
-          drawer: _buildDrawer(context),
-          body: content,
-        ),
+        body: _buildInnerScaffold(context, content),
       ),
+      body: _buildInnerScaffold(context, content),
     );
   }
 
+  Scaffold _buildInnerScaffold(BuildContext context, Widget content) {
+    return Scaffold(
+      key: _scaffoldKey,
+      drawer: _buildDrawer(context),
+      appBar: _buildAppBar(),
+      body: content,
+    );
+  }
+
+  AppBar _buildAppBar() {
+    return AppBar(
+        automaticallyImplyLeading: false,
+        title: Text(
+          S.current.main_page_title,
+          style: TextStyle(color: Colors.white, fontSize: UIConstants.xxxxhFontSize),
+        ),
+        backgroundColor: ColorName.appPrimaryColor,
+        leading: IconButton(
+            padding: EdgeInsets.zero,
+            onPressed: () => _openDrawer(),
+            icon: Icon(Icons.menu, color: Colors.white)));
+  }
+
   Widget _buildContent(BuildContext context) {
-    return NestedScrollView(
-        headerSliverBuilder: (BuildContext context, bool isBoxIsScrolled) => <Widget>[
-              CupertinoSliverNavigationBar(
-                  automaticallyImplyLeading: false,
-                  largeTitle: Align(
-                    alignment: Alignment.topCenter,
-                    child: Padding(
-                      padding: const EdgeInsets.only(bottom: 15),
-                      child: Text(
-                        S.current.main_page_title,
-                        style: TextStyle(color: Colors.white, fontSize: UIConstants.xxxxhFontSize),
-                      ),
-                    ),
-                  ),
-                  backgroundColor: ColorName.appPrimaryColor,
-                  leading: PlatformIconButton(
-                      padding: EdgeInsets.zero,
-                      onPressed: () => _openDrawer(),
-                      materialIcon: Icon(Icons.menu, color: Colors.white),
-                      cupertinoIcon: Icon(CupertinoIcons.bars, color: Colors.white)))
-            ],
-        body: BlocBuilder<MainBloc, MainState>(builder: (context, state) {
+    return BlocBuilder<MainBloc, MainState>(builder: (context, state) {
           if (state is Success || state is LoadMoreSuccess || state is ToggleFavorSuccess) {
             if (state is Success || state is LoadMoreSuccess) {
               this._summaryInfos =
@@ -122,7 +117,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           } else {
             return EmptyDataWidget();
           }
-        }));
+        });
   }
 
   Drawer _buildDrawer(BuildContext context) {
