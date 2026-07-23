@@ -38,6 +38,19 @@ end
 post_install do |installer|
   installer.pods_project.targets.each do |target|
     flutter_additional_ios_build_settings(target)
+    target.build_configurations.each do |config|
+      config.build_settings['BUILD_LIBRARY_FOR_DISTRIBUTION'] = 'YES'
+      # Ensure Swift standard libraries are embedded for pods that use Swift
+      config.build_settings['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = 'NO'
+    end
+  end
+  # The app target itself needs Swift standard libraries embedded
+  installer.aggregate_targets.each do |target|
+    target.xcconfigs.each do |config_name, config_file|
+      config_file.attributes['ALWAYS_EMBED_SWIFT_STANDARD_LIBRARIES'] = 'YES'
+      xcconfig_path = target.xcconfig_path(config_name)
+      config_file.save_as(xcconfig_path)
+    end
   end
 end
 
