@@ -18,5 +18,6 @@
 
 ## 驗收條件 (Acceptance Criteria)
 - [ ] 執行 `flutter test` 所有既有測試皆通過。
-- [ ] 上述 6 個頁面的 `build()` 內不應出現任何 Bloc `add()` 事件或路由導航。
-- [ ] UI 切換與重新渲染時，不應再產生多餘的重複 API 請求日誌。
+- [ ] 上述 6 個頁面的 `build()` 內不應出現任何 Bloc `add()` 事件、API 網路請求、路由導航、Toast 顯示或推播初始化設定。
+- [ ] 所有非同步或依賴生命週期的副作用皆應正確重構至 `initState()`、`didChangeDependencies()` 或 `BlocListener` 中。
+- [ ] UI 切換與重新渲染時，不會再產生多餘的重複 API 請求日誌或觸發重複的推播通知。

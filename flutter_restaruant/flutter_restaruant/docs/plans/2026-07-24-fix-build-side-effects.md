@@ -3,9 +3,9 @@
 ## 1. 架構變更與實作策略 (How)
 目前的 6 個核心頁面在 `build()` 中觸發了初始資料加載 (例如發送 `Fetch...Info` 事件) 或路由導覽。這違反了 UI 渲染應該是 pure function 的原則。
 解法為：
-- **方案 A (優先)**：將初始狀態讀取的 `Bloc.add(...)` 從 `build()` 移入 BLoC `Provider` 提供的 `create` 閉包內。例如在 `BlocProvider(create: (context) => MyBloc()..add(MyEvent()))`。
-- **方案 B**：對於依賴外部傳入 arguments 的情況，也是在 `BlocProvider(create: (context) => MyBloc()..add(MyEvent()))` 中，將參數透過 event 傳給 BLoC 進行初始加載。
-- **方案 C**：針對導航或 Toast (如 SplashPage 的跳轉、RestaurantDetailPage 的 Favor Toast)，盡量以 `BlocListener` 來反應直接 toast 或導航，絕不在 `build()` 直接呼叫 `Navigator.push` 或彈出 Toast。
+- **方案 A (依生命週期初始化)**：對於需要立刻載入或具備所有參數的頁面，在 `initState()` 內觸發初始 `Bloc.add(...)`；若需依賴路由參數 (如 `RestaurantDetailPage`)，則使用 `didChangeDependencies()` 配合旗標來發送初始事件。
+- **方案 B (可選：Provider 初始化)**：當所有必要參數皆能在 BLoC 創建當下取得時，才可選擇將事件放入 `BlocProvider(create: (context) => MyBloc()..add(MyEvent()))` 中。
+- **方案 C (監聽副作用)**：針對導航或 Toast (如 SplashPage 的跳轉、RestaurantDetailPage 的 Favor Toast)，盡量以 `BlocListener` / `BlocConsumer` 的 `listener` 來反應狀態變更，絕不在 `build()` 直接呼叫 `Navigator.push` 或彈出 Toast。
 
 ## 2. 檔案異動清單 (Files to Change)
 1. `lib/flow/signinup/view/sign_in_page.dart`
