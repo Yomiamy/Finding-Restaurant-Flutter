@@ -29,11 +29,11 @@ class _SettingsPageState extends State<SettingsPage> {
     super.initState();
 
     this._settingsBloc = BlocProvider.of<SettingsBloc>(context);
+    this._settingsBloc.add(InitBioAuthSettingEvent());
   }
 
   @override
   Widget build(BuildContext context) {
-    this._settingsBloc.add(InitBioAuthSettingEvent());
     bool isSupportBiometricAuth =
         BiometricSignInManager().isSupportBiometricAuth;
 
@@ -52,23 +52,24 @@ class _SettingsPageState extends State<SettingsPage> {
                     color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: ColorName.appPrimaryColor),
         body:
-            BlocBuilder<SettingsBloc, SettingsState>(builder: (context, state) {
-          bool bioAuthSettingSwitchValue = false;
-
+            BlocConsumer<SettingsBloc, SettingsState>(
+        listener: (context, state) {
           if (state is LogoutSuccess) {
-            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-              // Waiting building is finish and run.
-              Navigator.of(context).pushNamedAndRemoveUntil(
-                  SignInPage.ROUTE_NAME,
-                  ModalRoute.withName(SplashPage.ROUTE_NAME));
-            });
-          } else if (state is ToggleBioAuthSettingState) {
-            bioAuthSettingSwitchValue = state.settingValue;
-          } else if (state is InitBioAuthSettingState) {
-            bioAuthSettingSwitchValue = state.settingValue;
+            Navigator.of(context).pushNamedAndRemoveUntil(
+                SignInPage.ROUTE_NAME,
+                ModalRoute.withName(SplashPage.ROUTE_NAME));
           } else if (state is AccountRemovalSuccessState) {
             // Logout after request AccountRemovalEvent
             this._settingsBloc.add(LogoutEvent());
+          }
+        },
+        builder: (context, state) {
+          bool bioAuthSettingSwitchValue = false;
+
+          if (state is ToggleBioAuthSettingState) {
+            bioAuthSettingSwitchValue = state.settingValue;
+          } else if (state is InitBioAuthSettingState) {
+            bioAuthSettingSwitchValue = state.settingValue;
           }
 
           return SettingsList(sections: [
