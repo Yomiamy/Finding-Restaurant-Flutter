@@ -256,6 +256,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
   /// --- FCM notification
   void handleNotificationData() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (!mounted) return;
       // Waiting building is finish and run.
       final args =
           ModalRoute.of(context)?.settings.arguments as Tuple2<YelpRestaurantSummaryInfo, dynamic>?;
