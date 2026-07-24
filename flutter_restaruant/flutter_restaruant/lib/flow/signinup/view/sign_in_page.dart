@@ -39,8 +39,8 @@ class _SignInPageState extends State<SignInPage> {
   Widget build(BuildContext context) {
     this._signInBloc.add(AutoSignInEvent());
 
-    return PlatformScaffold(
-        appBar: PlatformAppBar(
+    return Scaffold(
+        appBar: AppBar(
             title: Text(S.current.signin_page_title,
                 style: TextStyle(color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: ColorName.appPrimaryColor),

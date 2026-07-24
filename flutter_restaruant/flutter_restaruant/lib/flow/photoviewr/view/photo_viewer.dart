@@ -24,8 +24,8 @@ class _PhotoViewerState extends State<PhotoViewer> {
         ModalRoute.of(context)!.settings.arguments as Tuple2<String, dynamic>;
     this._photoUrl = args.item1;
 
-    return PlatformScaffold(
-        appBar: PlatformAppBar(
+    return Scaffold(
+        appBar: AppBar(
             leading: PlatformIconButton(
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),

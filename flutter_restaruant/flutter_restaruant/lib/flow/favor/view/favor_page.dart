@@ -35,8 +35,8 @@ class _FavorPageState extends State<FavorPage> {
   Widget build(BuildContext context) {
     this._favorBloc.add(FetchFavorInfoEvent(false));
 
-    return PlatformScaffold(
-        appBar: PlatformAppBar(
+    return Scaffold(
+        appBar: AppBar(
             leading: PlatformIconButton(
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),

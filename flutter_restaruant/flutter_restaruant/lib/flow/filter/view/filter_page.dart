@@ -30,8 +30,8 @@ class _FilterPageState extends State<FilterPage> {
     this._openAtDateTime = configs.openAtDateTime;
     this._sortByIndex = configs.sortByIndex;
 
-    return PlatformScaffold(
-        appBar: PlatformAppBar(
+    return Scaffold(
+        appBar: AppBar(
             leading: PlatformIconButton(
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
@@ -39,7 +39,7 @@ class _FilterPageState extends State<FilterPage> {
                     color: ColorName.backBtnColor),
                 cupertinoIcon: Icon(CupertinoIcons.back,
                     color: ColorName.backBtnColor)),
-            trailingActions: [
+            actions: [
               PlatformElevatedButton(
                   color: ColorName.appPrimaryColor,
                   padding: EdgeInsets.all(0),
