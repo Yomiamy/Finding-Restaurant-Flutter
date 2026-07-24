@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_restaruant/flow/signinup/view/sign_in_page.dart';
 
 class SplashPage extends StatefulWidget {
@@ -20,7 +19,7 @@ class _SplashPageState extends State<SplashPage> {
           Navigator.of(context).pushReplacementNamed(SignInPage.ROUTE_NAME));
     });
 
-    return PlatformScaffold(
+    return Scaffold(
         body: Container(
             child: Image.asset(
       "images/launch_image.png",

@@ -37,8 +37,8 @@ class _SettingsPageState extends State<SettingsPage> {
     bool isSupportBiometricAuth =
         BiometricSignInManager().isSupportBiometricAuth;
 
-    return PlatformScaffold(
-        appBar: PlatformAppBar(
+    return Scaffold(
+        appBar: AppBar(
             leading: PlatformIconButton(
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),

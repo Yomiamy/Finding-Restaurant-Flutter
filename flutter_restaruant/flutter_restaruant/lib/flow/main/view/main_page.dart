@@ -56,17 +56,6 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
   Widget build(BuildContext context) {
     final Widget content = Builder(builder: (innerContext) => _buildContent(innerContext));
 
-    // 兩個平台都靠內層 Material Scaffold 承載 appBar 與 drawer；
-    // PlatformScaffold 只作為平台外殼，避免 iOS 疊出第二層 navbar。
-    return PlatformScaffold(
-      cupertino: (_, __) => CupertinoPageScaffoldData(
-        body: _buildInnerScaffold(context, content),
-      ),
-      body: _buildInnerScaffold(context, content),
-    );
-  }
-
-  Scaffold _buildInnerScaffold(BuildContext context, Widget content) {
     return Scaffold(
       key: _scaffoldKey,
       drawer: _buildDrawer(context),
