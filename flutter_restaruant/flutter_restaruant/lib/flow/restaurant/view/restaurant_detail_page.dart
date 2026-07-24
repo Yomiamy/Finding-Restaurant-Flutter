@@ -25,6 +25,19 @@ class RestaurantDetailPage extends StatefulWidget {
 class RestaurantDetailPageState extends State<RestaurantDetailPage> {
   late YelpRestaurantSummaryInfo _summaryInfo;
   late RestaurantDetailBloc _bloc;
+  bool _isInit = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInit) {
+      final args = ModalRoute.of(context)!.settings.arguments
+          as Tuple2<YelpRestaurantSummaryInfo, dynamic>;
+      this._summaryInfo = args.item1;
+      this._bloc.add(FetchDetailInfo(id: this._summaryInfo.id!));
+      _isInit = true;
+    }
+  }
 
   @override
   void initState() {
@@ -42,11 +55,6 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
 
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments
-        as Tuple2<YelpRestaurantSummaryInfo, dynamic>;
-    this._summaryInfo = args.item1;
-
-    this._bloc.add(FetchDetailInfo(id: this._summaryInfo.id!));
     return Scaffold(
         appBar: AppBar(
             leading: IconButton(
@@ -68,21 +76,21 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
             backgroundColor: ColorName.appPrimaryColor),
         body: Padding(
             padding: EdgeInsets.only(bottom: 10),
-            child: BlocBuilder<RestaurantDetailBloc, RestaurantDetailState>(
+            child: BlocConsumer<RestaurantDetailBloc, RestaurantDetailState>(
                 bloc: this._bloc,
+                listener: (context, state) {
+                  if (state is ToggleFavorSuccess) {
+                    String favorToggleMsg = this._summaryInfo.favor
+                        ? S.current.favorite_store_add
+                        : S.current.favorite_store_remove;
+
+                    Fluttertoast.showToast(msg: favorToggleMsg);
+                    // Re-fetch detail and build detail page
+                    this._bloc.add(FetchDetailInfo(id: this._summaryInfo.id!));
+                  }
+                },
                 builder: (context, state) {
                   if (state is InProgress || state is ToggleFavorSuccess) {
-                    if (state is ToggleFavorSuccess) {
-                      String favorToggleMsg = this._summaryInfo.favor
-                          ? S.current.favorite_store_add
-                          : S.current.favorite_store_remove;
-
-                      Fluttertoast.showToast(msg: favorToggleMsg);
-                      // Re-fetch detail and build detail page
-                      this
-                          ._bloc
-                          .add(FetchDetailInfo(id: this._summaryInfo.id!));
-                    }
                     return Center(child: LoadingWidget());
                   } else if (state is Success) {
                     return ListView(children: [
