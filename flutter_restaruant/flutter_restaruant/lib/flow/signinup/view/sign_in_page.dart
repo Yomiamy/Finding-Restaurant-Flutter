@@ -41,10 +41,10 @@ class _SignInPageState extends State<SignInPage> {
     return Scaffold(
         appBar: AppBar(
             title: Text(S.current.signin_page_title,
-                style: TextStyle(color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
+                style: TextStyle(
+                    color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: ColorName.appPrimaryColor),
-        body: BlocConsumer<SignInBloc, SignInState>(
-            listener: (context, state) {
+        body: BlocConsumer<SignInBloc, SignInState>(listener: (context, state) {
           if (state is SignInSuccess) {
             Fluttertoast.showToast(msg: S.current.signin_success_msg);
             Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME);
@@ -86,15 +86,20 @@ class _SignInPageState extends State<SignInPage> {
                 child: Center(
                     child: Text("---------OR---------",
                         textAlign: TextAlign.center,
-                        style: TextStyle(fontSize: UIConstants.xxxhFontSize, color: Colors.grey)))),
+                        style: TextStyle(
+                            fontSize: UIConstants.xxxhFontSize,
+                            color: Colors.grey)))),
             show3rdSignInUpBtns()
           ]);
         }));
   }
 
   Widget showLogo(SignInState state) => Column(children: <Widget>[
-        Image.asset("images/icon_signinup_icon.gif", height: 230.0, width: 230.0),
-        (state is InProgress) ? LoadingWidget(text: "") : UIConstants.EMPTY_WIDGET
+        Image.asset("images/icon_signinup_icon.gif",
+            height: 230.0, width: 230.0),
+        (state is InProgress)
+            ? LoadingWidget(text: "")
+            : UIConstants.EMPTY_WIDGET
       ]);
 
   Widget showInput(SignInState state) => Container(
@@ -125,8 +130,9 @@ class _SignInPageState extends State<SignInPage> {
                     hintText: S.current.email_invalid_hint_title,
                     cupertino: (_, __) => CupertinoTextFormFieldData(
                         // Assign a default cupertino decoration
-                        decoration:
-                            PlatformTextField().createCupertinoWidget(context).decoration))))
+                        decoration: PlatformTextField()
+                            .createCupertinoWidget(context)
+                            .decoration))))
       ]));
 
   Widget showPasswordInput() => Padding(
@@ -151,8 +157,9 @@ class _SignInPageState extends State<SignInPage> {
                     hintText: S.current.passwd_invalid_hint_title,
                     cupertino: (_, __) => CupertinoTextFormFieldData(
                         // Assign a default cupertino decoration
-                        decoration:
-                            PlatformTextField().createCupertinoWidget(context).decoration))))
+                        decoration: PlatformTextField()
+                            .createCupertinoWidget(context)
+                            .decoration))))
       ]));
 
   Widget showSignInUpBtns() => Padding(
@@ -166,23 +173,29 @@ class _SignInPageState extends State<SignInPage> {
                     fontWeight: FontWeight.bold,
                     color: Colors.white)),
             onPressed: () {
-              if (this._formKey.currentState != null && this._formKey.currentState!.validate()) {
+              if (this._formKey.currentState != null &&
+                  this._formKey.currentState!.validate()) {
                 this._formKey.currentState!.save();
-                this._signInBloc.add(MailSignInEvent(mail: this._email, passwd: this._passwd));
+                this._signInBloc.add(
+                    MailSignInEvent(mail: this._email, passwd: this._passwd));
               }
             }),
         PlatformTextButton(
             child: Text(S.current.signup_title,
-                style: TextStyle(fontSize: UIConstants.mFontSize, color: Colors.grey)),
+                style: TextStyle(
+                    fontSize: UIConstants.mFontSize, color: Colors.grey)),
             onPressed: () {
-              if (this._formKey.currentState != null && this._formKey.currentState!.validate()) {
+              if (this._formKey.currentState != null &&
+                  this._formKey.currentState!.validate()) {
                 this._formKey.currentState!.save();
-                this._signInBloc.add(MailSignUpEvent(mail: this._email, passwd: this._passwd));
+                this._signInBloc.add(
+                    MailSignUpEvent(mail: this._email, passwd: this._passwd));
               }
             })
       ]));
 
-  Widget show3rdSignInUpBtns() => Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+  Widget show3rdSignInUpBtns() =>
+      Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
         SignInButton(
           Buttons.google,
           elevation: 3.0,

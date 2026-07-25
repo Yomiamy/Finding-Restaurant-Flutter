@@ -39,10 +39,10 @@ class _FavorPageState extends State<FavorPage> {
             leading: PlatformIconButton(
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
-                materialIcon: Icon(Icons.arrow_back,
-                    color: ColorName.backBtnColor),
-                cupertinoIcon: Icon(CupertinoIcons.back,
-                    color: ColorName.backBtnColor)),
+                materialIcon:
+                    Icon(Icons.arrow_back, color: ColorName.backBtnColor),
+                cupertinoIcon:
+                    Icon(CupertinoIcons.back, color: ColorName.backBtnColor)),
             title: Text(UIConstants.FAVOR_TITLE,
                 style: TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxxhFontSize)),

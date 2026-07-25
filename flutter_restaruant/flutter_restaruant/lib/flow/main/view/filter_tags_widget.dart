@@ -16,8 +16,7 @@ class FilterTagsWidget extends StatelessWidget {
   FilterTagsWidget({Key? key, required FilterConfigs filterConfigs})
       : _filterConfigs = filterConfigs,
         super(key: key) {
-    if (_filterConfigs.sortBy != null &&
-        _filterConfigs.sortBy!.isNotEmpty) {
+    if (_filterConfigs.sortBy != null && _filterConfigs.sortBy!.isNotEmpty) {
       _filterConfigsMap[FilterConfigType.SORTING_RULE] =
           _filterConfigs.getSortingRuleDispStr(_filterConfigs.sortBy!);
     }
@@ -81,4 +80,3 @@ class FilterTagsWidget extends StatelessWidget {
     );
   }
 }
-

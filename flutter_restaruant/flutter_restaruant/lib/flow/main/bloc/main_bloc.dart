@@ -62,7 +62,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       if (filterInfos.isNotEmpty) {
         emit(Success(summaryInfos: filterInfos));
       } else {
-        emit(Failure());
+        emit(Success(summaryInfos: []));
       }
     });
 

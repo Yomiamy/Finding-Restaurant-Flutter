@@ -16,8 +16,6 @@ class UIConstants {
   static const double FAVOR_IMAGE_H = 20.0;
   static const double FAVOR_IMAGE_W = 20.0;
 
-
-
   static const EMPTY_WIDGET = SizedBox(height: 0);
 
   static const MAP_DEFAULT_LOCATION = LatLng(25.048036, 121.517063);

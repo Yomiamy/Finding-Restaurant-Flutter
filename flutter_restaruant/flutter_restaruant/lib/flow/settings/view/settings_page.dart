@@ -42,28 +42,24 @@ class _SettingsPageState extends State<SettingsPage> {
             leading: PlatformIconButton(
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
-                materialIcon: Icon(Icons.arrow_back,
-                    color: ColorName.backBtnColor),
-                cupertinoIcon: Icon(CupertinoIcons.back,
-                    color: ColorName.backBtnColor)),
-            title: PlatformText(
-                S.current.settings_title,
+                materialIcon:
+                    Icon(Icons.arrow_back, color: ColorName.backBtnColor),
+                cupertinoIcon:
+                    Icon(CupertinoIcons.back, color: ColorName.backBtnColor)),
+            title: PlatformText(S.current.settings_title,
                 style: TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: ColorName.appPrimaryColor),
-        body:
-            BlocConsumer<SettingsBloc, SettingsState>(
-        listener: (context, state) {
+        body: BlocConsumer<SettingsBloc, SettingsState>(
+            listener: (context, state) {
           if (state is LogoutSuccess) {
-            Navigator.of(context).pushNamedAndRemoveUntil(
-                SignInPage.ROUTE_NAME,
+            Navigator.of(context).pushNamedAndRemoveUntil(SignInPage.ROUTE_NAME,
                 ModalRoute.withName(SplashPage.ROUTE_NAME));
           } else if (state is AccountRemovalSuccessState) {
             // Logout after request AccountRemovalEvent
             this._settingsBloc.add(LogoutEvent());
           }
-        },
-        builder: (context, state) {
+        }, builder: (context, state) {
           bool bioAuthSettingSwitchValue = false;
 
           if (state is ToggleBioAuthSettingState) {
@@ -88,13 +84,11 @@ class _SettingsPageState extends State<SettingsPage> {
   AbstractSettingsSection createInfoSettingsSection(
           bool bioAuthSettingSwitchValue, bool isSupportBiometricAuth) =>
       SettingsSection(
-          title: PlatformText(
-              S.current.information_section_title),
+          title: PlatformText(S.current.information_section_title),
           tiles: <SettingsTile>[
             SettingsTile(
               leading: Icon(Icons.info),
-              title: PlatformText(
-                  S.current.version_tile_title),
+              title: PlatformText(S.current.version_tile_title),
               value: PlatformText(Constants.VERSION),
             ),
             // TODO:判斷生物辨識
@@ -115,8 +109,7 @@ class _SettingsPageState extends State<SettingsPage> {
               height: 50,
               child: PlatformElevatedButton(
                   color: Colors.red,
-                  child: Text(
-                      S.current.logout_section_title,
+                  child: Text(S.current.logout_section_title,
                       style: TextStyle(
                           fontSize: UIConstants.xhFontSize,
                           fontWeight: FontWeight.bold,
@@ -132,8 +125,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     subject: S.current.delete_account_email_subject,
                     bodyPrefix: S.current.delete_account_email_body));
               },
-              child: Text(
-                  S.current.delete_account_title,
+              child: Text(S.current.delete_account_title,
                   style: TextStyle(
                       fontSize: UIConstants.hFontSize,
                       fontWeight: FontWeight.bold,

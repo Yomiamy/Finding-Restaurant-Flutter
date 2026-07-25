@@ -4,7 +4,8 @@ class Constants {
   /// [FCM]
   static const FCM_NOTIFICATION_CHANNEL_ID = "fcm_notification_channel_id";
   static const FCM_NOTIFICATION_CHANNEL_NAME = "fcm_notification_channel_name";
-  static const FCM_NOTIFICATION_CHANNEL_DESCRIPTION = "Android Notification Channel";
+  static const FCM_NOTIFICATION_CHANNEL_DESCRIPTION =
+      "Android Notification Channel";
 
   static const FCM_NOTIFICATION_PAYLOAD_KEY_STORE_ID = "store_id";
 
@@ -20,7 +21,8 @@ class Constants {
   // PROD AD banner id
   static const AD_ANDROID_BANNER_ID = "ca-app-pub-7910179918263365/3813466391";
   static const AD_IOS_BANNER_ID = "ca-app-pub-7910179918263365/9426979056";
-  static const AD_ANDROID_INTERSTITAL_ID = "ca-app-pub-7910179918263365/9901799382";
+  static const AD_ANDROID_INTERSTITAL_ID =
+      "ca-app-pub-7910179918263365/9901799382";
   static const AD_IOS_INTERSTITAL_ID = "ca-app-pub-7910179918263365/7956300504";
 
   /// [API]

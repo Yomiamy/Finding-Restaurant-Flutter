@@ -118,8 +118,7 @@ class RestaurantInfoCell extends StatelessWidget {
               }),
           actions: [
             CupertinoActionSheetAction(
-                child:
-                    Text(S.current.route_navigation),
+                child: Text(S.current.route_navigation),
                 onPressed: () {
                   double lat = this._detailInfo.coordinates?.latitude ?? 0;
                   double lng = this._detailInfo.coordinates?.longitude ?? 0;

@@ -44,10 +44,10 @@ class _FilterPageState extends State<FilterPage> {
             leading: PlatformIconButton(
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
-                materialIcon: Icon(Icons.arrow_back,
-                    color: ColorName.backBtnColor),
-                cupertinoIcon: Icon(CupertinoIcons.back,
-                    color: ColorName.backBtnColor)),
+                materialIcon:
+                    Icon(Icons.arrow_back, color: ColorName.backBtnColor),
+                cupertinoIcon:
+                    Icon(CupertinoIcons.back, color: ColorName.backBtnColor)),
             actions: [
               PlatformElevatedButton(
                   color: ColorName.appPrimaryColor,
@@ -88,8 +88,7 @@ class _FilterPageState extends State<FilterPage> {
           // Business hour
           Padding(
               padding: EdgeInsets.only(left: 20, top: 15, right: 20),
-              child: Text(
-                  S.current.filter_business_hour,
+              child: Text(S.current.filter_business_hour,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: UIConstants.xxxhFontSize))),
@@ -107,8 +106,7 @@ class _FilterPageState extends State<FilterPage> {
           // Sorting rule
           Padding(
               padding: EdgeInsets.only(left: 20, top: 15),
-              child: Text(
-                  S.current.filter_sorting_rule,
+              child: Text(S.current.filter_sorting_rule,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: UIConstants.xxxhFontSize))),
