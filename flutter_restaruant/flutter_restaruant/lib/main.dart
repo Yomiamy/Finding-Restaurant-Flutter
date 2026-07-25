@@ -40,7 +40,8 @@ void main() async {
   ]).then((_) {
     FcmManager().init();
 
-    runApp(Provider.value(value: adState, builder: (context, child) => FindingRestaruantApp()));
+    runApp(Provider.value(
+        value: adState, builder: (context, child) => FindingRestaruantApp()));
   });
 }
 

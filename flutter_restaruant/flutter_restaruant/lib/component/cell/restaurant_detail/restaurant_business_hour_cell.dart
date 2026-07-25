@@ -73,8 +73,7 @@ class RestaurantBusinessHourCell extends StatelessWidget {
               child: DecoratedBox(
                   decoration: BoxDecoration(color: Colors.grey),
                   child: Center(
-                      child: Text(
-                          S.current.business_hour,
+                      child: Text(S.current.business_hour,
                           style: TextStyle(
                               fontSize: UIConstants.xhFontSize,
                               fontWeight: FontWeight.bold))))),

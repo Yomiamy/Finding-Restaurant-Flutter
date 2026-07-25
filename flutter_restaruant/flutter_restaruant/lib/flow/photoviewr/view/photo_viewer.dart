@@ -29,10 +29,10 @@ class _PhotoViewerState extends State<PhotoViewer> {
             leading: PlatformIconButton(
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
-                materialIcon: Icon(Icons.arrow_back,
-                    color: ColorName.backBtnColor),
-                cupertinoIcon: Icon(CupertinoIcons.back,
-                    color: ColorName.backBtnColor)),
+                materialIcon:
+                    Icon(Icons.arrow_back, color: ColorName.backBtnColor),
+                cupertinoIcon:
+                    Icon(CupertinoIcons.back, color: ColorName.backBtnColor)),
             title: Text(S.current.photo_viewer_title,
                 style: TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxhFontSize)),

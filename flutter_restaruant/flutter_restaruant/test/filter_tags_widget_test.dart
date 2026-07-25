@@ -23,10 +23,12 @@ void main() {
     // Verify FilterChip widgets are rendered
     expect(find.byType(FilterChip), findsNWidgets(2));
     expect(find.text(filterConfigs.getPriceDispStr(2)), findsOneWidget);
-    expect(find.text(filterConfigs.getSortingRuleDispStr('rating')), findsOneWidget);
+    expect(find.text(filterConfigs.getSortingRuleDispStr('rating')),
+        findsOneWidget);
   });
 
-  testWidgets('FilterTagsWidget returns SizedBox.shrink when filter configs empty',
+  testWidgets(
+      'FilterTagsWidget returns SizedBox.shrink when filter configs empty',
       (WidgetTester tester) async {
     final filterConfigs = FilterConfigs();
 

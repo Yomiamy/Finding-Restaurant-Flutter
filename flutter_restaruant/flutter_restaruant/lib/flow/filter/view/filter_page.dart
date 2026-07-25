@@ -21,24 +21,33 @@ class _FilterPageState extends State<FilterPage> {
   DateTime _openAtDateTime = DateTime.now();
   int _sortByIndex = 0;
 
+  bool _isInit = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInit) {
+      final args = ModalRoute.of(context)!.settings.arguments
+          as Tuple2<FilterConfigs, dynamic>;
+      final configs = args.item1;
+      _priceIndex = configs.priceIndex;
+      _openAtDateTime = configs.openAtDateTime;
+      _sortByIndex = configs.sortByIndex;
+      _isInit = true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments
-        as Tuple2<FilterConfigs, dynamic>;
-    FilterConfigs configs = args.item1;
-    this._priceIndex = configs.priceIndex;
-    this._openAtDateTime = configs.openAtDateTime;
-    this._sortByIndex = configs.sortByIndex;
-
     return Scaffold(
         appBar: AppBar(
             leading: PlatformIconButton(
                 padding: EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
-                materialIcon: Icon(Icons.arrow_back,
-                    color: ColorName.backBtnColor),
-                cupertinoIcon: Icon(CupertinoIcons.back,
-                    color: ColorName.backBtnColor)),
+                materialIcon:
+                    Icon(Icons.arrow_back, color: ColorName.backBtnColor),
+                cupertinoIcon:
+                    Icon(CupertinoIcons.back, color: ColorName.backBtnColor)),
             actions: [
               PlatformElevatedButton(
                   color: ColorName.appPrimaryColor,
@@ -79,8 +88,7 @@ class _FilterPageState extends State<FilterPage> {
           // Business hour
           Padding(
               padding: EdgeInsets.only(left: 20, top: 15, right: 20),
-              child: Text(
-                  S.current.filter_business_hour,
+              child: Text(S.current.filter_business_hour,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: UIConstants.xxxhFontSize))),
@@ -98,8 +106,7 @@ class _FilterPageState extends State<FilterPage> {
           // Sorting rule
           Padding(
               padding: EdgeInsets.only(left: 20, top: 15),
-              child: Text(
-                  S.current.filter_sorting_rule,
+              child: Text(S.current.filter_sorting_rule,
                   style: TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: UIConstants.xxxhFontSize))),

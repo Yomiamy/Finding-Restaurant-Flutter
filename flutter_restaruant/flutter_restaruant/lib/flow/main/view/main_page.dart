@@ -62,7 +62,8 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
 
   @override
   Widget build(BuildContext context) {
-    final Widget content = Builder(builder: (innerContext) => _buildContent(innerContext));
+    final Widget content =
+        Builder(builder: (innerContext) => _buildContent(innerContext));
 
     return Scaffold(
       key: _scaffoldKey,
@@ -77,7 +78,8 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         automaticallyImplyLeading: false,
         title: Text(
           S.current.main_page_title,
-          style: TextStyle(color: Colors.white, fontSize: UIConstants.xxxxhFontSize),
+          style: TextStyle(
+              color: Colors.white, fontSize: UIConstants.xxxxhFontSize),
         ),
         backgroundColor: ColorName.appPrimaryColor,
         leading: IconButton(
@@ -87,31 +89,35 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
   }
 
   Widget _buildContent(BuildContext context) {
-    return BlocConsumer<MainBloc, MainState>(
-        listener: (context, state) {
-          if (state is ResetSuccess) {
-            this._mainBloc.add(FetchSearchInfo(
-                price: this._configs.price,
-                openAt: this._configs.openAtInSec,
-                sortBy: this._configs.sortBy));
-          }
-        },
-        builder: (context, state) {
-          if (state is Success || state is LoadMoreSuccess || state is ToggleFavorSuccess) {
-            if (state is Success || state is LoadMoreSuccess) {
-              this._summaryInfos =
-                  (state is Success) ? state.summaryInfos : (state as LoadMoreSuccess).summaryInfos;
-            }
-            // display restaurant list
-            return _isListMode
-                ? RestaurantInfoListWidget(this._summaryInfos, this._configs)
-                : MapWidget(this._summaryInfos);
-          } else if (state is InProgress || state is MainInitial || state is ResetSuccess) {
-            return Center(child: LoadingWidget());
-          } else {
-            return EmptyDataWidget();
-          }
-        });
+    return BlocConsumer<MainBloc, MainState>(listener: (context, state) {
+      if (state is ResetSuccess) {
+        this._mainBloc.add(FetchSearchInfo(
+            price: this._configs.price,
+            openAt: this._configs.openAtInSec,
+            sortBy: this._configs.sortBy));
+      }
+    }, builder: (context, state) {
+      if (state is Success || state is LoadMoreSuccess) {
+        this._summaryInfos = (state is Success)
+            ? state.summaryInfos
+            : (state as LoadMoreSuccess).summaryInfos;
+      }
+
+      if (state is InProgress ||
+          state is MainInitial ||
+          state is ResetSuccess) {
+        return Center(child: LoadingWidget());
+      }
+
+      if (this._summaryInfos.isEmpty) {
+        return EmptyDataWidget();
+      }
+
+      // display restaurant list
+      return _isListMode
+          ? RestaurantInfoListWidget(this._summaryInfos, this._configs)
+          : MapWidget(this._summaryInfos);
+    });
   }
 
   Drawer _buildDrawer(BuildContext context) {
@@ -219,7 +225,8 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           PlatformTextButton(
               onPressed: () {
                 this._mainBloc.add(FilterListByKeyword(
-                    keyword: this._filterKeyword, sortByStr: this._configs.sortBy));
+                    keyword: this._filterKeyword,
+                    sortByStr: this._configs.sortBy));
                 this._filterKeyword = "";
                 Navigator.pop(context);
               },
@@ -233,9 +240,11 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
   }
 
   Future<void> _openFilterPage() async {
-    Tuple2<FilterConfigs, dynamic> arguments = Tuple2<FilterConfigs, dynamic>(this._configs, null);
+    Tuple2<FilterConfigs, dynamic> arguments =
+        Tuple2<FilterConfigs, dynamic>(this._configs, null);
     Tuple2<FilterConfigs, dynamic>? result = (await Navigator.of(this.context)
-        .pushNamed(FilterPage.ROUTE_NAME, arguments: arguments)) as Tuple2<FilterConfigs, dynamic>?;
+            .pushNamed(FilterPage.ROUTE_NAME, arguments: arguments))
+        as Tuple2<FilterConfigs, dynamic>?;
 
     if (result == null || !mounted) {
       return;
@@ -258,19 +267,20 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
       if (!mounted) return;
       // Waiting building is finish and run.
-      final args =
-          ModalRoute.of(context)?.settings.arguments as Tuple2<YelpRestaurantSummaryInfo, dynamic>?;
+      final args = ModalRoute.of(context)?.settings.arguments
+          as Tuple2<YelpRestaurantSummaryInfo, dynamic>?;
       YelpRestaurantSummaryInfo? summaryInfoFromNotification = args?.item1;
 
       if (summaryInfoFromNotification == null) {
         return;
       }
 
-      Tuple2 arguments =
-          Tuple2<YelpRestaurantSummaryInfo, dynamic>(summaryInfoFromNotification, null);
+      Tuple2 arguments = Tuple2<YelpRestaurantSummaryInfo, dynamic>(
+          summaryInfoFromNotification, null);
       // Avoid duplicate push, use pushNamedAndRemoveUntil instead of push
       Navigator.of(context).pushNamedAndRemoveUntil(
-          RestaurantDetailPage.ROUTE_NAME, ModalRoute.withName(MainPage.ROUTE_NAME),
+          RestaurantDetailPage.ROUTE_NAME,
+          ModalRoute.withName(MainPage.ROUTE_NAME),
           arguments: arguments);
     });
   }
