@@ -21,15 +21,24 @@ class _FilterPageState extends State<FilterPage> {
   DateTime _openAtDateTime = DateTime.now();
   int _sortByIndex = 0;
 
+  bool _isInit = false;
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (!_isInit) {
+      final args = ModalRoute.of(context)!.settings.arguments
+          as Tuple2<FilterConfigs, dynamic>;
+      final configs = args.item1;
+      _priceIndex = configs.priceIndex;
+      _openAtDateTime = configs.openAtDateTime;
+      _sortByIndex = configs.sortByIndex;
+      _isInit = true;
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
-    final args = ModalRoute.of(context)!.settings.arguments
-        as Tuple2<FilterConfigs, dynamic>;
-    FilterConfigs configs = args.item1;
-    this._priceIndex = configs.priceIndex;
-    this._openAtDateTime = configs.openAtDateTime;
-    this._sortByIndex = configs.sortByIndex;
-
     return Scaffold(
         appBar: AppBar(
             leading: PlatformIconButton(
