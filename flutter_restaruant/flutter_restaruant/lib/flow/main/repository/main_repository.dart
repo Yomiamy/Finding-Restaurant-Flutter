@@ -40,27 +40,36 @@ class MainRepository {
     }
 
     this._isLoading = true;
-    YelpSearchInfo searchInfo = await apiInstance.businessesSearch(
-        term: "Restaurants",
-        latitude: lat,
-        longitude: lng,
-        locale: Constants.LOCALE,
-        price: price,
-        openAt: openAt,
-        sortBy: sortByStr,
-        limit: MainRepository._MAX_ITEMS_COUNT_IN_LIST,
-        offset: ++this._offset);
-    this._isLoading = false;
-    Map<String, dynamic> favorsMap = await this._fetchFavorsMap();
+    try {
+      YelpSearchInfo searchInfo = await apiInstance.businessesSearch(
+          term: "Restaurants",
+          latitude: lat,
+          longitude: lng,
+          locale: Constants.LOCALE,
+          price: price,
+          openAt: openAt,
+          sortBy: sortByStr,
+          limit: MainRepository._MAX_ITEMS_COUNT_IN_LIST,
+          offset: this._offset);
 
-    // 檢查是否為最愛店家
-    searchInfo.businesses?.forEach((summaryInfo) {
-      summaryInfo.favor = (favorsMap.containsKey(summaryInfo.id));
-    });
-    this.summaryInfoSet.addAll(searchInfo.businesses ?? []);
+      Map<String, dynamic> favorsMap = await this._fetchFavorsMap();
 
-    // Reference ref = FirebaseStorage.instance.ref("Gh3CuBx9LrhoTrBveY4B2OBLWvj2/test.png");
-    return await this.filterByKeyword(this._keyword, sortByStr);
+      // 檢查是否為最愛店家
+      searchInfo.businesses?.forEach((summaryInfo) {
+        summaryInfo.favor = (favorsMap.containsKey(summaryInfo.id));
+      });
+      this.summaryInfoSet.addAll(searchInfo.businesses ?? []);
+
+      this._offset += MainRepository._MAX_ITEMS_COUNT_IN_LIST;
+
+      // Reference ref = FirebaseStorage.instance.ref("Gh3CuBx9LrhoTrBveY4B2OBLWvj2/test.png");
+      return await this.filterByKeyword(this._keyword, sortByStr);
+    } on Exception catch (e, st) {
+      logger.e('fetchYelpSearchInfo 發生異常', error: e, stackTrace: st);
+      rethrow;
+    } finally {
+      this._isLoading = false;
+    }
   }
 
   Future<List<YelpRestaurantSummaryInfo>> filterByKeyword(
