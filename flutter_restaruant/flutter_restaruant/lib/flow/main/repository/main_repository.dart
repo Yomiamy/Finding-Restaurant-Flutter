@@ -64,6 +64,9 @@ class MainRepository {
 
       // Reference ref = FirebaseStorage.instance.ref("Gh3CuBx9LrhoTrBveY4B2OBLWvj2/test.png");
       return await this.filterByKeyword(this._keyword, sortByStr);
+    } on Exception catch (e, st) {
+      logger.e('fetchYelpSearchInfo 發生異常', error: e, stackTrace: st);
+      rethrow;
     } finally {
       this._isLoading = false;
     }
