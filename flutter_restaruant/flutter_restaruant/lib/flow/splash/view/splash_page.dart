@@ -12,13 +12,19 @@ class SplashPage extends StatefulWidget {
 
 class _SplashPageState extends State<SplashPage> {
   @override
-  Widget build(BuildContext context) {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+  void initState() {
+    super.initState();
+    WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       // Waiting building is finish and run.
-      Future.delayed(Duration(seconds: 3)).then((value) =>
-          Navigator.of(context).pushReplacementNamed(SignInPage.ROUTE_NAME));
+      await Future.delayed(Duration(seconds: 3));
+      if (mounted) {
+        Navigator.of(context).pushReplacementNamed(SignInPage.ROUTE_NAME);
+      }
     });
+  }
 
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
         body: Container(
             child: Image.asset(

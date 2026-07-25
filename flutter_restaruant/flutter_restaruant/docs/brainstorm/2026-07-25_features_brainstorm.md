@@ -57,8 +57,8 @@ lib/
    * `lib/flow/splash/view/splash_page.dart:16-20`: 在 `build()` 內寫入 `addPostFrameCallback` 搭配 `Future.delayed(Duration(seconds: 3))` 導航。
 
 2. **硬編碼 API 金鑰與敏感 Token (Hardcoded Secrets)**
-   * `lib/utils/constants.dart:37`: `static const AUTH_TOKEN = "Bearer 7W-eBLLJ3ij1hx8nKfbihuC9rB...";` (Yelp Fusion API Token 明碼版控)。
-   * `lib/utils/constants.dart:27`: `static const STATIC_MAP_API_KEY = "AIzaSyAfe5kOHB_-GPPNovB8iCDimCBnTsW6OYQ";` (Google Maps Key 明碼寫死)。
+   * `lib/utils/constants.dart:37`: `static const AUTH_TOKEN = "Bearer <YELP_API_KEY_REDACTED>";` (Yelp Fusion API Token 明碼版控)。
+   * `lib/utils/constants.dart:27`: `static const STATIC_MAP_API_KEY = "<GOOGLE_MAPS_KEY_REDACTED>";` (Google Maps Key 明碼寫死)。
 
 3. **Yelp 分頁邏輯錯誤 (`MainRepository`)**
    * `lib/flow/main/repository/main_repository.dart:52`: 呼叫 API 帶入 `offset: ++this._offset`。Yelp API 的 `offset` 是資料筆數偏移量 (如 0, 50, 100)，而非頁碼 (1, 2, 3)。當加載第 2 頁時傳入 `offset: 2`，只跳過了前 2 筆資料，導致分頁加載幾乎完全失效且嚴重重複！
@@ -262,21 +262,21 @@ lib/
 
 | 功能/修復項目 | 類別 | Reach (1-10) | Impact (0.25-3) | Confidence (%) | Effort (0.5-4) | RICE 得分 | ICE 得分 | 綜合排名 | **優先級** |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| **修復 `build()` 側邊效應反模式** | 既有修復 | 10 | 3.0 | 100% | 0.5 | **60.0** | 27.0 | 1 | **P0** |
-| **修復 Yelp API 分頁邏輯 Bug** | 既有修復 | 9 | 2.5 | 100% | 0.5 | **45.0** | 22.5 | 2 | **P0** |
-| **修復 `FilterPage` 狀態重置 Bug** | 既有修復 | 8 | 2.5 | 100% | 0.5 | **40.0** | 20.0 | 3 | **P0** |
-| **移除硬編碼 API Key (`--dart-define`)** | 安全修復 | 10 | 2.0 | 100% | 0.5 | **40.0** | 18.0 | 4 | **P0** |
-| **地圖與 BottomSheet 雙向連動 Carousel** | 空間 UX | 9 | 3.0 | 90% | 1.5 | **16.2** | 23.0 | 5 | **P1** |
-| **`fluster` 圖標動態聚類** | 效能優化 | 8 | 2.0 | 90% | 1.0 | **14.4** | 16.2 | 6 | **P1** |
-| **情境化探索標籤 (#一人食等)** | 搜尋優化 | 9 | 2.0 | 90% | 1.0 | **16.2** | 16.2 | 7 | **P1** |
+| **修復 `build()` 側邊效應反模式** | 既有修復 | 10 | 3.0 | 100% | 0.5 | **60.0** | 28.5 | 1 | **P0** |
+| **修復 Yelp API 分頁邏輯 Bug** | 既有修復 | 9 | 2.5 | 100% | 0.5 | **45.0** | 23.75 | 2 | **P0** |
+| **修復 `FilterPage` 狀態重置 Bug** | 既有修復 | 8 | 2.5 | 100% | 0.5 | **40.0** | 23.75 | 3 | **P0** |
+| **移除硬編碼 API Key (改用 Server-side Broker)** | 安全修復 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | 4 | **P0** |
+| **地圖與 BottomSheet 雙向連動 Carousel** | 空間 UX | 9 | 3.0 | 90% | 1.5 | **16.2** | 22.95 | 5 | **P1** |
+| **情境化探索標籤 (#一人食等)** | 搜尋優化 | 9 | 2.0 | 90% | 1.0 | **16.2** | 16.2 | 6 | **P1** |
+| **`fluster` 圖標動態聚類** | 效能優化 | 8 | 2.0 | 90% | 1.0 | **14.4** | 16.2 | 7 | **P1** |
 | **骨架屏 Shimmer 載入與離線快取** | UX 優化 | 9 | 1.5 | 100% | 1.0 | **13.5** | 13.5 | 8 | **P1** |
-| **Firestore Subcollection 口袋名單** | 資料架構 | 7 | 2.0 | 90% | 1.0 | **12.6** | 14.4 | 9 | **P1** |
+| **Firestore Subcollection 口袋名單** | 資料架構 | 7 | 2.0 | 90% | 1.0 | **12.6** | 16.2 | 9 | **P1** |
 | **輕量化線上微訂位 Time-Slot 選擇器** | 商業轉化 | 7 | 3.0 | 80% | 2.0 | **8.4** | 19.2 | 10 | **P1** |
-| **自訂美食地圖社群共編** | 社群生態 | 6 | 2.0 | 80% | 2.0 | **4.8** | 9.6 | 11 | **P2** |
-| **線上候位與動態隊列 FCM 追蹤** | 商業轉化 | 5 | 2.5 | 80% | 2.5 | **4.0** | 10.0 | 12 | **P2** |
-| **AI 多模態 Vision 菜單翻譯** | AI 創新 | 6 | 2.5 | 80% | 2.5 | **4.8** | 12.0 | 13 | **P2** |
-| **個人味蕾配對度 (0-100% Match)** | AI 創新 | 7 | 2.0 | 70% | 2.5 | **3.92** | 9.8 | 14 | **P2** |
-| **自然語言選店助手與命運轉盤** | AI 創新 | 6 | 2.0 | 70% | 2.0 | **4.2** | 11.2 | 15 | **P2** |
+| **AI 多模態 Vision 菜單翻譯** | AI 創新 | 6 | 2.5 | 80% | 2.5 | **4.8** | 15.0 | 11 | **P2** |
+| **自訂美食地圖社群共編** | 社群生態 | 6 | 2.0 | 80% | 2.0 | **4.8** | 12.8 | 12 | **P2** |
+| **自然語言選店助手與命運轉盤** | AI 創新 | 6 | 2.0 | 70% | 2.0 | **4.2** | 11.2 | 13 | **P2** |
+| **線上候位與動態隊列 FCM 追蹤** | 商業轉化 | 5 | 2.5 | 80% | 2.5 | **4.0** | 15.0 | 14 | **P2** |
+| **個人味蕾配對度 (0-100% Match)** | AI 創新 | 7 | 2.0 | 70% | 2.5 | **3.92** | 10.5 | 15 | **P2** |
 | **雙排瀑布流 UGC 食記與短影片** | 內容生態 | 5 | 2.0 | 70% | 3.0 | **2.33** | 9.8 | 16 | **P2** |
 
 ---
@@ -290,7 +290,7 @@ lib/
 |                           STRATEGIC PRODUCT ROADMAP                               |
 +-----------------------------------------------------------------------------------+
 | Phase 1: 空間與視覺體驗升級 (Low-Hanging Fruit & Spatial UX)                       |
-|   • P0 既有架構修復 (build() 側邊效應, Yelp分頁, Filter重置, API Key 安全化)             |
+|   • P0 既有架構修復 (build() 側邊效應, Yelp分頁, Filter重置, API Key Server-side broker)             |
 |   • 地圖與 BottomSheet Carousel 雙向平滑連動                                       |
 |   • fluster 動態圖標聚類 (Clustering)                                               |
 |   • 情境化探索標籤 (#一人食 #深夜食堂 #約會不踩雷)                                    |
@@ -350,5 +350,5 @@ lib/
    * 使用者從點擊餐廳卡片到完成預訂，操作路徑不可超過 **3 次點擊**。
 
 ---
-*報告產出時間：2026-07-25*
+*報告產出時間：2026-07-24*
 *報告編寫團隊：Worker 1 (Report Author & Strategic Analyst)*

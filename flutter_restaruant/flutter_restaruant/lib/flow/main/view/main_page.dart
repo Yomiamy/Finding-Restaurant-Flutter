@@ -45,6 +45,14 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
 
     this._mainBloc = BlocProvider.of<MainBloc>(context);
     this._summaryInfos = List.empty();
+
+    this._mainBloc.add(NotificationSetup());
+    this._mainBloc.add(FetchSearchInfo(
+        price: this._configs.price,
+        openAt: this._configs.openAtInSec,
+        sortBy: this._configs.sortBy));
+
+    this.handleNotificationData();
   }
 
   @override
@@ -79,7 +87,16 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
   }
 
   Widget _buildContent(BuildContext context) {
-    return BlocBuilder<MainBloc, MainState>(builder: (context, state) {
+    return BlocConsumer<MainBloc, MainState>(
+        listener: (context, state) {
+          if (state is ResetSuccess) {
+            this._mainBloc.add(FetchSearchInfo(
+                price: this._configs.price,
+                openAt: this._configs.openAtInSec,
+                sortBy: this._configs.sortBy));
+          }
+        },
+        builder: (context, state) {
           if (state is Success || state is LoadMoreSuccess || state is ToggleFavorSuccess) {
             if (state is Success || state is LoadMoreSuccess) {
               this._summaryInfos =
@@ -90,18 +107,6 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                 ? RestaurantInfoListWidget(this._summaryInfos, this._configs)
                 : MapWidget(this._summaryInfos);
           } else if (state is InProgress || state is MainInitial || state is ResetSuccess) {
-            if (state is MainInitial || state is ResetSuccess) {
-              int? price = this._configs.price;
-              int? openAt = this._configs.openAtInSec;
-              String? sortBy = this._configs.sortBy;
-
-              if (state is MainInitial) {
-                // Request FCM
-                this._mainBloc.add(NotificationSetup());
-                this.handleNotificationData();
-              }
-              this._mainBloc.add(FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
-            }
             return Center(child: LoadingWidget());
           } else {
             return EmptyDataWidget();
@@ -251,6 +256,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
   /// --- FCM notification
   void handleNotificationData() {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
+      if (!mounted) return;
       // Waiting building is finish and run.
       final args =
           ModalRoute.of(context)?.settings.arguments as Tuple2<YelpRestaurantSummaryInfo, dynamic>?;

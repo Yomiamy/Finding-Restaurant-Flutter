@@ -33,25 +33,21 @@ class _SignInPageState extends State<SignInPage> {
     super.initState();
 
     this._signInBloc = BlocProvider.of<SignInBloc>(context);
+    this._signInBloc.add(AutoSignInEvent());
   }
 
   @override
   Widget build(BuildContext context) {
-    this._signInBloc.add(AutoSignInEvent());
-
     return Scaffold(
         appBar: AppBar(
             title: Text(S.current.signin_page_title,
                 style: TextStyle(color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: ColorName.appPrimaryColor),
-        body: BlocBuilder<SignInBloc, SignInState>(builder: (context, state) {
+        body: BlocConsumer<SignInBloc, SignInState>(
+            listener: (context, state) {
           if (state is SignInSuccess) {
             Fluttertoast.showToast(msg: S.current.signin_success_msg);
-
-            WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-              // Waiting building is finish and run.
-              Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME);
-            });
+            Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME);
           } else if (state is SignUpSuccess) {
             ViewUtils.showPromptDialog(
                 context: context,
@@ -67,7 +63,6 @@ class _SignInPageState extends State<SignInPage> {
                   )
                 ]);
           } else if (state is Failure && state.errorMsg.isNotEmpty) {
-            // Waiting building is finish and run.
             ViewUtils.showPromptDialog(
                 context: context,
                 title: S.current.error,
@@ -81,7 +76,7 @@ class _SignInPageState extends State<SignInPage> {
                   )
                 ]);
           }
-
+        }, builder: (context, state) {
           return ListView(children: <Widget>[
             showLogo(state),
             showInput(state),

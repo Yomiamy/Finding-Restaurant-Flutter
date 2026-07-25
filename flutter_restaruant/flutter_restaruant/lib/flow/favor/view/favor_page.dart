@@ -29,12 +29,11 @@ class _FavorPageState extends State<FavorPage> {
     super.initState();
 
     this._favorBloc = BlocProvider.of<FavorBloc>(context);
+    this._favorBloc.add(FetchFavorInfoEvent(false));
   }
 
   @override
   Widget build(BuildContext context) {
-    this._favorBloc.add(FetchFavorInfoEvent(false));
-
     return Scaffold(
         appBar: AppBar(
             leading: PlatformIconButton(
