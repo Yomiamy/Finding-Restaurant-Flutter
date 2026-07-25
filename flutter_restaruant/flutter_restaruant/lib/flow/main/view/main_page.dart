@@ -109,6 +109,11 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           } else if (state is InProgress || state is MainInitial || state is ResetSuccess) {
             return Center(child: LoadingWidget());
           } else {
+            if (this._summaryInfos.isNotEmpty) {
+              return _isListMode
+                  ? RestaurantInfoListWidget(this._summaryInfos, this._configs)
+                  : MapWidget(this._summaryInfos);
+            }
             return EmptyDataWidget();
           }
         });
