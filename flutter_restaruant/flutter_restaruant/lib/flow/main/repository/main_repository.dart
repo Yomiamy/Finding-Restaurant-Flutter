@@ -49,8 +49,10 @@ class MainRepository {
         openAt: openAt,
         sortBy: sortByStr,
         limit: MainRepository._MAX_ITEMS_COUNT_IN_LIST,
-        offset: ++this._offset);
+        offset: this._offset);
     this._isLoading = false;
+    this._offset += MainRepository._MAX_ITEMS_COUNT_IN_LIST;
+
     Map<String, dynamic> favorsMap = await this._fetchFavorsMap();
 
     // 檢查是否為最愛店家
