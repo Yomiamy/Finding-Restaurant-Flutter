@@ -136,21 +136,21 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                       fontSize: UIConstants.xxxhFontSize,
                       fontWeight: FontWeight.bold)))),
       ListTile(
-          leading: Icon(Icons.settings, color: ColorName.appPrimaryColor),
-          title: Text(appLocalizations.settings_title),
+          leading: Icon(Icons.search, color: ColorName.appPrimaryColor),
+          title: Text(appLocalizations.keyword_search),
           onTap: () {
             Navigator.of(context).pop();
             _runAfterDrawerClosed(() {
-              Navigator.of(this.context).pushNamed(SettingsPage.ROUTE_NAME);
+              _showKeywordDialog();
             });
           }),
       ListTile(
-          leading: Icon(Icons.favorite, color: ColorName.appPrimaryColor),
-          title: Text(appLocalizations.favorite_store_add),
+          leading: Icon(Icons.filter_list, color: ColorName.appPrimaryColor),
+          title: Text(appLocalizations.filter_rules),
           onTap: () {
             Navigator.of(context).pop();
             _runAfterDrawerClosed(() {
-              Navigator.of(this.context).pushNamed(FavorPage.ROUTE_NAME);
+              _openFilterPage();
             });
           }),
       ListTile(
@@ -180,21 +180,21 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
             });
           }),
       ListTile(
-          leading: Icon(Icons.search, color: ColorName.appPrimaryColor),
-          title: Text(appLocalizations.keyword_search),
+          leading: Icon(Icons.favorite, color: ColorName.appPrimaryColor),
+          title: Text(appLocalizations.favorite_store_add),
           onTap: () {
             Navigator.of(context).pop();
             _runAfterDrawerClosed(() {
-              _showKeywordDialog();
+              Navigator.of(this.context).pushNamed(FavorPage.ROUTE_NAME);
             });
           }),
       ListTile(
-          leading: Icon(Icons.filter_list, color: ColorName.appPrimaryColor),
-          title: Text(appLocalizations.filter_rules),
+          leading: Icon(Icons.settings, color: ColorName.appPrimaryColor),
+          title: Text(appLocalizations.settings_title),
           onTap: () {
             Navigator.of(context).pop();
             _runAfterDrawerClosed(() {
-              _openFilterPage();
+              Navigator.of(this.context).pushNamed(SettingsPage.ROUTE_NAME);
             });
           })
     ])));
