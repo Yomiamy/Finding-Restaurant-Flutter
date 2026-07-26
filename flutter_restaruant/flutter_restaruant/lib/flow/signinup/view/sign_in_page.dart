@@ -92,7 +92,7 @@ class _SignInPageState extends State<SignInPage> {
           ]),
         ),
         (state is InProgress)
-            ? const LoadingWidget(text: '')
+            ? const Center(child: LoadingWidget(text: ''))
             : UIConstants.emptyWidget
       ]);
 
