@@ -1,54 +1,106 @@
-.PHONY: get gen clean assets help
+.PHONY: help get pod clean gen watch build_runner build_watch build_clean assets intl fluttergen launcher_icon format fix analyze_lint analyze_custom run_debug_all run_profile_all run_prod_all mason_feature
 
 help:
 	@echo "Usage: make [target]"
 	@echo ""
-	@echo "Targets:"
-	@echo "  get          Get dependencies"
-	@echo "  gen          Run build_runner build"
-	@echo "  watch        Run build_runner watch"
-	@echo "  assets       Generate assets and intl"
-	@echo "  clean        Clean build artifacts"
+	@echo "Dependencies & Environment:"
+	@echo "  get             Get Flutter packages"
+	@echo "  pod             Install CocoaPods dependencies"
+	@echo "  clean           Clean build artifacts, lock files, and caches"
+	@echo ""
+	@echo "Code Generation & Assets:"
+	@echo "  gen             Run build_runner build"
+	@echo "  watch           Run build_runner watch"
+	@echo "  build_clean     Clean build_runner cache"
+	@echo "  assets          Generate assets (flutter_gen) and intl"
+	@echo "  intl            Generate localization files"
+	@echo "  fluttergen      Generate asset references"
+	@echo "  launcher_icon   Generate app icons"
+	@echo ""
+	@echo "Code Quality:"
+	@echo "  format          Format Dart code"
+	@echo "  fix             Apply automated dart fixes"
+	@echo "  analyze_lint    Analyze code with dart analyze"
+	@echo "  analyze_custom  Analyze code with custom_lint"
+	@echo ""
+	@echo "Run App:"
+	@echo "  run_debug_all   Run debug mode on all devices"
+	@echo "  run_profile_all Run profile mode on all devices"
+	@echo "  run_prod_all    Run release mode on all devices"
+	@echo ""
+	@echo "Tools:"
+	@echo "  mason_feature   Generate Clean Architecture feature via Mason"
+
+## =============================================================================
+## Dependencies & Environment
+## =============================================================================
 
 get:
-	flutter pub get
+	@flutter pub get
 
-gen:
-	dart run build_runner build --delete-conflicting-outputs
+pod:
+	@cd ios && pod install
 
-watch:
-	dart run build_runner watch --delete-conflicting-outputs
-
-assets:
-	dart run flutter_gen
-	dart run intl_utils:generate
-
-## Generate intl
-intl:
-	@dart run intl_utils:generate
-
-## Clean the environment.
 clean:
 	@echo "⚡︎Cleaning the project..."
-
 	@rm -rf pubspec.lock
 	@rm -rf ios/Podfile.lock
 	@rm -rf ios/Pods
 	@rm -rf ios/.symlinks
 	@rm -rf ios/Flutter/Flutter.framework
 	@rm -rf ios/Flutter/Flutter.podspec
-	@rm -rf ~/.pub-cache 
+	@rm -rf ~/.pub-cache
 	@flutter clean
-
 	@echo "⚡︎Project clean successfully!"
 
-## Get pub packages.
-get: 
-	@flutter pub get
-	@flutter precache --ios
-	@cd ios && pod install
+## =============================================================================
+## Code Generation & Assets
+## =============================================================================
 
-## Run app.
+gen:
+	@dart run build_runner build --delete-conflicting-outputs
+
+watch:
+	@dart run build_runner watch --delete-conflicting-outputs
+
+# Aliases for backward compatibility
+build_runner: gen
+build_watch: watch
+
+build_clean:
+	@dart run build_runner clean
+
+assets:
+	@dart run flutter_gen
+	@dart run intl_utils:generate
+
+intl:
+	@dart run intl_utils:generate
+
+fluttergen:
+	@fluttergen -c pubspec.yaml
+
+launcher_icon:
+	@dart run flutter_launcher_icons:main -f flutter_launcher_icons*
+
+## =============================================================================
+## Code Quality & Formatting
+## =============================================================================
+
+format:
+	@dart format .
+
+fix:
+	@dart fix --dry-run
+	@dart fix --apply
+
+analyze_lint:
+	@flutter analyze . || (echo "Error in analyzing, some code need to optimize."; exit 99)
+
+## =============================================================================
+## Run App
+## =============================================================================
+
 run_debug_all:
 	@flutter run --debug -d all
 
@@ -58,51 +110,9 @@ run_profile_all:
 run_prod_all:
 	@flutter run --release -d all
 
-# run_dev_debug:
-# 	@flutter run --debug --flavor dev --target ./lib/main.dart || (echo "Error in running dev."; exit 99)
-#
-# run_dev_profile:
-# 	@flutter run --profile --flavor dev --target ./lib/main.dart || (echo "Error in running dev."; exit 99)
-#
-# run_dev_prod:
-# 	@flutter run --release --flavor dev --target ./lib/main.dart || (echo "Error in running dev."; exit 99)
+## =============================================================================
+## Tools
+## =============================================================================
 
-## Run build_runner and generate files automatically.
-build_runner: 
-	@dart run build_runner build -d
-
-## Run build_runner and generate files automatically.
-build_watch: 
-	@dart run build_runner watch -d
-
-build_clean: 
-	@dart run build_runner clean
-
-## Analyze the code and find issues.
-analyze_lint: 
-	@dart analyze . || (echo "Error in analyzing, some code need to optimize."; exit 99)
-
-## Analyze the code by custom_lint
-analyze_custom:
-	@dart run custom_lint
-
-## Format the code.
-format: 
-	@dart format .
-
-## Fix the code.
-fix: 
-	@dart fix --dry-run
-	@dart fix --apply
-
-## Generate new app icon images.
-launcher_icon: 
-	@dart run flutter_launcher_icons:main -f flutter_launcher_icons*
-
-# Mason Tool
 mason_feature:
 	@mason make clean_architecture_feature_riverpod
-
-## fluttergen for asset gen
-fluttergen:
-	@fluttergen -c pubspec.yaml
