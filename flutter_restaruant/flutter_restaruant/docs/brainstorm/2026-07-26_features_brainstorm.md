@@ -250,6 +250,26 @@ lib/
 7. **列表底部載入更多動畫 (Load-More Loading Indicator)**
    * **設計理念**: 在無限滾動 (Infinite Scroll) 觸發「加載更多」時，列表最底部應動態顯示一個 Loading Indicator (例如骨架屏的最後一個 item 或 `CircularProgressIndicator`)。這能讓使用者明確知道正在拉取下一頁資料，避免因網路延遲而產生「滑到底卡住」的錯覺。
 
+### 2.6 對照組架構與風格對齊重構 (Architecture Alignment)
+
+依據對標對照組 Monorepo 的架構風格，當前專案亟需進行以下 Clean Architecture 與 Clean Code 調整，以降低技術債並提升可測試性：
+
+1. **目錄架構與層級分離重構 (Clean Directory Structure)**
+   * **問題**: 現行 `flow/{feature}/repository` 將資料層綁死在 UI 流程中。`component/` 混雜了全局與區域 UI。
+   * **對齊方案**: 抽出獨立的 `domain/` (業務邏輯與介面) 與 `data_layer/` (實作層)。將 feature-specific 的元件移回其所屬的 `view/widgets/`。
+2. **導入全域依賴注入 (Dependency Injection with GetIt)**
+   * **問題**: 無 DI 機制，重度依賴全域變數 (`apiInstance`) 與 Singleton (`SignInManager`)，無法 Mock 測試。
+   * **對齊方案**: 導入 `get_it` 與 `injectable`。在 BLoC 與 Repository 之間透過 DI 注入 Facade (Interface)，徹底解耦。
+3. **資料模型與職責分離 (DTO vs Domain Model 分離)**
+   * **問題**: `YelpRestaurantSummaryInfo` 同時作為網路解析 DTO 與 UI 狀態模型 (混入 `favor` 欄位與 `operator ==` 覆寫)。
+   * **對齊方案**: 拆分為網路層 `DataDto` 與業務層 `DomainEntity`，避免網路結構汙染 UI 渲染邏輯，並移除有風險的 `operator ==`。
+4. **全域常數與狀態管理修正 (Constants Cleanup)**
+   * **問題**: `UIConstants` 內藏有可變狀態 (`InterstitialADCountDown`)，且使用非標準的 `SCREAMING_SNAKE_CASE`。
+   * **對齊方案**: 將可變狀態移入 BLoC；常數改用 `camelCase` (或加 `k` 前綴) 對齊 Effective Dart 規範。
+5. **程式碼風格與 Linting 嚴格化 (Coding Style & Linting)**
+   * **問題**: 濫用 `this.`，且非同步呼叫處理不嚴謹。
+   * **對齊方案**: 依循對照組風格的 `analysis_options.yaml` (如 `unawaited_futures`, `prefer_single_quotes`)，清除冗餘的 `this.` 語法。
+
 ---
 
 ## 3. 功能優先級評估矩陣 (ICE / RICE Prioritization Matrix)
@@ -272,6 +292,11 @@ lib/
 | ✅ **修復 Yelp API 分頁邏輯 Bug** | 既有修復 | 9 | 2.5 | 100% | 0.5 | **45.0** | 23.75 | 2 | **P0** |
 | ✅ **修復 `FilterPage` 狀態重置 Bug** | 既有修復 | 8 | 2.5 | 100% | 0.5 | **40.0** | 23.75 | 3 | **P0** |
 | ✅ **移除硬編碼 API Key (改用 Server-side Broker)** | 安全修復 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | 4 | **P0** |
+| **對照組風格: 目錄架構與層級分離重構** | 架構重構 | 10 | 3.0 | 100% | 2.0 | **15.0** | 24.0 | - | **P0** |
+| **對照組風格: 導入全域依賴注入 (GetIt)** | 架構重構 | 10 | 2.5 | 100% | 1.5 | **16.6** | 21.2 | - | **P0** |
+| **對照組風格: DTO 與 Domain Entity 分離** | 架構重構 | 10 | 2.5 | 100% | 1.5 | **16.6** | 21.2 | - | **P0** |
+| **對照組風格: 全域常數與可變狀態清理** | 程式碼重構 | 10 | 2.0 | 100% | 1.0 | **20.0** | 18.0 | - | **P1** |
+| **對照組風格: 程式碼風格與 Lint 嚴格化** | 程式碼重構 | 10 | 1.0 | 100% | 1.0 | **10.0** | 9.0 | - | **P1** |
 | **地圖與 BottomSheet 雙向連動 Carousel** | 空間 UX | 9 | 3.0 | 90% | 1.5 | **16.2** | 22.95 | 5 | **P1** |
 | **調整側選單功能項目順序** | UX 優化 | 10 | 1.0 | 100% | 0.5 | **20.0** | 10.0 | - | **P1** |
 | **列表底部載入更多動畫** | UX 優化 | 9 | 1.0 | 100% | 0.5 | **18.0** | 10.0 | - | **P1** |
@@ -302,6 +327,10 @@ lib/
 |   • [x] P0 移除硬編碼 API Key (改用 Server-side broker)                           |
 |   • [x] P0 修復 Yelp API 分頁邏輯 Bug                                              |
 |   • [x] P0 修復 `FilterPage` 狀態重置 Bug                                          |
+|   • [ ] P0 對照組風格對齊: 目錄架構與層級分離重構 (Domain / Data)                |
+|   • [ ] P0 對照組風格對齊: 導入全域依賴注入 (GetIt / Injectable)                 |
+|   • [ ] P0 對照組風格對齊: 資料模型與職責分離 (DTO vs Domain)                    |
+|   • [ ] P1 對照組風格對齊: 全域常數清理與程式碼風格 Lint 嚴格化                  |
 |   • [ ] P1 地圖與 BottomSheet Carousel 雙向平滑連動                               |
 |   • [ ] P1 調整側選單功能項目順序 (Drawer Menu Reordering)                        |
 |   • [ ] P1 列表底部載入更多動畫 (Load-More Indicator)                             |
