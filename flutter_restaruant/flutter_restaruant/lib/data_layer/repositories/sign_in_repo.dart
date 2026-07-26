@@ -1,7 +1,7 @@
 import 'dart:async';
 import 'dart:convert';
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../domain/repositories/i_sign_in_repository.dart';
+import '../../domain/repositories/sign_in_repository.dart';
 import '../../manager/sign_in_manager.dart';
 import '../../domain/entities/user_entity.dart';
 import '../dto/account_dto.dart';
@@ -9,7 +9,7 @@ import '../../utils/constants.dart';
 import '../../utils/tuple.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-class SignInRepository implements ISignInRepository {
+class SignInRepo implements SignInRepository {
   static const String userCollectionName = 'users';
 
   final SignInManager _signInManager = SignInManager();
