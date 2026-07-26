@@ -1,10 +1,10 @@
-import 'package:flutter_restaruant/domain/repositories/i_sign_in_repository.dart';
+import 'package:flutter_restaruant/domain/repositories/sign_in_repository.dart';
 import 'package:flutter_restaruant/flow/signinup/bloc/sign_in_bloc.dart';
 import 'package:flutter_restaruant/domain/entities/user_entity.dart';
 import 'package:flutter_restaruant/utils/tuple.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class MockSignInRepository implements ISignInRepository {
+class MockSignInRepository implements SignInRepository {
   AccountType? lastAccountType;
   bool? lastIsSignUp;
   String? lastMail;

@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../../domain/repositories/i_sign_in_repository.dart';
+import '../../../domain/repositories/sign_in_repository.dart';
 import '../../../domain/entities/user_entity.dart';
 import '../../../utils/tuple.dart';
 
@@ -9,9 +9,9 @@ part 'sign_in_event.dart';
 part 'sign_in_state.dart';
 
 class SignInBloc extends Bloc<SignInEvent, SignInState> {
-  final ISignInRepository _signInRepository;
+  final SignInRepository _signInRepository;
 
-  SignInBloc({required ISignInRepository repository})
+  SignInBloc({required SignInRepository repository})
       : _signInRepository = repository,
         super(SignInInitial()) {
     on<SignInEvent>((event, emit) async {
