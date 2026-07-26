@@ -82,6 +82,21 @@ void main() {
       expect(mockRepo.lastPasswd, 'secret');
     });
 
+    test('AutoSignInEvent failure emits SignInInitial, not Failure', () async {
+      mockRepo.returnAccountInfo = null;
+      mockRepo.returnErrorMessage = 'No cached credential';
+
+      bloc.add(AutoSignInEvent());
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder([
+          const InProgress(),
+          isA<SignInInitial>(),
+        ]),
+      );
+    });
+
     test('SignIn failure emits Failure state', () async {
       mockRepo.returnAccountInfo = null;
       mockRepo.returnErrorMessage = 'Auth failed';

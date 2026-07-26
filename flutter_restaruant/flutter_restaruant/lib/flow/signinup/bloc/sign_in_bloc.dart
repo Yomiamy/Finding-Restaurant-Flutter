@@ -60,6 +60,10 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         } else {
           emit(SignUpSuccess(userEntity: userEntity));
         }
+      } else if (event is AutoSignInEvent) {
+        // 自動登入失敗屬於正常情況（沒有既有憑證），僅回到初始狀態，
+        // 不視為錯誤，避免使用者一進頁面就看到錯誤提示。
+        emit(SignInInitial());
       } else {
         String errorMsg = result.item2;
         emit(Failure(errorMsg: errorMsg));
