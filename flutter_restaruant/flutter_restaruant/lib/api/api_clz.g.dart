@@ -64,7 +64,7 @@ class _APIClz implements APIClz {
   }
 
   @override
-  Future<YelpSearchInfo> businessesSearch({
+  Future<YelpSearchDto> businessesSearch({
     String? term,
     double? latitude,
     double? longitude,
@@ -90,7 +90,7 @@ class _APIClz implements APIClz {
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<YelpSearchInfo>(
+    final _options = _setStreamType<YelpSearchDto>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -101,9 +101,9 @@ class _APIClz implements APIClz {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late YelpSearchInfo _value;
+    late YelpSearchDto _value;
     try {
-      _value = YelpSearchInfo.fromJson(_result.data!);
+      _value = YelpSearchDto.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
@@ -112,13 +112,13 @@ class _APIClz implements APIClz {
   }
 
   @override
-  Future<YelpRestaurantDetailInfo> business(String? id, String? locale) async {
+  Future<YelpRestaurantDetailDto> business(String? id, String? locale) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'locale': locale};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<YelpRestaurantDetailInfo>(
+    final _options = _setStreamType<YelpRestaurantDetailDto>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -129,9 +129,9 @@ class _APIClz implements APIClz {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late YelpRestaurantDetailInfo _value;
+    late YelpRestaurantDetailDto _value;
     try {
-      _value = YelpRestaurantDetailInfo.fromJson(_result.data!);
+      _value = YelpRestaurantDetailDto.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;
@@ -140,13 +140,13 @@ class _APIClz implements APIClz {
   }
 
   @override
-  Future<YelpReviewInfo> review(String? id, String? locale) async {
+  Future<YelpReviewDto> review(String? id, String? locale) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{r'locale': locale};
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
     const Map<String, dynamic>? _data = null;
-    final _options = _setStreamType<YelpReviewInfo>(
+    final _options = _setStreamType<YelpReviewDto>(
       Options(method: 'GET', headers: _headers, extra: _extra)
           .compose(
             _dio.options,
@@ -157,9 +157,9 @@ class _APIClz implements APIClz {
           .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
     );
     final _result = await _dio.fetch<Map<String, dynamic>>(_options);
-    late YelpReviewInfo _value;
+    late YelpReviewDto _value;
     try {
-      _value = YelpReviewInfo.fromJson(_result.data!);
+      _value = YelpReviewDto.fromJson(_result.data!);
     } on Object catch (e, s) {
       errorLogger?.logError(e, s, _options, response: _result);
       rethrow;

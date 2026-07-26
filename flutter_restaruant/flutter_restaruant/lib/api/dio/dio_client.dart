@@ -1,12 +1,12 @@
 import 'package:dio/dio.dart';
-import 'package:flutter_restaruant/utils/constants.dart';
+import '../../utils/constants.dart';
 
 class DioClient {
   late Dio dio;
 
   DioClient(
-      {int connectionTimeout = Constants.CONNECTION_TIEMOUT,
-      int receiveTimeout = Constants.RECEIVE_TIEMOUT,
+      {int connectionTimeout = Constants.connectionTimeout,
+      int receiveTimeout = Constants.receiveTimeout,
       bool isLogEnabled = true,
       List<InterceptorsWrapper>? interceptWraps}) {
     BaseOptions options = () {
@@ -17,7 +17,7 @@ class DioClient {
       return options;
     }();
 
-    this.dio = () {
+    dio = () {
       Dio dio = Dio(options);
 
       if (isLogEnabled) {
