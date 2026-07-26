@@ -13,32 +13,32 @@ class InProgress extends SignInState {
   const InProgress();
 
   @override
-  String toString() => "Loading detail info";
+  String toString() => 'Loading detail info';
 }
 
 class SignInSuccess extends SignInState {
-  final AccountInfo accountInfo;
+  final UserEntity userEntity;
 
-  SignInSuccess({required this.accountInfo});
+  const SignInSuccess({required this.userEntity});
 
   @override
-  List<Object> get props => [this.accountInfo.hashCode];
+  List<Object> get props => [userEntity.hashCode];
 }
 
 class SignUpSuccess extends SignInState {
-  final AccountInfo accountInfo;
+  final UserEntity userEntity;
 
-  SignUpSuccess({required this.accountInfo});
+  const SignUpSuccess({required this.userEntity});
 
   @override
-  List<Object> get props => [this.accountInfo.hashCode];
+  List<Object> get props => [userEntity.hashCode];
 }
 
 class Failure extends SignInState {
   final String errorMsg;
 
-  Failure({required this.errorMsg});
+  const Failure({required this.errorMsg});
 
   @override
-  List<Object> get props => [this.errorMsg];
+  List<Object> get props => [errorMsg];
 }

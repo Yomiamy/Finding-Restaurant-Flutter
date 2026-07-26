@@ -11,43 +11,43 @@ class MailSignInEvent extends SignInEvent {
   final String mail;
   final String passwd;
 
-  MailSignInEvent({required this.mail, required this.passwd});
+  const MailSignInEvent({required this.mail, required this.passwd});
 
   @override
-  String toString() => "MailSignIn event.";
+  String toString() => 'MailSignIn event.';
 }
 
 class MailSignUpEvent extends SignInEvent {
   final String mail;
   final String passwd;
 
-  MailSignUpEvent({required this.mail, required this.passwd});
+  const MailSignUpEvent({required this.mail, required this.passwd});
 
   @override
-  String toString() => "MailSignUp event.";
+  String toString() => 'MailSignUp event.';
 }
 
 class GoogleSignInEvent extends SignInEvent {
   @override
-  String toString() => "GoogleSignIn event.";
+  String toString() => 'GoogleSignIn event.';
 }
 
 class FacebookSignInEvent extends SignInEvent {
   @override
-  String toString() => "FacebookSignIn event.";
+  String toString() => 'FacebookSignIn event.';
 }
 
 class AppleSignInEvent extends SignInEvent {
   @override
-  String toString() => "AppleSignIn event.";
+  String toString() => 'AppleSignIn event.';
 }
 
 class BiometricSignInEvent extends SignInEvent {
   @override
-  String toString() => "BiometricAuth event.";
+  String toString() => 'BiometricAuth event.';
 }
 
 class AutoSignInEvent extends SignInEvent {
   @override
-  String toString() => "MailSignIn event.";
+  String toString() => 'MailSignIn event.';
 }

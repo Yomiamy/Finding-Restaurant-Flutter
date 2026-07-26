@@ -1,10 +1,11 @@
-import 'package:flutter_restaruant/manager/apple_sign_in_manager.dart';
-import 'package:flutter_restaruant/manager/auto_sign_in_manager.dart';
-import 'package:flutter_restaruant/manager/biometric_sign_in_manager.dart';
-import 'package:flutter_restaruant/manager/facebook_sign_in_manager.dart';
-import 'package:flutter_restaruant/manager/google_sign_in_manager.dart';
-import 'package:flutter_restaruant/model/account_info.dart';
-import 'package:flutter_restaruant/utils/tuple.dart';
+import 'apple_sign_in_manager.dart';
+import 'auto_sign_in_manager.dart';
+import 'biometric_sign_in_manager.dart';
+import 'facebook_sign_in_manager.dart';
+import 'google_sign_in_manager.dart';
+import '../data_layer/dto/account_dto.dart';
+import '../domain/entities/user_entity.dart';
+import '../utils/tuple.dart';
 
 import 'mail_sign_in_up_manager.dart';
 
@@ -15,78 +16,78 @@ class SignInManager {
 
   factory SignInManager() => _singleton;
 
-  AccountInfo? accountInfo;
-  GoogleSignInManager _googleSignInManager = GoogleSignInManager();
-  AppleSignInManager _appleSignInManager = AppleSignInManager();
-  FacebookSignInManager _facebookSignInManager = FacebookSignInManager();
-  MailSignInUpManager _mailSignInUpManager = MailSignInUpManager();
-  BiometricSignInManager _biometricAuthManager = BiometricSignInManager();
-  AutoSignInManager _autoSignInManager = AutoSignInManager();
+  AccountDto? accountDto;
+  final GoogleSignInManager _googleSignInManager = GoogleSignInManager();
+  final AppleSignInManager _appleSignInManager = AppleSignInManager();
+  final FacebookSignInManager _facebookSignInManager = FacebookSignInManager();
+  final MailSignInUpManager _mailSignInUpManager = MailSignInUpManager();
+  final BiometricSignInManager _biometricAuthManager = BiometricSignInManager();
+  final AutoSignInManager _autoSignInManager = AutoSignInManager();
 
-  Future<Tuple2<AccountInfo?, String>> signIn(AccountType accountType,
-      {String mail = "", String passwd = ""}) async {
-    Tuple2<AccountInfo?, String> signInResult = Tuple2(null, "");
+  Future<Tuple2<AccountDto?, String>> signIn(AccountType accountType,
+      {String mail = '', String passwd = ''}) async {
+    Tuple2<AccountDto?, String> signInResult = const Tuple2(null, '');
 
     switch (accountType) {
-      case AccountType.GOOGLE:
-        signInResult = await this._googleSignInManager.signInWithGoogle();
+      case AccountType.google:
+        signInResult = await _googleSignInManager.signInWithGoogle();
         break;
-      case AccountType.APPLE:
-        signInResult = await this._appleSignInManager.signInWithApple();
+      case AccountType.apple:
+        signInResult = await _appleSignInManager.signInWithApple();
         break;
-      case AccountType.FACEBOOK:
-        signInResult = await this._facebookSignInManager.signInWithFB();
+      case AccountType.facebook:
+        signInResult = await _facebookSignInManager.signInWithFB();
         break;
-      case AccountType.BIOMETRIC:
-        signInResult = await this._biometricAuthManager.signInWithBiometric();
+      case AccountType.biometric:
+        signInResult = await _biometricAuthManager.signInWithBiometric();
         break;
-      case AccountType.AUTO:
-        signInResult = await this._autoSignInManager.signInWithAuto();
+      case AccountType.auto:
+        signInResult = await _autoSignInManager.signInWithAuto();
         break;
-      case AccountType.MAIL:
+      case AccountType.mail:
       default:
         signInResult =
-            await this._mailSignInUpManager.signInWithMail(mail, passwd);
+            await _mailSignInUpManager.signInWithMail(mail, passwd);
         break;
     }
-    this.accountInfo = signInResult.item1;
+    accountDto = signInResult.item1;
 
     return signInResult;
   }
 
-  Future<Tuple2<AccountInfo?, String>> signUp(AccountType accountType,
+  Future<Tuple2<AccountDto?, String>> signUp(AccountType accountType,
       {required String mail, required String passwd}) async {
-    Tuple2<AccountInfo?, String> signUpResult = Tuple2(null, "");
+    Tuple2<AccountDto?, String> signUpResult = const Tuple2(null, '');
 
     switch (accountType) {
-      case AccountType.MAIL:
+      case AccountType.mail:
       default:
         signUpResult =
-            await this._mailSignInUpManager.signUpWithMail(mail, passwd);
+            await _mailSignInUpManager.signUpWithMail(mail, passwd);
         break;
     }
-    this.accountInfo = signUpResult.item1;
+    accountDto = signUpResult.item1;
 
     return signUpResult;
   }
 
   Future<void> signOut() async {
-    switch (this.accountInfo?.type) {
-      case AccountType.GOOGLE:
-        this._googleSignInManager.signOutWithGoogle();
+    switch (accountDto?.type) {
+      case AccountType.google:
+        _googleSignInManager.signOutWithGoogle();
         break;
-      case AccountType.APPLE:
-        this._appleSignInManager.signOutWithApple();
+      case AccountType.apple:
+        _appleSignInManager.signOutWithApple();
         break;
-      case AccountType.FACEBOOK:
-        this._facebookSignInManager.signOutWithFB();
+      case AccountType.facebook:
+        _facebookSignInManager.signOutWithFB();
         break;
-      case AccountType.MAIL:
+      case AccountType.mail:
       default:
-        this._mailSignInUpManager.signOutWithMail();
+        _mailSignInUpManager.signOutWithMail();
         break;
     }
 
-    this.accountInfo = null;
+    accountDto = null;
   }
 }

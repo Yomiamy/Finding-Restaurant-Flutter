@@ -1,7 +1,8 @@
 import 'dart:convert';
-import 'package:flutter_restaruant/model/account_info.dart';
-import 'package:flutter_restaruant/utils/constants.dart';
-import 'package:flutter_restaruant/utils/tuple.dart';
+import '../data_layer/dto/account_dto.dart';
+
+import '../utils/constants.dart';
+import '../utils/tuple.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AutoSignInManager {
@@ -11,16 +12,16 @@ class AutoSignInManager {
 
   factory AutoSignInManager() => _singleton;
 
-  Future<Tuple2<AccountInfo?, String>> signInWithAuto() async {
+  Future<Tuple2<AccountDto?, String>> signInWithAuto() async {
     final prefs = await SharedPreferences.getInstance();
-    final accountInfoJsonStr = prefs.getString(Constants.PREF_KEY_ACCOUNT_INFO);
+    final accountInfoJsonStr = prefs.getString(Constants.prefKeyAccountInfo);
 
     if (accountInfoJsonStr == null || accountInfoJsonStr.isEmpty) {
-      return Tuple2(null, "");
+      return const Tuple2(null, '');
     } else {
-      AccountInfo accountInfo =
-          AccountInfo.fromJson(jsonDecode(accountInfoJsonStr));
-      return Tuple2(accountInfo, "");
+      AccountDto accountDto =
+          AccountDto.fromJson(jsonDecode(accountInfoJsonStr));
+      return Tuple2(accountDto, '');
     }
   }
 }

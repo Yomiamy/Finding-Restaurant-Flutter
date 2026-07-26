@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
-import 'package:flutter_restaruant/model/account_info.dart';
-import 'package:flutter_restaruant/utils/tuple.dart';
+import '../data_layer/dto/account_dto.dart';
+import '../domain/entities/user_entity.dart';
+import '../utils/tuple.dart';
 
 class FacebookSignInManager {
   static final FacebookSignInManager _singleton =
@@ -11,15 +13,15 @@ class FacebookSignInManager {
 
   factory FacebookSignInManager() => _singleton;
 
-  Future<Tuple2<AccountInfo?, String>> signInWithFB() async {
+  Future<Tuple2<AccountDto?, String>> signInWithFB() async {
     try {
       // Trigger the sign-in flow
       final LoginResult loginResult = await FacebookAuth.instance.login();
 
       if (loginResult.accessToken == null) {
         // 未登入
-        return Tuple2<AccountInfo?, String>(
-            null, "Error occurred, please retry again");
+        return const Tuple2<AccountDto?, String>(
+            null, 'Error occurred, please retry again');
       }
 
       // Create a credential from the access token
@@ -28,21 +30,21 @@ class FacebookSignInManager {
       // Once signed in, return the UserCredential
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithCredential(facebookAuthCredential);
-      AccountInfo accountInfo = AccountInfo(
-          type: AccountType.FACEBOOK,
-          uid: userCredential.user?.uid ?? "",
-          account: userCredential.user?.email ?? "");
+      AccountDto accountDto = AccountDto(
+          type: AccountType.facebook,
+          uid: userCredential.user?.uid ?? '',
+          account: userCredential.user?.email ?? '');
 
-      return Tuple2(accountInfo, "");
+      return Tuple2(accountDto, '');
     } on FirebaseAuthException catch (e) {
       // 登入錯誤
-      print("FacebookSignInManager, error = $e");
-      if (e.code == "account-exists-with-different-credential") {
-        return Tuple2(null,
-            "An account already exists with a different credential. Please sign in using the original provider.");
+      debugPrint('FacebookSignInManager, error = $e');
+      if (e.code == 'account-exists-with-different-credential') {
+        return const Tuple2(null,
+            'An account already exists with a different credential. Please sign in using the original provider.');
       } else {
         return Tuple2(
-            null, "FB sign in fail, please retry again\n${e.toString()}");
+            null, 'FB sign in fail, please retry again\n${e.toString()}');
       }
     }
   }

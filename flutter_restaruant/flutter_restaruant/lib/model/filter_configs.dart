@@ -1,53 +1,57 @@
 import 'dart:core';
-import 'package:flutter_restaruant/model/yelp_base_info.dart';
+
 import 'package:intl/intl.dart';
 
-enum FilterConfigType { PRICE, OPEN_AT, SORTING_RULE }
+enum FilterConfigType { price, openAt, sortingRule }
 
-enum SortBy { best_match, distance, rating, review_count }
+enum SortBy {
+  bestMatch('best_match'),
+  distance('distance'),
+  rating('rating'),
+  reviewCount('review_count');
 
-extension SortByExtension on SortBy {
-  String toShortString() {
-    return this.toString().split('.').last;
-  }
+  final String value;
+  const SortBy(this.value);
+
+  String toShortString() => value;
 }
 
-class FilterConfigs extends YelpBaseInfo {
+class FilterConfigs {
   // Price
   int? price;
   int get priceIndex =>
-      (this.price == null || this.price! < 1) ? 0 : (this.price! - 1);
+      (price == null || price! < 1) ? 0 : (price! - 1);
 
   // Business hours
   int? openAt;
-  DateTime get openAtDateTime => (this.openAt != null && this.openAt! > 0)
-      ? DateTime.fromMillisecondsSinceEpoch(this.openAt!)
+  DateTime get openAtDateTime => (openAt != null && openAt! > 0)
+      ? DateTime.fromMillisecondsSinceEpoch(openAt!)
       : DateTime.now();
   int? get openAtInSec =>
-      (this.openAt != null && this.openAt! > 0) ? openAt! ~/ 1000 : null;
+      (openAt != null && openAt! > 0) ? openAt! ~/ 1000 : null;
   String get openAtDispStr =>
-      DateFormat('MM-dd HH:mm').format(this.openAtDateTime);
+      DateFormat('MM-dd HH:mm').format(openAtDateTime);
 
   // Sorting rule
   String? sortBy;
   int get sortByIndex => (sortBy != null)
       ? SortBy.values
-          .firstWhere((element) => element.toShortString() == this.sortBy)
+          .firstWhere((element) => element.toShortString() == sortBy)
           .index
       : 0;
 
   String mapSortingRuleByIndex(int sortByIndex) {
     switch (sortByIndex) {
       case 0:
-        return SortBy.best_match.toShortString();
+        return SortBy.bestMatch.toShortString();
       case 1:
         return SortBy.distance.toShortString();
       case 2:
         return SortBy.rating.toShortString();
       case 3:
-        return SortBy.review_count.toShortString();
+        return SortBy.reviewCount.toShortString();
       default:
-        return SortBy.best_match.toShortString();
+        return SortBy.bestMatch.toShortString();
     }
   }
 
@@ -57,22 +61,51 @@ class FilterConfigs extends YelpBaseInfo {
       {required int priceIndex,
       required DateTime openAtDate,
       required int sortingRuleIndex}) {
-    this.price = priceIndex + 1;
-    this.openAt = openAtDate.millisecondsSinceEpoch;
-    this.sortBy = this.mapSortingRuleByIndex(sortingRuleIndex);
+    price = priceIndex + 1;
+    openAt = openAtDate.millisecondsSinceEpoch;
+    sortBy = mapSortingRuleByIndex(sortingRuleIndex);
   }
 
   void clearConfig(FilterConfigType configType) {
     switch (configType) {
-      case FilterConfigType.PRICE:
-        this.price = null;
+      case FilterConfigType.price:
+        price = null;
         break;
-      case FilterConfigType.OPEN_AT:
-        this.openAt = null;
+      case FilterConfigType.openAt:
+        openAt = null;
         break;
-      case FilterConfigType.SORTING_RULE:
-        this.sortBy = null;
+      case FilterConfigType.sortingRule:
+        sortBy = null;
         break;
+    }
+  }
+  String getPriceDispStr(int price) {
+    switch (price) {
+      case 1:
+        return '\$';
+      case 2:
+        return '\$\$';
+      case 3:
+        return '\$\$\$';
+      case 4:
+        return '\$\$\$\$';
+      default:
+        return '';
+    }
+  }
+
+  String getSortingRuleDispStr(String sortBy) {
+    switch (sortBy) {
+      case 'best_match':
+        return 'BestMatch';
+      case 'distance':
+        return 'Distance';
+      case 'review_count':
+        return 'ReviewCount';
+      case 'rating':
+        return 'Rating';
+      default:
+        return '';
     }
   }
 }

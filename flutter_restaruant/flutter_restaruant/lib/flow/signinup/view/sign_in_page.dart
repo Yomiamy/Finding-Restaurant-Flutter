@@ -3,122 +3,115 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_restaruant/component/loading_widget.dart';
-import 'package:flutter_restaruant/flow/main/view/main_page.dart';
-import 'package:flutter_restaruant/flow/signinup/bloc/sign_in_bloc.dart';
-import 'package:flutter_restaruant/generated/l10n.dart';
-import 'package:flutter_restaruant/utils/ui_constants.dart';
-import 'package:flutter_restaruant/utils/view_utils.dart';
+import '../../../component/loading_widget.dart';
+import '../bloc/sign_in_bloc.dart';
+import '../../../generated/l10n.dart';
+import '../../../utils/ui_constants.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import 'package:flutter_restaruant/gen/colors.gen.dart';
+import '../../../gen/colors.gen.dart';
+import '../../main/view/main_page.dart';
 
 class SignInPage extends StatefulWidget {
-  static const ROUTE_NAME = "/SignInPage";
+  static const routeName = '/SignInPage';
 
-  const SignInPage({Key? key}) : super(key: key);
+  const SignInPage({super.key});
 
   @override
-  _SignInPageState createState() => _SignInPageState();
+  State<SignInPage> createState() => _SignInPageState();
 }
 
 class _SignInPageState extends State<SignInPage> {
-  final _formKey = new GlobalKey<FormState>();
+  final _formKey = GlobalKey<FormState>();
   late SignInBloc _signInBloc;
-  String _email = "";
-  String _passwd = "";
+  String _email = '';
+  String _passwd = '';
 
   @override
   void initState() {
     super.initState();
 
-    this._signInBloc = BlocProvider.of<SignInBloc>(context);
-    this._signInBloc.add(AutoSignInEvent());
+    _signInBloc = BlocProvider.of<SignInBloc>(context);
+    _signInBloc.add(AutoSignInEvent());
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            title: Text(S.current.signin_page_title,
-                style: TextStyle(
-                    color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
-            backgroundColor: ColorName.appPrimaryColor),
-        body: BlocConsumer<SignInBloc, SignInState>(listener: (context, state) {
+      appBar: AppBar(
+        title: Text(
+          S.current.signin_page_title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: UIConstants.xxxhFontSize,
+          ),
+        ),
+        backgroundColor: ColorName.appPrimaryColor,
+      ),
+      body: BlocConsumer<SignInBloc, SignInState>(
+        listener: (context, state) {
           if (state is SignInSuccess) {
             Fluttertoast.showToast(msg: S.current.signin_success_msg);
-            Navigator.of(context).pushReplacementNamed(MainPage.ROUTE_NAME);
+            // ignore: unawaited_futures
+            Navigator.of(context).pushReplacementNamed(MainPage.routeName);
           } else if (state is SignUpSuccess) {
-            ViewUtils.showPromptDialog(
-                context: context,
-                title: S.current.email_signup_success_hint_title,
-                msgWidget:
-                    PlatformText(S.current.email_signup_success_hint_msg),
-                actions: [
-                  PlatformTextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: PlatformText(S.current.confirm),
-                  )
-                ]);
-          } else if (state is Failure && state.errorMsg.isNotEmpty) {
-            ViewUtils.showPromptDialog(
-                context: context,
-                title: S.current.error,
-                msgWidget: PlatformText(state.errorMsg),
-                actions: [
-                  PlatformTextButton(
-                    onPressed: () {
-                      Navigator.pop(context);
-                    },
-                    child: PlatformText(S.current.confirm),
-                  )
-                ]);
+            Fluttertoast.showToast(msg: S.current.signin_success_msg);
+            // ignore: unawaited_futures
+            Navigator.of(context).pushReplacementNamed(MainPage.routeName);
+          } else if (state is Failure) {
+            Fluttertoast.showToast(msg: state.errorMsg);
           }
-        }, builder: (context, state) {
-          return ListView(children: <Widget>[
-            showLogo(state),
-            showInput(state),
-            showSignInUpBtns(),
-            Padding(
-                padding: EdgeInsets.only(top: 5, bottom: 5),
-                child: Center(
-                    child: Text("---------OR---------",
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                            fontSize: UIConstants.xxxhFontSize,
-                            color: Colors.grey)))),
-            show3rdSignInUpBtns()
-          ]);
-        }));
+        },
+        builder: (context, state) => _buildView(state),
+      ),
+    );
   }
 
-  Widget showLogo(SignInState state) => Column(children: <Widget>[
-        Image.asset("images/icon_signinup_icon.gif",
-            height: 230.0, width: 230.0),
+  Widget _buildView(SignInState state) => Stack(children: <Widget>[
+        ConstrainedBox(
+          constraints: const BoxConstraints.expand(),
+          child: Column(children: <Widget>[
+            Expanded(
+              flex: 1,
+              child: Image.asset(
+                'images/icon_signinup_icon.gif',
+                fit: BoxFit.cover,
+              ),
+            ),
+            Expanded(
+                flex: 1,
+                child: SingleChildScrollView(
+                  child: Padding(
+                      padding: const EdgeInsets.only(left: 30, right: 30),
+                      child: Column(children: <Widget>[
+                        showInput(state),
+                        showSignInUpBtns(),
+                        show3rdSignInUpBtns(),
+                      ])),
+                ))
+          ]),
+        ),
         (state is InProgress)
-            ? LoadingWidget(text: "")
-            : UIConstants.EMPTY_WIDGET
+            ? const LoadingWidget(text: '')
+            : UIConstants.emptyWidget
       ]);
 
-  Widget showInput(SignInState state) => Container(
-      child: Form(
-          key: this._formKey,
-          child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: <Widget>[showEmailInput(), showPasswordInput()])));
+  Widget showInput(SignInState state) => Form(
+      key: _formKey,
+      child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[showEmailInput(), showPasswordInput()]));
 
   Widget showEmailInput() => Padding(
       padding: const EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 0.0),
       child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
-        Icon(
+        const Icon(
           Icons.mail,
           color: Colors.grey,
         ),
         Expanded(
             child: Padding(
-                padding: EdgeInsets.only(left: 10),
+                padding: const EdgeInsets.only(left: 10),
                 child: PlatformTextFormField(
                     maxLines: 1,
                     autofocus: false,
@@ -126,11 +119,11 @@ class _SignInPageState extends State<SignInPage> {
                     validator: (value) => (value == null || value.isEmpty)
                         ? S.current.email_invalid_hint_msg
                         : null,
-                    onSaved: (value) => this._email = value!,
+                    onSaved: (value) => _email = value!,
                     hintText: S.current.email_invalid_hint_title,
                     cupertino: (_, __) => CupertinoTextFormFieldData(
                         // Assign a default cupertino decoration
-                        decoration: PlatformTextField()
+                        decoration: const PlatformTextField()
                             .createCupertinoWidget(context)
                             .decoration))))
       ]));
@@ -138,13 +131,13 @@ class _SignInPageState extends State<SignInPage> {
   Widget showPasswordInput() => Padding(
       padding: const EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 0.0),
       child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
-        Icon(
+        const Icon(
           Icons.lock,
           color: Colors.grey,
         ),
         Expanded(
             child: Padding(
-                padding: EdgeInsets.only(left: 10),
+                padding: const EdgeInsets.only(left: 10),
                 child: PlatformTextFormField(
                     maxLines: 1,
                     obscureText: true,
@@ -153,43 +146,43 @@ class _SignInPageState extends State<SignInPage> {
                     validator: (value) => (value == null || value.isEmpty)
                         ? S.current.passwd_invalid_hint_msg
                         : null,
-                    onSaved: (value) => this._passwd = value!,
+                    onSaved: (value) => _passwd = value!,
                     hintText: S.current.passwd_invalid_hint_title,
                     cupertino: (_, __) => CupertinoTextFormFieldData(
                         // Assign a default cupertino decoration
-                        decoration: PlatformTextField()
+                        decoration: const PlatformTextField()
                             .createCupertinoWidget(context)
                             .decoration))))
       ]));
 
   Widget showSignInUpBtns() => Padding(
-      padding: EdgeInsets.only(top: 15),
+      padding: const EdgeInsets.only(top: 15),
       child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
         PlatformElevatedButton(
-            color: Color.fromARGB(255, 5, 97, 245),
+            color: const Color.fromARGB(255, 5, 97, 245),
             child: Text(S.current.signin_btn_title,
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: UIConstants.xhFontSize,
                     fontWeight: FontWeight.bold,
                     color: Colors.white)),
             onPressed: () {
-              if (this._formKey.currentState != null &&
-                  this._formKey.currentState!.validate()) {
-                this._formKey.currentState!.save();
-                this._signInBloc.add(
-                    MailSignInEvent(mail: this._email, passwd: this._passwd));
+              if (_formKey.currentState != null &&
+                  _formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
+                _signInBloc.add(
+                    MailSignInEvent(mail: _email, passwd: _passwd));
               }
             }),
         PlatformTextButton(
             child: Text(S.current.signup_title,
-                style: TextStyle(
+                style: const TextStyle(
                     fontSize: UIConstants.mFontSize, color: Colors.grey)),
             onPressed: () {
-              if (this._formKey.currentState != null &&
-                  this._formKey.currentState!.validate()) {
-                this._formKey.currentState!.save();
-                this._signInBloc.add(
-                    MailSignUpEvent(mail: this._email, passwd: this._passwd));
+              if (_formKey.currentState != null &&
+                  _formKey.currentState!.validate()) {
+                _formKey.currentState!.save();
+                _signInBloc.add(
+                    MailSignUpEvent(mail: _email, passwd: _passwd));
               }
             })
       ]));
@@ -201,20 +194,21 @@ class _SignInPageState extends State<SignInPage> {
           elevation: 3.0,
           text: S.current.signinup_with_google,
           onPressed: () {
-            this._signInBloc.add(GoogleSignInEvent());
+            _signInBloc.add(GoogleSignInEvent());
             Fluttertoast.showToast(
                 msg: S.current.signinup_with_google_hint_msg);
           },
         ),
-        SizedBox(height: 10),
+        const SizedBox(height: 10),
         (Platform.isIOS)
             ? SignInButton(Buttons.apple,
                 elevation: 3.0,
                 text: S.current.signinup_with_apple, onPressed: () {
-                this._signInBloc.add(AppleSignInEvent());
+                _signInBloc.add(AppleSignInEvent());
                 Fluttertoast.showToast(
                     msg: S.current.signinup_with_apple_hint_msg);
               })
-            : UIConstants.EMPTY_WIDGET
+            : UIConstants.emptyWidget
       ]);
 }
+

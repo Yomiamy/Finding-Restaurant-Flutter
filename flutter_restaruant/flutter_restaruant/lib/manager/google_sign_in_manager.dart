@@ -1,6 +1,8 @@
+import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_restaruant/model/account_info.dart';
-import 'package:flutter_restaruant/utils/tuple.dart';
+import '../data_layer/dto/account_dto.dart';
+import '../domain/entities/user_entity.dart';
+import '../utils/tuple.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class GoogleSignInManager {
@@ -10,7 +12,7 @@ class GoogleSignInManager {
 
   factory GoogleSignInManager() => _singleton;
 
-  Future<Tuple2<AccountInfo?, String>> signInWithGoogle() async {
+  Future<Tuple2<AccountDto?, String>> signInWithGoogle() async {
     try {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -21,8 +23,8 @@ class GoogleSignInManager {
 
       if (googleAuth?.accessToken == null && googleAuth?.idToken == null) {
         // 未登入
-        return Tuple2<AccountInfo?, String>(
-            null, "Error occurred, please retry again");
+        return const Tuple2<AccountDto?, String>(
+            null, 'Error occurred, please retry again');
       }
 
       // Create a new credential
@@ -34,17 +36,17 @@ class GoogleSignInManager {
       // Once signed in, return the UserCredential
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(credential);
-      AccountInfo accountInfo = AccountInfo(
-          type: AccountType.GOOGLE,
-          uid: userCredential.user?.uid ?? "",
-          account: userCredential.user?.email ?? "");
+      AccountDto accountDto = AccountDto(
+          type: AccountType.google,
+          uid: userCredential.user?.uid ?? '',
+          account: userCredential.user?.email ?? '');
 
-      return Tuple2(accountInfo, "");
+      return Tuple2(accountDto, '');
     } on Exception catch (e) {
       // 登入錯誤
-      print("GoogleSignInManager, error = $e");
+      debugPrint('GoogleSignInManager, error = $e');
       return Tuple2(
-          null, "Google sign in fail, please retry again\n${e.toString()}");
+          null, 'Google sign in fail, please retry again\n${e.toString()}');
     }
   }
 
