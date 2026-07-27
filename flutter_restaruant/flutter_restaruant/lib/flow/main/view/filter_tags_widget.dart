@@ -2,9 +2,9 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_restaruant/flow/main/bloc/main_bloc.dart';
-import 'package:flutter_restaruant/model/filter_configs.dart';
-import 'package:flutter_restaruant/utils/ui_constants.dart';
+import '../bloc/main_bloc.dart';
+import '../../../model/filter_configs.dart';
+import '../../../utils/ui_constants.dart';
 
 import 'main_page.dart';
 
@@ -13,21 +13,20 @@ class FilterTagsWidget extends StatelessWidget {
   final LinkedHashMap<FilterConfigType, String> _filterConfigsMap =
       LinkedHashMap<FilterConfigType, String>();
 
-  FilterTagsWidget({Key? key, required FilterConfigs filterConfigs})
-      : _filterConfigs = filterConfigs,
-        super(key: key) {
+  FilterTagsWidget({super.key, required FilterConfigs filterConfigs})
+      : _filterConfigs = filterConfigs {
     if (_filterConfigs.sortBy != null && _filterConfigs.sortBy!.isNotEmpty) {
-      _filterConfigsMap[FilterConfigType.SORTING_RULE] =
+      _filterConfigsMap[FilterConfigType.sortingRule] =
           _filterConfigs.getSortingRuleDispStr(_filterConfigs.sortBy!);
     }
 
     if (_filterConfigs.price != null && _filterConfigs.price! > 0) {
-      _filterConfigsMap[FilterConfigType.PRICE] =
+      _filterConfigsMap[FilterConfigType.price] =
           _filterConfigs.getPriceDispStr(_filterConfigs.price!);
     }
 
     if (_filterConfigs.openAt != null && _filterConfigs.openAt! > 0) {
-      _filterConfigsMap[FilterConfigType.OPEN_AT] =
+      _filterConfigsMap[FilterConfigType.openAt] =
           _filterConfigs.openAtDispStr;
     }
   }
@@ -56,7 +55,7 @@ class FilterTagsWidget extends StatelessWidget {
                 child: FilterChip(
                   label: Text(
                     title,
-                    style: TextStyle(fontSize: UIConstants.xhFontSize),
+                    style: const TextStyle(fontSize: UIConstants.xhFontSize),
                   ),
                   selected: true,
                   selectedColor: Theme.of(context).primaryColor,
@@ -68,7 +67,7 @@ class FilterTagsWidget extends StatelessWidget {
                         ?.updateState(() {
                       final mainBloc = BlocProvider.of<MainBloc>(context);
                       _filterConfigs.clearConfig(type);
-                      mainBloc.add(Reset());
+                      mainBloc.add(const Reset());
                     });
                   },
                 ),
