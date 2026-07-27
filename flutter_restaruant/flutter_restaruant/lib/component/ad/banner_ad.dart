@@ -54,10 +54,7 @@ class _BannerADState extends State<BannerAD> {
 
   Future<AnchoredAdaptiveBannerAdSize?> anchoredAdaptiveBannerAdSize(
       BuildContext context) async {
-    return await AdSize.getAnchoredAdaptiveBannerAdSize(
-      MediaQuery.of(context).orientation == Orientation.portrait
-          ? Orientation.portrait
-          : Orientation.landscape,
+    return await AdSize.getLargeAnchoredAdaptiveBannerAdSize(
       MediaQuery.of(context).size.width.toInt(),
     );
   }
