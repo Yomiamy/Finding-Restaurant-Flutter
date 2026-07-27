@@ -1,46 +1,47 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_restaruant/generated/l10n.dart';
-import 'package:flutter_restaruant/model/yelp_restaurant_summary_info.dart';
-import 'package:flutter_restaruant/utils/ui_constants.dart';
+import '../../../domain/entities/restaurant_entity.dart';
+import '../../../generated/l10n.dart';
+import '../../../utils/rating_helper.dart';
+import '../../../utils/ui_constants.dart';
 import 'package:sprintf/sprintf.dart';
 
 class RestaurantItemCell extends StatelessWidget {
-  static const int IMAGE_H = 110;
-  static const int IMAGE_W = 110;
-  static const double ITEM_H = 110;
+  static const int imageH = 110;
+  static const int imageW = 110;
+  static const double itemH = 110;
 
-  final YelpRestaurantSummaryInfo _summaryInfo;
+  final RestaurantEntity _summaryInfo;
 
-  const RestaurantItemCell({required YelpRestaurantSummaryInfo summaryInfo})
-      : this._summaryInfo = summaryInfo;
+  const RestaurantItemCell({super.key, required RestaurantEntity summaryInfo})
+      : _summaryInfo = summaryInfo;
 
   @override
   Widget build(BuildContext context) {
-    String category = this._summaryInfo.categoriesStr;
+    String category = _summaryInfo.categoriesStr;
 
     return SizedBox(
-        height: ITEM_H,
+        height: itemH,
         child: Container(
-            padding: EdgeInsets.only(left: 10, right: 5, top: 10, bottom: 0),
+            padding: const EdgeInsets.only(left: 10, right: 5, top: 10, bottom: 0),
             child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
               SizedBox(
-                  width: RestaurantItemCell.IMAGE_W.toDouble(),
-                  height: RestaurantItemCell.IMAGE_H.toDouble(),
+                  width: RestaurantItemCell.imageW.toDouble(),
+                  height: RestaurantItemCell.imageH.toDouble(),
                   child: FadeInImage.assetNetwork(
-                      placeholder: UIConstants.NO_IMAGE,
+                      placeholder: UIConstants.noImage,
                       imageErrorBuilder: (context, error, trace) =>
-                          Image.asset(UIConstants.NO_IMAGE),
-                      image: this._summaryInfo.image_url ?? "",
-                      imageCacheHeight: RestaurantItemCell.IMAGE_H,
-                      imageCacheWidth: RestaurantItemCell.IMAGE_W,
-                      placeholderCacheHeight: RestaurantItemCell.IMAGE_H,
-                      placeholderCacheWidth: RestaurantItemCell.IMAGE_W,
+                          Image.asset(UIConstants.noImage),
+                      image: _summaryInfo.imageUrl ?? '',
+                      imageCacheHeight: RestaurantItemCell.imageH,
+                      imageCacheWidth: RestaurantItemCell.imageW,
+                      placeholderCacheHeight: RestaurantItemCell.imageH,
+                      placeholderCacheWidth: RestaurantItemCell.imageW,
                       fit: BoxFit.fill)),
               Expanded(
                   child: Container(
-                      padding: EdgeInsets.only(left: 10),
+                      padding: const EdgeInsets.only(left: 10),
                       child: SizedBox(
-                          height: RestaurantItemCell.ITEM_H,
+                          height: RestaurantItemCell.itemH,
                           child: Column(
                               mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                               crossAxisAlignment: CrossAxisAlignment.start,
@@ -50,12 +51,12 @@ class RestaurantItemCell extends StatelessWidget {
                                     children: <Widget>[
                                       Expanded(
                                           child: Text(
-                                              this._summaryInfo.name ?? "",
+                                              _summaryInfo.name ?? '',
                                               overflow: TextOverflow.ellipsis)),
                                       Text(
-                                          sprintf("%.2fm",
-                                              [this._summaryInfo.distance]),
-                                          style: TextStyle(
+                                          sprintf('%.2fm',
+                                              [_summaryInfo.distance]),
+                                          style: const TextStyle(
                                               fontSize: UIConstants.mFontSize,
                                               color: Colors.grey))
                                     ]),
@@ -63,45 +64,40 @@ class RestaurantItemCell extends StatelessWidget {
                                     direction: Axis.horizontal,
                                     children: <Widget>[
                                       Expanded(
-                                          child: this
-                                              ._summaryInfo
-                                              .getRatingImage(this
-                                                  ._summaryInfo
-                                                  .rating
-                                                  .toString()),
-                                          flex: 1),
+                                          flex: 1,
+                                          child: RatingHelper.getRatingImage(_summaryInfo
+                                              .rating
+                                              ?.toString())),
                                       Expanded(
+                                          flex: 1,
                                           child: Align(
+                                              alignment: Alignment.centerRight,
                                               child: Text(
-                                                  "${this._summaryInfo.review_count}${S.current.review_count_suffix}",
-                                                  style: TextStyle(
+                                                  '${_summaryInfo.reviewCount ?? 0}${S.current.review_count_suffix}',
+                                                  style: const TextStyle(
                                                       fontSize:
                                                           UIConstants.mFontSize,
-                                                      color: Colors.grey)),
-                                              alignment: Alignment.centerRight),
-                                          flex: 1),
+                                                      color: Colors.grey)))),
                                       Expanded(
+                                          flex: 1,
                                           child: Align(
+                                              alignment: Alignment.centerRight,
                                               child: Text(
-                                                  this._summaryInfo.price ?? "",
-                                                  style: TextStyle(
+                                                  _summaryInfo.price ?? '',
+                                                  style: const TextStyle(
                                                       fontSize:
                                                           UIConstants.mFontSize,
-                                                      color: Colors.grey)),
-                                              alignment: Alignment.centerRight),
-                                          flex: 1)
+                                                      color: Colors.grey))))
                                     ]),
                                 Text(
-                                    this
-                                            ._summaryInfo
+                                    _summaryInfo
                                             .location
-                                            ?.display_address
-                                            ?.join("") ??
-                                        "",
+                                            ?.displayAddressStr ??
+                                        '',
                                     overflow: TextOverflow.ellipsis),
                                 Text(category,
                                     overflow: TextOverflow.ellipsis,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: UIConstants.mFontSize,
                                         color: Colors.grey))
                               ]))))
