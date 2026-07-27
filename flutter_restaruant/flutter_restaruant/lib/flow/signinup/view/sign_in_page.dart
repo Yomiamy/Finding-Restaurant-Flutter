@@ -55,7 +55,8 @@ class _SignInPageState extends State<SignInPage> {
             // ignore: unawaited_futures
             Navigator.of(context).pushReplacementNamed(MainPage.routeName);
           } else if (state is SignUpSuccess) {
-            Fluttertoast.showToast(msg: S.current.signin_success_msg);
+            Fluttertoast.showToast(
+                msg: S.current.email_signup_success_hint_msg);
             // ignore: unawaited_futures
             Navigator.of(context).pushReplacementNamed(MainPage.routeName);
           } else if (state is Failure) {
