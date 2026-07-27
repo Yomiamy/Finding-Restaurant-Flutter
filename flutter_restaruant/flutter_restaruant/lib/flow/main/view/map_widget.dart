@@ -1,14 +1,13 @@
 import 'package:flutter/material.dart';
-import 'package:flutter/widgets.dart';
-import 'package:flutter_restaruant/model/yelp_restaurant_summary_info.dart';
-import 'package:flutter_restaruant/utils/ui_constants.dart';
+import '../../../domain/entities/restaurant_entity.dart';
+import '../../../utils/ui_constants.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
-import 'package:flutter_restaruant/generated/l10n.dart';
+import '../../../generated/l10n.dart';
 
 class MapWidget extends StatefulWidget {
-  final List<YelpRestaurantSummaryInfo> _summaryInfos;
+  final List<RestaurantEntity> _summaryInfos;
 
-  const MapWidget(this._summaryInfos);
+  const MapWidget(this._summaryInfos, {super.key});
 
   @override
   State<MapWidget> createState() => _MapPageState();
@@ -23,14 +22,19 @@ class _MapPageState extends State<MapWidget> {
   void initState() {
     super.initState();
 
-    Iterable<Marker> ite = widget._summaryInfos.map((summaryInfo) => Marker(
-        markerId: MarkerId(summaryInfo.id!),
-        position: LatLng(summaryInfo.coordinates!.latitude!,
-            summaryInfo.coordinates!.longitude!),
-        infoWindow: InfoWindow(title: summaryInfo.name),
-        icon: BitmapDescriptor.defaultMarker));
-    this._markers = () {
-      Set<Marker> markers = Set();
+    Iterable<Marker> ite = widget._summaryInfos
+        .where((summaryInfo) =>
+            summaryInfo.id != null &&
+            summaryInfo.coordinates?.latitude != null &&
+            summaryInfo.coordinates?.longitude != null)
+        .map((summaryInfo) => Marker(
+            markerId: MarkerId(summaryInfo.id!),
+            position: LatLng(summaryInfo.coordinates!.latitude!,
+                summaryInfo.coordinates!.longitude!),
+            infoWindow: InfoWindow(title: summaryInfo.name),
+            icon: BitmapDescriptor.defaultMarker));
+    _markers = () {
+      Set<Marker> markers = {};
 
       markers.addAll(ite);
       return markers;
@@ -39,29 +43,28 @@ class _MapPageState extends State<MapWidget> {
 
   @override
   Widget build(BuildContext context) {
-    // TODO:到此
     return GoogleMap(
         initialCameraPosition:
-            CameraPosition(target: UIConstants.MAP_DEFAULT_LOCATION),
-        markers: this._markers,
+            const CameraPosition(target: UIConstants.mapDefaultLocation),
+        markers: _markers,
         myLocationEnabled: true,
         onCameraMove: (position) {
-          this._currentPos = position;
+          _currentPos = position;
         },
         onCameraIdle: () {
           if (_myLocMarker != null) {
-            this._markers.remove(this._myLocMarker);
+            _markers.remove(_myLocMarker);
           }
 
           setState(() {
-            this._myLocMarker = Marker(
-                position: this._currentPos!.target,
-                markerId: MarkerId(UIConstants.MAP_MY_LOCATION_MARK_ID),
+            _myLocMarker = Marker(
+                position: _currentPos!.target,
+                markerId: const MarkerId(UIConstants.mapMyLocationMarkId),
                 infoWindow: InfoWindow(title: S.current.map_my_loc_title),
                 icon: BitmapDescriptor.defaultMarkerWithHue(
                     BitmapDescriptor.hueYellow));
 
-            this._markers.add(this._myLocMarker!);
+            _markers.add(_myLocMarker!);
           });
         });
   }
