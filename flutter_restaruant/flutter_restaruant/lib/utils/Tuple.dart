@@ -20,8 +20,6 @@
 /// final t2 = t1.withItem1('c');
 /// // t2 is a new [Tuple2] object with item1 is 'c' and item2 is 10.
 /// ```
-library tuple;
-
 import 'package:quiver/core.dart';
 
 /// Represents a 2-tuple, or pair.

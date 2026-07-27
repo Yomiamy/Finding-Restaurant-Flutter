@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'dart:io';
 
 import 'package:geolocator/geolocator.dart';
@@ -12,12 +13,13 @@ class Utils {
       .join('&');
 
   static void openUrl(
-      {String? rawUrl = null,
-      String? scheme = null,
-      String? host = null,
-      String path = "",
+      {String? rawUrl,
+      String? scheme,
+      String? host,
+      String path = '',
       Map<String, String> parameters = const <String, String>{}}) async {
     if (rawUrl != null && rawUrl.isNotEmpty) {
+      // ignore: unawaited_futures
       launchUrlString(rawUrl);
     } else if (scheme != null &&
         host != null &&
@@ -30,8 +32,9 @@ class Utils {
         query: encodeQueryParameters(parameters),
       );
 
-      bool isCanLaunch = await canLaunch(uri.toString());
+      bool isCanLaunch = await canLaunchUrl(uri);
       if (isCanLaunch) {
+        // ignore: unawaited_futures
         launchUrl(uri);
       }
     }
@@ -60,8 +63,8 @@ class Utils {
     }
 
     return Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high);
+        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
   }
 
-  static bool isLocaleZh() => Platform.localeName.contains("zh");
+  static bool isLocaleZh() => Platform.localeName.contains('zh');
 }
