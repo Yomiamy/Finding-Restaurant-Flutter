@@ -1,9 +1,9 @@
 import 'package:bloc/bloc.dart';
-import 'package:flutter_restaruant/api/google_api_util.dart';
-import 'package:flutter_restaruant/flow/restaurant/repository/restaurant_detail_repository.dart';
-import 'package:flutter_restaruant/model/yelp_restaurant_detail_info.dart';
-import 'package:flutter_restaruant/model/yelp_restaurant_summary_info.dart';
-import 'package:flutter_restaruant/model/yelp_review_info.dart';
+import '../../../api/google_api_util.dart';
+import '../../../domain/entities/restaurant_detail_entity.dart';
+import '../../../domain/entities/restaurant_entity.dart';
+import '../../../domain/entities/review_entity.dart';
+import '../../../domain/repositories/restaurant_detail_repository.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
@@ -16,17 +16,15 @@ class RestaurantDetailBloc
   final RestaurantDetailRepository _detailRepository;
 
   RestaurantDetailBloc({required RestaurantDetailRepository repository})
-      : this._detailRepository = repository,
-        super(RestaurantDetailInitial()) {
+      : _detailRepository = repository,
+        super(const RestaurantDetailInitial()) {
     on<FetchDetailInfo>((event, emit) async {
       try {
-        emit(InProgress());
+        emit(const InProgress());
 
-        final YelpRestaurantDetailInfo detailInfo = await this
-            ._detailRepository
+        final RestaurantDetailEntity detailInfo = await _detailRepository
             .fetchYelpRestaurantDetailInfo(event.id);
-        final YelpReviewInfo reviewInfo = await this
-            ._detailRepository
+        final ReviewEntity reviewInfo = await _detailRepository
             .fetchYelpRestaurantReviewInfo(event.id);
 
         double lat = detailInfo.coordinates?.latitude ?? 0;
@@ -39,20 +37,20 @@ class RestaurantDetailBloc
             reviewInfo: reviewInfo,
             staticMapUrl: staticMapUrl));
       } on Exception catch (_) {
-        emit(Failure());
+        emit(const Failure());
       }
     });
 
     on<ToggleFavor>((event, emit) async {
       try {
-        emit(InProgress());
+        emit(const InProgress());
 
-        YelpRestaurantSummaryInfo summary = event.summaryInfo;
-        await this._detailRepository.toggleFavor(summary);
+        RestaurantEntity summary = event.summaryInfo;
+        await _detailRepository.toggleFavor(summary);
 
-        emit(ToggleFavorSuccess());
+        emit(const ToggleFavorSuccess());
       } on Exception catch (_) {
-        emit(Failure());
+        emit(const Failure());
       }
     });
   }

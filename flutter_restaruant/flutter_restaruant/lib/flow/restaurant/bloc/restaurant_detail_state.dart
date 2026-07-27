@@ -12,19 +12,19 @@ class RestaurantDetailInitial extends RestaurantDetailState {
   const RestaurantDetailInitial();
 
   @override
-  String toString() => "RestaurantDetail page init state.";
+  String toString() => 'RestaurantDetail page init state.';
 }
 
 class InProgress extends RestaurantDetailState {
   const InProgress();
 
   @override
-  String toString() => "Loading detail info";
+  String toString() => 'Loading detail info';
 }
 
 class Success extends RestaurantDetailState {
-  final YelpRestaurantDetailInfo detailInfo;
-  final YelpReviewInfo reviewInfo;
+  final RestaurantDetailEntity detailInfo;
+  final ReviewEntity reviewInfo;
   final String staticMapUrl;
 
   const Success(
@@ -36,19 +36,19 @@ class Success extends RestaurantDetailState {
   List<Object> get props => [detailInfo.hashCode, reviewInfo.hashCode];
 
   @override
-  String toString() => "Success get detail info ${this.detailInfo}";
+  String toString() => 'Success get detail info $detailInfo';
 }
 
 class Failure extends RestaurantDetailState {
   const Failure();
 
   @override
-  String toString() => "Fail get detail info";
+  String toString() => 'Fail get detail info';
 }
 
 class ToggleFavorSuccess extends RestaurantDetailState {
   const ToggleFavorSuccess();
 
   @override
-  String toString() => "Toggle favor success.";
+  String toString() => 'Toggle favor success.';
 }
