@@ -22,34 +22,40 @@ class _BannerADState extends State<BannerAD> {
 
     widget.adState.initialization.then((value) async {
       if (!mounted) return;
-      size = await anchoredAdaptiveBannerAdSize(context);
+      final adSize = await anchoredAdaptiveBannerAdSize(context);
       if (!mounted) return;
+      // The SDK returns null when it cannot work out a size (e.g. no screen
+      // metrics yet); without a size there is no ad to build.
+      if (adSize == null || widget.adState.bannerAdUnitId == null) return;
       setState(() {
-        if (widget.adState.bannerAdUnitId != null) {
-          banner = BannerAd(
-            listener: widget.adState.adListener,
-            adUnitId: widget.adState.bannerAdUnitId!,
-            request: const AdRequest(),
-            size: size!,
-          )..load();
-        }
+        size = adSize;
+        banner = BannerAd(
+          listener: widget.adState.adListener,
+          adUnitId: widget.adState.bannerAdUnitId!,
+          request: const AdRequest(),
+          size: adSize,
+        )..load();
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return banner ==
-            null //banner is only null for a very less time //don't think that banner will be null if ads fails loads
-        ? const SizedBox()
-        : Container(
-            color: Colors.grey,
-            width: size!.width.toDouble(),
-            height: size!.height.toDouble(),
-            child: AdWidget(
-              ad: banner!,
-            ),
-          );
+    final loadedBanner = banner;
+    final loadedSize = size;
+    // Both stay null until an ad size resolves and the banner is built.
+    if (loadedBanner == null || loadedSize == null) {
+      return const SizedBox();
+    }
+
+    return Container(
+      color: Colors.grey,
+      width: loadedSize.width.toDouble(),
+      height: loadedSize.height.toDouble(),
+      child: AdWidget(
+        ad: loadedBanner,
+      ),
+    );
   }
 
   Future<AnchoredAdaptiveBannerAdSize?> anchoredAdaptiveBannerAdSize(
