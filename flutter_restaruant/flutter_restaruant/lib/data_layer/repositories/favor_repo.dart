@@ -10,12 +10,12 @@ import '../../manager/sign_in_manager.dart';
 class FavorRepo implements FavorRepository {
   static const String favorCollectionName = 'favors';
 
-  String _uid = '';
   List<RestaurantEntity> _favorInfos = [];
 
-  FavorRepo() {
-    _uid = SignInManager().accountDto?.uid ?? '';
-  }
+  /// Resolved per call: this repo is a lazy singleton, so caching the uid in
+  /// the constructor would keep pointing at the previous user after a
+  /// sign-out/sign-in.
+  String get _uid => SignInManager().accountDto?.uid ?? '';
 
   @override
   Future<List<RestaurantEntity>> fetchFavorInfos(

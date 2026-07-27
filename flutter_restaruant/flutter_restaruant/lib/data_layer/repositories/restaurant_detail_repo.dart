@@ -17,11 +17,10 @@ import '../../utils/constants.dart';
 class RestaurantDetailRepo implements RestaurantDetailRepository {
   static const String favorCollectionName = 'favors';
 
-  String _uid = '';
-
-  RestaurantDetailRepo() {
-    _uid = SignInManager().accountDto?.uid ?? '';
-  }
+  /// Resolved per call: this repo is a lazy singleton, so caching the uid in
+  /// the constructor would keep pointing at the previous user after a
+  /// sign-out/sign-in.
+  String get _uid => SignInManager().accountDto?.uid ?? '';
 
   @override
   Future<RestaurantDetailEntity> fetchYelpRestaurantDetailInfo(

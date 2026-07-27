@@ -21,11 +21,13 @@ class MainRepo implements MainRepository {
   int _offset = 0;
   String _keyword = '';
   bool _isLoading = false;
-  String _uid = '';
+
+  /// Resolved per call: this repo is a lazy singleton, so caching the uid in
+  /// the constructor would keep pointing at the previous user after a
+  /// sign-out/sign-in.
+  String get _uid => SignInManager().accountDto?.uid ?? '';
 
   MainRepo() {
-    _uid = SignInManager().accountDto?.uid ?? '';
-
     reset();
   }
 
