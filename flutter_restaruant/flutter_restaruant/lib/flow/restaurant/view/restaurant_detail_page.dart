@@ -79,12 +79,18 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 bloc: _bloc,
                 listener: (context, state) {
                   if (state is ToggleFavorSuccess) {
-                    // _summaryInfo still holds the pre-toggle value: the
-                    // repository persists a copyWith() result instead of
-                    // mutating it, so the new state is the negation.
+                    // The repository persists a copyWith() result instead of
+                    // mutating _summaryInfo, so adopt the new value here.
+                    // RestaurantHeadCell reads _summaryInfo.favor for the
+                    // heart icon, which would otherwise stay stale.
+                    setState(() {
+                      _summaryInfo =
+                          _summaryInfo.copyWith(favor: !_summaryInfo.favor);
+                    });
+
                     String favorToggleMsg = _summaryInfo.favor
-                        ? S.current.favorite_store_remove
-                        : S.current.favorite_store_add;
+                        ? S.current.favorite_store_add
+                        : S.current.favorite_store_remove;
 
                     Fluttertoast.showToast(msg: favorToggleMsg);
                     // Re-fetch detail and build detail page
