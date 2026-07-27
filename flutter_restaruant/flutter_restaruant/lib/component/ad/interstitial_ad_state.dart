@@ -1,23 +1,24 @@
-import 'package:flutter_restaruant/utils/constants.dart';
+import 'package:flutter/foundation.dart';
+import '../../utils/constants.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'dart:io';
 
 class InterstitialADState {
   String? get interstitialAdUnitId => Platform.isAndroid
-      ? Constants.AD_ANDROID_INTERSTITAL_ID
-      : Constants.AD_IOS_INTERSTITAL_ID;
+      ? Constants.adAndroidInterstitialId
+      : Constants.adIosInterstitialId;
 
   var adListener = FullScreenContentCallback(
     onAdShowedFullScreenContent: (InterstitialAd ad) =>
-        print('%ad onAdShowedFullScreenContent.'),
+        debugPrint('%ad onAdShowedFullScreenContent.'),
     onAdDismissedFullScreenContent: (InterstitialAd ad) {
-      print('$ad onAdDismissedFullScreenContent.');
+      debugPrint('$ad onAdDismissedFullScreenContent.');
       ad.dispose();
     },
     onAdFailedToShowFullScreenContent: (InterstitialAd ad, AdError error) {
-      print('$ad onAdFailedToShowFullScreenContent: $error');
+      debugPrint('$ad onAdFailedToShowFullScreenContent: $error');
       ad.dispose();
     },
-    onAdImpression: (InterstitialAd ad) => print('$ad impression occurred.'),
+    onAdImpression: (InterstitialAd ad) => debugPrint('$ad impression occurred.'),
   );
 }

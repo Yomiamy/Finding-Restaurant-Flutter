@@ -5,10 +5,10 @@ import 'banner_ad_state.dart';
 class BannerAD extends StatefulWidget {
   final BannerADState adState;
 
-  const BannerAD({Key? key, required this.adState}) : super(key: key);
+  const BannerAD({super.key, required this.adState});
 
   @override
-  _BannerADState createState() => _BannerADState();
+  State<BannerAD> createState() => _BannerADState();
 }
 
 class _BannerADState extends State<BannerAD> {
@@ -29,7 +29,7 @@ class _BannerADState extends State<BannerAD> {
           banner = BannerAd(
             listener: widget.adState.adListener,
             adUnitId: widget.adState.bannerAdUnitId!,
-            request: AdRequest(),
+            request: const AdRequest(),
             size: size!,
           )..load();
         }
@@ -41,7 +41,7 @@ class _BannerADState extends State<BannerAD> {
   Widget build(BuildContext context) {
     return banner ==
             null //banner is only null for a very less time //don't think that banner will be null if ads fails loads
-        ? SizedBox()
+        ? const SizedBox()
         : Container(
             color: Colors.grey,
             width: size!.width.toDouble(),
