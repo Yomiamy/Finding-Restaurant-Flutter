@@ -181,7 +181,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           }),
       ListTile(
           leading: const Icon(Icons.favorite, color: ColorName.appPrimaryColor),
-          title: Text(appLocalizations.favorite_store_add),
+          title: Text(appLocalizations.favorite_stores),
           onTap: () {
             Navigator.of(context).pop();
             _runAfterDrawerClosed(() {

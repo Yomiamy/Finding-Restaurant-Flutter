@@ -259,6 +259,16 @@ class S {
     return Intl.message('Street View', name: 'street_view', desc: '', args: []);
   }
 
+  /// `favorite stores`
+  String get favorite_stores {
+    return Intl.message(
+      'favorite stores',
+      name: 'favorite_stores',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Add in favorite list`
   String get favorite_store_add {
     return Intl.message(
