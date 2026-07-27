@@ -193,21 +193,16 @@ class _SignInPageState extends State<SignInPage> {
           Buttons.google,
           elevation: 3.0,
           text: S.current.signinup_with_google,
-          onPressed: () {
-            _signInBloc.add(GoogleSignInEvent());
-            Fluttertoast.showToast(
-                msg: S.current.signinup_with_google_hint_msg);
-          },
+          onPressed: () => _signInBloc.add(GoogleSignInEvent()),
         ),
         const SizedBox(height: 10),
         (Platform.isIOS)
-            ? SignInButton(Buttons.apple,
+            ? SignInButton(
+                Buttons.apple,
                 elevation: 3.0,
-                text: S.current.signinup_with_apple, onPressed: () {
-                _signInBloc.add(AppleSignInEvent());
-                Fluttertoast.showToast(
-                    msg: S.current.signinup_with_apple_hint_msg);
-              })
+                text: S.current.signinup_with_apple,
+                onPressed: () => _signInBloc.add(AppleSignInEvent()),
+              )
             : UIConstants.emptyWidget
       ]);
 }
