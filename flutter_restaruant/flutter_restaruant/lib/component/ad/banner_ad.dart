@@ -21,7 +21,9 @@ class _BannerADState extends State<BannerAD> {
     super.didChangeDependencies();
 
     widget.adState.initialization.then((value) async {
+      if (!mounted) return;
       size = await anchoredAdaptiveBannerAdSize(context);
+      if (!mounted) return;
       setState(() {
         if (widget.adState.bannerAdUnitId != null) {
           banner = BannerAd(
