@@ -1,15 +1,14 @@
-import 'dart:io';
+import 'dart:async';
 import 'dart:ui' as ui;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_restaruant/utils/constants.dart';
-import 'package:flutter_restaruant/utils/ui_constants.dart';
-import 'package:google_maps_flutter/google_maps_flutter.dart';
+import 'utils/constants.dart';
+import 'utils/ui_constants.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
-import 'package:provider/provider.dart';
 
 import 'component/ad/banner_ad_state.dart';
+import 'di/injection.dart';
 import 'firebase_options.dart';
 import 'generated/l10n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
@@ -21,14 +20,11 @@ final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  setupInjection();
 
   // MobileAds init
   final initFuture = MobileAds.instance.initialize();
-  final adState = BannerADState(initFuture);
-  // GoogleMap init
-  if (Platform.isAndroid) {
-    AndroidGoogleMapsFlutter.useAndroidViewSurface = true;
-  }
+  getIt.registerSingleton<BannerADState>(BannerADState(initFuture));
 
   Future.wait([
     Constants.init(),
@@ -37,15 +33,17 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     ),
     S.load(ui.PlatformDispatcher.instance.locale),
+  // ignore: unawaited_futures
   ]).then((_) {
     FcmManager().init();
 
-    runApp(Provider.value(
-        value: adState, builder: (context, child) => FindingRestaruantApp()));
+    runApp(const FindingRestaruantApp());
   });
 }
 
 class FindingRestaruantApp extends StatelessWidget {
+  const FindingRestaruantApp({super.key});
+
   // This widget is the root of your application.
   @override
   Widget build(BuildContext context) => PlatformApp(
@@ -59,6 +57,6 @@ class FindingRestaruantApp extends StatelessWidget {
       ],
       supportedLocales: S.delegate.supportedLocales,
       debugShowCheckedModeBanner: false,
-      title: UIConstants.APP_TITLE,
-      routes: ROUTES_TABLE);
+      title: UIConstants.appTitle,
+      routes: routesTable);
 }
