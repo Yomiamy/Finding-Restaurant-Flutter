@@ -26,7 +26,7 @@ class RestaurantBusinessHourCell extends StatelessWidget {
       Widget businessTimeWidget;
       List<Widget> businessTimeWidgets;
 
-      if (!businessTimeWidgetMap.containsKey(businessTimeInfo.day)) {
+      if (!businessTimeWidgetMap.containsKey(yelpWeekDay)) {
         businessTimeWidgets = <Widget>[];
         businessTimeWidget =
             _createBusinessTimeRow(isToday, dayStr, start, end);
