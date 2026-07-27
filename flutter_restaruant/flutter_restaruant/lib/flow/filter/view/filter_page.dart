@@ -1,19 +1,19 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_restaruant/model/filter_configs.dart';
-import 'package:flutter_restaruant/utils/tuple.dart';
-import 'package:flutter_restaruant/utils/ui_constants.dart';
-import 'package:flutter_restaruant/generated/l10n.dart';
-import 'package:flutter_restaruant/gen/colors.gen.dart';
+import '../../../model/filter_configs.dart';
+import '../../../utils/tuple.dart';
+import '../../../utils/ui_constants.dart';
+import '../../../generated/l10n.dart';
+import '../../../gen/colors.gen.dart';
 
 class FilterPage extends StatefulWidget {
-  static const ROUTE_NAME = "/FilterPage";
+  static const routeName = '/FilterPage';
 
-  const FilterPage({Key? key}) : super(key: key);
+  const FilterPage({super.key});
 
   @override
-  _FilterPageState createState() => _FilterPageState();
+  State<FilterPage> createState() => _FilterPageState();
 }
 
 class _FilterPageState extends State<FilterPage> {
@@ -42,76 +42,76 @@ class _FilterPageState extends State<FilterPage> {
     return Scaffold(
         appBar: AppBar(
             leading: PlatformIconButton(
-                padding: EdgeInsets.all(0),
+                padding: const EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
                 materialIcon:
-                    Icon(Icons.arrow_back, color: ColorName.backBtnColor),
+                    const Icon(Icons.arrow_back, color: ColorName.backBtnColor),
                 cupertinoIcon:
-                    Icon(CupertinoIcons.back, color: ColorName.backBtnColor)),
+                    const Icon(CupertinoIcons.back, color: ColorName.backBtnColor)),
             actions: [
               PlatformElevatedButton(
                   color: ColorName.appPrimaryColor,
-                  padding: EdgeInsets.all(0),
+                  padding: const EdgeInsets.all(0),
                   onPressed: () {
                     FilterConfigs configs = FilterConfigs.fromUI(
-                        priceIndex: this._priceIndex,
-                        openAtDate: this._openAtDateTime,
-                        sortingRuleIndex: this._sortByIndex);
+                        priceIndex: _priceIndex,
+                        openAtDate: _openAtDateTime,
+                        sortingRuleIndex: _sortByIndex);
                     Tuple2<FilterConfigs, dynamic> result =
                         Tuple2(configs, null);
                     Navigator.pop(context, result);
                   },
                   child: Text(S.current.apply,
-                      style: TextStyle(
+                      style: const TextStyle(
                           color: Colors.white,
                           fontSize: UIConstants.xhFontSize)))
             ],
             title: Text(S.current.filter_rules,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: ColorName.appPrimaryColor),
         body: ListView(children: <Widget>[
           // Price level
           Padding(
-              padding: EdgeInsets.only(left: 20, top: 15),
+              padding: const EdgeInsets.only(left: 20, top: 15),
               child: Text(S.current.filter_price,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: UIConstants.xxxhFontSize))),
-          this._createSegmentWidget(
-              initValue: this._priceIndex,
+          _createSegmentWidget(
+              initValue: _priceIndex,
               segmentItems: ['\$', '\$\$', '\$\$\$', '\$\$\$\$'],
               valueChange: (i) {
-                this._priceIndex = i;
+                _priceIndex = i;
               }),
 
           // Business hour
           Padding(
-              padding: EdgeInsets.only(left: 20, top: 15, right: 20),
+              padding: const EdgeInsets.only(left: 20, top: 15, right: 20),
               child: Text(S.current.filter_business_hour,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: UIConstants.xxxhFontSize))),
           SizedBox(
               width: MediaQuery.of(context).size.width.toInt() - 20,
               height: 200,
               child: CupertinoDatePicker(
-                  initialDateTime: this._openAtDateTime,
+                  initialDateTime: _openAtDateTime,
                   use24hFormat: true,
                   mode: CupertinoDatePickerMode.dateAndTime,
                   onDateTimeChanged: (dateTime) {
-                    this._openAtDateTime = dateTime;
+                    _openAtDateTime = dateTime;
                   })),
 
           // Sorting rule
           Padding(
-              padding: EdgeInsets.only(left: 20, top: 15),
+              padding: const EdgeInsets.only(left: 20, top: 15),
               child: Text(S.current.filter_sorting_rule,
-                  style: TextStyle(
+                  style: const TextStyle(
                       fontWeight: FontWeight.bold,
                       fontSize: UIConstants.xxxhFontSize))),
-          this._createSegmentWidget(
-              initValue: this._sortByIndex,
+          _createSegmentWidget(
+              initValue: _sortByIndex,
               segmentItems: [
                 S.current.filter_sorting_rule_best_match,
                 S.current.filter_sorting_rule_distance,
@@ -119,7 +119,7 @@ class _FilterPageState extends State<FilterPage> {
                 S.current.filter_sorting_review_count
               ],
               valueChange: (i) {
-                this._sortByIndex = i;
+                _sortByIndex = i;
               })
         ]));
   }
@@ -134,13 +134,13 @@ class _FilterPageState extends State<FilterPage> {
       children[i] = Text(segmentItems[i]);
     }
     return StatefulBuilder(
-        builder: (context, _setState) => Padding(
-            padding: EdgeInsets.only(left: 5, top: 15),
+        builder: (context, setState) => Padding(
+            padding: const EdgeInsets.only(left: 5, top: 15),
             child: CupertinoSegmentedControl<int>(
                 groupValue: initValue,
                 children: children,
                 onValueChanged: (i) {
-                  _setState(() {
+                  setState(() {
                     initValue = i;
                     valueChange(i);
                   });
