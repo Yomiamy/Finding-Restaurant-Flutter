@@ -45,7 +45,7 @@ void main() {
     });
 
     test('GoogleSignInEvent passes correct parameters to repository', () async {
-      final account = UserEntity(type: AccountType.google, uid: '123');
+      const account = UserEntity(type: AccountType.google, uid: '123');
       mockRepo.returnAccountInfo = account;
 
       bloc.add(GoogleSignInEvent());
@@ -54,7 +54,7 @@ void main() {
         bloc.stream,
         emitsInOrder([
           const InProgress(),
-          SignInSuccess(userEntity: account),
+          const SignInSuccess(userEntity: account),
         ]),
       );
 
@@ -63,7 +63,7 @@ void main() {
     });
 
     test('MailSignUpEvent passes correct parameters to repository', () async {
-      final account = UserEntity(type: AccountType.mail, uid: '456');
+      const account = UserEntity(type: AccountType.mail, uid: '456');
       mockRepo.returnAccountInfo = account;
 
       bloc.add(const MailSignUpEvent(mail: 'test@mail.com', passwd: 'secret'));
@@ -72,7 +72,7 @@ void main() {
         bloc.stream,
         emitsInOrder([
           const InProgress(),
-          SignUpSuccess(userEntity: account),
+          const SignUpSuccess(userEntity: account),
         ]),
       );
 
