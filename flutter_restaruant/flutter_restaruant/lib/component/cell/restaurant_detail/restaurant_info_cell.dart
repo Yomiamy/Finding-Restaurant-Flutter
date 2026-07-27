@@ -1,106 +1,108 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_restaruant/model/yelp_restaurant_detail_info.dart';
-import 'package:flutter_restaruant/utils/constants.dart';
-import 'package:flutter_restaruant/utils/ui_constants.dart';
-import 'package:flutter_restaruant/utils/utils.dart';
+import '../../../domain/entities/restaurant_detail_entity.dart';
+import '../../../utils/constants.dart';
+import '../../../utils/rating_helper.dart';
+import '../../../utils/ui_constants.dart';
+import '../../../utils/utils.dart';
 import 'package:sprintf/sprintf.dart';
-import 'package:flutter_restaruant/generated/l10n.dart';
+import '../../../generated/l10n.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RestaurantInfoCell extends StatelessWidget {
-  static const int _MAP_IMAGE_W = 140;
-  static const int _MAP_IMAGE_H = 140;
+  static const int _mapImageW = 140;
+  static const int _mapImageH = 140;
 
-  final YelpRestaurantDetailInfo _detailInfo;
+  final RestaurantDetailEntity _detailInfo;
   final String staticMapUrl;
 
   const RestaurantInfoCell(
-      {Key? key = const Key("RestaurantImageCell"),
-      required YelpRestaurantDetailInfo detailInfo,
+      {super.key = const Key('RestaurantImageCell'),
+      required RestaurantDetailEntity detailInfo,
       required this.staticMapUrl})
-      : this._detailInfo = detailInfo,
-        super(key: key);
+      : _detailInfo = detailInfo;
 
   @override
   Widget build(BuildContext context) {
-    String category = this
-            ._detailInfo
+    String category = _detailInfo
             .categories
-            ?.map((category) => category.title ?? "")
-            .join(" ") ??
-        "";
-    String openStatus =
-        (this._detailInfo.hours?[0].is_open_now ?? false) ? "OPEN" : "CLOSE";
+            ?.map((category) => category.title ?? '')
+            .join(' ') ??
+        '';
+    bool isOpen = (_detailInfo.hours != null &&
+            _detailInfo.hours!.isNotEmpty)
+        ? (_detailInfo.hours![0].isOpenNow ?? false)
+        : false;
+    String openStatus = isOpen ? 'OPEN' : 'CLOSE';
 
     return Padding(
-        padding: EdgeInsets.only(left: 5, right: 5, top: 10),
+        padding: const EdgeInsets.only(left: 5, right: 5, top: 10),
         child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
           SizedBox(
-              width: RestaurantInfoCell._MAP_IMAGE_H.toDouble(),
-              height: RestaurantInfoCell._MAP_IMAGE_W.toDouble(),
+              width: RestaurantInfoCell._mapImageH.toDouble(),
+              height: RestaurantInfoCell._mapImageW.toDouble(),
               child: GestureDetector(
                   onTap: () {
                     showCupertinoModalPopup(
                         context: context, builder: buildNavigationActionSheet);
                   },
                   child: FadeInImage.assetNetwork(
-                      placeholder: UIConstants.NO_IMAGE,
+                      placeholder: UIConstants.noImage,
                       imageErrorBuilder: (context, error, trace) =>
-                          Image.asset(UIConstants.NO_IMAGE),
-                      image: this.staticMapUrl,
-                      imageCacheHeight: RestaurantInfoCell._MAP_IMAGE_H,
-                      imageCacheWidth: RestaurantInfoCell._MAP_IMAGE_W,
-                      placeholderCacheHeight: RestaurantInfoCell._MAP_IMAGE_H,
-                      placeholderCacheWidth: RestaurantInfoCell._MAP_IMAGE_W,
+                          Image.asset(UIConstants.noImage),
+                      image: staticMapUrl,
+                      imageCacheHeight: RestaurantInfoCell._mapImageH,
+                      imageCacheWidth: RestaurantInfoCell._mapImageW,
+                      placeholderCacheHeight: RestaurantInfoCell._mapImageH,
+                      placeholderCacheWidth: RestaurantInfoCell._mapImageW,
                       fit: BoxFit.fill))),
           Expanded(
               child: Container(
-                  padding: EdgeInsets.only(left: 10),
+                  padding: const EdgeInsets.only(left: 10),
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
                         Text(
-                            this
-                                    ._detailInfo
+                            _detailInfo
                                     .location
-                                    ?.display_address
-                                    ?.join("") ??
-                                "",
-                            style: TextStyle(fontWeight: FontWeight.w700),
+                                    ?.displayAddressStr ??
+                                '',
+                            style: const TextStyle(fontWeight: FontWeight.w700),
                             overflow: TextOverflow.ellipsis),
                         Row(children: <Widget>[
                           Text(S.current.store_phone,
-                              style: TextStyle(fontWeight: FontWeight.w700)),
-                          SizedBox(width: 10),
+                              style: const TextStyle(fontWeight: FontWeight.w700)),
+                          const SizedBox(width: 10),
                           GestureDetector(
                               onTap: () {
-                                launch("tel://${this._detailInfo.phone ?? ""}");
+                                String phoneStr = _detailInfo.phone ?? '';
+                                if (phoneStr.isNotEmpty) {
+                                  launchUrl(Uri.parse('tel://$phoneStr'));
+                                }
                               },
-                              child: Text(this._detailInfo.phone ?? "",
-                                  style: TextStyle(color: Colors.blue)))
+                              child: Text(_detailInfo.phone ?? '',
+                                  style: const TextStyle(color: Colors.blue)))
                         ]),
                         Text(category,
                             overflow: TextOverflow.ellipsis,
-                            style: TextStyle(color: Colors.grey)),
-                        this
-                            ._detailInfo
-                            .getRatingImage(this._detailInfo.rating.toString()),
+                            style: const TextStyle(color: Colors.grey)),
+                        RatingHelper.getRatingImage(
+                            _detailInfo.rating?.toString()),
                         Text(
-                            "${this._detailInfo.review_count}${S.current.review_count_suffix}",
-                            style: TextStyle(
+                            '${_detailInfo.reviewCount ?? 0}${S.current.review_count_suffix}',
+                            style: const TextStyle(
                                 fontSize: UIConstants.mFontSize,
                                 color: Colors.grey)),
                         DecoratedBox(
-                            decoration: BoxDecoration(
+                            decoration: const BoxDecoration(
                                 color: Colors.red,
                                 borderRadius:
                                     BorderRadius.all(Radius.circular(15.0))),
                             child: Padding(
-                                padding: EdgeInsets.all(3),
+                                padding: const EdgeInsets.all(3),
                                 child: Text(openStatus,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: UIConstants.lFontSize,
                                         color: Colors.white))))
                       ])))
@@ -120,16 +122,16 @@ class RestaurantInfoCell extends StatelessWidget {
             CupertinoActionSheetAction(
                 child: Text(S.current.route_navigation),
                 onPressed: () {
-                  double lat = this._detailInfo.coordinates?.latitude ?? 0;
-                  double lng = this._detailInfo.coordinates?.longitude ?? 0;
+                  double lat = _detailInfo.coordinates?.latitude ?? 0;
+                  double lng = _detailInfo.coordinates?.longitude ?? 0;
 
                   Utils.openUrl(
-                      scheme: Constants.HTTPS_SCHEME,
-                      host: Constants.GOOGLE_MAP_HOST,
-                      path: Constants.GOOGLE_MAP_NAVIGATION_PATH,
+                      scheme: Constants.httpsScheme,
+                      host: Constants.googleMapHost,
+                      path: Constants.googleMapNavigationPath,
                       parameters: <String, String>{
-                        Constants.GOOGLE_MAP_NAVIGATION_LATLNG:
-                            sprintf("%f,%f", [lat, lng]),
+                        Constants.googleMapNavigationLatLng:
+                            sprintf('%f,%f', [lat, lng]),
                       });
                   Navigator.pop(context);
                 }),
@@ -137,18 +139,18 @@ class RestaurantInfoCell extends StatelessWidget {
                 isDefaultAction: false,
                 child: Text(S.current.street_view),
                 onPressed: () {
-                  double lat = this._detailInfo.coordinates?.latitude ?? 0;
-                  double lng = this._detailInfo.coordinates?.longitude ?? 0;
+                  double lat = _detailInfo.coordinates?.latitude ?? 0;
+                  double lng = _detailInfo.coordinates?.longitude ?? 0;
 
                   Utils.openUrl(
-                      scheme: Constants.HTTPS_SCHEME,
-                      host: Constants.GOOGLE_MAP_HOST,
-                      path: Constants.GOOGLE_MAP_NAVIGATION_PATH,
+                      scheme: Constants.httpsScheme,
+                      host: Constants.googleMapHost,
+                      path: Constants.googleMapNavigationPath,
                       parameters: <String, String>{
-                        Constants.GOOGLE_MAP_NAVIGATION_LATLNG: "",
-                        Constants.GOOGLE_MAP_STREETVIEW_LAYER: "c",
-                        Constants.GOOGLE_MAP_STREETVIEW_LATLNG:
-                            sprintf("%f,%f", [lat, lng])
+                        Constants.googleMapNavigationLatLng: '',
+                        Constants.googleMapStreetviewLayer: 'c',
+                        Constants.googleMapStreetviewLatLng:
+                            sprintf('%f,%f', [lat, lng])
                       });
                   Navigator.pop(context);
                 })

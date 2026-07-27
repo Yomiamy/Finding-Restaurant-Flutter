@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_restaruant/flow/restaurant/bloc/restaurant_detail_bloc.dart';
-import 'package:flutter_restaruant/model/yelp_restaurant_summary_info.dart';
-import 'package:flutter_restaruant/utils/ui_constants.dart';
+import '../../../domain/entities/restaurant_entity.dart';
+import '../../../flow/restaurant/bloc/restaurant_detail_bloc.dart';
+import '../../../utils/ui_constants.dart';
 
 class RestaurantHeadCell extends StatelessWidget {
-  static const int HEAD_IMAGE_H = 200;
+  static const int headImageH = 200;
 
   final String _imageUrl;
-  final YelpRestaurantSummaryInfo _summaryInfo;
-  RestaurantHeadCell(
-      {Key? key = const Key("RestaurantHeadCell"),
+  final RestaurantEntity _summaryInfo;
+  const RestaurantHeadCell(
+      {super.key = const Key('RestaurantHeadCell'),
       required String imageUrl,
-      required YelpRestaurantSummaryInfo summaryInfo})
-      : this._imageUrl = imageUrl,
-        this._summaryInfo = summaryInfo,
-        super(key: key);
+      required RestaurantEntity summaryInfo})
+      : _imageUrl = imageUrl,
+        _summaryInfo = summaryInfo;
 
   @override
   Widget build(BuildContext context) {
@@ -24,34 +23,34 @@ class RestaurantHeadCell extends StatelessWidget {
     return Stack(
       children: <Widget>[
         FadeInImage.assetNetwork(
-            placeholder: UIConstants.NO_IMAGE,
+            placeholder: UIConstants.noImage,
             imageErrorBuilder: (context, error, trace) =>
-                Image.asset(UIConstants.NO_IMAGE),
-            image: this._imageUrl,
-            imageCacheHeight: RestaurantHeadCell.HEAD_IMAGE_H,
+                Image.asset(UIConstants.noImage),
+            image: _imageUrl,
+            imageCacheHeight: RestaurantHeadCell.headImageH,
             imageCacheWidth: MediaQuery.of(context).size.width.toInt(),
-            placeholderCacheHeight: RestaurantHeadCell.HEAD_IMAGE_H,
+            placeholderCacheHeight: RestaurantHeadCell.headImageH,
             placeholderCacheWidth: MediaQuery.of(context).size.width.toInt(),
             fit: BoxFit.fill,
             width: MediaQuery.of(context).size.width,
-            height: RestaurantHeadCell.HEAD_IMAGE_H.toDouble()),
+            height: RestaurantHeadCell.headImageH.toDouble()),
         StatefulBuilder(builder: (context, setState) {
           return GestureDetector(
               onTap: () {
-                bloc.add(ToggleFavor(summaryInfo: this._summaryInfo));
+                bloc.add(ToggleFavor(summaryInfo: _summaryInfo));
               },
               child: Align(
                   alignment: Alignment.topRight,
                   child: Padding(
-                      padding: EdgeInsets.only(top: 10, right: 10),
+                      padding: const EdgeInsets.only(top: 10, right: 10),
                       child: CircleAvatar(
                           backgroundColor: Colors.white,
                           child: Image.asset(
-                              this._summaryInfo.favor
-                                  ? "images/ic_favor_fill.png"
-                                  : "images/ic_favor_empty.png",
-                              width: UIConstants.FAVOR_IMAGE_W,
-                              height: UIConstants.FAVOR_IMAGE_H,
+                              _summaryInfo.favor
+                                  ? 'images/ic_favor_fill.png'
+                                  : 'images/ic_favor_empty.png',
+                              width: UIConstants.favorImageW,
+                              height: UIConstants.favorImageH,
                               fit: BoxFit.fill)))));
         })
       ],
