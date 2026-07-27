@@ -1,29 +1,30 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_restaruant/component/empty_data_widget.dart';
-import 'package:flutter_restaruant/component/loading_widget.dart';
-import 'package:flutter_restaruant/component/ad/interstitial_ad.dart';
-import 'package:flutter_restaruant/component/ad/interstitial_ad_state.dart';
-import 'package:flutter_restaruant/component/cell/restaurant_detail/restaurant_detail_cell_collection.dart';
-import 'package:flutter_restaruant/model/yelp_restaurant_summary_info.dart';
-import 'package:flutter_restaruant/utils/tuple.dart';
-import 'package:flutter_restaruant/utils/ui_constants.dart';
+import '../../../component/empty_data_widget.dart';
+import '../../../component/loading_widget.dart';
+import '../../../component/ad/interstitial_ad.dart';
+import '../../../component/ad/interstitial_ad_state.dart';
+import '../../../component/cell/restaurant_detail/restaurant_detail_cell_collection.dart';
+import '../../../domain/entities/restaurant_entity.dart';
+import '../../../manager/ad_counter_manager.dart';
+import '../../../utils/tuple.dart';
+import '../../../utils/ui_constants.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../bloc/restaurant_detail_bloc.dart';
-import 'package:flutter_restaruant/generated/l10n.dart';
-import 'package:flutter_restaruant/gen/colors.gen.dart';
+import '../../../generated/l10n.dart';
+import '../../../gen/colors.gen.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
-  static const ROUTE_NAME = "/RestaurantDetailPage";
+  static const routeName = '/RestaurantDetailPage';
 
-  const RestaurantDetailPage();
+  const RestaurantDetailPage({super.key});
 
   @override
   State<StatefulWidget> createState() => RestaurantDetailPageState();
 }
 
 class RestaurantDetailPageState extends State<RestaurantDetailPage> {
-  late YelpRestaurantSummaryInfo _summaryInfo;
+  late RestaurantEntity _summaryInfo;
   late RestaurantDetailBloc _bloc;
   bool _isInit = false;
 
@@ -32,9 +33,9 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
     super.didChangeDependencies();
     if (!_isInit) {
       final args = ModalRoute.of(context)!.settings.arguments
-          as Tuple2<YelpRestaurantSummaryInfo, dynamic>;
-      this._summaryInfo = args.item1;
-      this._bloc.add(FetchDetailInfo(id: this._summaryInfo.id!));
+          as Tuple2<RestaurantEntity, dynamic>;
+      _summaryInfo = args.item1;
+      _bloc.add(FetchDetailInfo(id: _summaryInfo.id!));
       _isInit = true;
     }
   }
@@ -43,11 +44,9 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
   void initState() {
     super.initState();
 
-    this._bloc = BlocProvider.of<RestaurantDetailBloc>(context);
+    _bloc = BlocProvider.of<RestaurantDetailBloc>(context);
 
-    if (--UIConstants.InterstitialADCountDown <= 0) {
-      UIConstants.InterstitialADCountDown = 3;
-
+    if (AdCounterManager().decrementAndCheckShouldShowAd()) {
       // iOS DetailPage才有全屏AD
       IntersitialAD(adState: InterstitialADState()).load();
     }
@@ -58,26 +57,26 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
     return Scaffold(
         appBar: AppBar(
             leading: IconButton(
-                padding: EdgeInsets.all(0),
+                padding: const EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
-                icon: Icon(Icons.arrow_back, color: ColorName.backBtnColor)),
+                icon: const Icon(Icons.arrow_back, color: ColorName.backBtnColor)),
             title: BlocBuilder<RestaurantDetailBloc, RestaurantDetailState>(
-                bloc: this._bloc,
+                bloc: _bloc,
                 builder: (context, state) {
                   if (state is Success) {
-                    return Text(state.detailInfo.name ?? "",
-                        style: TextStyle(
+                    return Text(state.detailInfo.name ?? '',
+                        style: const TextStyle(
                             color: Colors.white,
                             fontSize: UIConstants.xxxhFontSize));
                   } else {
-                    return Text("");
+                    return const Text('');
                   }
                 }),
             backgroundColor: ColorName.appPrimaryColor),
         body: Padding(
-            padding: EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.only(bottom: 10),
             child: BlocConsumer<RestaurantDetailBloc, RestaurantDetailState>(
-                bloc: this._bloc,
+                bloc: _bloc,
                 listener: (context, state) {
                   if (state is ToggleFavorSuccess) {
                     // _summaryInfo still holds the pre-toggle value: the
@@ -89,17 +88,17 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
 
                     Fluttertoast.showToast(msg: favorToggleMsg);
                     // Re-fetch detail and build detail page
-                    this._bloc.add(FetchDetailInfo(id: this._summaryInfo.id!));
+                    _bloc.add(FetchDetailInfo(id: _summaryInfo.id!));
                   }
                 },
                 builder: (context, state) {
                   if (state is InProgress || state is ToggleFavorSuccess) {
-                    return Center(child: LoadingWidget());
+                    return const Center(child: LoadingWidget());
                   } else if (state is Success) {
                     return ListView(children: [
                       RestaurantHeadCell(
-                          imageUrl: state.detailInfo.image_url ?? "",
-                          summaryInfo: this._summaryInfo),
+                          imageUrl: state.detailInfo.imageUrl ?? '',
+                          summaryInfo: _summaryInfo),
                       RestaurantInfoCell(
                           detailInfo: state.detailInfo,
                           staticMapUrl: state.staticMapUrl),
@@ -112,7 +111,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                           reviewInfos: state.reviewInfo.reviews ?? [])
                     ]);
                   } else {
-                    return EmptyDataWidget();
+                    return const EmptyDataWidget();
                   }
                 })));
   }
