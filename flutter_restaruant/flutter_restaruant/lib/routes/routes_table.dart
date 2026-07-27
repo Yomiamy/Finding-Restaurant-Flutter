@@ -1,42 +1,45 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_restaruant/flow/favor/bloc/favor_bloc.dart';
-import 'package:flutter_restaruant/flow/favor/repository/favor_repository.dart';
-import 'package:flutter_restaruant/flow/favor/view/favor_page.dart';
-import 'package:flutter_restaruant/flow/photoviewr/view/photo_viewer.dart';
-import 'package:flutter_restaruant/flow/filter/view/filter_page.dart';
-import 'package:flutter_restaruant/flow/main/bloc/main_bloc.dart';
-import 'package:flutter_restaruant/flow/main/repository/main_repository.dart';
-import 'package:flutter_restaruant/flow/main/view/main_page.dart';
-import 'package:flutter_restaruant/flow/restaurant/view/restaurant_detail_page.dart';
-import 'package:flutter_restaruant/flow/restaurant/bloc/restaurant_detail_bloc.dart';
-import 'package:flutter_restaruant/flow/restaurant/repository/restaurant_detail_repository.dart';
-import 'package:flutter_restaruant/flow/settings/bloc/settings_bloc.dart';
-import 'package:flutter_restaruant/flow/settings/repository/settings_repository.dart';
-import 'package:flutter_restaruant/flow/settings/view/settings_page.dart';
-import 'package:flutter_restaruant/flow/signinup/bloc/sign_in_bloc.dart';
-import 'package:flutter_restaruant/flow/signinup/repository/sign_in_repository.dart';
-import 'package:flutter_restaruant/flow/signinup/view/sign_in_page.dart';
-import 'package:flutter_restaruant/flow/splash/view/splash_page.dart';
+import 'package:get_it/get_it.dart';
+import '../domain/repositories/favor_repository.dart';
+import '../domain/repositories/main_repository.dart';
+import '../domain/repositories/restaurant_detail_repository.dart';
+import '../domain/repositories/settings_repository.dart';
+import '../domain/repositories/sign_in_repository.dart';
+import '../flow/favor/bloc/favor_bloc.dart';
+import '../flow/favor/view/favor_page.dart';
+import '../flow/filter/view/filter_page.dart';
+import '../flow/main/bloc/main_bloc.dart';
+import '../flow/main/view/main_page.dart';
+import '../flow/photoviewr/view/photo_viewer.dart';
+import '../flow/restaurant/bloc/restaurant_detail_bloc.dart';
+import '../flow/restaurant/view/restaurant_detail_page.dart';
+import '../flow/settings/bloc/settings_bloc.dart';
+import '../flow/settings/view/settings_page.dart';
+import '../flow/signinup/bloc/sign_in_bloc.dart';
+import '../flow/signinup/view/sign_in_page.dart';
+import '../flow/splash/view/splash_page.dart';
 
-Map<String, WidgetBuilder> ROUTES_TABLE = <String, WidgetBuilder>{
-  SplashPage.ROUTE_NAME: (context) => SplashPage(),
-  SignInPage.ROUTE_NAME: (context) => BlocProvider<SignInBloc>(
-      create: (_) => SignInBloc(repository: SignInRepository()),
-      child: SignInPage()),
-  MainPage.ROUTE_NAME: (context) => BlocProvider<MainBloc>(
-      create: (_) => MainBloc(repository: MainRepository()), child: MainPage()),
-  RestaurantDetailPage.ROUTE_NAME: (context) =>
+final Map<String, WidgetBuilder> routesTable = <String, WidgetBuilder>{
+  SplashPage.routeName: (context) => const SplashPage(),
+  SignInPage.routeName: (context) => BlocProvider<SignInBloc>(
+      create: (_) => SignInBloc(repository: GetIt.I<SignInRepository>()),
+      child: const SignInPage()),
+  MainPage.routeName: (context) => BlocProvider<MainBloc>(
+      create: (_) => MainBloc(repository: GetIt.I<MainRepository>()),
+      child: const MainPage()),
+  RestaurantDetailPage.routeName: (context) =>
       BlocProvider<RestaurantDetailBloc>(
-          create: (_) =>
-              RestaurantDetailBloc(repository: RestaurantDetailRepository()),
-          child: RestaurantDetailPage()),
-  FavorPage.ROUTE_NAME: (context) => BlocProvider<FavorBloc>(
-      create: (_) => FavorBloc(repository: FavorRepository()),
-      child: FavorPage()),
-  FilterPage.ROUTE_NAME: (context) => FilterPage(),
-  PhotoViewer.ROUTE_NAME: (context) => PhotoViewer(),
-  SettingsPage.ROUTE_NAME: (context) => BlocProvider<SettingsBloc>(
-      create: (_) => SettingsBloc(repository: const SettingsRepository()),
-      child: SettingsPage())
+          create: (_) => RestaurantDetailBloc(
+              repository: GetIt.I<RestaurantDetailRepository>()),
+          child: const RestaurantDetailPage()),
+  FavorPage.routeName: (context) => BlocProvider<FavorBloc>(
+      create: (_) => FavorBloc(repository: GetIt.I<FavorRepository>()),
+      child: const FavorPage()),
+  FilterPage.routeName: (context) => const FilterPage(),
+  PhotoViewer.routeName: (context) => const PhotoViewer(),
+  SettingsPage.routeName: (context) => BlocProvider<SettingsBloc>(
+      create: (_) =>
+          SettingsBloc(repository: GetIt.I<SettingsRepository>()),
+      child: const SettingsPage())
 };
