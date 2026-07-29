@@ -33,7 +33,14 @@ class Success extends RestaurantDetailState {
       required this.staticMapUrl});
 
   @override
-  List<Object> get props => [detailInfo.hashCode, reviewInfo.hashCode];
+  List<Object> get props => [
+        detailInfo.name ?? '',
+        detailInfo.imageUrl ?? '',
+        detailInfo.reviewCount ?? 0,
+        detailInfo.rating ?? 0,
+        staticMapUrl,
+        reviewInfo.reviews?.length ?? 0,
+      ];
 
   @override
   String toString() => 'Success get detail info $detailInfo';
