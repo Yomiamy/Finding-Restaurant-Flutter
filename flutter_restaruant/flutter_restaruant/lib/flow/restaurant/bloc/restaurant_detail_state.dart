@@ -47,8 +47,13 @@ class Failure extends RestaurantDetailState {
 }
 
 class ToggleFavorSuccess extends RestaurantDetailState {
-  const ToggleFavorSuccess();
+  final RestaurantEntity summaryInfo;
+
+  const ToggleFavorSuccess({required this.summaryInfo});
 
   @override
-  String toString() => 'Toggle favor success.';
+  List<Object> get props => [summaryInfo.id ?? '', summaryInfo.favor];
+
+  @override
+  String toString() => 'Toggle favor success, favor=${summaryInfo.favor}';
 }

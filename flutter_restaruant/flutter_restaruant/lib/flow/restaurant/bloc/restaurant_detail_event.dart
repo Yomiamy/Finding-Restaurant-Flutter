@@ -27,4 +27,7 @@ class ToggleFavor extends RestaurantDetailEvent {
 
   @override
   String toString() => 'ToggleFavor event.';
+
+  @override
+  List<Object> get props => [summaryInfo.id ?? '', summaryInfo.favor];
 }

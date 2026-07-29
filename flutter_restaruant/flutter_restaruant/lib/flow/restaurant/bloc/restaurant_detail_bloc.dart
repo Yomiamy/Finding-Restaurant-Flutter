@@ -45,10 +45,10 @@ class RestaurantDetailBloc
       try {
         emit(const InProgress());
 
-        RestaurantEntity summary = event.summaryInfo;
-        await _detailRepository.toggleFavor(summary);
+        final RestaurantEntity updated =
+            await _detailRepository.toggleFavor(event.summaryInfo);
 
-        emit(const ToggleFavorSuccess());
+        emit(ToggleFavorSuccess(summaryInfo: updated));
       } on Exception catch (_) {
         emit(const Failure());
       }

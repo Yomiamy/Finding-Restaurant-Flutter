@@ -34,25 +34,21 @@ class RestaurantHeadCell extends StatelessWidget {
             fit: BoxFit.fill,
             width: MediaQuery.of(context).size.width,
             height: RestaurantHeadCell.headImageH.toDouble()),
-        StatefulBuilder(builder: (context, setState) {
-          return GestureDetector(
-              onTap: () {
-                bloc.add(ToggleFavor(summaryInfo: _summaryInfo));
-              },
-              child: Align(
-                  alignment: Alignment.topRight,
-                  child: Padding(
-                      padding: const EdgeInsets.only(top: 10, right: 10),
-                      child: CircleAvatar(
-                          backgroundColor: Colors.white,
-                          child: Image.asset(
-                              _summaryInfo.favor
-                                  ? 'images/ic_favor_fill.png'
-                                  : 'images/ic_favor_empty.png',
-                              width: UIConstants.favorImageW,
-                              height: UIConstants.favorImageH,
-                              fit: BoxFit.fill)))));
-        })
+        GestureDetector(
+            onTap: () => bloc.add(ToggleFavor(summaryInfo: _summaryInfo)),
+            child: Align(
+                alignment: Alignment.topRight,
+                child: Padding(
+                    padding: const EdgeInsets.only(top: 10, right: 10),
+                    child: CircleAvatar(
+                        backgroundColor: Colors.white,
+                        child: Image.asset(
+                            _summaryInfo.favor
+                                ? 'images/ic_favor_fill.png'
+                                : 'images/ic_favor_empty.png',
+                            width: UIConstants.favorImageW,
+                            height: UIConstants.favorImageH,
+                            fit: BoxFit.fill)))))
       ],
     );
   }

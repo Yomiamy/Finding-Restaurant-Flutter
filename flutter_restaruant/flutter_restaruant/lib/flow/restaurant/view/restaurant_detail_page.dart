@@ -79,16 +79,11 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 bloc: _bloc,
                 listener: (context, state) {
                   if (state is ToggleFavorSuccess) {
-                    // The repository persists a copyWith() result instead of
-                    // mutating _summaryInfo, so adopt the new value here.
-                    // RestaurantHeadCell reads _summaryInfo.favor for the
-                    // heart icon, which would otherwise stay stale.
-                    setState(() {
-                      _summaryInfo =
-                          _summaryInfo.copyWith(favor: !_summaryInfo.favor);
-                    });
+                    // Adopt the persisted entity so the heart icon and the
+                    // toast both read the same source of truth.
+                    setState(() => _summaryInfo = state.summaryInfo);
 
-                    String favorToggleMsg = _summaryInfo.favor
+                    String favorToggleMsg = state.summaryInfo.favor
                         ? S.current.favorite_store_add
                         : S.current.favorite_store_remove;
 
