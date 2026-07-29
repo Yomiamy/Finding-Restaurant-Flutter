@@ -18,7 +18,9 @@
 String get _uid => SignInManager().accountDto?.uid ?? '';
 ```
 
-理論上 `accountDto` 為 null 時 `_uid` 會退化為空字串。但**這在本功能的設計下不會被觸發**：訪客點擊最愛按鈕時，UI 層在發出 `ToggleFavor` 之前就導向登入頁，bloc → repository 這條路徑根本不會進入，`_uid` 也就不會被解析。
+`accountDto` 為 null 時 `_uid` 會退化為空字串。**寫入路徑**確實不會被觸發：訪客點擊最愛按鈕時，UI 層在發出 `ToggleFavor` 之前就導向登入頁，bloc → repository 這條路徑根本不會進入。
+
+但**讀取路徑會**。載入餐廳列表時 `MainRepo` 會呼叫 `fetchFavorsMap()`，該路徑不經過任何最愛按鈕，因此 UI 攔截管不到。實作階段已據此在 `FavorDataSource` 補上資料層 guard（見下方修訂記錄）。
 
 已查證的事實（`grep` 全 codebase 的 `ToggleFavor` 派發點）：
 
@@ -26,7 +28,7 @@ String get _uid => SignInManager().accountDto?.uid ?? '';
 - `MainBloc` 雖有 `ToggleFavor` event / state / handler，但**沒有任何 UI 派發它**；`RestaurantItemCell` 沒有最愛按鈕。該路徑目前是無法從 UI 到達的死碼。
 - `MainBloc` 本身不使用 `SignInManager` 的任何登入資訊。
 
-因此本規格**不設立「防止空 doc id 寫入」的驗收條件**——那會是在為一條不存在的路徑寫防禦。只要維持「按鈕先導向登入頁」這個單一攔截點，問題就不會發生。
+因此本規格原先**不設立「防止空 doc id 寫入」的驗收條件**——當時的判斷是「為一條不存在的路徑寫防禦」。該判斷對寫入路徑成立，對讀取路徑不成立，實作階段已修正（見修訂記錄）。
 
 ---
 
@@ -62,7 +64,7 @@ String get _uid => SignInManager().accountDto?.uid ?? '';
 ## 3. 驗收條件 (Acceptance Criteria)
 
 ### AC-1：登入頁的訪客模式入口
-- [ ] `SignInPage` 的三方登入按鈕區塊（`show3rdSignInUpBtns()`）**最底下**新增一個訪客模式按鈕。
+- [ ] `SignInPage` 新增一個訪客模式按鈕。**最終位置**：與「註冊新帳號」並列於 `showSignInUpBtns()` 的 `Row`（實機測試後調整，見修訂記錄），而非原先規劃的三方登入區塊末端。
 - [ ] 按鈕文字走多語系：`intl_zh_TW.arb` 為「訪客模式」、`intl_en.arb` 為「Continue As Guest」，並透過 `S.current.<key>` 取用。
 - [ ] 該按鈕在 iOS 與 Android **皆顯示**（不同於 Apple 登入按鈕僅限 iOS）。
 - [ ] 點擊後：標記為訪客狀態 → 導向 `MainPage`，且不得留下可返回登入頁的堆疊（比照既有 `pushReplacementNamed` 行為）。
@@ -116,7 +118,7 @@ String get _uid => SignInManager().accountDto?.uid ?? '';
 - **不做訪客資料遷移**。訪客不產生任何最愛資料，因此登入後沒有東西需要合併或搬移。
 - **不做本機端的訪客最愛**。不提供「訪客的最愛存在本地、登入後再上傳」這條路——那是另一個功能，且會直接引入 US-5 的資料合併衝突。
 - **不新增依賴**、**不引入新的狀態管理套件**、**不重構 `SignInManager` 的既有登入流程**。
-- **不修改 `FavorDataSource` 的 uid 解析邏輯**。本次以 UI 層攔截為準；`?? ''` 的退化行為留待安全規則加固時一併處理（見風險 R-1）。
+- **不修改 `FavorDataSource._uid` 的 `?? ''` 解析邏輯本身**。實作階段已在 `fetchFavorsMap()` 與 `toggleFavor()` 補上空 uid guard（見修訂記錄）——那是必要防護，**不得**在後續工作中以「Out of Scope」為由移除。此處排除的僅是重構 uid 解析方式，以及 Firestore 安全規則的後端加固。
 - **不改動登入頁既有的 Email / Google / Apple 登入流程與版面**，僅在三方按鈕區塊末端追加。
 
 ### 其他最愛進入點的處理範圍
@@ -135,7 +137,7 @@ String get _uid => SignInManager().accountDto?.uid ?? '';
 
 ### 風險
 
-- **R-1（低）**：`FavorDataSource._uid` 的 `?? ''` 退化在程式碼中仍然存在。目前不會被觸發（唯一的最愛入口已在 UI 層攔截），但若未來新增最愛入口而忘記比照 AC-4 攔截，該退化才會浮現。緩解方式是把訪客判定收斂為單一來源（AC-2），讓新入口容易沿用同一個判斷。
+- **R-1（已緩解）**：`FavorDataSource._uid` 的 `?? ''` 退化仍在，但讀寫兩端都已有 guard——`fetchFavorsMap()` 回傳空 map，`toggleFavor()` 拋 `StateError`。即使未來新增最愛入口而忘記比照 AC-4 在 UI 攔截，資料層仍不會寫進空 doc id。根治仍需 Firestore 安全規則，已列為 Out of Scope。
 - **R-2（相容性，中）**：`SplashPage` 目前只導向 `SignInPage`，`MainPage` 從未被當作啟動後的第一個畫面。需確認 `MainPage` 所依賴的 Bloc 與初始化不隱含「剛從登入頁過來」的前提，否則訪客路徑會出現只在該路徑發生的崩潰（AC-3 已納入驗收）。
 - **R-3（狀態一致性，中）**：訪客旗標與 `SignInManager().accountDto` 是兩份狀態，存在不同步的可能（例如登入成功但旗標未清）。AC-2 的互斥規則與 AC-6 的單一清除點即為此而設。
 - **R-4（低）**：`SignInPage.initState` 會發 `AutoSignInEvent()`。訪客從設定頁進入登入頁時，若自動登入成功，會直接跳往 `MainPage`。此行為與現況一致，屬可接受，但需確認此路徑同樣觸發旗標清除（涵蓋於 AC-6）。
@@ -145,3 +147,16 @@ String get _uid => SignInManager().accountDto?.uid ?? '';
 - **Q-1**：訪客點抽屜選單的「口袋名單」，是進入空的 `FavorPage`，還是直接導向登入頁？本規格暫定為**進入空清單**（維持現狀，改動最小）。若希望一致地引導登入，需明確指示。
 - **Q-2**：訪客從最愛按鈕被導向登入頁並**完成登入後**，是否要自動返回原本的餐廳詳情頁？本規格暫定**不做**——比照既有登入成功的行為導向 `MainPage`。若要保留返回點，屬額外的路由狀態傳遞需求。
 - **Q-3**：訪客模式按鈕是否需要二次確認或功能限制說明（例如「訪客無法使用收藏」的提示）？本規格暫定**不做**。
+
+---
+
+## 6. 修訂記錄（實作與審查後）
+
+規格撰寫時的判斷與最終實作的差異，記錄於此以免後續工作誤把必要防護當成「Out of Scope」而移除。
+
+| 項目 | 規格原判斷 | 最終實作 | 原因 |
+|------|-----------|---------|------|
+| 空 uid 的 Firestore 存取 | 不設防護，UI 攔截即足夠 | `fetchFavorsMap()` 空 uid 回傳空 map；`toggleFavor()` 拋 `StateError` | 原判斷只對**寫入**路徑成立。主列表載入會呼叫 `fetchFavorsMap()`，該路徑不經最愛按鈕，UI 攔截管不到；Firestore 對空 doc id 拋 `ArgumentError`（繼承 `Error` 非 `Exception`），`MainBloc` 的 `on Exception` 接不住，畫面卡在 loading |
+| 訪客按鈕位置 | `show3rdSignInUpBtns()` 末端 | 與「註冊新帳號」並列於 `showSignInUpBtns()` 的 `Row` | 實機測試後調整；兩者同為 email 路徑的次要文字動作，與三方登入按鈕分開較合理 |
+| 登入成功後的導航 | 未指定（沿用既有 `pushReplacementNamed`） | 改用 `pushNamedAndRemoveUntil` | 訪客可從詳情頁／設定頁 `pushNamed` 進入登入頁，只替換頂層會把訪客身分下 build 的舊頁面留在堆疊 |
+| `loadGuestFlag()` 失敗處理 | 未指定 | `try/catch` 後退回非訪客 | 該呼叫在 `main()` 的 `Future.wait` 上，拋錯會讓 `runApp()` 不執行 |

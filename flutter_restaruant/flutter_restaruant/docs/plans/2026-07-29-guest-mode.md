@@ -16,11 +16,14 @@
 
 **本計畫嚴禁包含**：
 
-- ❌ 為 `MainBloc` / `MainRepo` / `FavorDataSource` 加訪客判斷或防禦分支
-- ❌ 修改 `FavorDataSource._uid` 的 `?? ''` 邏輯
-- ❌ 任何「防止空 doc id 寫入」的任務
+- ❌ 為 `MainBloc` / `MainRepo` 加訪客判斷或防禦分支
+- ❌ 修改 `FavorDataSource._uid` 的 `?? ''` 解析方式
 
-**在唯一入口（`RestaurantHeadCell`）攔截，就是完整的修法。** 不做縱深防禦。
+> **⚠️ 此處原本還禁止「為 `FavorDataSource` 加防禦」與「任何防止空 doc id 的任務」，該判斷在實作階段被推翻。**
+>
+> 原判斷「在唯一入口攔截就是完整修法」只對**寫入**路徑成立。主列表載入會經 `MainRepo` 呼叫 `fetchFavorsMap()`，這條**讀取**路徑不經過任何最愛按鈕，UI 攔截管不到；Firestore 對空 doc id 拋 `ArgumentError`（繼承 `Error` 非 `Exception`），`MainBloc` 的 `on Exception` 接不住，訪客主畫面會卡在 loading。
+>
+> 因此 `FavorDataSource` 的空 uid guard **是必要防護**，後續工作不得以本節為由移除。
 
 ---
 
@@ -250,7 +253,8 @@ rtk dart pub global activate intl_utils && rtk dart pub global run intl_utils:ge
 - **複雜度**：整合
 - **寫入檔案**：`lib/flow/signinup/view/sign_in_page.dart`
 - **相依**：T2（需要 `S.current.continue_as_guest`）、T3（需要 `markAsGuest()`）
-- **內容**：新增 import `../../../manager/sign_in_manager.dart`，並在 `show3rdSignInUpBtns()`（第 191 行）的 Column children **最末端**追加：
+- **內容**：新增 import `../../../manager/sign_in_manager.dart`，並追加訪客按鈕。
+  > **最終實作位置與此處不同**：按鈕改放在 `showSignInUpBtns()` 內，與「註冊新帳號」並列於同一個 `Row`（實機測試後調整）。以下程式碼片段的樣式亦已改為與「註冊新帳號」相同的 `PlatformTextButton`。
 
 ```dart
         const SizedBox(height: 10),
@@ -465,7 +469,8 @@ rtk flutter test
 
 - 不新增任何 pubspec 依賴
 - 不新增 interface / abstract class / Repository / Bloc / Event / State
-- 不修改 `FavorDataSource`、`MainBloc`、`MainRepo`
+- 不修改 `MainBloc`、`MainRepo`
+- 不修改 `FavorDataSource` 的 uid 解析方式（但**已**加入空 uid guard，見上方警告框）
 - 不修改 Firestore 安全規則
 - 不做訪客最愛的本地儲存或資料遷移
 - 不隱藏抽屜的「口袋名單」入口（規格 Q-1 暫定維持現狀）
