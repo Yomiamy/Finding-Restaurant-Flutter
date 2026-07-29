@@ -48,6 +48,11 @@ class _SignInPageState extends State<SignInPage> {
             fontSize: UIConstants.xxxhFontSize,
           ),
         ),
+        // 本頁有兩種進入方式：從 Splash 取代進來（無返回鍵），或訪客從
+        // 詳情頁／設定頁 pushNamed 進來（有返回鍵）。因此不能比照其他頁面
+        // 寫死 leading——那會讓 Splash 路徑也長出一顆按不動的返回鍵。
+        // 交給 Flutter 依 canPop() 決定是否顯示，這裡只負責上色。
+        iconTheme: const IconThemeData(color: ColorName.backBtnColor),
         backgroundColor: ColorName.appPrimaryColor,
       ),
       body: BlocConsumer<SignInBloc, SignInState>(
@@ -186,18 +191,30 @@ class _SignInPageState extends State<SignInPage> {
                     MailSignInEvent(mail: _email, passwd: _passwd));
               }
             }),
-        PlatformTextButton(
-            child: Text(S.current.signup_title,
-                style: const TextStyle(
-                    fontSize: UIConstants.mFontSize, color: Colors.grey)),
-            onPressed: () {
-              if (_formKey.currentState != null &&
-                  _formKey.currentState!.validate()) {
-                _formKey.currentState!.save();
-                _signInBloc.add(
-                    MailSignUpEvent(mail: _email, passwd: _passwd));
-              }
-            })
+        Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+          PlatformTextButton(
+              child: Text(S.current.signup_title,
+                  style: const TextStyle(
+                      fontSize: UIConstants.mFontSize, color: Colors.grey)),
+              onPressed: () {
+                if (_formKey.currentState != null &&
+                    _formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  _signInBloc.add(
+                      MailSignUpEvent(mail: _email, passwd: _passwd));
+                }
+              }),
+          PlatformTextButton(
+              child: Text(S.current.continue_as_guest,
+                  style: const TextStyle(
+                      fontSize: UIConstants.mFontSize, color: Colors.grey)),
+              onPressed: () async {
+                await SignInManager().markAsGuest();
+                if (!mounted) return;
+                // ignore: unawaited_futures
+                _goToMainPage(context);
+              })
+        ])
       ]));
 
   Widget show3rdSignInUpBtns() =>
@@ -216,19 +233,7 @@ class _SignInPageState extends State<SignInPage> {
                 text: S.current.signinup_with_apple,
                 onPressed: () => _signInBloc.add(AppleSignInEvent()),
               )
-            : UIConstants.emptyWidget,
-        const SizedBox(height: 10),
-        PlatformTextButton(
-          child: Text(S.current.continue_as_guest,
-              style: const TextStyle(
-                  fontSize: UIConstants.mFontSize, color: Colors.grey)),
-          onPressed: () async {
-            await SignInManager().markAsGuest();
-            if (!mounted) return;
-            // ignore: unawaited_futures
-            _goToMainPage(context);
-          },
-        )
+            : UIConstants.emptyWidget
       ]);
 }
 
