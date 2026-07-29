@@ -513,6 +513,26 @@ class S {
       args: [],
     );
   }
+
+  /// `Continue As Guest`
+  String get continue_as_guest {
+    return Intl.message(
+      'Continue As Guest',
+      name: 'continue_as_guest',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `SignIn / SignUp`
+  String get signin_or_signup_title {
+    return Intl.message(
+      'SignIn / SignUp',
+      name: 'signin_or_signup_title',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

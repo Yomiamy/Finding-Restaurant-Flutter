@@ -13,6 +13,7 @@ import 'firebase_options.dart';
 import 'generated/l10n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'manager/fcm_manager.dart';
+import 'manager/sign_in_manager.dart';
 import 'routes/routes_table.dart';
 
 // For FCM onMessageOpenedApp to open specific page
@@ -33,6 +34,8 @@ void main() async {
       options: DefaultFirebaseOptions.currentPlatform,
     ),
     S.load(ui.PlatformDispatcher.instance.locale),
+    // 於 runApp 前載入，使 isGuest 可被 UI 同步查詢
+    SignInManager().loadGuestFlag(),
   // ignore: unawaited_futures
   ]).then((_) {
     FcmManager().init();

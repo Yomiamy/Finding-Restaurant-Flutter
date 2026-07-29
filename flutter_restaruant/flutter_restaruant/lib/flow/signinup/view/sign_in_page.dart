@@ -6,11 +6,13 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import '../../../component/loading_widget.dart';
 import '../bloc/sign_in_bloc.dart';
 import '../../../generated/l10n.dart';
+import '../../../manager/sign_in_manager.dart';
 import '../../../utils/ui_constants.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../../../gen/colors.gen.dart';
 import '../../main/view/main_page.dart';
+import '../../splash/view/splash_page.dart';
 
 class SignInPage extends StatefulWidget {
   static const routeName = '/SignInPage';
@@ -53,12 +55,12 @@ class _SignInPageState extends State<SignInPage> {
           if (state is SignInSuccess) {
             Fluttertoast.showToast(msg: S.current.signin_success_msg);
             // ignore: unawaited_futures
-            Navigator.of(context).pushReplacementNamed(MainPage.routeName);
+            _goToMainPage(context);
           } else if (state is SignUpSuccess) {
             Fluttertoast.showToast(
                 msg: S.current.email_signup_success_hint_msg);
             // ignore: unawaited_futures
-            Navigator.of(context).pushReplacementNamed(MainPage.routeName);
+            _goToMainPage(context);
           } else if (state is Failure) {
             Fluttertoast.showToast(msg: state.errorMsg);
           }
@@ -67,6 +69,16 @@ class _SignInPageState extends State<SignInPage> {
       ),
     );
   }
+
+  /// 清掉 Splash 之上的所有頁面再進主畫面。
+  ///
+  /// 訪客可從詳情頁最愛或設定頁進入本頁（`pushNamed`），此時登入頁並非堆疊
+  /// 頂端唯一的一頁。用 `pushReplacementNamed` 只會換掉登入頁本身，把過期的
+  /// 詳情頁／設定頁留在下面——那些頁面是在訪客身分下 build 的，返回鍵會回到
+  /// 顯示錯誤內容的舊畫面。
+  Future<void> _goToMainPage(BuildContext context) =>
+      Navigator.of(context).pushNamedAndRemoveUntil(
+          MainPage.routeName, ModalRoute.withName(SplashPage.routeName));
 
   Widget _buildView(SignInState state) => Stack(children: <Widget>[
         ConstrainedBox(
@@ -204,7 +216,19 @@ class _SignInPageState extends State<SignInPage> {
                 text: S.current.signinup_with_apple,
                 onPressed: () => _signInBloc.add(AppleSignInEvent()),
               )
-            : UIConstants.emptyWidget
+            : UIConstants.emptyWidget,
+        const SizedBox(height: 10),
+        PlatformTextButton(
+          child: Text(S.current.continue_as_guest,
+              style: const TextStyle(
+                  fontSize: UIConstants.mFontSize, color: Colors.grey)),
+          onPressed: () async {
+            await SignInManager().markAsGuest();
+            if (!mounted) return;
+            // ignore: unawaited_futures
+            _goToMainPage(context);
+          },
+        )
       ]);
 }
 

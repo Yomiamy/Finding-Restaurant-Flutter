@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../domain/entities/restaurant_entity.dart';
 import '../../../flow/restaurant/bloc/restaurant_detail_bloc.dart';
+import '../../../flow/signinup/view/sign_in_page.dart';
+import '../../../manager/sign_in_manager.dart';
 import '../../../utils/ui_constants.dart';
 
 class RestaurantHeadCell extends StatelessWidget {
@@ -35,7 +37,14 @@ class RestaurantHeadCell extends StatelessWidget {
             width: MediaQuery.of(context).size.width,
             height: RestaurantHeadCell.headImageH.toDouble()),
         GestureDetector(
-            onTap: () => bloc.add(ToggleFavor(summaryInfo: _summaryInfo)),
+            onTap: () {
+              if (SignInManager().isGuest) {
+                // ignore: unawaited_futures
+                Navigator.of(context).pushNamed(SignInPage.routeName);
+                return;
+              }
+              bloc.add(ToggleFavor(summaryInfo: _summaryInfo));
+            },
             child: Align(
                 alignment: Alignment.topRight,
                 child: Padding(

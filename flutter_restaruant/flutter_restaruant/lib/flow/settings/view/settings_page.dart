@@ -6,6 +6,7 @@ import '../bloc/settings_bloc.dart';
 import '../../signinup/view/sign_in_page.dart';
 import '../../splash/view/splash_page.dart';
 import '../../../manager/biometric_sign_in_manager.dart';
+import '../../../manager/sign_in_manager.dart';
 import '../../../utils/constants.dart';
 import '../../../utils/ui_constants.dart';
 import 'package:settings_ui/settings_ui.dart';
@@ -101,10 +102,22 @@ class _SettingsPageState extends State<SettingsPage> {
             //     })
           ]);
 
-  AbstractSettingsSection createLogoutSection() => CustomSettingsSection(
-      child: Padding(
-          padding: const EdgeInsets.only(left: 25, top: 50, right: 25),
-          child: Column(mainAxisSize: MainAxisSize.min, children: [
+  AbstractSettingsSection createLogoutSection() {
+    // 訪客沒有帳號可登出或刪除，改提供轉為正式帳號的入口。
+    final Widget child = SignInManager().isGuest
+        ? SizedBox(
+            height: 50,
+            child: PlatformElevatedButton(
+                color: ColorName.appPrimaryColor,
+                child: Text(S.current.signin_or_signup_title,
+                    style: const TextStyle(
+                        fontSize: UIConstants.xhFontSize,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white)),
+                onPressed: () =>
+                    Navigator.of(context).pushNamed(SignInPage.routeName)),
+          )
+        : Column(mainAxisSize: MainAxisSize.min, children: [
             SizedBox(
               height: 50,
               child: PlatformElevatedButton(
@@ -131,5 +144,11 @@ class _SettingsPageState extends State<SettingsPage> {
                       fontWeight: FontWeight.bold,
                       color: Colors.red)),
             )
-          ])));
+          ]);
+
+    return CustomSettingsSection(
+        child: Padding(
+            padding: const EdgeInsets.only(left: 25, top: 50, right: 25),
+            child: child));
+  }
 }

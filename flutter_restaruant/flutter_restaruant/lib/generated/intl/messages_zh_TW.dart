@@ -26,6 +26,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "business_hour": MessageLookupByLibrary.simpleMessage("營業時間"),
     "cancel": MessageLookupByLibrary.simpleMessage("取消"),
     "confirm": MessageLookupByLibrary.simpleMessage("確定"),
+    "continue_as_guest": MessageLookupByLibrary.simpleMessage("訪客模式"),
     "delete_account_email_body": MessageLookupByLibrary.simpleMessage(
       "敬愛的團隊，我希望透過這封信來正式請求刪除我的帳號，以及與該帳號相關的所有個人資料和數據。帳號詳細資訊為:",
     ),
@@ -74,6 +75,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "route_navigation": MessageLookupByLibrary.simpleMessage("導航"),
     "settings_title": MessageLookupByLibrary.simpleMessage("設定"),
     "signin_btn_title": MessageLookupByLibrary.simpleMessage("登入"),
+    "signin_or_signup_title": MessageLookupByLibrary.simpleMessage("登入 / 註冊"),
     "signin_page_title": MessageLookupByLibrary.simpleMessage("登入/註冊"),
     "signin_success_msg": MessageLookupByLibrary.simpleMessage("登入成功"),
     "signinup_with_apple": MessageLookupByLibrary.simpleMessage("使用Apple繼續"),

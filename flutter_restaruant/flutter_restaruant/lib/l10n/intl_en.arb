@@ -57,5 +57,7 @@
   "signinup_with_fb": "Continue with Facebook",
   "signinup_with_fb_hint_msg": "Facebook SignIn",
   "signinup_with_apple": "Continue with Apple",
-  "signinup_with_apple_hint_msg": "Apple SignIn"
+  "signinup_with_apple_hint_msg": "Apple SignIn",
+  "continue_as_guest": "Continue As Guest",
+  "signin_or_signup_title": "SignIn / SignUp"
 }

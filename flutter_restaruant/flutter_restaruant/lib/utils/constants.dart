@@ -16,6 +16,7 @@ class Constants {
   /// [SharedPreference]
   static const prefKeyAccountInfo = 'account_info';
   static const prefKeyBiometricAuthSetting = 'biometric_auth_setting';
+  static const prefKeyGuestMode = 'guest_mode';
 
   /// [AD]
   // PROD AD banner id
