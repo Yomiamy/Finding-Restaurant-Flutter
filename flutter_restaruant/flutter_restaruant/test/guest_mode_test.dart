@@ -42,11 +42,11 @@ void main() {
   });
 
   // SignInManager 是 singleton，每個測試都需重置，避免狀態互相污染。
+  // 重設 mock prefs 後重新 loadPrefs()，讓 manager 取得新的 instance。
   Future<void> resetManager(Map<String, Object> initialPrefs) async {
     SharedPreferences.setMockInitialValues(initialPrefs);
     SignInManager().accountDto = null;
-    await SignInManager().clearGuestFlag();
-    SharedPreferences.setMockInitialValues(initialPrefs);
+    await SignInManager().loadPrefs();
   }
 
   group('Guest mode flag', () {
@@ -60,25 +60,20 @@ void main() {
       expect(prefs.getBool(Constants.prefKeyGuestMode), isTrue);
     });
 
-    test('loadGuestFlag restores the flag on app restart', () async {
+    test('a stored flag survives an app restart', () async {
       await resetManager(_Data.guestPrefs);
-
-      await SignInManager().loadGuestFlag();
 
       expect(SignInManager().isGuest, isTrue);
     });
 
-    test('loadGuestFlag defaults to false on a fresh install', () async {
+    test('isGuest is false on a fresh install', () async {
       await resetManager(_Data.emptyPrefs);
-
-      await SignInManager().loadGuestFlag();
 
       expect(SignInManager().isGuest, isFalse);
     });
 
-    test('clearGuestFlag removes both memory and stored flag', () async {
+    test('clearGuestFlag removes the stored flag', () async {
       await resetManager(_Data.guestPrefs);
-      await SignInManager().loadGuestFlag();
       expect(SignInManager().isGuest, isTrue);
 
       await SignInManager().clearGuestFlag();

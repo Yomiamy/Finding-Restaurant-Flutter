@@ -35,7 +35,7 @@ void main() async {
     ),
     S.load(ui.PlatformDispatcher.instance.locale),
     // 於 runApp 前載入，使 isGuest 可被 UI 同步查詢
-    SignInManager().loadGuestFlag(),
+    SignInManager().loadPrefs(),
   // ignore: unawaited_futures
   ]).then((_) {
     FcmManager().init();

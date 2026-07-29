@@ -21,7 +21,11 @@ class SignInManager {
   factory SignInManager() => _singleton;
 
   AccountDto? accountDto;
-  bool _isGuest = false;
+
+  /// 由 [loadPrefs] 於啟動時填入。`shared_preferences` 內部持有一份記憶體
+  /// 快取，取得 instance 後 `getBool` 即為同步呼叫，因此不需要另外複製一份
+  /// 旗標到本類別——多一份狀態只會多一個要維護的同步點。
+  SharedPreferences? _prefs;
 
   final GoogleSignInManager _googleSignInManager = GoogleSignInManager();
   final AppleSignInManager _appleSignInManager = AppleSignInManager();
@@ -31,41 +35,31 @@ class SignInManager {
   final AutoSignInManager _autoSignInManager = AutoSignInManager();
 
   /// 訪客模式：未登入且已選擇以訪客身分瀏覽。與已登入狀態互斥。
-  bool get isGuest => accountDto == null && _isGuest;
+  ///
+  /// [_prefs] 尚未載入時一律視為非訪客，最差情況是使用者多看到一次登入頁。
+  bool get isGuest =>
+      accountDto == null &&
+      (_prefs?.getBool(Constants.prefKeyGuestMode) ?? false);
 
-  /// 由 `main()` 於 `runApp` 前呼叫，把磁碟上的旗標讀進記憶體，
-  /// 使 [isGuest] 能以同步方式被 UI 查詢。
+  /// 由 `main()` 於 `runApp` 前呼叫，使 [isGuest] 能以同步方式被 UI 查詢。
   ///
   /// 這個呼叫位於 `main()` 的 `Future.wait` 啟動鏈上，因此**不可對外拋錯**：
   /// 讀取失敗（例如 prefs 檔損毀）若讓 Future 被 reject，`runApp()` 就不會
-  /// 執行，App 開啟後只剩黑畫面。失敗時退回「非訪客」，最差情況是使用者
-  /// 多看到一次登入頁，而不是整個 App 起不來。
-  Future<void> loadGuestFlag() async {
+  /// 執行，App 開啟後只剩黑畫面。
+  Future<void> loadPrefs() async {
     try {
-      final prefs = await SharedPreferences.getInstance();
-      _isGuest = prefs.getBool(Constants.prefKeyGuestMode) ?? false;
+      _prefs = await SharedPreferences.getInstance();
     } on Exception catch (e, st) {
-      logger.e('讀取訪客旗標失敗，退回非訪客', error: e, stackTrace: st);
-      _isGuest = false;
+      logger.e('載入 SharedPreferences 失敗，訪客旗標將視為未設定',
+          error: e, stackTrace: st);
     }
   }
 
-  /// 標記為訪客。記憶體狀態只在寫入成功後才更新，避免磁碟寫入失敗時
-  /// 記憶體與磁碟分歧——那會讓訪客身分在下次啟動時無聲消失。
-  Future<void> markAsGuest() async {
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.setBool(Constants.prefKeyGuestMode, true);
-    _isGuest = true;
-  }
+  Future<void> markAsGuest() async =>
+      await _prefs?.setBool(Constants.prefKeyGuestMode, true);
 
-  /// 清除訪客旗標。與 [markAsGuest] 相反的順序考量：先清記憶體，確保
-  /// 即使磁碟移除失敗，當下的 [isGuest] 也不會仍回報 true。下次啟動時
-  /// 殘留的磁碟值會讓使用者回到訪客身分，這比讓已登入者被當成訪客安全。
-  Future<void> clearGuestFlag() async {
-    _isGuest = false;
-    final prefs = await SharedPreferences.getInstance();
-    await prefs.remove(Constants.prefKeyGuestMode);
-  }
+  Future<void> clearGuestFlag() async =>
+      await _prefs?.remove(Constants.prefKeyGuestMode);
 
   Future<Tuple2<AccountDto?, String>> signIn(AccountType accountType,
       {String mail = '', String passwd = ''}) async {
@@ -142,8 +136,6 @@ class SignInManager {
     }
 
     accountDto = null;
-    // SettingsRepo.logout() 的 prefs.clear() 只清磁碟，不會清記憶體快取，
-    // 因此這行不可省略——否則登出後 _isGuest 仍為 true，會被誤判為訪客。
     await clearGuestFlag();
   }
 }
