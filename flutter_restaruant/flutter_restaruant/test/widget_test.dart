@@ -12,7 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 void main() {
   testWidgets('LoadingWidget Test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
-    await tester.pumpWidget(LoadingTestApp());
+    await tester.pumpWidget(const LoadingTestApp());
 
     //await tester.pumpAndSettle(Duration(seconds: 2));
     await tester.pump();
@@ -23,10 +23,10 @@ void main() {
 }
 
 class LoadingTestApp extends StatelessWidget {
-  const LoadingTestApp({Key? key}) : super(key: key);
+  const LoadingTestApp({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(home: Container(child: LoadingWidget()));
+    return const MaterialApp(home: LoadingWidget());
   }
 }

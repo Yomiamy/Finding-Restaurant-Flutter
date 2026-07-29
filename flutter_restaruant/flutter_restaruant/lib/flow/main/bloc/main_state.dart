@@ -12,59 +12,59 @@ class MainInitial extends MainState {
   const MainInitial();
 
   @override
-  String toString() => "Main page init state.";
+  String toString() => 'Main page init state.';
 }
 
 class InProgress extends MainState {
   const InProgress();
 
   @override
-  String toString() => "Loading search info";
+  String toString() => 'Loading search info';
 }
 
 class Success extends MainState {
-  final List<YelpRestaurantSummaryInfo> summaryInfos;
+  final List<RestaurantEntity> summaryInfos;
 
   const Success({required this.summaryInfos});
 
   @override
-  List<Object> get props => this.summaryInfos;
+  List<Object> get props => summaryInfos;
 
   @override
-  String toString() => "Success get summary infos ${this.summaryInfos}";
+  String toString() => 'Success get summary infos $summaryInfos';
 }
 
 class Failure extends MainState {
   const Failure();
 
   @override
-  String toString() => "Fail get search info";
+  String toString() => 'Fail get search info';
 }
 
 class ResetSuccess extends MainState {
   const ResetSuccess();
 
   @override
-  String toString() => "Sucess reset offset";
+  String toString() => 'Sucess reset offset';
 }
 
 class LoadMoreSuccess extends MainState {
-  final List<YelpRestaurantSummaryInfo> summaryInfos = [];
+  final List<RestaurantEntity> summaryInfos = [];
 
-  LoadMoreSuccess({required List<YelpRestaurantSummaryInfo> summaryInfos}) {
+  LoadMoreSuccess({required List<RestaurantEntity> summaryInfos}) {
     this.summaryInfos.addAll(summaryInfos);
   }
 
   @override
-  List<Object> get props => this.summaryInfos;
+  List<Object> get props => summaryInfos;
 
   @override
-  String toString() => "Load more success.";
+  String toString() => 'Load more success.';
 }
 
 class ToggleFavorSuccess extends MainState {
   const ToggleFavorSuccess();
 
   @override
-  String toString() => "Toggle favor success.";
+  String toString() => 'Toggle favor success.';
 }

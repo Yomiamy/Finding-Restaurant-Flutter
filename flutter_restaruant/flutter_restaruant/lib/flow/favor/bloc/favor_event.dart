@@ -18,10 +18,10 @@ class FetchFavorInfoEvent extends FavorEvent {
 }
 
 class UpdateFavorInfoEvent extends FavorEvent {
-  final YelpRestaurantSummaryInfo summaryInfo;
+  final RestaurantEntity summaryInfo;
 
   const UpdateFavorInfoEvent({required this.summaryInfo});
 
   @override
-  List<Object> get props => [this.summaryInfo.hashCode];
+  List<Object> get props => [summaryInfo.hashCode];
 }

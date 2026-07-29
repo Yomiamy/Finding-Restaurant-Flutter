@@ -9,7 +9,7 @@ abstract class SettingsState extends Equatable {
 
 class SettingsInitial extends SettingsState {
   @override
-  String toString() => "SettingsInitial";
+  String toString() => 'SettingsInitial';
 
   @override
   List<Object> get props => [];
@@ -19,7 +19,7 @@ class InProgress extends SettingsState {
   const InProgress();
 
   @override
-  String toString() => "InProgress";
+  String toString() => 'InProgress';
 
   @override
   List<Object> get props => [];
@@ -29,7 +29,7 @@ class LogoutSuccess extends SettingsState {
   const LogoutSuccess();
 
   @override
-  String toString() => "LogoutSuccess";
+  String toString() => 'LogoutSuccess';
 
   @override
   List<Object> get props => [];
@@ -39,7 +39,7 @@ class AccountRemovalSuccessState extends SettingsState {
   const AccountRemovalSuccessState();
 
   @override
-  String toString() => "AccountRemovalSuccess";
+  String toString() => 'AccountRemovalSuccess';
 
   @override
   List<Object> get props => [];
@@ -51,7 +51,7 @@ class InitBioAuthSettingState extends SettingsState {
   const InitBioAuthSettingState({required this.settingValue});
 
   @override
-  String toString() => "InitBioAuthSettingState";
+  String toString() => 'InitBioAuthSettingState';
 
   @override
   List<Object> get props => [settingValue];
@@ -63,7 +63,7 @@ class ToggleBioAuthSettingState extends SettingsState {
   const ToggleBioAuthSettingState({required this.settingValue});
 
   @override
-  String toString() => "ToggleBioAuthSettingState";
+  String toString() => 'ToggleBioAuthSettingState';
 
   @override
   List<Object> get props => [settingValue];

@@ -9,8 +9,8 @@ abstract class AppOpenADEvent {
 
 class AppOpenADState {
   String adUnitId = Platform.isAndroid
-      ? "ca-app-pub-7910179918263365/2058235863"
-      : "ca-app-pub-7910179918263365/5774119595";
+      ? 'ca-app-pub-7910179918263365/2058235863'
+      : 'ca-app-pub-7910179918263365/5774119595';
   bool isShowingAd = false;
 
   /// Whether an ad is available to be shown.
@@ -20,21 +20,23 @@ class AppOpenADState {
   final AppOpenADEvent appOpenADEventListener;
 
   AppOpenADState({required this.appOpenADEventListener}) {
-    this.adListener =
+    adListener =
         FullScreenContentCallback(onAdShowedFullScreenContent: (ad) {
-      this.isShowingAd = true;
+      isShowingAd = true;
     }, onAdFailedToShowFullScreenContent: (ad, error) async {
-      this.isShowingAd = false;
-      this.appOpenAd = null;
+      isShowingAd = false;
+      appOpenAd = null;
 
+      // ignore: unawaited_futures
       ad.dispose();
-      this.appOpenADEventListener.onAdFailedToShow();
+      appOpenADEventListener.onAdFailedToShow();
     }, onAdDismissedFullScreenContent: (ad) async {
-      this.isShowingAd = false;
-      this.appOpenAd = null;
+      isShowingAd = false;
+      appOpenAd = null;
 
+      // ignore: unawaited_futures
       ad.dispose();
-      this.appOpenADEventListener.onAdDismissed();
+      appOpenADEventListener.onAdDismissed();
     });
   }
 }

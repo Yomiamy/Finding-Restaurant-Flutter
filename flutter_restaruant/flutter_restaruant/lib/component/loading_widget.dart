@@ -3,13 +3,13 @@ import 'package:flutter/material.dart';
 class LoadingWidget extends StatelessWidget {
   final String text;
 
-  LoadingWidget({Key? key, this.text = "Loading..."}) : super(key: key);
+  const LoadingWidget({super.key, this.text = 'Loading...'});
 
   @override
   Widget build(BuildContext context) =>
       Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-        CircularProgressIndicator(),
-        SizedBox(height: 20),
-        Text(this.text)
+        const CircularProgressIndicator(),
+        const SizedBox(height: 20),
+        Text(text)
       ]);
 }

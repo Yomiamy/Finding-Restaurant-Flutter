@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'interstitial_ad_state.dart';
 
@@ -8,14 +9,14 @@ class IntersitialAD {
 
   void load() => InterstitialAd.load(
       adUnitId: adState.interstitialAdUnitId!,
-      request: AdRequest(),
+      request: const AdRequest(),
       adLoadCallback:
           InterstitialAdLoadCallback(onAdLoaded: (InterstitialAd ad) {
         // Keep a reference to the ad so you can show it later.
-        ad.fullScreenContentCallback = this.adState.adListener;
+        ad.fullScreenContentCallback = adState.adListener;
 
         ad.show();
       }, onAdFailedToLoad: (LoadAdError error) {
-        print('InterstitialAd failed to load: $error');
+        debugPrint('InterstitialAd failed to load: $error');
       }));
 }

@@ -1,24 +1,23 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_restaruant/component/ad/banner_ad.dart';
-import 'package:flutter_restaruant/component/ad/banner_ad_state.dart';
-import 'package:flutter_restaruant/component/cell/main_page/restaurant_item_cell.dart';
-import 'package:flutter_restaruant/flow/main/bloc/main_bloc.dart';
-import 'package:flutter_restaruant/flow/main/view/filter_tags_widget.dart';
-import 'package:flutter_restaruant/flow/main/view/main_page.dart';
-import 'package:flutter_restaruant/flow/restaurant/view/restaurant_detail_page.dart';
-import 'package:flutter_restaruant/model/filter_configs.dart';
-import 'package:flutter_restaruant/model/yelp_restaurant_summary_info.dart';
-import 'package:flutter_restaruant/utils/tuple.dart';
-import 'package:provider/provider.dart';
+import '../../../component/ad/banner_ad.dart';
+import '../../../component/ad/banner_ad_state.dart';
+import '../../../component/cell/main_page/restaurant_item_cell.dart';
+import '../../../domain/entities/restaurant_entity.dart';
+import '../bloc/main_bloc.dart';
+import 'filter_tags_widget.dart';
+import 'main_page.dart';
+import '../../restaurant/view/restaurant_detail_page.dart';
+import '../../../model/filter_configs.dart';
+import '../../../utils/tuple.dart';
+import '../../../di/injection.dart';
 
 class RestaurantInfoListWidget extends StatelessWidget {
   final ScrollController _scrollController = ScrollController();
-  final List<YelpRestaurantSummaryInfo> _summaryInfos;
+  final List<RestaurantEntity> _summaryInfos;
   final FilterConfigs _configs;
 
-  RestaurantInfoListWidget(this._summaryInfos, this._configs, {Key? key})
-      : super(key: key);
+  RestaurantInfoListWidget(this._summaryInfos, this._configs, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -26,10 +25,10 @@ class RestaurantInfoListWidget extends StatelessWidget {
 
     return NotificationListener<ScrollEndNotification>(
         onNotification: (notification) {
-          if (this._scrollController.position.atEdge) {
-            int? price = this._configs.price;
-            int? openAt = this._configs.openAtInSec;
-            String? sortBy = this._configs.sortBy;
+          if (_scrollController.position.atEdge) {
+            int? price = _configs.price;
+            int? openAt = _configs.openAtInSec;
+            String? sortBy = _configs.sortBy;
 
             // Load more when scrolling reach the edge of ListView
             mainBloc.add(
@@ -38,31 +37,30 @@ class RestaurantInfoListWidget extends StatelessWidget {
           return true;
         },
         child: ListView.builder(
-            padding: EdgeInsets.only(top: 0, bottom: 0),
-            controller: this._scrollController,
-            itemCount: this._summaryInfos.length + 2,
+            padding: const EdgeInsets.only(top: 0, bottom: 0),
+            controller: _scrollController,
+            itemCount: _summaryInfos.length + 2,
             itemBuilder: (context, index) {
               if (index == 0) {
-                final adState = Provider.of<BannerADState>(context);
-
-                return BannerAD(adState: adState);
+                return BannerAD(adState: getIt<BannerADState>());
               } else if (index == 1) {
-                return FilterTagsWidget(filterConfigs: this._configs);
+                return FilterTagsWidget(filterConfigs: _configs);
               } else {
-                YelpRestaurantSummaryInfo summaryInfo =
-                    this._summaryInfos[index - 2];
+                RestaurantEntity summaryInfo =
+                    _summaryInfos[index - 2];
 
                 return GestureDetector(
                     child: RestaurantItemCell(summaryInfo: summaryInfo),
                     onTap: () async {
                       Tuple2 arguments =
-                          Tuple2<YelpRestaurantSummaryInfo, dynamic>(
+                          Tuple2<RestaurantEntity, dynamic>(
                               summaryInfo, null);
 
                       // Avoid duplicate push, use pushNamedAndRemoveUntil instead of push
+                      // ignore: unawaited_futures
                       Navigator.of(context).pushNamedAndRemoveUntil(
-                          RestaurantDetailPage.ROUTE_NAME,
-                          ModalRoute.withName(MainPage.ROUTE_NAME),
+                          RestaurantDetailPage.routeName,
+                          ModalRoute.withName(MainPage.routeName),
                           arguments: arguments);
                     });
               }

@@ -5,10 +5,10 @@ import 'banner_ad_state.dart';
 class BannerAD extends StatefulWidget {
   final BannerADState adState;
 
-  const BannerAD({Key? key, required this.adState}) : super(key: key);
+  const BannerAD({super.key, required this.adState});
 
   @override
-  _BannerADState createState() => _BannerADState();
+  State<BannerAD> createState() => _BannerADState();
 }
 
 class _BannerADState extends State<BannerAD> {
@@ -21,41 +21,46 @@ class _BannerADState extends State<BannerAD> {
     super.didChangeDependencies();
 
     widget.adState.initialization.then((value) async {
-      size = await anchoredAdaptiveBannerAdSize(context);
+      if (!mounted) return;
+      final adSize = await anchoredAdaptiveBannerAdSize(context);
+      if (!mounted) return;
+      // The SDK returns null when it cannot work out a size (e.g. no screen
+      // metrics yet); without a size there is no ad to build.
+      if (adSize == null || widget.adState.bannerAdUnitId == null) return;
       setState(() {
-        if (widget.adState.bannerAdUnitId != null) {
-          banner = BannerAd(
-            listener: widget.adState.adListener,
-            adUnitId: widget.adState.bannerAdUnitId!,
-            request: AdRequest(),
-            size: size!,
-          )..load();
-        }
+        size = adSize;
+        banner = BannerAd(
+          listener: widget.adState.adListener,
+          adUnitId: widget.adState.bannerAdUnitId!,
+          request: const AdRequest(),
+          size: adSize,
+        )..load();
       });
     });
   }
 
   @override
   Widget build(BuildContext context) {
-    return banner ==
-            null //banner is only null for a very less time //don't think that banner will be null if ads fails loads
-        ? SizedBox()
-        : Container(
-            color: Colors.grey,
-            width: size!.width.toDouble(),
-            height: size!.height.toDouble(),
-            child: AdWidget(
-              ad: banner!,
-            ),
-          );
+    final loadedBanner = banner;
+    final loadedSize = size;
+    // Both stay null until an ad size resolves and the banner is built.
+    if (loadedBanner == null || loadedSize == null) {
+      return const SizedBox();
+    }
+
+    return Container(
+      color: Colors.grey,
+      width: loadedSize.width.toDouble(),
+      height: loadedSize.height.toDouble(),
+      child: AdWidget(
+        ad: loadedBanner,
+      ),
+    );
   }
 
   Future<AnchoredAdaptiveBannerAdSize?> anchoredAdaptiveBannerAdSize(
       BuildContext context) async {
-    return await AdSize.getAnchoredAdaptiveBannerAdSize(
-      MediaQuery.of(context).orientation == Orientation.portrait
-          ? Orientation.portrait
-          : Orientation.landscape,
+    return await AdSize.getLargeAnchoredAdaptiveBannerAdSize(
       MediaQuery.of(context).size.width.toInt(),
     );
   }

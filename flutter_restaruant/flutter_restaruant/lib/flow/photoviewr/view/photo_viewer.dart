@@ -1,18 +1,18 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_restaruant/utils/tuple.dart';
-import 'package:flutter_restaruant/utils/ui_constants.dart';
-import 'package:flutter_restaruant/generated/l10n.dart';
-import 'package:flutter_restaruant/gen/colors.gen.dart';
+import '../../../utils/tuple.dart';
+import '../../../utils/ui_constants.dart';
+import '../../../generated/l10n.dart';
+import '../../../gen/colors.gen.dart';
 
 class PhotoViewer extends StatefulWidget {
-  static const ROUTE_NAME = "/PhotoViewer";
+  static const routeName = '/PhotoViewer';
 
-  const PhotoViewer({Key? key}) : super(key: key);
+  const PhotoViewer({super.key});
 
   @override
-  _PhotoViewerState createState() => _PhotoViewerState();
+  State<PhotoViewer> createState() => _PhotoViewerState();
 }
 
 class _PhotoViewerState extends State<PhotoViewer> {
@@ -22,31 +22,31 @@ class _PhotoViewerState extends State<PhotoViewer> {
   Widget build(BuildContext context) {
     final args =
         ModalRoute.of(context)!.settings.arguments as Tuple2<String, dynamic>;
-    this._photoUrl = args.item1;
+    _photoUrl = args.item1;
 
     return Scaffold(
         appBar: AppBar(
             leading: PlatformIconButton(
-                padding: EdgeInsets.all(0),
+                padding: const EdgeInsets.all(0),
                 onPressed: () => Navigator.of(context).pop(),
                 materialIcon:
-                    Icon(Icons.arrow_back, color: ColorName.backBtnColor),
+                    const Icon(Icons.arrow_back, color: ColorName.backBtnColor),
                 cupertinoIcon:
-                    Icon(CupertinoIcons.back, color: ColorName.backBtnColor)),
+                    const Icon(CupertinoIcons.back, color: ColorName.backBtnColor)),
             title: Text(S.current.photo_viewer_title,
-                style: TextStyle(
+                style: const TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
             backgroundColor: ColorName.appPrimaryColor),
         body: InteractiveViewer(
           // Set it to false
-          boundaryMargin: EdgeInsets.all(100),
+          boundaryMargin: const EdgeInsets.all(100),
           minScale: 0.5,
           maxScale: 2,
           child: FadeInImage.assetNetwork(
               width: MediaQuery.of(context).size.width,
               height: MediaQuery.of(context).size.height,
-              placeholder: UIConstants.NO_IMAGE,
-              image: this._photoUrl,
+              placeholder: UIConstants.noImage,
+              image: _photoUrl,
               fit: BoxFit.contain),
         ));
   }

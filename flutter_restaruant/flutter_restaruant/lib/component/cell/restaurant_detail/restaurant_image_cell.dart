@@ -1,40 +1,39 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_restaruant/flow/photoviewr/view/photo_viewer.dart';
-import 'package:flutter_restaruant/utils/tuple.dart';
-import 'package:flutter_restaruant/utils/ui_constants.dart';
+import '../../../flow/photoviewr/view/photo_viewer.dart';
+import '../../../utils/tuple.dart';
+import '../../../utils/ui_constants.dart';
 
 class RestaurantImageCell extends StatelessWidget {
-  static const int _IMAGE_H = 200;
+  static const int _imageH = 200;
 
   final List<String> _photos;
 
-  const RestaurantImageCell({Key? key, required List<String> photos})
-      : this._photos = photos,
-        super(key: key);
+  const RestaurantImageCell({super.key, required List<String> photos})
+      : _photos = photos;
 
   @override
   Widget build(BuildContext context) => Container(
-      padding: EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: 10),
       height: MediaQuery.of(context).size.width / 3,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
-          itemCount: this._photos.length,
+          itemCount: _photos.length,
           itemBuilder: (context, index) => Padding(
-              padding: EdgeInsets.symmetric(horizontal: 5),
+              padding: const EdgeInsets.symmetric(horizontal: 5),
               child: GestureDetector(
                 onTap: () {
-                  String photoUrl = this._photos[index];
+                  String photoUrl = _photos[index];
                   Tuple2 arguments = Tuple2<String, dynamic>(photoUrl, null);
 
                   Navigator.of(context)
-                      .pushNamed(PhotoViewer.ROUTE_NAME, arguments: arguments);
+                      .pushNamed(PhotoViewer.routeName, arguments: arguments);
                 },
                 child: FadeInImage.assetNetwork(
-                    placeholder: UIConstants.NO_IMAGE,
-                    image: this._photos[index],
-                    imageCacheHeight: RestaurantImageCell._IMAGE_H,
+                    placeholder: UIConstants.noImage,
+                    image: _photos[index],
+                    imageCacheHeight: RestaurantImageCell._imageH,
                     imageCacheWidth: MediaQuery.of(context).size.width.toInt(),
-                    placeholderCacheHeight: RestaurantImageCell._IMAGE_H,
+                    placeholderCacheHeight: RestaurantImageCell._imageH,
                     placeholderCacheWidth:
                         MediaQuery.of(context).size.width.toInt(),
                     fit: BoxFit.fill,

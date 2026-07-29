@@ -19,8 +19,12 @@ dependencies:
   # 狀態管理與非同步 (State Management & Reactive Programming)
   bloc: ^9.2.1 # BLoC 狀態管理核心庫
   flutter_bloc: ^9.1.1 # Flutter 的 BLoC 狀態管理整合套件
+  equatable: ^2.0.5
   rxdart: ^0.28.0 # ReactiveX 響應式擴充庫 (Observable/Subject)
   event_bus: ^2.0.0 # 跨組件事件總線 (Event Bus) 傳遞廣播訊息
+
+  # 依賴注入 (Dependency Injection)
+  get_it: ^8.0.0
 
   # 網路請求與 API (Networking & API Services)
   dio: ^5.6.0 # 強大的 HTTP Client (支援攔截器、請求取消等)
@@ -66,29 +70,25 @@ dependencies:
   logger: ^2.4.0 # 多層級日誌紀錄工具 (Logger)
   crypto: ^3.0.3 # 加密與雜湊演算法 (MD5, SHA-256 等)
 
-dependency_overrides:
-  # For Tuple dependency (解 Quiver 版本相依衝突)
-  quiver: ^3.2.1
-
+  # Standard Flutter SDK and core packages
   flutter:
     sdk: flutter
   flutter_localizations:
     sdk: flutter
-  intl: ^0.20.2 # 多國語言與日期數字格式化
-
-  # iOS 風格 Icon 圖示
   cupertino_icons: ^1.0.8
-
-  # 測試工具 (Testing Framework)
-  integration_test:
-    sdk: flutter
+  intl: ^0.20.2
+  json_annotation: ^4.9.0
+  quiver: ^3.2.1
+  meta: ^1.11.0
 
 dev_dependencies:
+  flutter_lints: ^5.0.0
+  integration_test:
+    sdk: flutter
   # 開發與程式碼生成工具 (Development & Code Generation Tools)
   build_runner: ^2.4.12 # Dart 程式碼生成器執行工具
   retrofit_generator: ^10.2.8 # Retrofit API 程式碼生成器
   json_serializable: ^6.8.0 # JSON 序列化/反序列化程式碼生成器
-  equatable: any # 物件相等性比較工具
   intl_utils: ^2.8.11 # intl_utils 多國語言程式碼生成工具
   flutter_gen_runner: ^5.8.0 # 資源程式碼生成工具
 

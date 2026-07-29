@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'package:flutter_restaruant/utils/ui_constants.dart';
+import 'ui_constants.dart';
 
 class ViewUtils {
   static void showPromptDialog(
@@ -12,10 +12,10 @@ class ViewUtils {
         showPlatformDialog(
             context: context,
             builder: (context) => PlatformAlertDialog(
-                  key: GlobalKey(debugLabel: "PromptDialog"),
+                  key: GlobalKey(debugLabel: 'PromptDialog'),
                   title: PlatformText(
                     title,
-                    style: TextStyle(
+                    style: const TextStyle(
                         fontSize: UIConstants.xxhFontSize,
                         fontWeight: FontWeight.bold),
                   ),

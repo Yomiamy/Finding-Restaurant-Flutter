@@ -3,26 +3,23 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 
 class UIConstants {
   /// [FCM]
-  static const FCM_NOTIFICATION_ICON = "@mipmap/ic_launcher";
+  static const fcmNotificationIcon = '@mipmap/ic_launcher';
 
   /// [UI]
-  static const APP_TITLE = "尋找餐廳";
-  static const LOGIN_TITLE = "登入";
-  static const FAVOR_TITLE = "我喜好的店家";
+  static const appTitle = '尋找餐廳';
+  static const loginTitle = '登入';
+  static const favorTitle = '我喜好的店家';
 
-  static const String NO_IMAGE = "images/empty.png";
-  static const double RATING_IMAGE_W = 100.0;
-  static const double RATING_IMAGE_H = 20.0;
-  static const double FAVOR_IMAGE_H = 20.0;
-  static const double FAVOR_IMAGE_W = 20.0;
+  static const String noImage = 'images/empty.png';
+  static const double ratingImageW = 100.0;
+  static const double ratingImageH = 20.0;
+  static const double favorImageH = 20.0;
+  static const double favorImageW = 20.0;
 
-  static const EMPTY_WIDGET = SizedBox(height: 0);
+  static const emptyWidget = SizedBox(height: 0);
 
-  static const MAP_DEFAULT_LOCATION = LatLng(25.048036, 121.517063);
-  static const MAP_MY_LOCATION_MARK_ID = "MAP_MY_LOCATION_MARK_ID";
-
-  // AD
-  static int InterstitialADCountDown = 3;
+  static const mapDefaultLocation = LatLng(25.048036, 121.517063);
+  static const mapMyLocationMarkId = 'MAP_MY_LOCATION_MARK_ID';
 
   // Dimens
   static const double xlFontSize = 10;

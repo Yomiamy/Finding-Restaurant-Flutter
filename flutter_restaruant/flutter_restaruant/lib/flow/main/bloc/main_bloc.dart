@@ -1,39 +1,38 @@
 import 'dart:async';
+import 'package:flutter/foundation.dart';
 import 'package:bloc/bloc.dart';
-import 'package:flutter_restaruant/flow/main/repository/main_repository.dart';
-import 'package:flutter_restaruant/manager/fcm_manager.dart';
-import 'package:flutter_restaruant/model/yelp_restaurant_summary_info.dart';
-import 'package:flutter_restaruant/utils/utils.dart';
+import '../../../domain/entities/restaurant_entity.dart';
+import '../../../domain/repositories/main_repository.dart';
+import '../../../manager/fcm_manager.dart';
+import '../../../utils/utils.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
 part 'main_event.dart';
 part 'main_state.dart';
 
 class MainBloc extends Bloc<MainEvent, MainState> {
-  static const TAG = "MainBloc";
+  static const tag = 'MainBloc';
   final MainRepository _mainRepository;
 
   MainBloc({required MainRepository repository})
-      : this._mainRepository = repository,
-        super(MainInitial()) {
+      : _mainRepository = repository,
+        super(const MainInitial()) {
     on<FetchSearchInfo>((event, emit) async {
       try {
         final Position currentPos = await Utils.getCurrentPosition();
         double lat = currentPos.latitude;
         double lng = currentPos.longitude;
-        bool isLoadMore = this._mainRepository.summaryInfoSet.isNotEmpty;
+        bool isLoadMore = _mainRepository.summaryInfoSet.isNotEmpty;
         int? price = event.price;
         int? openAt = event.openAt;
         String? sortBy = event.sortBy;
 
         if (!isLoadMore) {
           // If it is first loading, then display loading progress.
-          emit(InProgress());
+          emit(const InProgress());
         }
-        final List<YelpRestaurantSummaryInfo> summaryInfos = await this
-            ._mainRepository
+        final List<RestaurantEntity> summaryInfos = await _mainRepository
             .fetchYelpSearchInfo(lat, lng, price, openAt, sortBy);
 
         if (isLoadMore) {
@@ -42,40 +41,38 @@ class MainBloc extends Bloc<MainEvent, MainState> {
           emit(Success(summaryInfos: summaryInfos));
         }
       } on Exception catch (_) {
-        emit(Failure());
+        emit(const Failure());
       }
     });
 
     on<Reset>((event, emit) async {
-      this._mainRepository.reset();
-      emit(ResetSuccess());
+      _mainRepository.reset();
+      emit(const ResetSuccess());
     });
 
     on<FilterListByKeyword>((event, emit) async {
-      emit(InProgress());
+      emit(const InProgress());
 
-      await Future.delayed(Duration(seconds: 2));
-      final List<YelpRestaurantSummaryInfo> filterInfos = await this
-          ._mainRepository
+      await Future.delayed(const Duration(seconds: 2));
+      final List<RestaurantEntity> filterInfos = await _mainRepository
           .filterByKeyword(event.keyword, event.sortByStr);
 
       if (filterInfos.isNotEmpty) {
         emit(Success(summaryInfos: filterInfos));
       } else {
-        emit(Success(summaryInfos: []));
+        emit(const Success(summaryInfos: []));
       }
     });
 
     on<ToggleFavor>((event, emit) async {
       try {
-        emit(InProgress());
+        emit(const InProgress());
 
-        YelpRestaurantSummaryInfo summary = event.summaryInfo;
-        await this._mainRepository.toggleFavor(summary);
+        await _mainRepository.toggleFavor(event.summaryInfo);
 
-        emit(ToggleFavorSuccess());
+        emit(const ToggleFavorSuccess());
       } on Exception catch (_) {
-        emit(Failure());
+        emit(const Failure());
       }
     });
 
@@ -84,7 +81,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
       await fcmManager.requestPermission();
       String fcmToken = await fcmManager.fcmToken;
-      print("$TAG, fcm Token is $fcmToken");
+      debugPrint('$tag, fcm Token is $fcmToken');
     });
   }
 }

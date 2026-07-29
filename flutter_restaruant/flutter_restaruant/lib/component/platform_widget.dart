@@ -3,6 +3,8 @@ import 'dart:io';
 
 abstract class PlatformWidget<I extends Widget, A extends Widget>
     extends StatelessWidget {
+  const PlatformWidget({super.key});
+
   @override
   Widget build(BuildContext context) {
     if (Platform.isAndroid) {
@@ -10,7 +12,7 @@ abstract class PlatformWidget<I extends Widget, A extends Widget>
     } else if (Platform.isIOS) {
       return createIosWidget(context);
     }
-    return new Container();
+    return Container();
   }
 
   I createIosWidget(BuildContext context);

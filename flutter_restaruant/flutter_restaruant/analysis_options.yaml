@@ -1,0 +1,30 @@
+include: package:flutter_lints/flutter.yaml
+
+analyzer:
+  exclude:
+    - "**/*.g.dart"
+    - "**/*.freezed.dart"
+    - "build/**"
+    - "android/**"
+    - "ios/**"
+    - "linux/**"
+    - "macos/**"
+    - "windows/**"
+    - "web/**"
+  errors:
+    unused_import: warning
+    deprecated_member_use: info
+
+linter:
+  rules:
+    prefer_const_constructors: true
+    prefer_const_declarations: true
+    unnecessary_this: true
+    avoid_unused_constructor_parameters: true
+    await_only_futures: true
+    prefer_relative_imports: true
+    unawaited_futures: true
+    prefer_single_quotes: true
+    always_declare_return_types: true
+    cancel_subscriptions: true
+    close_sinks: true

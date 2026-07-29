@@ -1,8 +1,9 @@
 import 'dart:convert';
 
-import 'package:flutter_restaruant/model/account_info.dart';
-import 'package:flutter_restaruant/utils/constants.dart';
-import 'package:flutter_restaruant/utils/tuple.dart';
+import '../data_layer/dto/account_dto.dart';
+
+import '../utils/constants.dart';
+import '../utils/tuple.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,12 +12,12 @@ class BiometricSignInManager {
       BiometricSignInManager._internal();
 
   BiometricSignInManager._internal() {
-    this.initBioSignInInfo();
+    initBioSignInInfo();
   }
 
   factory BiometricSignInManager() => _singleton;
 
-  var _localAuth = LocalAuthentication();
+  final _localAuth = LocalAuthentication();
   late List<BiometricType> _availableBiometrics;
   late bool isSupportBiometricAuth;
   late bool isSupportFingerPrintAuth;
@@ -30,34 +31,34 @@ class BiometricSignInManager {
     isSupportFaceIdAuth = _availableBiometrics.contains(BiometricType.face);
   }
 
-  Future<Tuple2<AccountInfo?, String>> signInWithBiometric() async {
+  Future<Tuple2<AccountDto?, String>> signInWithBiometric() async {
     final prefs = await SharedPreferences.getInstance();
     bool isBiometricSignInEnabled =
-        prefs.getBool(Constants.PREF_KEY_BIOMETRIC_AUTH_SETTING) ?? false;
+        prefs.getBool(Constants.prefKeyBiometricAuthSetting) ?? false;
 
     if (!isBiometricSignInEnabled) {
       // 不支援生物辨識登入
-      return Tuple2(null, "");
+      return const Tuple2(null, '');
     }
 
     bool isSignInSuccess =
         await _localAuth.authenticate(localizedReason: '請使用生物識別認證進行登入');
 
     if (!isSignInSuccess) {
-      return Tuple2(null, "");
+      return const Tuple2(null, '');
     } else {
       // 緩存登入資料代表登入過
       final prefs = await SharedPreferences.getInstance();
       final accountInfoJsonStr =
-          prefs.getString(Constants.PREF_KEY_ACCOUNT_INFO);
+          prefs.getString(Constants.prefKeyAccountInfo);
 
       if (accountInfoJsonStr == null || accountInfoJsonStr.isEmpty) {
-        return Tuple2(null, "登入失敗, 請重新登入一次");
+        return const Tuple2(null, '登入失敗, 請重新登入一次');
       }
 
-      AccountInfo accountInfo =
-          AccountInfo.fromJson(jsonDecode(accountInfoJsonStr));
-      return Tuple2(accountInfo, "");
+      AccountDto accountDto =
+          AccountDto.fromJson(jsonDecode(accountInfoJsonStr));
+      return Tuple2(accountDto, '');
     }
   }
 

@@ -1,9 +1,11 @@
+import 'package:flutter/foundation.dart';
 import 'dart:convert';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import 'package:flutter_restaruant/model/account_info.dart';
-import 'package:flutter_restaruant/utils/tuple.dart';
+import '../data_layer/dto/account_dto.dart';
+import '../domain/entities/user_entity.dart';
+import '../utils/tuple.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AppleSignInManager {
@@ -16,7 +18,7 @@ class AppleSignInManager {
   /// Generates a cryptographically secure random nonce, to be included in a
   /// credential request.
   String generateNonce([int length = 32]) {
-    final charset =
+    const charset =
         '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
     final random = Random.secure();
     return List.generate(length, (_) => charset[random.nextInt(charset.length)])
@@ -30,7 +32,7 @@ class AppleSignInManager {
     return digest.toString();
   }
 
-  Future<Tuple2<AccountInfo?, String>> signInWithApple() async {
+  Future<Tuple2<AccountDto?, String>> signInWithApple() async {
     try {
       // To prevent replay attacks with the credential returned from Apple, we
       // include a nonce in the credential request. When signing in with
@@ -50,12 +52,12 @@ class AppleSignInManager {
 
       if (appleCredential.identityToken == null) {
         // 未登入
-        return Tuple2<AccountInfo?, String>(
-            null, "Error occurred, please retry again");
+        return const Tuple2<AccountDto?, String>(
+            null, 'Error occurred, please retry again');
       }
 
       // Create an `OAuthCredential` from the credential returned by Apple.
-      final oauthCredential = OAuthProvider("apple.com").credential(
+      final oauthCredential = OAuthProvider('apple.com').credential(
         idToken: appleCredential.identityToken,
         rawNonce: rawNonce,
       );
@@ -64,17 +66,17 @@ class AppleSignInManager {
       // not match the nonce in `appleCredential.identityToken`, sign in will fail.
       UserCredential userCredential =
           await FirebaseAuth.instance.signInWithCredential(oauthCredential);
-      AccountInfo accountInfo = AccountInfo(
-          type: AccountType.APPLE,
-          uid: userCredential.user?.uid ?? "",
-          account: userCredential.user?.email ?? "");
+      AccountDto accountDto = AccountDto(
+          type: AccountType.apple,
+          uid: userCredential.user?.uid ?? '',
+          account: userCredential.user?.email ?? '');
 
-      return Tuple2(accountInfo, "");
+      return Tuple2(accountDto, '');
     } on Exception catch (e) {
       // 登入錯誤
-      print("AppleSignInManager, error = $e");
+      debugPrint('AppleSignInManager, error = $e');
       return Tuple2(
-          null, "Apple sign in fail, please retry again\n${e.toString()}");
+          null, 'Apple sign in fail, please retry again\n${e.toString()}');
     }
   }
 
