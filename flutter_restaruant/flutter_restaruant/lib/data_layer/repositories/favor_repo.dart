@@ -1,73 +1,40 @@
 import 'dart:async';
-import 'dart:convert';
 
-import 'package:cloud_firestore/cloud_firestore.dart';
-import '../dto/yelp_restaurant_summary_dto.dart';
+import '../datasources/favor_data_source.dart';
 import '../../domain/entities/restaurant_entity.dart';
 import '../../domain/repositories/favor_repository.dart';
-import '../../manager/sign_in_manager.dart';
 
 class FavorRepo implements FavorRepository {
-  static const String favorCollectionName = 'favors';
+  final FavorDataSource _dataSource;
 
   List<RestaurantEntity> _favorInfos = [];
 
-  /// Resolved per call: this repo is a lazy singleton, so caching the uid in
-  /// the constructor would keep pointing at the previous user after a
-  /// sign-out/sign-in.
-  String get _uid => SignInManager().accountDto?.uid ?? '';
+  FavorRepo({FavorDataSource? favorDataSource})
+      : _dataSource = favorDataSource ?? FavorDataSource();
 
   @override
   Future<List<RestaurantEntity>> fetchFavorInfos(
       bool isRefreshLocalOnly) async {
     if (isRefreshLocalOnly) {
-      _favorInfos =
-          _favorInfos.where((element) => element.favor).toList();
+      _favorInfos = _favorInfos.where((element) => element.favor).toList();
     } else {
-      DocumentSnapshot snapshots = await FirebaseFirestore.instance
-          .collection(favorCollectionName)
-          .doc(_uid)
-          .get();
-      Map<String, dynamic> favorMap = (snapshots.data() != null)
-          ? snapshots.data() as Map<String, dynamic>
-          : <String, dynamic>{};
-      _favorInfos = favorMap.values.map((value) {
-        YelpRestaurantSummaryDto dto =
-            YelpRestaurantSummaryDto.fromJson(jsonDecode(value));
-        dto.favor = true;
-
-        return RestaurantEntity.fromDto(dto);
-      }).toList();
+      _favorInfos = await _dataSource.fetchFavorEntities();
     }
 
     return _favorInfos;
   }
 
   @override
-  Future<void> toggleFavor(RestaurantEntity summaryInfo) async {
-    DocumentReference ref = FirebaseFirestore.instance
-        .collection(favorCollectionName)
-        .doc(_uid);
-    DocumentSnapshot snapshots = await ref.get();
-    Map<String, dynamic> favorsMap = (snapshots.data() != null)
-        ? snapshots.data() as Map<String, dynamic>
-        : <String, dynamic>{};
-    bool newFavor = !summaryInfo.favor;
-    RestaurantEntity updatedEntity = summaryInfo.copyWith(favor: newFavor);
+  Future<RestaurantEntity> toggleFavor(RestaurantEntity summaryInfo) async {
+    RestaurantEntity updatedEntity =
+        await _dataSource.toggleFavor(summaryInfo);
 
-    if (newFavor) {
-      // 若設定為最愛資料則新增
-      YelpRestaurantSummaryDto dto = updatedEntity.toDto;
-      String summaryInfoJsonStr = jsonEncode(dto.toJson());
+    // 同步本地快取，否則 fetchFavorInfos(true) 濾不掉剛取消收藏的項目
+    _favorInfos = [
+      ..._favorInfos.where((element) => element.id != updatedEntity.id),
+      if (updatedEntity.favor) updatedEntity,
+    ];
 
-
-      favorsMap[updatedEntity.id!] = summaryInfoJsonStr;
-    } else {
-      // 若設定為非最愛資料則刪除
-      favorsMap.remove(updatedEntity.id!);
-    }
-    // 更新資料
-    // ignore: unawaited_futures
-    ref.set(favorsMap, SetOptions(merge: false));
+    return updatedEntity;
   }
 }

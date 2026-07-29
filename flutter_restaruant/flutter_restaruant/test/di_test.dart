@@ -2,6 +2,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_restaruant/api/api_clz.dart';
 import 'package:flutter_restaruant/api/dio/dio_client.dart';
 
+import 'package:flutter_restaruant/data_layer/datasources/favor_data_source.dart';
 import 'package:flutter_restaruant/di/injection.dart';
 import 'package:flutter_restaruant/domain/repositories/favor_repository.dart';
 import 'package:flutter_restaruant/domain/repositories/main_repository.dart';
@@ -50,6 +51,14 @@ void main() {
 
       expect(GetIt.I.isRegistered<AdCounterManager>(), isTrue);
       expect(GetIt.I<AdCounterManager>(), isA<AdCounterManager>());
+    });
+
+    test('FavorDataSource resolves and is shared by all repositories', () {
+      expect(GetIt.I.isRegistered<FavorDataSource>(), isTrue);
+
+      final dataSource1 = GetIt.I<FavorDataSource>();
+      final dataSource2 = GetIt.I<FavorDataSource>();
+      expect(identical(dataSource1, dataSource2), isTrue);
     });
 
     test('MainRepository resolves to MainRepository', () {

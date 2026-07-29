@@ -1,6 +1,7 @@
 import 'package:get_it/get_it.dart';
 import '../api/api_clz.dart';
 import '../api/dio/dio_client.dart';
+import '../data_layer/datasources/favor_data_source.dart';
 import '../data_layer/repositories/favor_repo.dart';
 import '../data_layer/repositories/main_repo.dart';
 import '../data_layer/repositories/restaurant_detail_repo.dart';
@@ -27,11 +28,16 @@ void setupInjection() {
   getIt.registerLazySingleton<FcmManager>(() => FcmManager());
   getIt.registerLazySingleton<AdCounterManager>(() => AdCounterManager());
 
+  // Data sources
+  getIt.registerLazySingleton<FavorDataSource>(() => FavorDataSource());
+
   // Repositories
-  getIt.registerLazySingleton<MainRepository>(() => MainRepo());
+  getIt.registerLazySingleton<MainRepository>(
+      () => MainRepo(favorDataSource: getIt<FavorDataSource>()));
   getIt.registerLazySingleton<RestaurantDetailRepository>(
-      () => RestaurantDetailRepo());
-  getIt.registerLazySingleton<FavorRepository>(() => FavorRepo());
+      () => RestaurantDetailRepo(favorDataSource: getIt<FavorDataSource>()));
+  getIt.registerLazySingleton<FavorRepository>(
+      () => FavorRepo(favorDataSource: getIt<FavorDataSource>()));
   getIt.registerLazySingleton<SignInRepository>(() => SignInRepo());
   getIt.registerLazySingleton<SettingsRepository>(
       () => const SettingsRepo());

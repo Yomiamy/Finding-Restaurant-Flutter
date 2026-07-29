@@ -18,5 +18,7 @@ abstract interface class MainRepository {
     String? sortByStr,
   );
 
-  Future<void> toggleFavor(RestaurantEntity summaryInfo);
+  /// Returns the persisted entity so callers adopt the new favor value
+  /// instead of deriving it a second time.
+  Future<RestaurantEntity> toggleFavor(RestaurantEntity summaryInfo);
 }

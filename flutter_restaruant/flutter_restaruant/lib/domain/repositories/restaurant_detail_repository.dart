@@ -7,5 +7,7 @@ abstract interface class RestaurantDetailRepository {
 
   Future<ReviewEntity> fetchYelpRestaurantReviewInfo(String id);
 
-  Future<void> toggleFavor(RestaurantEntity summaryInfo);
+  /// Returns the persisted entity so callers adopt the new favor value
+  /// instead of deriving it a second time.
+  Future<RestaurantEntity> toggleFavor(RestaurantEntity summaryInfo);
 }
