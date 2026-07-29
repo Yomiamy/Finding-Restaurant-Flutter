@@ -1,5 +1,6 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
+import '../api/api_clz.dart';
 import 'apple_sign_in_manager.dart';
 import 'auto_sign_in_manager.dart';
 import 'biometric_sign_in_manager.dart';
@@ -34,17 +35,32 @@ class SignInManager {
 
   /// 由 `main()` 於 `runApp` 前呼叫，把磁碟上的旗標讀進記憶體，
   /// 使 [isGuest] 能以同步方式被 UI 查詢。
+  ///
+  /// 這個呼叫位於 `main()` 的 `Future.wait` 啟動鏈上，因此**不可對外拋錯**：
+  /// 讀取失敗（例如 prefs 檔損毀）若讓 Future 被 reject，`runApp()` 就不會
+  /// 執行，App 開啟後只剩黑畫面。失敗時退回「非訪客」，最差情況是使用者
+  /// 多看到一次登入頁，而不是整個 App 起不來。
   Future<void> loadGuestFlag() async {
-    final prefs = await SharedPreferences.getInstance();
-    _isGuest = prefs.getBool(Constants.prefKeyGuestMode) ?? false;
+    try {
+      final prefs = await SharedPreferences.getInstance();
+      _isGuest = prefs.getBool(Constants.prefKeyGuestMode) ?? false;
+    } on Exception catch (e, st) {
+      logger.e('讀取訪客旗標失敗，退回非訪客', error: e, stackTrace: st);
+      _isGuest = false;
+    }
   }
 
+  /// 標記為訪客。記憶體狀態只在寫入成功後才更新，避免磁碟寫入失敗時
+  /// 記憶體與磁碟分歧——那會讓訪客身分在下次啟動時無聲消失。
   Future<void> markAsGuest() async {
-    _isGuest = true;
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool(Constants.prefKeyGuestMode, true);
+    _isGuest = true;
   }
 
+  /// 清除訪客旗標。與 [markAsGuest] 相反的順序考量：先清記憶體，確保
+  /// 即使磁碟移除失敗，當下的 [isGuest] 也不會仍回報 true。下次啟動時
+  /// 殘留的磁碟值會讓使用者回到訪客身分，這比讓已登入者被當成訪客安全。
   Future<void> clearGuestFlag() async {
     _isGuest = false;
     final prefs = await SharedPreferences.getInstance();

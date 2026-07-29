@@ -59,7 +59,11 @@ class FavorDataSource {
   Future<RestaurantEntity> toggleFavor(RestaurantEntity summaryInfo) async {
     // 寫入需要真實的使用者。UI 層已在唯一入口（RestaurantHeadCell）攔下訪客，
     // 走到這裡代表攔截失效——直接失敗，不要無聲寫進空 doc id。
-    assert(_uid.isNotEmpty, 'toggleFavor requires a signed-in user');
+    // 用 throw 而非 assert：assert 在 release build 會被移除，正是最需要
+    // 這道防護的環境。
+    if (_uid.isEmpty) {
+      throw StateError('toggleFavor requires a signed-in user');
+    }
 
     Map<String, dynamic> favorsMap = await fetchFavorsMap();
     bool newFavor = !summaryInfo.favor;

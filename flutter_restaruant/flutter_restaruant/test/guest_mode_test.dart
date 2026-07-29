@@ -1,6 +1,7 @@
 import 'package:flutter/services.dart';
 import 'package:flutter_restaruant/data_layer/datasources/favor_data_source.dart';
 import 'package:flutter_restaruant/data_layer/dto/account_dto.dart';
+import 'package:flutter_restaruant/domain/entities/restaurant_entity.dart';
 import 'package:flutter_restaruant/domain/entities/user_entity.dart';
 import 'package:flutter_restaruant/manager/sign_in_manager.dart';
 import 'package:flutter_restaruant/utils/constants.dart';
@@ -115,6 +116,18 @@ void main() {
       await SignInManager().markAsGuest();
 
       expect(await FavorDataSource().fetchFavorEntities(), isEmpty);
+    });
+
+    // 寫入路徑必須在 release build 也擋得住，因此用 throw 而非 assert。
+    // 這個測試在 debug 與 release 下都成立。
+    test('toggleFavor throws instead of writing to an empty doc id', () async {
+      await resetManager(_Data.emptyPrefs);
+      await SignInManager().markAsGuest();
+
+      expect(
+          () => FavorDataSource()
+              .toggleFavor(const RestaurantEntity(id: 'any-id')),
+          throwsStateError);
     });
   });
 }
