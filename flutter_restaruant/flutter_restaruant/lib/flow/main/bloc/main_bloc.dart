@@ -68,8 +68,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       try {
         emit(const InProgress());
 
-        RestaurantEntity summary = event.summaryInfo;
-        await _mainRepository.toggleFavor(summary);
+        await _mainRepository.toggleFavor(event.summaryInfo);
 
         emit(const ToggleFavorSuccess());
       } on Exception catch (_) {
