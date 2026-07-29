@@ -6,11 +6,13 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import '../../../component/loading_widget.dart';
 import '../bloc/sign_in_bloc.dart';
 import '../../../generated/l10n.dart';
+import '../../../manager/sign_in_manager.dart';
 import '../../../utils/ui_constants.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../../../gen/colors.gen.dart';
 import '../../main/view/main_page.dart';
+import '../../splash/view/splash_page.dart';
 
 class SignInPage extends StatefulWidget {
   static const routeName = '/SignInPage';
@@ -46,6 +48,11 @@ class _SignInPageState extends State<SignInPage> {
             fontSize: UIConstants.xxxhFontSize,
           ),
         ),
+        // 本頁有兩種進入方式：從 Splash 取代進來（無返回鍵），或訪客從
+        // 詳情頁／設定頁 pushNamed 進來（有返回鍵）。因此不能比照其他頁面
+        // 寫死 leading——那會讓 Splash 路徑也長出一顆按不動的返回鍵。
+        // 交給 Flutter 依 canPop() 決定是否顯示，這裡只負責上色。
+        iconTheme: const IconThemeData(color: ColorName.backBtnColor),
         backgroundColor: ColorName.appPrimaryColor,
       ),
       body: BlocConsumer<SignInBloc, SignInState>(
@@ -53,12 +60,12 @@ class _SignInPageState extends State<SignInPage> {
           if (state is SignInSuccess) {
             Fluttertoast.showToast(msg: S.current.signin_success_msg);
             // ignore: unawaited_futures
-            Navigator.of(context).pushReplacementNamed(MainPage.routeName);
+            _goToMainPage(context);
           } else if (state is SignUpSuccess) {
             Fluttertoast.showToast(
                 msg: S.current.email_signup_success_hint_msg);
             // ignore: unawaited_futures
-            Navigator.of(context).pushReplacementNamed(MainPage.routeName);
+            _goToMainPage(context);
           } else if (state is Failure) {
             Fluttertoast.showToast(msg: state.errorMsg);
           }
@@ -67,6 +74,16 @@ class _SignInPageState extends State<SignInPage> {
       ),
     );
   }
+
+  /// 清掉 Splash 之上的所有頁面再進主畫面。
+  ///
+  /// 訪客可從詳情頁最愛或設定頁進入本頁（`pushNamed`），此時登入頁並非堆疊
+  /// 頂端唯一的一頁。用 `pushReplacementNamed` 只會換掉登入頁本身，把過期的
+  /// 詳情頁／設定頁留在下面——那些頁面是在訪客身分下 build 的，返回鍵會回到
+  /// 顯示錯誤內容的舊畫面。
+  Future<void> _goToMainPage(BuildContext context) =>
+      Navigator.of(context).pushNamedAndRemoveUntil(
+          MainPage.routeName, ModalRoute.withName(SplashPage.routeName));
 
   Widget _buildView(SignInState state) => Stack(children: <Widget>[
         ConstrainedBox(
@@ -174,18 +191,30 @@ class _SignInPageState extends State<SignInPage> {
                     MailSignInEvent(mail: _email, passwd: _passwd));
               }
             }),
-        PlatformTextButton(
-            child: Text(S.current.signup_title,
-                style: const TextStyle(
-                    fontSize: UIConstants.mFontSize, color: Colors.grey)),
-            onPressed: () {
-              if (_formKey.currentState != null &&
-                  _formKey.currentState!.validate()) {
-                _formKey.currentState!.save();
-                _signInBloc.add(
-                    MailSignUpEvent(mail: _email, passwd: _passwd));
-              }
-            })
+        Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
+          PlatformTextButton(
+              child: Text(S.current.signup_title,
+                  style: const TextStyle(
+                      fontSize: UIConstants.mFontSize, color: Colors.grey)),
+              onPressed: () {
+                if (_formKey.currentState != null &&
+                    _formKey.currentState!.validate()) {
+                  _formKey.currentState!.save();
+                  _signInBloc.add(
+                      MailSignUpEvent(mail: _email, passwd: _passwd));
+                }
+              }),
+          PlatformTextButton(
+              child: Text(S.current.continue_as_guest,
+                  style: const TextStyle(
+                      fontSize: UIConstants.mFontSize, color: Colors.grey)),
+              onPressed: () async {
+                await SignInManager().markAsGuest();
+                if (!mounted) return;
+                // ignore: unawaited_futures
+                _goToMainPage(context);
+              })
+        ])
       ]));
 
   Widget show3rdSignInUpBtns() =>

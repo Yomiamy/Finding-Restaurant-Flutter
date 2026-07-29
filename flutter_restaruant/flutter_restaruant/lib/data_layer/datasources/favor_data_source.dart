@@ -23,7 +23,16 @@ class FavorDataSource {
       FirebaseFirestore.instance.collection(favorCollectionName).doc(_uid);
 
   /// 讀出原始的最愛 map，key 為餐廳 id。
+  ///
+  /// 未登入時（訪客或尚未登入）沒有可查詢的 document，直接回傳空 map。
+  /// 少了這道 guard，Firestore 會因空字串 doc id 拋出 [ArgumentError]——
+  /// 它繼承 [Error] 而非 [Exception]，呼叫端的 `on Exception` 接不住，
+  /// 會變成未捕捉錯誤並讓畫面卡在 loading。
   Future<Map<String, dynamic>> fetchFavorsMap() async {
+    if (_uid.isEmpty) {
+      return <String, dynamic>{};
+    }
+
     DocumentSnapshot snapshot = await _doc.get();
 
     return (snapshot.data() != null)
@@ -48,6 +57,14 @@ class FavorDataSource {
   ///
   /// 回傳實際被持久化的 entity，呼叫端直接採用即可，不需自行再推導一次。
   Future<RestaurantEntity> toggleFavor(RestaurantEntity summaryInfo) async {
+    // 寫入需要真實的使用者。UI 層已在唯一入口（RestaurantHeadCell）攔下訪客，
+    // 走到這裡代表攔截失效——直接失敗，不要無聲寫進空 doc id。
+    // 用 throw 而非 assert：assert 在 release build 會被移除，正是最需要
+    // 這道防護的環境。
+    if (_uid.isEmpty) {
+      throw StateError('toggleFavor requires a signed-in user');
+    }
+
     Map<String, dynamic> favorsMap = await fetchFavorsMap();
     bool newFavor = !summaryInfo.favor;
     RestaurantEntity updatedEntity = summaryInfo.copyWith(favor: newFavor);

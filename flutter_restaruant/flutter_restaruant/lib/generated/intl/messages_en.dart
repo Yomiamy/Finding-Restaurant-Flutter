@@ -26,6 +26,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "business_hour": MessageLookupByLibrary.simpleMessage("Business Hour"),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
     "confirm": MessageLookupByLibrary.simpleMessage("Ok"),
+    "continue_as_guest": MessageLookupByLibrary.simpleMessage(
+      "Continue As Guest",
+    ),
     "delete_account_email_body": MessageLookupByLibrary.simpleMessage(
       "Dear Team, I am writing to formally request the deletion of my account and all associated personal data. Please find the details of my account:",
     ),
@@ -102,6 +105,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "settings_title": MessageLookupByLibrary.simpleMessage("Settings"),
     "signin_btn_title": MessageLookupByLibrary.simpleMessage("SignIn"),
+    "signin_or_signup_title": MessageLookupByLibrary.simpleMessage(
+      "SignIn / SignUp",
+    ),
     "signin_page_title": MessageLookupByLibrary.simpleMessage("SignIn/SignUp"),
     "signin_success_msg": MessageLookupByLibrary.simpleMessage(
       "SignIn successfully",

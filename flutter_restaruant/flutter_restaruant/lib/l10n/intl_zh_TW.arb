@@ -57,5 +57,7 @@
   "signinup_with_fb": "使用Facebook繼續",
   "signinup_with_fb_hint_msg": "Facebook登入成功",
   "signinup_with_apple": "使用Apple繼續",
-  "signinup_with_apple_hint_msg": "Apple登入成功"
+  "signinup_with_apple_hint_msg": "Apple登入成功",
+  "continue_as_guest": "訪客模式",
+  "signin_or_signup_title": "登入 / 註冊"
 }

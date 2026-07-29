@@ -14,8 +14,9 @@ class SettingsRepo implements SettingsRepository {
     final prefs = await SharedPreferences.getInstance();
 
     await prefs.clear();
-    // ignore: unawaited_futures
-    SignInManager().signOut();
+    // 必須 await：signOut() 會清除訪客旗標的記憶體快取，未等待完成的話
+    // 呼叫端可能在清除前就讀到過期的 isGuest。
+    await SignInManager().signOut();
   }
 
   @override
