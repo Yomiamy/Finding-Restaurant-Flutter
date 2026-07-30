@@ -11,44 +11,95 @@
 
 ---
 
+## 📌 進度覆核摘要 (Progress Review — 2026-07-30)
+
+初版報告產出於 2026-07-26。本次依 07-26～07-30 期間實際落地的變更（截至 `d4aa8f1`, v1.4.0+30）覆核全文。**覆核方式為直接檢視當前程式碼，而非採信 commit 訊息**，故部分原標記為完成的項目已被更正。
+
+**✅ 已落地（9 項）**
+
+| 項目 | 驗證依據 |
+| :--- | :--- |
+| 修復 `build()` 側邊效應 | Event 已移入 `initState()` / `BlocListener` |
+| 修復 Yelp 分頁 `offset` | `main_repo.dart:56,70` 改為筆數累加 |
+| 修復 `FilterPage` 狀態重置 | 改用 `didChangeDependencies` + `_isInit` |
+| 目錄分層 (Domain / Data) | 新增 `domain/`、`data_layer/`、`di/` |
+| 導入 DI | `get_it: ^8.0.0`（未用 `injectable`） |
+| DTO 與 Domain Entity 分離 | `RestaurantEntity` / `UserEntity` 取代 legacy model |
+| 常數清理與 Lint 嚴格化 | `flutter analyze` → `No issues found!` |
+| 側選單順序調整 | 設定已移至末位 |
+| 訪客模式 Guest Mode | 規劃外新增，PR #56 |
+
+**🔴 仍未解決（3 項，全數為 P0）**
+
+| 項目 | 現況 | 風險 |
+| :--- | :--- | :--- |
+| **硬編碼 API Key** | 僅改名為 `camelCase`，明碼仍在 `constants.dart:30,40` | 金鑰已入 git 歷史，須**撤銷並輪替**，非搬移可解 |
+| **Firestore 單一 Document 覆寫** | 抽出 `FavorDataSource`，但結構與 `merge: false` 未動 | 1MB 上限、併發寫入覆蓋掉資料 |
+| **硬編碼假延遲** | 過濾 2s、推播導航 8s、啟動頁 3s 全數保留 | 無謂等待傷體感（啟動頁 3s 屬合理設計，可保留） |
+
+> **判斷**：架構地基已從「垃圾」修到「湊合」，但剩下三項不是風格問題——是會噴錢和掉資料的問題。**Phase 1.5 的體驗功能不該先於這三項動工。**
+
+---
+
 ## 1. 專案現狀審計與同類競品對標 (Codebase Audit & Competitor Analysis)
 
 ### 1.1 Flutter 專案現狀點評 (Project Architecture Review)
 
-`flutter_restaruant` 專案（版本 v1.4.0+29，基於 Dart SDK `^3.5.0` 及 Flutter 3.x）為一款具備完整雛形的餐廳搜尋與瀏覽應用程式。整體呈現清晰的 **Feature-First** 模組化目錄分層架構：
+`flutter_restaruant` 專案（版本 v1.4.0+30，基於 Dart SDK `^3.5.0` 及 Flutter 3.x）為一款具備完整雛形的餐廳搜尋與瀏覽應用程式。經 2026-07-26 至 07-30 的 Clean Architecture 對齊重構後，目錄已從單純 Feature-First 演進為 **Feature-First + 分層 (Domain / Data)** 架構：
 
 ```
 lib/
 ├── api/          # Retrofit (APIClz) + Dio (DioClient) 網路介面層，對接 Yelp Fusion API v3 & Google Static Maps
-├── component/    # 跨頁面 UI 元件 (Ad, Restaurant Item Cell, Skeleton/Loading Widget, Expandable FAB, Platform Widgets)
+├── component/    # 跨頁面 UI 元件 (Ad, Restaurant Item Cell, Skeleton/Loading Widget, Platform Widgets)
+├── data_layer/   # 【新增】資料層實作 (datasources/ 資料源、dto/ 網路模型、repositories/ Repo 實作)
+├── di/           # 【新增】get_it 依賴注入容器註冊
+├── domain/       # 【新增】業務層 (entities/ 領域實體、repositories/ 抽象介面契約)
+├── extension/    # 【新增】Dart extension 工具擴充
 ├── flow/         # Feature-First 業務流 (8大 Flow: splash, signinup, main, restaurant, favor, filter, photoviewr, settings)
 ├── gen/          # flutter_gen 自動生成顏色資源 (ColorName.appPrimaryColor 等)
 ├── generated/    # i18n 國際化生成程式碼 (ARB 檔: intl_en.arb, intl_zh_TW.arb)
+├── l10n/         # 【新增】ARB 語系原始檔
 ├── manager/      # 核心門面元件 (SignInManager 整合 Firebase Auth/Third-party/Biometric; FcmManager 推播管理)
-├── model/        # 資料模型 (YelpBaseInfo, YelpRestaurantSummaryInfo, AccountInfo, FilterConfigs)
-├── routes/       # 靜態路由表 ROUTES_TABLE (搭配 flutter_platform_widgets)
-└── utils/        # 常數與工具庫 (constants.dart, dimens.dart, tuple.dart, utils.dart)
+├── model/        # 殘餘資料模型 (FilterConfigs 等；legacy DTO 已遷出至 data_layer/dto)
+├── routes/       # 靜態路由表 (搭配 flutter_platform_widgets，Bloc 改由 get_it 解析)
+└── utils/        # 常數與工具庫 (constants.dart, dimens.dart, rating_helper.dart, utils.dart)
 ```
 
 #### 關鍵依賴與技術棧 (Tech Stack & Dependencies)
 * **狀態管理 (State Management)**: `flutter_bloc: ^9.1.1` + `bloc: ^9.2.1`，配合 `rxdart: ^0.28.0` 與 `event_bus: ^2.0.0`。
+* **依賴注入 (DI)**: `get_it: ^8.0.0`（2026-07-27 導入，未採用 `injectable` 程式碼生成，改為手寫註冊）。
 * **網路與 API**: `dio: ^5.6.0` + `retrofit: ^4.2.0`。
 * **資料庫與持久化**: `sqflite: ^2.3.0` (SQLite 本地快取)、`cloud_firestore: ^6.7.1` (遠端資料)、`shared_preferences: ^2.2.0`。
-* **身分驗證與雲端**: `firebase_auth: ^6.5.6` (支援 Google, Apple, Facebook, Email 及生物辨識 Auto-login)。
+* **身分驗證與雲端**: `firebase_auth: ^6.5.6` (支援 Google, Apple, Facebook, Email、生物辨識 Auto-login 及**訪客模式 Guest Mode**)。
 * **地圖與廣告**: `google_maps_flutter: ^2.4.0` 與 `google_mobile_ads: ^9.0.0`。
 
 ---
 
 ### 1.2 重大架構缺陷與 Linus 模式品味評估 (Linus Taste Rating & Architecture Assessment)
 
-#### 🐧 品味評級: 🔴 垃圾 / 嚴重架構缺陷 (Garbage Architecturally)
+#### 🐧 品味評級
 
-> **Linus Torvalds 式核心評語**：
+| 時間點 | 評級 | 依據 |
+| :--- | :--- | :--- |
+| 2026-07-26（初次稽核） | 🔴 **垃圾 / 嚴重架構缺陷** | 7 大缺陷全數存在，無分層、無 DI |
+| 2026-07-30（重構後覆核） | 🟡 **湊合 (Mediocre)** | 生命週期與分頁缺陷已清除，分層／DI 到位；但金鑰、Firestore 結構、假延遲三項未解 |
+
+> **Linus Torvalds 式核心評語（2026-07-26 初次稽核）**：
 > 「這程式碼缺乏對 Flutter 生命週期的基本尊重。在 `build()` 渲染方法裡發動非同步 Side-effects 和 API 請求，就像是在開車時把煞車當油門踩——每一次 UI 重新繪製都會觸發重複的 API 網路請求與狀態變動！好程式員關注資料結構與邊界情況；把整個最愛列表打包成 JSON 字串塞進單一 Firestore 文件，還用 `merge: false` 每次全量覆蓋，簡直是資料庫設計的災難。更別提在搜尋過濾裡硬塞 2 秒 `Future.delayed` 和在推播導航硬塞 8 秒延遲這種假裝程式很忙的神祕邏輯。這種爛程式碼必須被徹底撕掉重寫。」
+
+> **重構後覆核評語（2026-07-30）**：
+> 「生命週期的問題修對了——Event 回到 `initState()`，`FilterPage` 用 `didChangeDependencies` + 旗標只初始化一次，`build()` 終於是純函式。分頁的 `offset` 從『把筆數當頁碼』改成正確的累加，這是把錯誤的資料語意修正，不是加 if 打補丁，有品味。導入分層與 DI 讓依賴可以被 Mock，13 個測試檔與 `flutter analyze` 零警告是實打實的證據。
+>
+> 但別急著慶功。**金鑰還在版控裡明碼躺著**——把 `AUTH_TOKEN` 改名成 `authToken` 不叫修復，叫換個姿勢繼續裸奔，而且既然已經進過 git 歷史，光搬走也沒用，得撤銷重發。**Firestore 那坨 JSON 大字串還在單一 Document 裡用 `merge: false` 全量覆寫**——資料結構錯了就是錯了，包一層 `FavorDataSource` 只是把災難換了個資料夾放。還有那 2 秒和 8 秒的假延遲，程式碼沒事幹就別裝忙。
+>
+> 從垃圾爬到湊合是進步，但剩下這三項不是風格問題，是會噴錢和掉資料的問題。」
 
 #### 7 大致命程式碼缺陷詳解 (Detailed Code Defects)
 
-1. **`build()` 方法中發動 Event / 非同步側邊效應 (Anti-pattern: Side-effects in build)**
+> **⚠️ 修復進度更新 (2026-07-30 覆核)**：下列缺陷經 07-27～07-30 重構後，**5 項已修復、2 項仍存在**。各項狀態已於標題標註，內文保留原始稽核紀錄以供追溯。覆核方式為直接檢視當前程式碼，非依賴 commit 訊息。
+
+1. **✅ 已修復 — `build()` 方法中發動 Event / 非同步側邊效應 (Anti-pattern: Side-effects in build)**
+   * **現況**：`sign_in_page.dart:37`、`main_page.dart:49-50`、`favor_page.dart:32`、`settings_page.dart:33` 的初始化 Event 皆已移入 `initState()`；`restaurant_detail_page.dart:38` 移入 `BlocListener` 回呼。原始缺陷紀錄如下：
    * `lib/flow/signinup/view/sign_in_page.dart:40`: `this._signInBloc.add(AutoSignInEvent());` 直接寫在 `build()` 頂層，每次重繪皆重新引發 AutoSignIn。
    * `lib/flow/main/view/main_page.dart:103`: 在 `BlocBuilder` 內部執行 `this._mainBloc.add(FetchSearchInfo(...));`。
    * `lib/flow/restaurant/view/restaurant_detail_page.dart:49, 83-84`: 在 `build()` 觸發 `FetchDetailInfo`，且當 `state is ToggleFavorSuccess` 時直接彈出 Toast 並重複觸發 `FetchDetailInfo`。
@@ -56,27 +107,27 @@ lib/
    * `lib/flow/settings/view/settings_page.dart:36`: `build()` 內發動 `InitBioAuthSettingEvent()`。
    * `lib/flow/splash/view/splash_page.dart:16-20`: 在 `build()` 內寫入 `addPostFrameCallback` 搭配 `Future.delayed(Duration(seconds: 3))` 導航。
 
-2. **硬編碼 API 金鑰與敏感 Token (Hardcoded Secrets)**
-   * `lib/utils/constants.dart:37`: `static const AUTH_TOKEN = "Bearer 7W-eBLLJ3ij1hx8nKfbihuC9rB...";` (Yelp Fusion API Token 明碼版控)。
-   * `lib/utils/constants.dart:27`: `static const STATIC_MAP_API_KEY = "AIzaSyAfe5kOHB_-GPPNovB8iCDimCBnTsW6OYQ";` (Google Maps Key 明碼寫死)。
+2. **🔴 仍未修復 — 硬編碼 API 金鑰與敏感 Token (Hardcoded Secrets)**
+   * **現況（2026-07-30 覆核）**：金鑰僅隨常數改名為 `camelCase`，**明碼仍留在版控中**。`lib/utils/constants.dart:30` 的 `staticMapApiKey` 與 `:40` 的 `authToken` 皆未移除。此為當前**唯一未解的 P0 安全風險**，且既有金鑰已外洩於 git 歷史，修復時必須同步「撤銷並輪替 (revoke & rotate)」，僅搬移位置無效。
+   * 原始稽核紀錄：`constants.dart:37` `AUTH_TOKEN` (Yelp Fusion Token)、`constants.dart:27` `STATIC_MAP_API_KEY` (Google Maps Key)。
 
-3. **Yelp 分頁邏輯錯誤 (`MainRepository`)**
-   * `lib/flow/main/repository/main_repository.dart:52`: 呼叫 API 帶入 `offset: ++this._offset`。Yelp API 的 `offset` 是資料筆數偏移量 (如 0, 50, 100)，而非頁碼 (1, 2, 3)。當加載第 2 頁時傳入 `offset: 2`，只跳過了前 2 筆資料，導致分頁加載幾乎完全失效且嚴重重複！
+3. **✅ 已修復 — Yelp 分頁邏輯錯誤 (`MainRepository` → `MainRepo`)**
+   * **現況**：邏輯已遷至 `lib/data_layer/repositories/main_repo.dart`，改為 `offset: _offset`（`:56`）搭配成功後 `_offset += _maxItemsCountInList`（`:70`），偏移量語意正確。
+   * 原始缺陷：舊 `main_repository.dart:52` 傳入 `offset: ++this._offset`，將筆數偏移量誤當頁碼，導致分頁幾乎完全重複。
 
-4. **Firestore 最愛店家單一 Document Map 覆寫 (Database Architecture Defect)**
-   * `lib/flow/main/repository/main_repository.dart:121-149`: `_updateFavorsMap` 將使用者的所有最愛店家序列化成巨大 JSON 字串，存放在單一 Document `favors/{uid}` 的 Map 欄位中，並以 `SetOptions(merge: false)` 全量覆寫。這受限於 Firestore 1MB Document 限制，且併發寫入時極易造成資料遺失。
+4. **🔴 仍未修復 — Firestore 最愛店家單一 Document Map 覆寫 (Database Architecture Defect)**
+   * **現況（2026-07-30 覆核）**：邏輯雖已抽出至 `lib/data_layer/datasources/`（`FavorDataSource`），但資料結構未動 —— 仍是單一 Document `favors/{uid}` 搭配 `set(favorsMap, SetOptions(merge: false))` 全量覆寫。1MB 上限與併發寫入覆蓋的風險完全未解除。此項對應 F-2.1 Subcollection 重構（P1）。
 
-5. **硬編碼人工假延遲 (Hardcoded Fake Delays)**
-   * `lib/flow/main/bloc/main_bloc.dart:57`: 關鍵字過濾時硬塞 `await Future.delayed(Duration(seconds: 2));`。
-   * `lib/manager/fcm_manager.dart:63`: 點擊推播通知時硬塞 `Future.delayed(Duration(seconds: 8), ...)` 才導向頁面。
+5. **🔴 仍未修復 — 硬編碼人工假延遲 (Hardcoded Fake Delays)**
+   * **現況（2026-07-30 覆核）**：三處延遲全數保留 —— `main_bloc.dart:56` 過濾 2 秒、`fcm_manager.dart:53` 推播導航 8 秒、`splash_page.dart:22` 啟動頁 3 秒。啟動頁延遲屬品牌曝光的合理設計，但過濾與推播導航的延遲純屬無謂等待，應移除。
 
-6. **`FilterPage` UI 狀態被覆蓋重置 Bug (State Reset Bug)**
-   * `lib/flow/filter/view/filter_page.dart:26-31`: 在 `build()` 內部每次都從 `ModalRoute.of(context)!.settings.arguments` 重新賦值給 `_priceIndex`, `_openAtDateTime`, `_sortByIndex`。當使用者在畫面上調整價格或排序觸發 `setState` 時，`build()` 重新執行又被覆蓋回最初傳入的舊設定，導致使用者完全無法修改過濾條件！
+6. **✅ 已修復 — `FilterPage` UI 狀態被覆蓋重置 Bug (State Reset Bug)**
+   * **現況**：`lib/flow/filter/view/filter_page.dart:27-36` 已改為在 `didChangeDependencies()` 搭配 `_isInit` 旗標僅初始化一次，`build()` 回歸純淨。使用者調整條件不再被舊參數覆寫。
 
-7. **`MapWidget` 標記未連動與常數錯字 (Map & Code Quality Defects)**
-   * `lib/flow/main/view/map_widget.dart:26-37`: 地圖 Marker 僅在 `initState()` 初始建立。當 `_summaryInfos` 列表因搜尋或過濾更新時，未實作 `didUpdateWidget()`，導致地圖 Marker 永遠停留在初始狀態。
-   * `lib/utils/constants.dart`: 常數存在拼字錯誤 (`CONNECTION_TIEMOUT`, `RECEIVE_TIEMOUT`, `EMAIL_SUBJEC`)。
-   * `YelpRestaurantSummaryInfo`: `operator ==` 使用 `this.id!.compareTo(other.id!)`，若 `id` 為 null 會引發 Runtime Crash。
+7. **🟡 部分修復 — `MapWidget` 標記未連動與常數品質 (Map & Code Quality Defects)**
+   * **✅ 常數錯字已修**：`CONNECTION_TIEMOUT` / `RECEIVE_TIEMOUT` / `EMAIL_SUBJEC` 已更正並改為 `connectionTimeout` / `receiveTimeout` / `emailSubject`。
+   * **✅ 風險 `operator ==` 已移除**：`YelpRestaurantSummaryInfo` 已由 `RestaurantEntity` 取代，`id!.compareTo()` 的 null crash 風險消失。
+   * **🔴 Marker 未連動仍存在**：`lib/flow/main/view/map_widget.dart` 至今未實作 `didUpdateWidget()`，Marker 僅於 `initState()`（`:22-35`）建立。搜尋或過濾更新列表時，地圖標記仍停留在初始狀態。
 
 ---
 
@@ -250,6 +301,36 @@ lib/
 7. **列表底部載入更多動畫 (Load-More Loading Indicator)**
    * **設計理念**: 在無限滾動 (Infinite Scroll) 觸發「加載更多」時，列表最底部應動態顯示一個 Loading Indicator (例如骨架屏的最後一個 item 或 `CircularProgressIndicator`)。這能讓使用者明確知道正在拉取下一頁資料，避免因網路延遲而產生「滑到底卡住」的錯覺。
 
+### 2.6 對照組架構與風格對齊重構 (Architecture Alignment) — ✅ 已於 2026-07-27～07-29 完成
+
+依據對標對照組 Monorepo 的架構風格所規劃的 Clean Architecture 調整，**5 項全數落地**。以下記錄各項的最終實作與偏離規劃之處：
+
+1. **✅ 目錄架構與層級分離重構 (Clean Directory Structure)**
+   * **原問題**: `flow/{feature}/repository` 將資料層綁死在 UI 流程中。
+   * **實作結果**: 已抽出 `domain/`（`entities/` + `repositories/` 抽象介面）與 `data_layer/`（`dto/` + `datasources/` + `repositories/` 實作）。legacy 的 `flow/*/repository/` 實作已全數移除。
+2. **✅ 導入全域依賴注入 (Dependency Injection with GetIt)**
+   * **實作結果**: 導入 `get_it: ^8.0.0`，於 `lib/di/` 集中註冊，路由表改由 get_it 解析 Bloc。
+   * **⚠️ 與原規劃偏離**: **未導入 `injectable` 程式碼生成**，改採手寫註冊。以當前規模而言，手寫註冊足夠且少一層 build_runner 相依，屬合理取捨。
+3. **✅ 資料模型與職責分離 (DTO vs Domain Model 分離)**
+   * **實作結果**: 建立 `RestaurantEntity` / `UserEntity` 等領域實體與 DTO mapping，legacy `YelpRestaurantSummaryInfo`、`AccountInfo` 已移除，連帶消滅了有 null crash 風險的 `operator ==`。
+4. **✅ 全域常數與狀態管理修正 (Constants Cleanup)**
+   * **實作結果**: `UIConstants` 改為 `camelCase`，可變狀態移出常數類，並新增 `RatingHelper` 收斂評分邏輯。工具檔名亦統一為 `lower_case_with_underscores`。
+5. **✅ 程式碼風格與 Linting 嚴格化 (Coding Style & Linting)**
+   * **實作結果**: 全專案清除冗餘 `this.`、統一單引號、現代化 `url_launcher` / `geolocator` API 用法。**`flutter analyze` 目前為 `No issues found!`**（原稽核時的 14 個 Warning 已全數清除）。
+
+---
+
+### 2.7 訪客模式 (Guest Mode) — ✅ 已於 2026-07-29～07-30 完成
+
+規劃期間新增並已交付的功能（原報告未涵蓋，補記於此）：
+
+* **設計理念**: 降低首次使用門檻 —— 使用者無須註冊或登入即可瀏覽餐廳搜尋、地圖與詳情，僅在觸及需身分的功能（如收藏最愛）時才引導登入。
+* **實作要點**:
+  * 登入頁提供與「註冊」並列的訪客入口，避免藏在次要位置。
+  * 訪客旗標**以 `shared_preferences` 為單一事實來源**讀取，不在記憶體另外鏡射一份狀態 —— 消除了兩份狀態不同步的邊界情況。
+  * 最愛寫入路徑加上訪客守衛 (write guard)，防止無 uid 情境下寫入 Firestore。
+* **相關文件**: `docs/features/2026-07-29-guest-mode.md`、`docs/plans/2026-07-29-guest-mode.md`（PR #56, issue #55）。
+
 ---
 
 ## 3. 功能優先級評估矩陣 (ICE / RICE Prioritization Matrix)
@@ -268,12 +349,20 @@ lib/
 
 | 功能/修復項目 | 類別 | Reach (1-10) | Impact (0.25-3) | Confidence (%) | Effort (0.5-4) | RICE 得分 | ICE 得分 | 綜合排名 | **優先級** |
 | :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
-| ✅ **修復 `build()` 側邊效應反模式** | 既有修復 | 10 | 3.0 | 100% | 0.5 | **60.0** | 28.5 | 1 | **P0** |
-| ✅ **修復 Yelp API 分頁邏輯 Bug** | 既有修復 | 9 | 2.5 | 100% | 0.5 | **45.0** | 23.75 | 2 | **P0** |
-| ✅ **修復 `FilterPage` 狀態重置 Bug** | 既有修復 | 8 | 2.5 | 100% | 0.5 | **40.0** | 23.75 | 3 | **P0** |
-| ✅ **移除硬編碼 API Key (改用 Server-side Broker)** | 安全修復 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | 4 | **P0** |
+| ✅ **修復 `build()` 側邊效應反模式** | 既有修復 | 10 | 3.0 | 100% | 0.5 | **60.0** | 28.5 | 1 | **已完成** |
+| ✅ **修復 Yelp API 分頁邏輯 Bug** | 既有修復 | 9 | 2.5 | 100% | 0.5 | **45.0** | 23.75 | 2 | **已完成** |
+| ✅ **修復 `FilterPage` 狀態重置 Bug** | 既有修復 | 8 | 2.5 | 100% | 0.5 | **40.0** | 23.75 | 3 | **已完成** |
+| 🔴 **移除硬編碼 API Key (改用 Server-side Broker)** | 安全修復 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | 4 | **P0（唯一未解）** |
+| ✅ **對照組風格: 目錄架構與層級分離重構** | 架構重構 | 10 | 3.0 | 100% | 2.0 | **15.0** | 24.0 | - | **已完成** |
+| ✅ **對照組風格: 導入全域依賴注入 (GetIt)** | 架構重構 | 10 | 2.5 | 100% | 1.5 | **16.6** | 21.2 | - | **已完成** |
+| ✅ **對照組風格: DTO 與 Domain Entity 分離** | 架構重構 | 10 | 2.5 | 100% | 1.5 | **16.6** | 21.2 | - | **已完成** |
+| ✅ **對照組風格: 全域常數與可變狀態清理** | 程式碼重構 | 10 | 2.0 | 100% | 1.0 | **20.0** | 18.0 | - | **已完成** |
+| ✅ **對照組風格: 程式碼風格與 Lint 嚴格化** | 程式碼重構 | 10 | 1.0 | 100% | 1.0 | **10.0** | 9.0 | - | **已完成** |
+| ✅ **訪客模式 (Guest Mode)** | 轉化優化 | 10 | 2.0 | 100% | 1.0 | **20.0** | 18.0 | - | **已完成** |
+| 🔴 **移除無謂假延遲 (過濾 2s / 推播 8s)** | 既有修復 | 9 | 1.5 | 100% | 0.5 | **27.0** | 14.25 | - | **P0** |
+| 🔴 **`MapWidget` 實作 `didUpdateWidget` 連動 Marker** | 既有修復 | 8 | 2.0 | 100% | 0.5 | **32.0** | 19.0 | - | **P0** |
 | **地圖與 BottomSheet 雙向連動 Carousel** | 空間 UX | 9 | 3.0 | 90% | 1.5 | **16.2** | 22.95 | 5 | **P1** |
-| **調整側選單功能項目順序** | UX 優化 | 10 | 1.0 | 100% | 0.5 | **20.0** | 10.0 | - | **P1** |
+| ✅ **調整側選單功能項目順序** | UX 優化 | 10 | 1.0 | 100% | 0.5 | **20.0** | 10.0 | - | **已完成** |
 | **列表底部載入更多動畫** | UX 優化 | 9 | 1.0 | 100% | 0.5 | **18.0** | 10.0 | - | **P1** |
 | **情境化探索標籤 (#一人食等)** | 搜尋優化 | 9 | 2.0 | 90% | 1.0 | **16.2** | 16.2 | 6 | **P1** |
 | **`fluster` 圖標動態聚類** | 效能優化 | 8 | 2.0 | 90% | 1.0 | **14.4** | 16.2 | 7 | **P1** |
@@ -297,14 +386,26 @@ lib/
 +-----------------------------------------------------------------------------------+
 |                           STRATEGIC PRODUCT ROADMAP                               |
 +-----------------------------------------------------------------------------------+
-| Phase 1: 空間與視覺體驗升級 (Low-Hanging Fruit & Spatial UX)                       |
+| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 9/12 ✅         |
 |   • [x] P0 修復 `build()` 側邊效應反模式                                          |
-|   • [x] P0 移除硬編碼 API Key (改用 Server-side broker)                           |
 |   • [x] P0 修復 Yelp API 分頁邏輯 Bug                                              |
 |   • [x] P0 修復 `FilterPage` 狀態重置 Bug                                          |
+|   • [x] P0 對照組風格對齊: 目錄架構與層級分離重構 (Domain / Data)                |
+|   • [x] P0 對照組風格對齊: 導入全域依賴注入 (GetIt；未用 Injectable)             |
+|   • [x] P0 對照組風格對齊: 資料模型與職責分離 (DTO vs Domain Entity)             |
+|   • [x] P1 對照組風格對齊: 全域常數清理與 Lint 嚴格化 (analyze 零警告)           |
+|   • [x] P1 調整側選單功能項目順序 (Drawer Menu Reordering)                        |
+|   • [x] ── 訪客模式 Guest Mode (規劃外新增，PR #56)                               |
+|   • [ ] P0 移除硬編碼 API Key ⚠️ 未動；金鑰已入 git 歷史，須撤銷並輪替            |
+|   • [ ] P0 移除無謂假延遲 (過濾 2s / 推播導航 8s)                                 |
+|   • [ ] P0 `MapWidget` 實作 `didUpdateWidget` 使 Marker 連動列表                  |
++-----------------------------------------------------------------------------------+
+                                         │
+                                         ▼
++-----------------------------------------------------------------------------------+
+| Phase 1.5: 空間與視覺體驗升級 (Spatial UX & Polish)                               |
 |   • [ ] P1 地圖與 BottomSheet Carousel 雙向平滑連動                               |
-|   • [ ] P1 調整側選單功能項目順序 (Drawer Menu Reordering)                        |
-|   • [ ] P1 列表底部載入更多動畫 (Load-More Indicator)                             |
+|   • [ ] P1 列表底部載入更多動畫 (Load-More Indicator；LoadMore state 已具備)      |
 |   • [ ] P1 fluster 動態圖標聚類 (Clustering)                                      |
 |   • [ ] P1 情境化探索標籤 (#一人食 #深夜食堂 #約會不踩雷)                             |
 |   • [ ] P1 骨架屏 (Shimmer Loading) 與離線降級快取                                |
@@ -337,14 +438,14 @@ lib/
 
 ### 5.1 靜態程式碼與單元測試驗證 (Static Code Quality)
 
-1. **`flutter analyze` 零警告要求**:
-   * 修復目前產生的 14 個 Warning (如 `launchUrl` 替代廢棄 `launch`，`AndroidGoogleMapsFlutter` 配置更換)。
-   * 執行命令：`flutter analyze`，必須呈現 `No issues found!`。
+1. **`flutter analyze` 零警告要求 — ✅ 已達成**:
+   * 原稽核的 14 個 Warning（`launchUrl` 替代廢棄 `launch`、`AndroidGoogleMapsFlutter` 配置等）已於 07-27 的 lint 現代化重構中全數清除。
+   * 2026-07-30 覆核執行 `flutter analyze` → **`No issues found!`**。此為後續 PR 的最低門檻，不得回退。
 
-2. **`flutter test` 測試覆蓋率**:
-   * 針對 BLoC 狀態轉換編寫 `bloc_test`。
-   * 測試覆蓋率目標：核心業務邏輯 (`flow/*/bloc/` 與 `flow/*/repository/`) 單元測試覆蓋率 $\ge 80\%$。
-   * 執行命令：`flutter test --coverage`。
+2. **`flutter test` 測試覆蓋率 — 🟡 進行中**:
+   * 現況：13 個 test 檔，已涵蓋 DI 註冊、repositories 與 sign-in bloc。
+   * 待補：BLoC 狀態轉換的 `bloc_test` 尚未全面覆蓋；測試目標路徑因分層重構已變更為 `flow/*/bloc/`、`domain/` 與 `data_layer/repositories/`（舊路徑 `flow/*/repository/` 已不存在）。
+   * 測試覆蓋率目標：核心業務邏輯單元測試覆蓋率 $\ge 80\%$（尚未量測，需先跑 `flutter test --coverage` 取得基線）。
 
 ---
 
@@ -364,5 +465,6 @@ lib/
 
 ---
 
-*報告產出時間：2026-07-26*
+*報告初版產出時間：2026-07-26*
+*進度覆核更新時間：2026-07-30（對應版本 v1.4.0+30，commit `d4aa8f1`）*
 *報告編寫團隊：Worker 1 (Report Author & Strategic Analyst)*
