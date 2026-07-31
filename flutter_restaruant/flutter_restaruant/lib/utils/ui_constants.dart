@@ -21,15 +21,26 @@ class UIConstants {
   static const mapDefaultLocation = LatLng(25.048036, 121.517063);
   static const mapMyLocationMarkId = 'MAP_MY_LOCATION_MARK_ID';
 
-  // Dimens
+  // Font sizes
+  // ponytail: 保留不刪，29 處使用點待 S4 遷移。移除是 S4 之後的獨立 PR。
+  @Deprecated('改用 Theme.of(context).textTheme（無對應角色，未被使用）')
   static const double xlFontSize = 10;
+  @Deprecated('改用 Theme.of(context).textTheme.labelSmall')
   static const double lFontSize = 12;
+  @Deprecated('改用 Theme.of(context).textTheme.bodyMedium')
   static const double mFontSize = 14;
+  @Deprecated('改用 Theme.of(context).textTheme.bodyLarge')
   static const double hFontSize = 16;
+  @Deprecated('改用 Theme.of(context).textTheme.titleMedium')
   static const double xhFontSize = 18;
+  @Deprecated('改用 Theme.of(context).textTheme.titleMedium（實測僅 1 處）')
   static const double xxhFontSize = 20;
+  @Deprecated('改用 Theme.of(context).textTheme.titleLarge')
   static const double xxxhFontSize = 22;
+  @Deprecated('改用 Theme.of(context).textTheme.titleLarge')
   static const double xxxxhFontSize = 24;
+  @Deprecated('改用 Theme.of(context).textTheme（無對應角色，未被使用）')
   static const double xxxxxhFontSize = 26;
+  @Deprecated('改用 Theme.of(context).textTheme（無對應角色，未被使用）')
   static const double xxxxxxhFontSize = 28;
 }

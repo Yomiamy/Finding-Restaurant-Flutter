@@ -58,7 +58,7 @@ class FilterTagsWidget extends StatelessWidget {
                     style: const TextStyle(fontSize: UIConstants.xhFontSize),
                   ),
                   selected: true,
-                  selectedColor: Theme.of(context).primaryColor,
+                  selectedColor: Theme.of(context).colorScheme.primary,
                   checkmarkColor: Colors.white,
                   labelStyle: const TextStyle(color: Colors.white),
                   onSelected: (_) {
