@@ -13,7 +13,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
-        theme: AppTheme.light,
+        theme: AppTheme.materialLight,
         home: Scaffold(
           body: FilterTagsWidget(filterConfigs: filterConfigs),
         ),
@@ -30,7 +30,7 @@ void main() {
 
     // 鎖住著色來源：chip 必須取自 theme 的 colorScheme，而非 Material 預設。
     final chip = tester.widget<FilterChip>(find.byType(FilterChip).first);
-    expect(chip.selectedColor, AppTheme.light.colorScheme.primary);
+    expect(chip.selectedColor, AppTheme.materialLight.colorScheme.primary);
   });
 
   testWidgets(

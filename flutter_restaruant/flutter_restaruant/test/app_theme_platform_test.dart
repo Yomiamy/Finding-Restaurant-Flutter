@@ -17,9 +17,9 @@ void main() {
       await tester.pumpWidget(Theme(
         data: ThemeData(platform: target),
         child: PlatformApp(
-          material: (_, __) => MaterialAppData(theme: AppTheme.light),
+          material: (_, __) => MaterialAppData(theme: AppTheme.materialLight),
           builder: (_, child) => Theme(
-            data: AppTheme.light,
+            data: AppTheme.materialLight,
             child: child ?? const SizedBox.shrink(),
           ),
           home: Builder(builder: (ctx) {
@@ -29,7 +29,7 @@ void main() {
         ),
       ));
 
-      expect(scheme.primary, AppTheme.light.colorScheme.primary);
+      expect(scheme.primary, AppTheme.materialLight.colorScheme.primary);
     });
   }
 }

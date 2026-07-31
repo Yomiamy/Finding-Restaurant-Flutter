@@ -1,3 +1,4 @@
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
 import '../gen/colors.gen.dart';
@@ -13,11 +14,16 @@ import 'app_text_theme.dart';
 /// palette 映射為 `#8F4B38`（較濁的棕橘），與仍硬編 `ColorName.appPrimaryColor`
 /// 的 18 處 AppBar 並存時有可見色差。此為零 `copyWith` 的既定後果，非缺陷。
 abstract final class AppTheme {
-  static final ThemeData light = ThemeData(
+  static final ThemeData materialLight = ThemeData(
     useMaterial3: true,
     colorScheme: ColorScheme.fromSeed(
       seedColor: ColorName.appPrimaryColor,
     ),
     textTheme: AppTextTheme.textTheme,
+  );
+
+  static const CupertinoThemeData cupertinoLight = CupertinoThemeData(
+    brightness: Brightness.light,
+    primaryColor: ColorName.appPrimaryColor,
   );
 }

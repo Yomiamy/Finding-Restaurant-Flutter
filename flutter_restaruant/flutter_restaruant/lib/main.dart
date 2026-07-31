@@ -63,11 +63,23 @@ class FindingRestaruantApp extends StatelessWidget {
       debugShowCheckedModeBanner: false,
       title: UIConstants.appTitle,
       routes: routesTable,
-      material: (_, __) => MaterialAppData(theme: AppTheme.light),
-      // iOS 走 CupertinoApp 分支，`material:` 不生效；此處補上 Theme
-      // 讓兩個平台的 Material widget 都能解析到同一份 ThemeData。
+      // 不做深色模式（darkTheme 指向同一份 light），系統切深色時 app 外觀
+      // 維持不變，避免內容淺色底卻配到深色模式的系統 UI。
+      material: (_, __) => MaterialAppData(
+            theme: AppTheme.materialLight,
+            darkTheme: AppTheme.materialLight,
+            themeMode: ThemeMode.light,
+          ),
+      // iOS 走 CupertinoApp 分支，`material:` 不生效。CupertinoApp 自身的
+      // brightness 預設會跟隨 MediaQuery.platformBrightnessOf，導致系統深色
+      // 模式下狀態列圖示轉白、與淺色內容相衝，故在此明確鎖為 light。
+      cupertino: (_, __) => CupertinoAppData(
+            theme: AppTheme.cupertinoLight,
+          ),
+      // 兩個平台的 Material widget 都靠這層解析到同一份 ThemeData
+      // （iOS 沒有 MaterialApp 可繼承，Android 則是與內層 Theme 重疊但無害）。
       builder: (_, child) => Theme(
-            data: AppTheme.light,
+            data: AppTheme.materialLight,
             child: child ?? const SizedBox.shrink(),
           ));
 }
