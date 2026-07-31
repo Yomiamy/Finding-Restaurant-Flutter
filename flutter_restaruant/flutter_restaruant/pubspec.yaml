@@ -80,11 +80,12 @@ dependencies:
   json_annotation: ^4.9.0
   quiver: ^3.2.1
   meta: ^1.11.0
+    # 測試工具 (Testing Framework)
+  integration_test:
+    sdk: flutter
 
 dev_dependencies:
   flutter_lints: ^5.0.0
-  integration_test:
-    sdk: flutter
   # 開發與程式碼生成工具 (Development & Code Generation Tools)
   build_runner: ^2.4.12 # Dart 程式碼生成器執行工具
   retrofit_generator: ^10.2.8 # Retrofit API 程式碼生成器
