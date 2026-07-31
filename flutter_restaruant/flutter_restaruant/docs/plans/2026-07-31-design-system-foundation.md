@@ -5,6 +5,12 @@
 > 背景報告：`docs/brainstorm/2026-07-30_features_brainstorm.md` §6.4、§6.7
 > 撰寫日期：2026-07-31
 
+## 重要變更 (Changelog)
+
+| 日期 | 變更 |
+| :--- | :--- |
+| 2026-08-01 | `app_typography.dart` / `AppTypography` 更名為 `app_text_theme.dart` / `AppTextTheme`。本文內文已同步為新名 |
+
 ---
 
 ## 1. 實作策略總覽
@@ -29,7 +35,7 @@ T1 / T2 / T6 三個任務寫入路徑完全不重疊，**可完全並行**。T3 
 
 ## 2. 設計判斷
 
-### 2.1 `app_typography.dart`：舊 10 個字級 → M3 TextTheme 的映射策略
+### 2.1 `app_text_theme.dart`：舊 10 個字級 → M3 TextTheme 的映射策略
 
 **結論：不做一對一映射，也不覆寫整個 TextTheme。只覆寫 `ThemeData.textTheme` 中「實際會被用到」的 5 個角色，其餘全部沿用 `ColorScheme` 推導出的 M3 預設。**
 
@@ -71,12 +77,12 @@ T1 / T2 / T6 三個任務寫入路徑完全不重疊，**可完全並行**。T3 
 實作形式（一個 `static const TextTheme`，不是 class + 一堆 getter）：
 
 ```dart
-// lib/theme/app_typography.dart
+// lib/theme/app_text_theme.dart
 import 'package:flutter/material.dart';
 
 /// S1 只覆寫實測有使用的 5 個字級，其餘沿用 Material 3 預設。
 /// 舊 `UIConstants` 字級常數對照見 docs/plans/2026-07-31-design-system-foundation.md §2.1
-abstract final class AppTypography {
+abstract final class AppTextTheme {
   static const TextTheme textTheme = TextTheme(
     titleLarge: TextStyle(fontSize: 22),
     titleMedium: TextStyle(fontSize: 18),
@@ -137,13 +143,13 @@ abstract final class Dimens {
 2. **品牌色已經有 owner**。`ColorName.appPrimaryColor` 在 `lib/gen/colors.gen.dart`（FlutterGen 生成，來源 `assets/colors.xml`）。再建一個 `AppColors.primary = ColorName.appPrimaryColor` 是**同一個值的第二個真相來源** — 這是 bug 的溫床，不是架構。
 3. **它會是一個空殼**。除了 seed 色（已有 owner）與語意色（`ColorScheme` 自己就是語意色 API），這個檔案裡沒有任何東西可放。為了湊滿報告 §6.4 的四個檔案而造一個空 class，正是 `lib/utils/dimens.dart` 現在的狀態 —— 我們正要修掉的問題，不該再製造一個。
 
-**對 AC-9 的影響**：AC-9 的原文是「`lib/theme/` 目錄存在，包含 `app_theme` / `app_colors` / `app_typography` / `app_spacing` **四個關注點**」。四個**關注點**都被覆蓋了：
+**對 AC-9 的影響**：AC-9 的原文是「`lib/theme/` 目錄存在，包含 `app_theme` / `app_colors` / `app_text_theme` / `app_spacing` **四個關注點**」。四個**關注點**都被覆蓋了：
 
 | 關注點 | 落在哪 |
 | :--- | :--- |
 | ThemeData 組裝 | `lib/theme/app_theme.dart` |
 | 色彩 | `ColorScheme.fromSeed(ColorName.appPrimaryColor)`，在 `app_theme.dart` 內一行 |
-| 字級 | `lib/theme/app_typography.dart` |
+| 字級 | `lib/theme/app_text_theme.dart` |
 | 間距/圓角 | `lib/utils/dimens.dart` |
 
 **這需要使用者確認**：是否接受「四個關注點，兩個新檔 + 一個填實既有檔」而非「四個新檔」。若堅持四檔，我會建但明說那是為了對齊文件而非技術需要。
@@ -186,8 +192,8 @@ abstract final class Dimens {
 
 | 路徑 | 內容 | 行數估計 |
 | :--- | :--- | :---: |
-| `lib/theme/app_theme.dart` | `AppTheme.light` — `ThemeData(useMaterial3: true, colorScheme: fromSeed(...), textTheme: AppTypography.textTheme)` | ~15 |
-| `lib/theme/app_typography.dart` | `AppTypography.textTheme` — 5 個 `TextStyle` | ~15 |
+| `lib/theme/app_theme.dart` | `AppTheme.light` — `ThemeData(useMaterial3: true, colorScheme: fromSeed(...), textTheme: AppTextTheme.textTheme)` | ~15 |
+| `lib/theme/app_text_theme.dart` | `AppTextTheme.textTheme` — 5 個 `TextStyle` | ~15 |
 
 ### 修改（4 檔）
 
@@ -231,10 +237,10 @@ abstract final class Dimens {
 
 ---
 
-### T1 — 建立 `app_typography.dart`
+### T1 — 建立 `app_text_theme.dart`
 
 - **目標**：定義 5 個字級的 `TextTheme`
-- **寫入檔案**：`lib/theme/app_typography.dart`（新增）
+- **寫入檔案**：`lib/theme/app_text_theme.dart`（新增）
 - **複雜度**：`快/便宜`
 - **相依**：無（§2.1 已定案數值）
 - **可並行**：✅ 與 T0 / T2 / T6 並行
@@ -244,7 +250,7 @@ abstract final class Dimens {
   - `TextStyle(fontSize: 22)` 必須是 `const`（`prefer_const_constructors`）
   - 單引號（`prefer_single_quotes`）
   - import 用 `package:flutter/material.dart`（絕對路徑套件，`prefer_relative_imports` 只管專案內部）
-- **驗收**：`rtk flutter analyze lib/theme/app_typography.dart` → 無 issue
+- **驗收**：`rtk flutter analyze lib/theme/app_text_theme.dart` → 無 issue
 
 ---
 
@@ -268,7 +274,7 @@ abstract final class Dimens {
 - **目標**：10 個字級常數加上 deprecation 標記，指向新的 `TextTheme` 角色
 - **寫入檔案**：`lib/utils/ui_constants.dart`（修改，只動 25-34 行區段）
 - **複雜度**：`快/便宜`
-- **相依**：無（訊息內容引用 `AppTypography` 但只是字串，不是 import）
+- **相依**：無（訊息內容引用 `AppTextTheme` 但只是字串，不是 import）
 - **可並行**：✅ 與 T0 / T1 / T2 並行
 - **實作**：在 `// Dimens` 註解區塊的 10 個常數上各加一行。訊息採 §2.1 的映射表：
 
@@ -312,7 +318,7 @@ abstract final class Dimens {
   - `lib/theme/app_theme.dart`（新增）
   - `lib/main.dart`（修改）
 - **複雜度**：`最強推論`（跨層整合 + 第三方套件 API + M3 破壞性風險）
-- **相依**：**必須等 T1 完成**（要 import `AppTypography`）、**必須等 T0 完成**（沒基準線不准動 code）
+- **相依**：**必須等 T1 完成**（要 import `AppTextTheme`）、**必須等 T0 完成**（沒基準線不准動 code）
 - **可並行**：❌ **序列。`main.dart` 只有一個 owner，就是這個任務。**
 
 #### T3-a：`lib/theme/app_theme.dart`
@@ -321,7 +327,7 @@ abstract final class Dimens {
 import 'package:flutter/material.dart';
 
 import '../gen/colors.gen.dart';
-import 'app_typography.dart';
+import 'app_text_theme.dart';
 
 /// App 的 Material 3 主題。
 ///
@@ -333,14 +339,14 @@ abstract final class AppTheme {
         colorScheme: ColorScheme.fromSeed(
           seedColor: ColorName.appPrimaryColor,
         ),
-        textTheme: AppTypography.textTheme,
+        textTheme: AppTextTheme.textTheme,
       );
 }
 ```
 
 - **實作注意**：
   - import 順序：`package:` → 相對路徑（Style Guide §3.1）
-  - `../gen/colors.gen.dart` 與 `app_typography.dart` 皆用**相對路徑**（`prefer_relative_imports`）
+  - `../gen/colors.gen.dart` 與 `app_text_theme.dart` 皆用**相對路徑**（`prefer_relative_imports`）
   - `ColorScheme.fromSeed` 不是 const constructor，所以 `light` 用 `get` 而非 `static const`。⚠️ 不要硬加 `const` 觸發編譯錯誤。
   - **零 `copyWith`**（AC-11）。不要「順手」加 `surface`、`appBarTheme`、`scaffoldBackgroundColor` —— 任何一個都會破壞 AC-7。
   - **不宣告 `darkTheme`**（AC-12）。連 `static ThemeData? get dark => null;` 都不要寫，那是 scaffolding。
@@ -418,8 +424,8 @@ diff 更小（刪一行），但 M3 的 `FilterChip` 選中態預設是 `seconda
 
 | 波次 | 任務 | 說明 |
 | :---: | :--- | :--- |
-| **波 1（4 個並行）** | T0（截圖）、T1（typography）、T2（Dimens）、T6（@Deprecated） | 寫入路徑互不重疊：`docs/screenshots/` ／ `lib/theme/app_typography.dart` ／ `lib/utils/dimens.dart` ／ `lib/utils/ui_constants.dart` |
-| **波 2（序列）** | T3（app_theme + main.dart） | `main.dart` 唯一 owner。需 T0（基準線）+ T1（AppTypography） |
+| **波 1（4 個並行）** | T0（截圖）、T1（typography）、T2（Dimens）、T6（@Deprecated） | 寫入路徑互不重疊：`docs/screenshots/` ／ `lib/theme/app_text_theme.dart` ／ `lib/utils/dimens.dart` ／ `lib/utils/ui_constants.dart` |
+| **波 2（序列）** | T3（app_theme + main.dart） | `main.dart` 唯一 owner。需 T0（基準線）+ T1（AppTextTheme） |
 | **波 3（序列）** | T4（FilterChip） | 需 T3 |
 | **波 4（序列）** | T5（驗證） | 需 T0 + T3 + T4 |
 
@@ -509,7 +515,7 @@ git revert <commit>
 | 想放棄 | 做法 | 剩餘價值 |
 | :--- | :--- | :--- |
 | 只放棄 M3（保留 token） | `ThemeData(useMaterial3: false, ...)` | token 仍在，`FilterChip` 仍變橘，M3 破壞性歸零。**這是 R1/R2 惡化時的第一道防線** |
-| 只放棄 theme（保留 token） | 移除 `main.dart` 的 `material:` 一行 | `Dimens` / `AppTypography` 仍可被 S2 使用，但 AC-6 失效 |
+| 只放棄 theme（保留 token） | 移除 `main.dart` 的 `material:` 一行 | `Dimens` / `AppTextTheme` 仍可被 S2 使用，但 AC-6 失效 |
 | 全放棄 | `git revert` | 回到現狀 |
 
 > `useMaterial3: false` 這個逃生口值得先知道，但**不要預先寫進程式碼**。預留 flag 是 scaffolding；真的需要時改一個 bool 是 5 秒的事。

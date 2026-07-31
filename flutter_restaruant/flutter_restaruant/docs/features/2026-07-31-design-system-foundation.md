@@ -6,6 +6,12 @@
 > 撰寫日期：2026-07-31
 > 定案更新：2026-07-31（§4.3、§4.4 兩項範圍決策經使用者拍板）
 
+## 重要變更 (Changelog)
+
+| 日期 | 變更 |
+| :--- | :--- |
+| 2026-08-01 | `app_typography` 關注點更名為 `app_text_theme`（實際檔案為 `lib/theme/app_text_theme.dart`、class `AppTextTheme`）。本文內文已同步為新名 |
+
 ## 定案摘要 (Ratified Decisions)
 
 | # | 決策 | 狀態 | 詳見 |
@@ -112,7 +118,7 @@
 
 | # | 條件 | 驗證方式 |
 | :--- | :--- | :--- |
-| AC-9 | `lib/theme/` 目錄存在，包含 `app_theme` / `app_colors` / `app_typography` / `app_spacing` 四個關注點 | 檔案存在 |
+| AC-9 | `lib/theme/` 目錄存在，包含 `app_theme` / `app_colors` / `app_text_theme` / `app_spacing` 四個關注點 | 檔案存在 |
 | AC-10 | `PlatformApp` 已掛載 `material:` 參數 | `lib/main.dart` |
 | AC-11 | 色票為 `ColorScheme.fromSeed(seedColor: #D84A20)`，**零 `copyWith` 覆寫**（已定案，見 §4.4） | Code review。D-4 的額度是「≤3 個」，S1 用 **0 個**，額度留給 S2 |
 | AC-12 | `darkTheme` 留空（不交付深色色值） | Code review（D-3） |
@@ -129,7 +135,7 @@
 
 | 項目 | 說明 |
 | :--- | :--- |
-| 建立 `lib/theme/` | `app_theme`（ThemeData 組裝）、`app_colors`（語意化 ColorScheme）、`app_typography`（TextTheme）、`app_spacing`（間距/圓角 token） |
+| 建立 `lib/theme/` | `app_theme`（ThemeData 組裝）、`app_colors`（語意化 ColorScheme）、`app_text_theme`（TextTheme）、`app_spacing`（間距/圓角 token） |
 | `PlatformApp` 掛上 `material:` | 整個改動的起點 |
 | 填實 `Dimens` | 間距（`space4/8/12/16/24`）與圓角（卡片/chip/圖片）token |
 | 舊字級常數標 `@Deprecated` | 保留不刪，避免一次性編譯失敗 |
