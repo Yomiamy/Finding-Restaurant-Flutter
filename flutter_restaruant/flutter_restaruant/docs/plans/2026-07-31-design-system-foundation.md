@@ -9,6 +9,12 @@
 
 | 日期 | 變更 |
 | :--- | :--- |
+| 2026-08-01 | **本文為實作前的計畫快照，內文的路徑與識別字已不等於現況。** 實作時目錄改為 features-first（`lib/theme/` → `lib/features/foundation/style/`）、識別字統一 `theme_` 前綴（`AppTheme` → `AppThemeData`、`Sizes` → `ThemeSize`、`AppTextTheme` → `ThemeTextStyle`），並移除 FlutterGen 的 colors 生成鏈。內文保留原樣以存證當時的推導；**現況以規格書的 AC 與程式碼為準**（見 `docs/features/2026-07-31-design-system-foundation.md` 文首 Changelog） |
+
+## 重要變更 (Changelog)
+
+| 日期 | 變更 |
+| :--- | :--- |
 | 2026-08-01 | `app_typography.dart` / `AppTypography` 更名為 `app_text_theme.dart` / `AppTextTheme`。本文內文已同步為新名 |
 
 ---
@@ -230,7 +236,7 @@ abstract final class Dimens {
 - **可並行**：✅ 與 T1 / T2 / T6 並行
 - **步驟**：
   1. 啟動 iPhone SE 模擬器（375pt 寬，AC-8 指定）
-  2. 逐頁截圖：`main`、`restaurant`（詳情）、`favor`、`filter`、`signinup`、`settings`、`splash`、`photoviewr`
+  2. 逐頁截圖：`main`、`restaurant`（詳情）、`favor`、`filter`、`signinup`、`settings`、`splash`、`photo_viewer`
   3. 存為 `docs/screenshots/s1-before/<page>.png`
 - **驗收**：8 個 `.png` 檔存在，且 `main.png` 中可見 `FilterChip`（需先套一個篩選條件），否則 AC-6 無對照組
 - **⚠️ 這是唯一不可補做的任務**。程式碼一改，基準線就永遠拿不到了。
@@ -476,7 +482,7 @@ rtk flutter test        # 13 個測試檔全綠 (AC-4)
 | `signinup` | 無變化 | 藍色主按鈕**必須維持藍**（R-2 / T-1，明寫顏色故不受影響）、2 個 `TextButton`、2 個 `PlatformTextField` iOS/Android 雙平台 |
 | `settings` | 無變化 | 2 個 `PlatformElevatedButton` |
 | `splash` | 無變化 | — |
-| `photoviewr` | 無變化 | `AppBar` |
+| `photo_viewer` | 無變化 | `AppBar` |
 
 **必驗小螢幕**（AC-8）：iPhone SE / 375pt 寬，重點是 `filter` 與 `settings` 的 `PlatformElevatedButton` —— M3 按鈕內距變大最可能在窄螢幕撐破版面。
 

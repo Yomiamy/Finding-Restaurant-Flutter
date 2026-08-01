@@ -11,6 +11,8 @@
 | 日期 | 變更 |
 | :--- | :--- |
 | 2026-08-01 | `app_typography` 關注點更名為 `app_text_theme`（實際檔案為 `lib/theme/app_text_theme.dart`、class `AppTextTheme`）。本文內文已同步為新名 |
+| 2026-08-01 | **目錄改為 features-first**：`lib/theme/` → `lib/features/foundation/style/`，並統一 `theme_` 前綴：`theme_data.dart`（`AppThemeData`）／`theme_color.dart`（`ThemeColor`）／`theme_text_style.dart`（`ThemeTextStyle`、`ThemeFontSize`）／`theme_size.dart`（`ThemeSize`），對外走 `style_barrel.dart`。AC-9、AC-13 已同步 |
+| 2026-08-01 | **移除 FlutterGen colors 生成鏈**：刪除 `assets/colors.xml`、`lib/gen/colors.gen.dart` 與 pubspec 的 `flutter_gen:` 區塊，品牌色改由手寫的 `ThemeColor` 管理。原 AC-15「不得手改生成檔」已失去對象，改寫為現況；M-4 同步 |
 
 ## 定案摘要 (Ratified Decisions)
 
@@ -111,20 +113,20 @@
 | # | 條件 | 驗證方式 |
 | :--- | :--- | :--- |
 | AC-6 | `filter_tags_widget.dart` 的 `FilterChip` 選中態顯示**品牌橘**，不再是 Material 預設藍 | 模擬器實跑截圖 |
-| AC-7 | **既有畫面無非預期外觀變化** | 逐頁截圖比對改造前後。必驗頁面：`main`、`restaurant`、`favor`、`filter`、`signinup`、`settings`、`splash`、`photoviewr`。任何 AC-6 以外的差異都必須被記錄並判定為「可接受」或「需修正」 |
+| AC-7 | **既有畫面無非預期外觀變化** | 逐頁截圖比對改造前後。必驗頁面：`main`、`restaurant`、`favor`、`filter`、`signinup`、`settings`、`splash`、`photo_viewer`。任何 AC-6 以外的差異都必須被記錄並判定為「可接受」或「需修正」 |
 | AC-8 | **必驗小螢幕**（iPhone SE / 375pt 寬）無版面破裂 | 模擬器實跑 |
 
 ### 3.4 架構產出（可檢查）
 
 | # | 條件 | 驗證方式 |
 | :--- | :--- | :--- |
-| AC-9 | `lib/theme/` 目錄存在，包含 `app_theme` / `app_colors` / `app_text_theme` / `app_spacing` 四個關注點 | 檔案存在 |
+| AC-9 | `lib/features/foundation/style/` 目錄存在，包含 `theme_data` / `theme_color` / `theme_text_style` / `theme_size` 四個關注點，並以 `style_barrel.dart` 對外 | 檔案存在。原訂路徑為 `lib/theme/`，實作時改採 features-first 結構（見文首 Changelog） |
 | AC-10 | `PlatformApp` 已掛載 `material:` 參數 | `lib/main.dart` |
 | AC-11 | 色票為 `ColorScheme.fromSeed(seedColor: #D84A20)`，**零 `copyWith` 覆寫**（已定案，見 §4.4） | Code review。D-4 的額度是「≤3 個」，S1 用 **0 個**，額度留給 S2 |
 | AC-12 | `darkTheme` 留空（不交付深色色值） | Code review（D-3） |
-| AC-13 | `lib/utils/dimens.dart` 不再是空類別，含間距與圓角 token | 檔案內容 |
+| AC-13 | 間距與圓角 token 集中於 `theme_size.dart` 的 `ThemeSize` | 檔案內容。原訂放 `lib/utils/dimens.dart`，該空殼檔已刪除（見文首 Changelog） |
 | AC-14 | `ui_constants.dart` 的 10 個字級常數標記 `@Deprecated`，**且未被移除** | 檔案內容。移除是 S4 之後的獨立 PR |
-| AC-15 | `lib/gen/colors.gen.dart` **未被手動修改** | `git diff` 該檔為空。它是 FlutterGen 生成檔 |
+| AC-15 | 品牌色以手寫的 `ThemeColor` 管理，FlutterGen 的 colors 生成鏈已移除 | `assets/colors.xml`、`lib/gen/colors.gen.dart` 與 pubspec 的 `flutter_gen:` 區塊皆已刪除（見文首 Changelog）。原條件為「不得手改生成檔」，改為直接不再生成 |
 | AC-16 | commit 遵循 Conventional Commits（英文祈使句，帶括號 scope） | 例如 `feat(theme): add design system foundation` |
 
 ---
@@ -135,9 +137,9 @@
 
 | 項目 | 說明 |
 | :--- | :--- |
-| 建立 `lib/theme/` | `app_theme`（ThemeData 組裝）、`app_colors`（語意化 ColorScheme）、`app_text_theme`（TextTheme）、`app_spacing`（間距/圓角 token） |
+| 建立 `lib/features/foundation/style/` | `theme_data`（ThemeData 組裝）、`theme_color`（品牌原始色）、`theme_text_style`（TextTheme 與字級原始值）、`theme_size`（間距/圓角 token）。原訂路徑 `lib/theme/`，見文首 Changelog |
 | `PlatformApp` 掛上 `material:` | 整個改動的起點 |
-| 填實 `Dimens` | 間距（`space4/8/12/16/24`）與圓角（卡片/chip/圖片）token |
+| 建立 `ThemeSize` | 間距與圓角 token。階梯依實測既有值採 5 的倍數（非 4 的倍數），使既有使用點能一對一替換、零視覺變更。原訂填實 `lib/utils/dimens.dart`，該空殼檔已刪除 |
 | 舊字級常數標 `@Deprecated` | 保留不刪，避免一次性編譯失敗 |
 | 修正 `FilterChip` 的主色來源 | E-1 的直接修復，S1 唯一使用者可見成果 |
 
@@ -236,7 +238,7 @@ D-4 的原文是**上限**（「覆寫上限 3 個，超過代表種子色選錯
 | M-1 | **改造前先建立截圖基準線**：在動任何程式碼之前，先於模擬器逐頁截圖存檔（含 iPhone SE 375pt）。沒有基準線，AC-7 無法驗證 |
 | M-2 | **S1 零 `copyWith` 覆寫**（§4.4 已定案）。這是本階段最主要的風險緩解手段：`surface` 覆寫會一次波及全部 8 個 Scaffold，把它移出 S1，AC-7 的「除 FilterChip 外外觀不變」才站得住 |
 | M-3 | **舊字級常數保留不刪**，避免一次性編譯失敗。**已驗證**：`analysis_options.yaml:16` 設有 `deprecated_member_use: info`，標記 `@Deprecated` 後 29 處使用點只會產生 `info` 層級提示，不計入 `flutter analyze` 的 issue 數，AC-1 不受影響。S1 可安全標記，無須額外處理 |
-| M-4 | **不動 `lib/gen/colors.gen.dart`**（AC-15）。它是 FlutterGen 生成檔，手改會在下次 `build_runner` 被覆蓋。新 token 一律放 `lib/theme/` |
+| M-4 | 新 token 一律放 `lib/features/foundation/style/`。原條件為「不動 FlutterGen 生成的 `colors.gen.dart`」，該生成鏈已整套移除，改由手寫的 `ThemeColor` 管理（AC-15） |
 | M-5 | **S1 不順手改任何顏色**（§4.2）。維持「唯一預期變化是 FilterChip」的乾淨驗證條件 |
 | M-6 | **可回退**：S1 是單一 PR，最壞情況直接 revert，App 回到現狀。`flutter_platform_widgets` 的 `PlatformApp` 原生支援 `material:`，不需更換套件，無依賴風險 |
 
