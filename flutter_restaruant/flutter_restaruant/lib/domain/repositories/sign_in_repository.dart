@@ -1,5 +1,5 @@
-import '../../domain/entities/user_entity.dart';
-import '../../features/utils/app_utils.dart';
+import '../entities/entities_barrel.dart';
+import '../../features/utils/utils_barrel.dart';
 
 abstract interface class SignInRepository {
   Future<Tuple2<UserEntity?, String>> signInUp({

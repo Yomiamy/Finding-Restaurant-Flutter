@@ -1,22 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import '../../../component/empty_data_widget.dart';
-import '../../../component/loading_widget.dart';
-import '../../../component/ad/app_open_ad_state.dart';
-import '../../../domain/entities/restaurant_entity.dart';
-import '../../favor/view/favor_page.dart';
-import '../../filter/view/filter_page.dart';
+import '../../../component/component_barrel.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../../favor/view/view_barrel.dart';
+import '../../filter/view/view_barrel.dart';
 import 'map_widget.dart';
 import 'restaurant_info_list_widget.dart';
-import '../../restaurant/view/restaurant_detail_page.dart';
-import '../../settings/view/settings_page.dart';
+import '../../restaurant/view/view_barrel.dart';
+import '../../settings/view/view_barrel.dart';
 import '../../../generated/l10n.dart';
-import '../../../model/filter_configs.dart';
-import '../../../features/utils/app_utils.dart';
-import '../../../features/foundation/constants/app_constants.dart';
+import '../../../model/model_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 
-import '../bloc/main_bloc.dart';
+import '../bloc/bloc_barrel.dart';
 import '../../../gen/colors.gen.dart';
 
 class MainPage extends StatefulWidget {

@@ -3,17 +3,17 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import '../../../component/loading_widget.dart';
-import '../bloc/sign_in_bloc.dart';
+import '../../../component/component_barrel.dart';
+import '../bloc/bloc_barrel.dart';
 import '../../../generated/l10n.dart';
-import '../../../manager/sign_in_manager.dart';
-import '../../../features/foundation/style/style.dart';
-import '../../../features/foundation/constants/app_constants.dart';
+import '../../../manager/manager_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../../../gen/colors.gen.dart';
-import '../../main/view/main_page.dart';
-import '../../splash/view/splash_page.dart';
+import '../../main/view/view_barrel.dart';
+import '../../splash/view/view_barrel.dart';
 
 class SignInPage extends StatefulWidget {
   static const routeName = '/SignInPage';

@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../domain/entities/restaurant_entity.dart';
+import '../../../domain/entities/entities_barrel.dart';
 import '../../../generated/l10n.dart';
-import '../../../features/utils/app_utils.dart';
-import '../../../features/foundation/style/style.dart';
-import '../../../features/foundation/constants/app_constants.dart';
+import '../../../features/utils/utils_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:sprintf/sprintf.dart';
 
 class RestaurantItemCell extends StatelessWidget {

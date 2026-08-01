@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../domain/entities/review_detail_entity.dart';
-import '../../../features/utils/app_utils.dart';
-import '../../../features/foundation/style/style.dart';
-import '../../../features/foundation/constants/app_constants.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class RestaurantCommentCell extends StatelessWidget {

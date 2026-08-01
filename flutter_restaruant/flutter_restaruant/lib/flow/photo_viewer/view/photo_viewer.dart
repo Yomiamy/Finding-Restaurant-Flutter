@@ -1,9 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import '../../../features/foundation/style/style.dart';
-import '../../../features/utils/app_utils.dart';
-import '../../../features/foundation/constants/app_constants.dart';
+import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../../../gen/colors.gen.dart';
 

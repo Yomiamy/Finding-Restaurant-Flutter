@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:get_it/get_it.dart';
-import '../../api/api_clz.dart';
-import '../datasources/favor_data_source.dart';
-import '../dto/yelp_search_dto.dart';
-import '../../domain/entities/restaurant_entity.dart';
-import '../../domain/repositories/main_repository.dart';
-import '../../model/filter_configs.dart';
-import '../../features/foundation/constants/app_constants.dart';
+import '../../api/api_barrel.dart';
+import '../datasources/datasources_barrel.dart';
+import '../dto/dto_barrel.dart';
+import '../../domain/entities/entities_barrel.dart';
+import '../../domain/repositories/repositories_barrel.dart';
+import '../../model/model_barrel.dart';
+import '../../features/foundation/constants/constants_barrel.dart';
 
 class MainRepo implements MainRepository {
   static const int _maxItemsCountInList = 50;

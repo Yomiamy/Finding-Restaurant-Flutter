@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../../domain/repositories/sign_in_repository.dart';
-import '../../../domain/entities/user_entity.dart';
-import '../../../features/utils/app_utils.dart';
+import '../../../domain/repositories/repositories_barrel.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
 
 part 'sign_in_event.dart';
 

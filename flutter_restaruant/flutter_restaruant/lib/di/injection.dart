@@ -1,20 +1,9 @@
 import 'package:get_it/get_it.dart';
-import '../api/api_clz.dart';
-import '../api/dio/dio_client.dart';
-import '../data_layer/datasources/favor_data_source.dart';
-import '../data_layer/repositories/favor_repo.dart';
-import '../data_layer/repositories/main_repo.dart';
-import '../data_layer/repositories/restaurant_detail_repo.dart';
-import '../data_layer/repositories/settings_repo.dart';
-import '../data_layer/repositories/sign_in_repo.dart';
-import '../domain/repositories/favor_repository.dart';
-import '../domain/repositories/main_repository.dart';
-import '../domain/repositories/restaurant_detail_repository.dart';
-import '../domain/repositories/settings_repository.dart';
-import '../domain/repositories/sign_in_repository.dart';
-import '../manager/ad_counter_manager.dart';
-import '../manager/fcm_manager.dart';
-import '../manager/sign_in_manager.dart';
+import '../api/api_barrel.dart';
+import '../data_layer/datasources/datasources_barrel.dart';
+import '../data_layer/repositories/repositories_barrel.dart';
+import '../domain/repositories/repositories_barrel.dart';
+import '../manager/manager_barrel.dart';
 
 final getIt = GetIt.instance;
 
@@ -39,6 +28,5 @@ void setupInjection() {
   getIt.registerLazySingleton<FavorRepository>(
       () => FavorRepo(favorDataSource: getIt<FavorDataSource>()));
   getIt.registerLazySingleton<SignInRepository>(() => SignInRepo());
-  getIt.registerLazySingleton<SettingsRepository>(
-      () => const SettingsRepo());
+  getIt.registerLazySingleton<SettingsRepository>(() => const SettingsRepo());
 }

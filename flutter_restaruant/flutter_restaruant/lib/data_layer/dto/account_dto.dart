@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import '../../domain/entities/user_entity.dart';
+import '../../domain/entities/entities_barrel.dart';
 
 part 'account_dto.g.dart';
 
@@ -19,5 +19,4 @@ class AccountDto {
       _$AccountDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$AccountDtoToJson(this);
-
 }

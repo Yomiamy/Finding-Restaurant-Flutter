@@ -1,17 +1,10 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_restaruant/api/api_clz.dart';
-import 'package:flutter_restaruant/api/dio/dio_client.dart';
+import 'package:flutter_restaruant/api/api_barrel.dart';
 
-import 'package:flutter_restaruant/data_layer/datasources/favor_data_source.dart';
-import 'package:flutter_restaruant/di/injection.dart';
-import 'package:flutter_restaruant/domain/repositories/favor_repository.dart';
-import 'package:flutter_restaruant/domain/repositories/main_repository.dart';
-import 'package:flutter_restaruant/domain/repositories/restaurant_detail_repository.dart';
-import 'package:flutter_restaruant/domain/repositories/settings_repository.dart';
-import 'package:flutter_restaruant/domain/repositories/sign_in_repository.dart';
-import 'package:flutter_restaruant/manager/ad_counter_manager.dart';
-import 'package:flutter_restaruant/manager/fcm_manager.dart';
-import 'package:flutter_restaruant/manager/sign_in_manager.dart';
+import 'package:flutter_restaruant/data_layer/datasources/datasources_barrel.dart';
+import 'package:flutter_restaruant/di/di_barrel.dart';
+import 'package:flutter_restaruant/domain/repositories/repositories_barrel.dart';
+import 'package:flutter_restaruant/manager/manager_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
 

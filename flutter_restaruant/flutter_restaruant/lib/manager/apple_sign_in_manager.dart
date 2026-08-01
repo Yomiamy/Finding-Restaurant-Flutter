@@ -3,9 +3,9 @@ import 'dart:convert';
 import 'dart:math';
 import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../data_layer/dto/account_dto.dart';
-import '../domain/entities/user_entity.dart';
-import '../features/utils/app_utils.dart';
+import '../data_layer/dto/dto_barrel.dart';
+import '../domain/entities/entities_barrel.dart';
+import '../features/utils/utils_barrel.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AppleSignInManager {

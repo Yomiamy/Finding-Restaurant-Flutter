@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import '../../data_layer/dto/account_dto.dart';
+import '../../data_layer/dto/dto_barrel.dart';
 
 enum AccountType {
   @JsonValue('GOOGLE')

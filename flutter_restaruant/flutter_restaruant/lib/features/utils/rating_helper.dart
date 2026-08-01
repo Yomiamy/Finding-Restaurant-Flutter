@@ -1,5 +1,5 @@
 import 'package:flutter/widgets.dart';
-import '../foundation/style/style.dart';
+import '../foundation/style/style_barrel.dart';
 
 class RatingHelper {
   static final Map<String, Image> _ratingImgMap = <String, Image>{

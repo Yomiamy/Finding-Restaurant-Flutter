@@ -1,6 +1,6 @@
-import 'package:flutter_restaruant/manager/ad_counter_manager.dart';
-import 'package:flutter_restaruant/features/foundation/constants/app_constants.dart';
-import 'package:flutter_restaruant/features/foundation/style/style.dart';
+import 'package:flutter_restaruant/manager/manager_barrel.dart';
+import 'package:flutter_restaruant/features/foundation/constants/constants_barrel.dart';
+import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

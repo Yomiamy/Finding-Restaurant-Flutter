@@ -1,10 +1,9 @@
 import 'package:flutter/services.dart';
-import 'package:flutter_restaruant/data_layer/datasources/favor_data_source.dart';
-import 'package:flutter_restaruant/data_layer/dto/account_dto.dart';
-import 'package:flutter_restaruant/domain/entities/restaurant_entity.dart';
-import 'package:flutter_restaruant/domain/entities/user_entity.dart';
-import 'package:flutter_restaruant/manager/sign_in_manager.dart';
-import 'package:flutter_restaruant/features/foundation/constants/app_constants.dart';
+import 'package:flutter_restaruant/data_layer/datasources/datasources_barrel.dart';
+import 'package:flutter_restaruant/data_layer/dto/dto_barrel.dart';
+import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
+import 'package:flutter_restaruant/manager/manager_barrel.dart';
+import 'package:flutter_restaruant/features/foundation/constants/constants_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 

@@ -2,16 +2,15 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import '../bloc/settings_bloc.dart';
-import '../../signinup/view/sign_in_page.dart';
-import '../../splash/view/splash_page.dart';
-import '../../../manager/biometric_sign_in_manager.dart';
-import '../../../manager/sign_in_manager.dart';
-import '../../../features/foundation/constants/app_constants.dart';
+import '../bloc/bloc_barrel.dart';
+import '../../signinup/view/view_barrel.dart';
+import '../../splash/view/view_barrel.dart';
+import '../../../manager/manager_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:settings_ui/settings_ui.dart';
 import '../../../generated/l10n.dart';
 import '../../../gen/colors.gen.dart';
-import '../../../features/foundation/style/style.dart';
+import '../../../features/foundation/style/style_barrel.dart';
 
 class SettingsPage extends StatefulWidget {
   static const routeName = '/SettingsPage';

@@ -1,31 +1,11 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_restaruant/data_layer/dto/account_dto.dart';
-import 'package:flutter_restaruant/data_layer/dto/yelp_restaurant_business_time_dto.dart';
-import 'package:flutter_restaruant/data_layer/dto/yelp_restaurant_category_dto.dart';
-import 'package:flutter_restaruant/data_layer/dto/yelp_restaurant_coordinates_dto.dart';
-import 'package:flutter_restaruant/data_layer/dto/yelp_restaurant_detail_dto.dart';
-import 'package:flutter_restaruant/data_layer/dto/yelp_restaurant_hours_dto.dart';
-import 'package:flutter_restaruant/data_layer/dto/yelp_restaurant_location_dto.dart';
-import 'package:flutter_restaruant/data_layer/dto/yelp_restaurant_summary_dto.dart';
-import 'package:flutter_restaruant/data_layer/dto/yelp_review_detail_dto.dart';
-import 'package:flutter_restaruant/data_layer/dto/yelp_review_dto.dart';
-import 'package:flutter_restaruant/data_layer/dto/yelp_reviewer_dto.dart';
+import 'package:flutter_restaruant/data_layer/dto/dto_barrel.dart';
 
-import 'package:flutter_restaruant/domain/entities/user_entity.dart';
-import 'package:flutter_restaruant/domain/entities/restaurant_business_time_entity.dart';
-import 'package:flutter_restaruant/domain/entities/restaurant_category_entity.dart';
-import 'package:flutter_restaruant/domain/entities/restaurant_coordinates_entity.dart';
-import 'package:flutter_restaruant/domain/entities/restaurant_detail_entity.dart';
-import 'package:flutter_restaruant/domain/entities/restaurant_hours_entity.dart';
-import 'package:flutter_restaruant/domain/entities/restaurant_location_entity.dart';
-import 'package:flutter_restaruant/domain/entities/restaurant_entity.dart';
-import 'package:flutter_restaruant/domain/entities/review_detail_entity.dart';
-import 'package:flutter_restaruant/domain/entities/review_entity.dart';
-import 'package:flutter_restaruant/domain/entities/reviewer_entity.dart';
-
+import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 
 void main() {
-  group('Empirical Stress Tests - Milestone 3 DTO & Domain Entity Separation', () {
+  group('Empirical Stress Tests - Milestone 3 DTO & Domain Entity Separation',
+      () {
     test('1. Null field handling in all DTO toEntity() mappings', () {
       final accountDto = AccountDto(type: AccountType.google);
       final userEntity = UserEntity.fromDto(accountDto);
@@ -89,13 +69,15 @@ void main() {
     });
 
     test('2. Round-trip mapping: DTO -> Entity -> DTO with full data', () {
-      final catDto = YelpRestaurantCategoryDto(alias: 'italian', title: 'Italian');
+      final catDto =
+          YelpRestaurantCategoryDto(alias: 'italian', title: 'Italian');
       final locDto = YelpRestaurantLocationDto(
         address1: 'Sec 1',
         city: 'Taipei',
         displayAddress: ['Sec 1, ', 'Taipei'],
       );
-      final coordDto = YelpRestaurantCoordinatesDto(latitude: 25.03, longitude: 121.56);
+      final coordDto =
+          YelpRestaurantCoordinatesDto(latitude: 25.03, longitude: 121.56);
 
       final summaryDto = YelpRestaurantSummaryDto(
         id: 'r_100',
@@ -128,8 +110,10 @@ void main() {
     test('3. Edge cases in Category and Location formatting', () {
       // Category title is null
       const catNullTitle = RestaurantCategoryEntity(alias: 'cat1', title: null);
-      const catValidTitle = RestaurantCategoryEntity(alias: 'cat2', title: 'Bistro');
-      const restEntity1 = RestaurantEntity(categories: [catNullTitle, catValidTitle]);
+      const catValidTitle =
+          RestaurantCategoryEntity(alias: 'cat2', title: 'Bistro');
+      const restEntity1 =
+          RestaurantEntity(categories: [catNullTitle, catValidTitle]);
       expect(restEntity1.categoriesStr, ' Bistro');
 
       // Empty categories
@@ -149,7 +133,9 @@ void main() {
       expect(locNull.displayAddressStr, '');
     });
 
-    test('4. Equality checks for RestaurantEntity & DTOs with null vs non-null IDs', () {
+    test(
+        '4. Equality checks for RestaurantEntity & DTOs with null vs non-null IDs',
+        () {
       const eNull1 = RestaurantEntity(id: null, name: 'A');
       const eNull2 = RestaurantEntity(id: null, name: 'B');
       const eVal1 = RestaurantEntity(id: 'id_1', name: 'A');
@@ -183,8 +169,6 @@ void main() {
       expect(dtoNull1 == dtoNull2, false);
       expect(dtoNull1 == dtoNull1, true);
       expect(dtoVal1 == dtoVal2, true);
-
-
     });
   });
 }

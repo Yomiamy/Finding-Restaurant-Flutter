@@ -2,15 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import '../../../component/empty_data_widget.dart';
-import '../../../component/loading_widget.dart';
-import '../../../component/cell/main_page/restaurant_item_cell.dart';
-import '../../../domain/entities/restaurant_entity.dart';
-import '../bloc/favor_bloc.dart';
-import '../../restaurant/view/restaurant_detail_page.dart';
-import '../../../features/utils/app_utils.dart';
-import '../../../features/foundation/style/style.dart';
-import '../../../features/foundation/constants/app_constants.dart';
+import '../../../component/component_barrel.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../bloc/bloc_barrel.dart';
+import '../../restaurant/view/view_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 import '../../../gen/colors.gen.dart';
 
 class FavorPage extends StatefulWidget {

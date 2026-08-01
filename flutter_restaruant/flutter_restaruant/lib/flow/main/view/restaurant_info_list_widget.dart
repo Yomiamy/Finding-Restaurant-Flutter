@@ -1,17 +1,16 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../component/ad/banner_ad.dart';
-import '../../../component/ad/banner_ad_state.dart';
-import '../../../component/cell/main_page/restaurant_item_cell.dart';
-import '../../../domain/entities/restaurant_entity.dart';
-import '../bloc/main_bloc.dart';
+import '../../../component/ad/ad_barrel.dart';
+import '../../../component/cell/main_page/main_page_barrel.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../bloc/bloc_barrel.dart';
 import 'filter_tags_widget.dart';
 import 'main_page.dart';
-import '../../restaurant/view/restaurant_detail_page.dart';
-import '../../../model/filter_configs.dart';
-import '../../../features/foundation/style/style.dart';
-import '../../../features/utils/app_utils.dart';
-import '../../../di/injection.dart';
+import '../../restaurant/view/view_barrel.dart';
+import '../../../model/model_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
+import '../../../di/di_barrel.dart';
 
 class RestaurantInfoListWidget extends StatelessWidget {
   final ScrollController _scrollController = ScrollController();

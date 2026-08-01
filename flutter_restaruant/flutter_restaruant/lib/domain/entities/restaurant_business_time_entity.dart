@@ -1,5 +1,5 @@
-import '../../data_layer/dto/yelp_restaurant_business_time_dto.dart';
-import '../../features/utils/app_utils.dart';
+import '../../data_layer/dto/dto_barrel.dart';
+import '../../features/utils/utils_barrel.dart';
 
 class RestaurantBusinessTimeEntity {
   final bool? isOvernight;

@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../../domain/repositories/settings_repository.dart';
+import '../../../domain/repositories/repositories_barrel.dart';
 
 part 'settings_event.dart';
 part 'settings_state.dart';

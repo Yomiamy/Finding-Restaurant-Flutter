@@ -1,4 +1,4 @@
-import '../../data_layer/dto/yelp_review_dto.dart';
+import '../../data_layer/dto/dto_barrel.dart';
 import 'review_detail_entity.dart';
 
 class ReviewEntity {
@@ -25,4 +25,3 @@ class ReviewEntity {
         reviews: reviews?.map((e) => e.toDto).toList(),
       );
 }
-

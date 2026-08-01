@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_restaruant/flow/main/view/filter_tags_widget.dart';
-import 'package:flutter_restaruant/model/filter_configs.dart';
-import 'package:flutter_restaruant/features/foundation/style/style.dart';
+import 'package:flutter_restaruant/flow/main/view/view_barrel.dart';
+import 'package:flutter_restaruant/model/model_barrel.dart';
+import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
 
 void main() {
   testWidgets('FilterTagsWidget renders FilterChip for active filter configs',

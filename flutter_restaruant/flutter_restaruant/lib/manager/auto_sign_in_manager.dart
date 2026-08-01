@@ -1,8 +1,8 @@
 import 'dart:convert';
-import '../data_layer/dto/account_dto.dart';
+import '../data_layer/dto/dto_barrel.dart';
 
-import '../features/foundation/constants/app_constants.dart';
-import '../features/utils/app_utils.dart';
+import '../features/foundation/constants/constants_barrel.dart';
+import '../features/utils/utils_barrel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AutoSignInManager {

@@ -1,6 +1,6 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import '../foundation/constants/app_constants.dart';
+import '../foundation/constants/constants_barrel.dart';
 
 class ViewUtils {
   static void showPromptDialog(

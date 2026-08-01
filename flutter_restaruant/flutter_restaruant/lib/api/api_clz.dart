@@ -1,8 +1,6 @@
-import 'dio/dio_client.dart';
-import '../data_layer/dto/yelp_restaurant_detail_dto.dart';
-import '../data_layer/dto/yelp_review_dto.dart';
-import '../data_layer/dto/yelp_search_dto.dart';
-import '../features/foundation/constants/app_constants.dart';
+import 'dio/dio_barrel.dart';
+import '../data_layer/dto/dto_barrel.dart';
+import '../features/foundation/constants/constants_barrel.dart';
 import 'package:logger/logger.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart' hide Headers;

@@ -1,4 +1,4 @@
-import '../../data_layer/dto/yelp_restaurant_hours_dto.dart';
+import '../../data_layer/dto/dto_barrel.dart';
 import 'restaurant_business_time_entity.dart';
 
 class RestaurantHoursEntity {
@@ -27,4 +27,3 @@ class RestaurantHoursEntity {
         open: open?.map((e) => e.toDto).toList(),
       );
 }
-

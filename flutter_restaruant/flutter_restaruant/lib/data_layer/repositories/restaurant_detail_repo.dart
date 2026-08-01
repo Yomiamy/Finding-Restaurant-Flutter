@@ -1,15 +1,12 @@
 import 'dart:async';
 
 import 'package:get_it/get_it.dart';
-import '../../api/api_clz.dart';
-import '../datasources/favor_data_source.dart';
-import '../dto/yelp_restaurant_detail_dto.dart';
-import '../dto/yelp_review_dto.dart';
-import '../../domain/entities/restaurant_detail_entity.dart';
-import '../../domain/entities/restaurant_entity.dart';
-import '../../domain/entities/review_entity.dart';
-import '../../domain/repositories/restaurant_detail_repository.dart';
-import '../../features/foundation/constants/app_constants.dart';
+import '../../api/api_barrel.dart';
+import '../datasources/datasources_barrel.dart';
+import '../dto/dto_barrel.dart';
+import '../../domain/entities/entities_barrel.dart';
+import '../../domain/repositories/repositories_barrel.dart';
+import '../../features/foundation/constants/constants_barrel.dart';
 
 class RestaurantDetailRepo implements RestaurantDetailRepository {
   final FavorDataSource _favorDataSource;

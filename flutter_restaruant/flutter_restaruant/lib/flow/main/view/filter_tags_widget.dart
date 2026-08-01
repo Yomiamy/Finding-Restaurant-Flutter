@@ -2,10 +2,10 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/main_bloc.dart';
-import '../../../model/filter_configs.dart';
-import '../../../features/foundation/style/style.dart';
-import '../../../features/foundation/constants/app_constants.dart';
+import '../bloc/bloc_barrel.dart';
+import '../../../model/model_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 
 import 'main_page.dart';
 

@@ -1,19 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../component/empty_data_widget.dart';
-import '../../../component/loading_widget.dart';
-import '../../../component/ad/interstitial_ad.dart';
-import '../../../component/ad/interstitial_ad_state.dart';
-import '../../../component/cell/restaurant_detail/restaurant_detail_cell_collection.dart';
-import '../../../domain/entities/restaurant_entity.dart';
-import '../../../manager/ad_counter_manager.dart';
-import '../../../features/utils/app_utils.dart';
-import '../../../features/foundation/constants/app_constants.dart';
+import '../../../component/component_barrel.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../../../manager/manager_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../bloc/restaurant_detail_bloc.dart';
+import '../bloc/bloc_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../../../gen/colors.gen.dart';
-import '../../../features/foundation/style/style.dart';
+import '../../../features/foundation/style/style_barrel.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   static const routeName = '/RestaurantDetailPage';

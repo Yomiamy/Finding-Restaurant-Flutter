@@ -1,15 +1,15 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../api/api_clz.dart';
+import '../api/api_barrel.dart';
 import 'apple_sign_in_manager.dart';
 import 'auto_sign_in_manager.dart';
 import 'biometric_sign_in_manager.dart';
 import 'facebook_sign_in_manager.dart';
 import 'google_sign_in_manager.dart';
-import '../data_layer/dto/account_dto.dart';
-import '../domain/entities/user_entity.dart';
-import '../features/foundation/constants/app_constants.dart';
-import '../features/utils/app_utils.dart';
+import '../data_layer/dto/dto_barrel.dart';
+import '../domain/entities/entities_barrel.dart';
+import '../features/foundation/constants/constants_barrel.dart';
+import '../features/utils/utils_barrel.dart';
 
 import 'mail_sign_in_up_manager.dart';
 

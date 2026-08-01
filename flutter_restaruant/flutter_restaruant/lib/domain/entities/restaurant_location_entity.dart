@@ -1,4 +1,4 @@
-import '../../data_layer/dto/yelp_restaurant_location_dto.dart';
+import '../../data_layer/dto/dto_barrel.dart';
 
 class RestaurantLocationEntity {
   final String? address1;
@@ -42,4 +42,3 @@ class RestaurantLocationEntity {
 
   String get displayAddressStr => displayAddress?.join('') ?? '';
 }
-

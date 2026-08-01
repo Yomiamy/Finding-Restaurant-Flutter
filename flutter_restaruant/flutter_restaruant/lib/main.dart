@@ -3,18 +3,17 @@ import 'dart:ui' as ui;
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import 'features/foundation/constants/app_constants.dart';
+import 'features/foundation/constants/constants_barrel.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-import 'component/ad/banner_ad_state.dart';
-import 'di/injection.dart';
+import 'component/ad/ad_barrel.dart';
+import 'di/di_barrel.dart';
 import 'firebase_options.dart';
 import 'generated/l10n.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
-import 'manager/fcm_manager.dart';
-import 'manager/sign_in_manager.dart';
-import 'routes/routes_table.dart';
-import 'features/foundation/style/style.dart';
+import 'manager/manager_barrel.dart';
+import 'routes/routes_barrel.dart';
+import 'features/foundation/style/style_barrel.dart';
 
 // For FCM onMessageOpenedApp to open specific page
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();

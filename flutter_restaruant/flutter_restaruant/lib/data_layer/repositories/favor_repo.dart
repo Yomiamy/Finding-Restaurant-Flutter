@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import '../datasources/favor_data_source.dart';
-import '../../domain/entities/restaurant_entity.dart';
-import '../../domain/repositories/favor_repository.dart';
+import '../datasources/datasources_barrel.dart';
+import '../../domain/entities/entities_barrel.dart';
+import '../../domain/repositories/repositories_barrel.dart';
 
 class FavorRepo implements FavorRepository {
   final FavorDataSource _dataSource;
@@ -26,8 +26,7 @@ class FavorRepo implements FavorRepository {
 
   @override
   Future<RestaurantEntity> toggleFavor(RestaurantEntity summaryInfo) async {
-    RestaurantEntity updatedEntity =
-        await _dataSource.toggleFavor(summaryInfo);
+    RestaurantEntity updatedEntity = await _dataSource.toggleFavor(summaryInfo);
 
     // 同步本地快取，否則 fetchFavorInfos(true) 濾不掉剛取消收藏的項目
     _favorInfos = [

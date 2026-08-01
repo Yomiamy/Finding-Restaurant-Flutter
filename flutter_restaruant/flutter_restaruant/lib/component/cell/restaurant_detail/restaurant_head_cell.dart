@@ -1,11 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../domain/entities/restaurant_entity.dart';
-import '../../../flow/restaurant/bloc/restaurant_detail_bloc.dart';
-import '../../../flow/signinup/view/sign_in_page.dart';
-import '../../../manager/sign_in_manager.dart';
-import '../../../features/foundation/style/style.dart';
-import '../../../features/foundation/constants/app_constants.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../../../flow/restaurant/bloc/bloc_barrel.dart';
+import '../../../flow/signinup/view/view_barrel.dart';
+import '../../../manager/manager_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 
 class RestaurantHeadCell extends StatelessWidget {
   static const int headImageH = 200;

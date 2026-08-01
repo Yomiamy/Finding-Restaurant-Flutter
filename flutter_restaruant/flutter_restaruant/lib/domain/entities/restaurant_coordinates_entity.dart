@@ -1,4 +1,4 @@
-import '../../data_layer/dto/yelp_restaurant_coordinates_dto.dart';
+import '../../data_layer/dto/dto_barrel.dart';
 
 class RestaurantCoordinatesEntity {
   final double? latitude;
@@ -21,4 +21,3 @@ class RestaurantCoordinatesEntity {
         longitude: longitude,
       );
 }
-

@@ -1,10 +1,10 @@
 import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:bloc/bloc.dart';
-import '../../../domain/entities/restaurant_entity.dart';
-import '../../../domain/repositories/main_repository.dart';
-import '../../../manager/fcm_manager.dart';
-import '../../../features/utils/app_utils.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../../../domain/repositories/repositories_barrel.dart';
+import '../../../manager/manager_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:equatable/equatable.dart';
 
