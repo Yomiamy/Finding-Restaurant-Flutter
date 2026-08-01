@@ -9,7 +9,6 @@ import '../../../manager/manager_barrel.dart';
 import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:settings_ui/settings_ui.dart';
 import '../../../generated/l10n.dart';
-import '../../../gen/colors.gen.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 
 class SettingsPage extends StatefulWidget {
@@ -40,16 +39,16 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
         appBar: AppBar(
             leading: PlatformIconButton(
-                padding: const EdgeInsets.all(Sizes.zero),
+                padding: const EdgeInsets.all(ThemeSize.zero),
                 onPressed: () => Navigator.of(context).pop(),
                 materialIcon:
-                    const Icon(Icons.arrow_back, color: ColorName.backBtnColor),
-                cupertinoIcon: const Icon(CupertinoIcons.back,
-                    color: ColorName.backBtnColor)),
+                    const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
+                cupertinoIcon:
+                    const Icon(CupertinoIcons.back, color: ThemeColor.backBtn)),
             title: PlatformText(S.current.settings_title,
                 style: const TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
-            backgroundColor: ColorName.appPrimaryColor),
+            backgroundColor: ThemeColor.appPrimary),
         body: BlocConsumer<SettingsBloc, SettingsState>(
             listener: (context, state) {
           if (state is LogoutSuccess) {
@@ -107,7 +106,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ? SizedBox(
             height: 50,
             child: PlatformElevatedButton(
-                color: ColorName.appPrimaryColor,
+                color: ThemeColor.appPrimary,
                 child: Text(S.current.signin_or_signup_title,
                     style: const TextStyle(
                         fontSize: UIConstants.xhFontSize,
@@ -130,7 +129,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     _settingsBloc.add(const LogoutEvent());
                   }),
             ),
-            const SizedBox(height: Sizes.space20),
+            const SizedBox(height: ThemeSize.space20),
             GestureDetector(
               onTap: () {
                 _settingsBloc.add(AccountRemovalEvent(
@@ -148,7 +147,9 @@ class _SettingsPageState extends State<SettingsPage> {
     return CustomSettingsSection(
         child: Padding(
             padding: const EdgeInsets.only(
-                left: Sizes.space25, top: Sizes.space50, right: Sizes.space25),
+                left: ThemeSize.space25,
+                top: ThemeSize.space50,
+                right: ThemeSize.space25),
             child: child));
   }
 }

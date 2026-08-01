@@ -14,7 +14,7 @@ class UIConstants {
 
   static const String noImage = 'images/empty.png';
 
-  static const emptyWidget = SizedBox(height: Sizes.zero);
+  static const emptyWidget = SizedBox(height: ThemeSize.zero);
 
   static const mapDefaultLocation = LatLng(25.048036, 121.517063);
   static const mapMyLocationMarkId = 'MAP_MY_LOCATION_MARK_ID';

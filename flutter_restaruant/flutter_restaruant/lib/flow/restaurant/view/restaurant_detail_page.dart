@@ -8,7 +8,6 @@ import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../bloc/bloc_barrel.dart';
 import '../../../generated/l10n.dart';
-import '../../../gen/colors.gen.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
@@ -54,10 +53,9 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
     return Scaffold(
         appBar: AppBar(
             leading: IconButton(
-                padding: const EdgeInsets.all(Sizes.zero),
+                padding: const EdgeInsets.all(ThemeSize.zero),
                 onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.arrow_back,
-                    color: ColorName.backBtnColor)),
+                icon: const Icon(Icons.arrow_back, color: ThemeColor.backBtn)),
             title: BlocBuilder<RestaurantDetailBloc, RestaurantDetailState>(
                 bloc: _bloc,
                 builder: (context, state) {
@@ -70,9 +68,9 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                     return const Text('');
                   }
                 }),
-            backgroundColor: ColorName.appPrimaryColor),
+            backgroundColor: ThemeColor.appPrimary),
         body: Padding(
-            padding: const EdgeInsets.only(bottom: Sizes.space10),
+            padding: const EdgeInsets.only(bottom: ThemeSize.space10),
             child: BlocConsumer<RestaurantDetailBloc, RestaurantDetailState>(
                 bloc: _bloc,
                 listener: (context, state) {

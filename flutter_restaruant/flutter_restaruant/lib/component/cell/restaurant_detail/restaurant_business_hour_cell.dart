@@ -47,7 +47,7 @@ class RestaurantBusinessHourCell extends StatelessWidget {
   Widget _createBusinessTimeRow(
           bool isToday, String weekDay, String startTime, String endTime) =>
       Padding(
-          padding: const EdgeInsets.only(top: Sizes.space5),
+          padding: const EdgeInsets.only(top: ThemeSize.space5),
           child: Stack(children: [
             Align(
                 alignment: Alignment.centerLeft,
@@ -65,7 +65,7 @@ class RestaurantBusinessHourCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(top: Sizes.space10),
+        padding: const EdgeInsets.only(top: ThemeSize.space10),
         child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
           SizedBox(
               width: MediaQuery.of(context).size.width,
@@ -78,7 +78,7 @@ class RestaurantBusinessHourCell extends StatelessWidget {
                               fontWeight: FontWeight.bold))))),
           Padding(
               padding: const EdgeInsets.only(
-                  left: Sizes.space10, right: Sizes.space10),
+                  left: ThemeSize.space10, right: ThemeSize.space10),
               child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: _businessTimeWidgets))

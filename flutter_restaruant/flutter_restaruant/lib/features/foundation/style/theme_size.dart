@@ -4,9 +4,9 @@
 /// 目的是讓既有使用點能一對一替換、零視覺變更。若日後要改走 4dp 階梯，
 /// 那是一次獨立的視覺調整，需逐頁截圖比對。
 ///
-/// 字級不在此定義語意角色，僅提供 `AppTextTheme` 取用的原始數值；
+/// 字級不在此定義語意角色，僅提供 `ThemeTextStyle` 取用的原始數值；
 /// 呼叫端一律走 `Theme.of(context).textTheme`。
-abstract final class Sizes {
+abstract final class ThemeSize {
   // ────────────────────────────────────────────
   // 間距 (Spacing)
   // ────────────────────────────────────────────
@@ -37,7 +37,7 @@ abstract final class Sizes {
   // ────────────────────────────────────────────
   // 字級原始值 (Font size)
   //
-  // 僅供 `AppTextTheme` 組裝 `TextTheme` 使用。UI 端請勿直接引用 ——
+  // 僅供 `ThemeTextStyle` 組裝 `TextTheme` 使用。UI 端請勿直接引用 ——
   // 字級的語意來源是 `Theme.of(context).textTheme`。
   // ────────────────────────────────────────────
   static const double textS = 12;

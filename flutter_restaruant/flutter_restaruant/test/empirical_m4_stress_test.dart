@@ -76,8 +76,8 @@ void main() {
       expect(UIConstants.appTitle, equals('尋找餐廳'));
       expect(UIConstants.loginTitle, equals('登入'));
       expect(UIConstants.favorTitle, equals('我喜好的店家'));
-      expect(Sizes.ratingImageW, equals(100.0));
-      expect(Sizes.ratingImageH, equals(20.0));
+      expect(ThemeSize.ratingImageW, equals(100.0));
+      expect(ThemeSize.ratingImageH, equals(20.0));
     });
   });
 }

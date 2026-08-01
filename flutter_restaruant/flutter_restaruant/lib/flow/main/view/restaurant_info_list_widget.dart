@@ -37,7 +37,8 @@ class RestaurantInfoListWidget extends StatelessWidget {
           return true;
         },
         child: ListView.builder(
-            padding: const EdgeInsets.only(top: Sizes.zero, bottom: Sizes.zero),
+            padding: const EdgeInsets.only(
+                top: ThemeSize.zero, bottom: ThemeSize.zero),
             controller: _scrollController,
             itemCount: _summaryInfos.length + 2,
             itemBuilder: (context, index) {

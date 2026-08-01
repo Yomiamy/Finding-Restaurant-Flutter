@@ -5,7 +5,6 @@ import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../features/foundation/constants/constants_barrel.dart';
 import '../../../generated/l10n.dart';
-import '../../../gen/colors.gen.dart';
 
 class PhotoViewer extends StatefulWidget {
   static const routeName = '/PhotoViewer';
@@ -28,16 +27,16 @@ class _PhotoViewerState extends State<PhotoViewer> {
     return Scaffold(
         appBar: AppBar(
             leading: PlatformIconButton(
-                padding: const EdgeInsets.all(Sizes.zero),
+                padding: const EdgeInsets.all(ThemeSize.zero),
                 onPressed: () => Navigator.of(context).pop(),
                 materialIcon:
-                    const Icon(Icons.arrow_back, color: ColorName.backBtnColor),
-                cupertinoIcon: const Icon(CupertinoIcons.back,
-                    color: ColorName.backBtnColor)),
+                    const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
+                cupertinoIcon:
+                    const Icon(CupertinoIcons.back, color: ThemeColor.backBtn)),
             title: Text(S.current.photo_viewer_title,
                 style: const TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
-            backgroundColor: ColorName.appPrimaryColor),
+            backgroundColor: ThemeColor.appPrimary),
         body: InteractiveViewer(
           // Set it to false
           boundaryMargin: const EdgeInsets.all(100),

@@ -1,3 +1,4 @@
-export 'app_text_theme.dart';
-export 'app_theme.dart';
-export 'sizes.dart';
+export 'theme_color.dart';
+export 'theme_data.dart';
+export 'theme_size.dart';
+export 'theme_text_style.dart';

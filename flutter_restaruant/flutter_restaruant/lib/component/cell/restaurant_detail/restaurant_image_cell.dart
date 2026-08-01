@@ -14,13 +14,13 @@ class RestaurantImageCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      padding: const EdgeInsets.only(top: Sizes.space10),
+      padding: const EdgeInsets.only(top: ThemeSize.space10),
       height: MediaQuery.of(context).size.width / 3,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: _photos.length,
           itemBuilder: (context, index) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: Sizes.space5),
+              padding: const EdgeInsets.symmetric(horizontal: ThemeSize.space5),
               child: GestureDetector(
                 onTap: () {
                   String photoUrl = _photos[index];

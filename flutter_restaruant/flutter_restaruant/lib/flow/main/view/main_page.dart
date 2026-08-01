@@ -15,7 +15,7 @@ import '../../../features/utils/utils_barrel.dart';
 import '../../../features/foundation/constants/constants_barrel.dart';
 
 import '../bloc/bloc_barrel.dart';
-import '../../../gen/colors.gen.dart';
+import '../../../features/foundation/style/style_barrel.dart';
 
 class MainPage extends StatefulWidget {
   static const routeName = '/MainPage';
@@ -78,7 +78,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           style: const TextStyle(
               color: Colors.white, fontSize: UIConstants.xxxxhFontSize),
         ),
-        backgroundColor: ColorName.appPrimaryColor,
+        backgroundColor: ThemeColor.appPrimary,
         leading: IconButton(
             padding: EdgeInsets.zero,
             onPressed: () => _openDrawer(),
@@ -124,7 +124,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         child: SafeArea(
             child: ListView(padding: EdgeInsets.zero, children: [
       DrawerHeader(
-          decoration: const BoxDecoration(color: ColorName.appPrimaryColor),
+          decoration: const BoxDecoration(color: ThemeColor.appPrimary),
           child: Align(
               alignment: Alignment.bottomLeft,
               child: Text(appLocalizations.main_page_title,
@@ -133,7 +133,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                       fontSize: UIConstants.xxxhFontSize,
                       fontWeight: FontWeight.bold)))),
       ListTile(
-          leading: const Icon(Icons.search, color: ColorName.appPrimaryColor),
+          leading: const Icon(Icons.search, color: ThemeColor.appPrimary),
           title: Text(appLocalizations.keyword_search),
           onTap: () {
             Navigator.of(context).pop();
@@ -142,8 +142,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
             });
           }),
       ListTile(
-          leading:
-              const Icon(Icons.filter_list, color: ColorName.appPrimaryColor),
+          leading: const Icon(Icons.filter_list, color: ThemeColor.appPrimary),
           title: Text(appLocalizations.filter_rules),
           onTap: () {
             Navigator.of(context).pop();
@@ -152,7 +151,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
             });
           }),
       ListTile(
-          leading: const Icon(Icons.map, color: ColorName.appPrimaryColor),
+          leading: const Icon(Icons.map, color: ThemeColor.appPrimary),
           title: Text(
             _isListMode
                 ? appLocalizations.map_mode
@@ -169,8 +168,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
             });
           }),
       ListTile(
-          leading:
-              const Icon(Icons.navigation, color: ColorName.appPrimaryColor),
+          leading: const Icon(Icons.navigation, color: ThemeColor.appPrimary),
           title: Text(appLocalizations.map_my_loc_title),
           onTap: () {
             Navigator.of(context).pop();
@@ -179,7 +177,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
             });
           }),
       ListTile(
-          leading: const Icon(Icons.favorite, color: ColorName.appPrimaryColor),
+          leading: const Icon(Icons.favorite, color: ThemeColor.appPrimary),
           title: Text(appLocalizations.favorite_stores),
           onTap: () {
             Navigator.of(context).pop();
@@ -188,7 +186,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
             });
           }),
       ListTile(
-          leading: const Icon(Icons.settings, color: ColorName.appPrimaryColor),
+          leading: const Icon(Icons.settings, color: ThemeColor.appPrimary),
           title: Text(appLocalizations.settings_title),
           onTap: () {
             Navigator.of(context).pop();

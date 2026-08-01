@@ -50,15 +50,15 @@ class RestaurantHeadCell extends StatelessWidget {
                 alignment: Alignment.topRight,
                 child: Padding(
                     padding: const EdgeInsets.only(
-                        top: Sizes.space10, right: Sizes.space10),
+                        top: ThemeSize.space10, right: ThemeSize.space10),
                     child: CircleAvatar(
                         backgroundColor: Colors.white,
                         child: Image.asset(
                             _summaryInfo.favor
                                 ? 'images/ic_favor_fill.png'
                                 : 'images/ic_favor_empty.png',
-                            width: Sizes.favorImageW,
-                            height: Sizes.favorImageH,
+                            width: ThemeSize.favorImageW,
+                            height: ThemeSize.favorImageH,
                             fit: BoxFit.fill)))))
       ],
     );

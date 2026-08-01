@@ -51,7 +51,8 @@ class FilterTagsWidget extends StatelessWidget {
               final type = keys[index];
               final title = values[index];
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: Sizes.space4),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: ThemeSize.space4),
                 child: FilterChip(
                   label: Text(
                     title,

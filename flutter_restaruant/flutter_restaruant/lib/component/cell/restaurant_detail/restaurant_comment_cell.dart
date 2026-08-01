@@ -52,7 +52,7 @@ class RestaurantCommentCell extends StatelessWidget {
                     ChromeSafariBrowserSettings(barCollapsingEnabled: true));
           },
           child: Padding(
-              padding: const EdgeInsets.only(bottom: Sizes.space10),
+              padding: const EdgeInsets.only(bottom: ThemeSize.space10),
               child: Row(
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -74,7 +74,8 @@ class RestaurantCommentCell extends StatelessWidget {
                             fit: BoxFit.fill)),
                     Expanded(
                         child: Container(
-                            padding: const EdgeInsets.only(left: Sizes.space10),
+                            padding:
+                                const EdgeInsets.only(left: ThemeSize.space10),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
@@ -85,7 +86,7 @@ class RestaurantCommentCell extends StatelessWidget {
                                           fontSize: UIConstants.hFontSize),
                                       overflow: TextOverflow.ellipsis),
                                   SizedBox(
-                                      height: Sizes.ratingImageH,
+                                      height: ThemeSize.ratingImageH,
                                       child: rateAsset),
                                   Text(comment,
                                       maxLines: 2,
@@ -96,7 +97,9 @@ class RestaurantCommentCell extends StatelessWidget {
   @override
   Widget build(BuildContext context) => Padding(
       padding: const EdgeInsets.only(
-          left: Sizes.space5, right: Sizes.space5, top: Sizes.space10),
+          left: ThemeSize.space5,
+          right: ThemeSize.space5,
+          top: ThemeSize.space10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: _commentWidgets,

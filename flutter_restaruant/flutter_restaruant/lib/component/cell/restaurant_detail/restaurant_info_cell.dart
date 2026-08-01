@@ -34,7 +34,9 @@ class RestaurantInfoCell extends StatelessWidget {
 
     return Padding(
         padding: const EdgeInsets.only(
-            left: Sizes.space5, right: Sizes.space5, top: Sizes.space10),
+            left: ThemeSize.space5,
+            right: ThemeSize.space5,
+            top: ThemeSize.space10),
         child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
           SizedBox(
               width: RestaurantInfoCell._mapImageH.toDouble(),
@@ -56,7 +58,7 @@ class RestaurantInfoCell extends StatelessWidget {
                       fit: BoxFit.fill))),
           Expanded(
               child: Container(
-                  padding: const EdgeInsets.only(left: Sizes.space10),
+                  padding: const EdgeInsets.only(left: ThemeSize.space10),
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -68,7 +70,7 @@ class RestaurantInfoCell extends StatelessWidget {
                           Text(S.current.store_phone,
                               style:
                                   const TextStyle(fontWeight: FontWeight.w700)),
-                          const SizedBox(width: Sizes.space10),
+                          const SizedBox(width: ThemeSize.space10),
                           GestureDetector(
                               onTap: () {
                                 String phoneStr = _detailInfo.phone ?? '';
@@ -93,9 +95,9 @@ class RestaurantInfoCell extends StatelessWidget {
                             decoration: const BoxDecoration(
                                 color: Colors.red,
                                 borderRadius: BorderRadius.all(
-                                    Radius.circular(Sizes.radiusTag))),
+                                    Radius.circular(ThemeSize.radiusTag))),
                             child: Padding(
-                                padding: const EdgeInsets.all(Sizes.space3),
+                                padding: const EdgeInsets.all(ThemeSize.space3),
                                 child: Text(openStatus,
                                     style: const TextStyle(
                                         fontSize: UIConstants.lFontSize,

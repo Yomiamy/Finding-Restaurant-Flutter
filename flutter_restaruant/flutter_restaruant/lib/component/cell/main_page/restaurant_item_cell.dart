@@ -24,10 +24,10 @@ class RestaurantItemCell extends StatelessWidget {
         height: itemH,
         child: Container(
             padding: const EdgeInsets.only(
-                left: Sizes.space10,
-                right: Sizes.space5,
-                top: Sizes.space10,
-                bottom: Sizes.zero),
+                left: ThemeSize.space10,
+                right: ThemeSize.space5,
+                top: ThemeSize.space10,
+                bottom: ThemeSize.zero),
             child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
               SizedBox(
                   width: RestaurantItemCell.imageW.toDouble(),
@@ -44,7 +44,7 @@ class RestaurantItemCell extends StatelessWidget {
                       fit: BoxFit.fill)),
               Expanded(
                   child: Container(
-                      padding: const EdgeInsets.only(left: Sizes.space10),
+                      padding: const EdgeInsets.only(left: ThemeSize.space10),
                       child: SizedBox(
                           height: RestaurantItemCell.itemH,
                           child: Column(

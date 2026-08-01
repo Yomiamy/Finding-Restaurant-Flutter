@@ -11,15 +11,16 @@ import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
 /// iOS case 變紅。
 void main() {
   for (final target in [TargetPlatform.iOS, TargetPlatform.android]) {
-    testWidgets('AppTheme 在 $target 上可被解析', (tester) async {
+    testWidgets('AppThemeData 在 $target 上可被解析', (tester) async {
       late ColorScheme scheme;
 
       await tester.pumpWidget(Theme(
         data: ThemeData(platform: target),
         child: PlatformApp(
-          material: (_, __) => MaterialAppData(theme: AppTheme.materialLight),
+          material: (_, __) =>
+              MaterialAppData(theme: AppThemeData.materialLight),
           builder: (_, child) => Theme(
-            data: AppTheme.materialLight,
+            data: AppThemeData.materialLight,
             child: child ?? const SizedBox.shrink(),
           ),
           home: Builder(builder: (ctx) {
@@ -29,7 +30,7 @@ void main() {
         ),
       ));
 
-      expect(scheme.primary, AppTheme.materialLight.colorScheme.primary);
+      expect(scheme.primary, AppThemeData.materialLight.colorScheme.primary);
     });
   }
 }

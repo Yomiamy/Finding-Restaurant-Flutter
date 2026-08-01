@@ -11,7 +11,7 @@ class LoadingWidget extends StatelessWidget {
   Widget build(BuildContext context) =>
       Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
         const CircularProgressIndicator(),
-        const SizedBox(height: Sizes.space20),
+        const SizedBox(height: ThemeSize.space20),
         Text(text)
       ]);
 }
