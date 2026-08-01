@@ -4,8 +4,7 @@
 /// 目的是讓既有使用點能一對一替換、零視覺變更。若日後要改走 4dp 階梯，
 /// 那是一次獨立的視覺調整，需逐頁截圖比對。
 ///
-/// 字級不在此定義語意角色，僅提供 `ThemeTextStyle` 取用的原始數值；
-/// 呼叫端一律走 `Theme.of(context).textTheme`。
+/// 字級原始值不在此處，見 `theme_text_style.dart` 的 `ThemeFontSize`。
 abstract final class ThemeSize {
   // ────────────────────────────────────────────
   // 間距 (Spacing)
@@ -33,16 +32,4 @@ abstract final class ThemeSize {
   static const double ratingImageH = 20;
   static const double favorImageW = 20;
   static const double favorImageH = 20;
-
-  // ────────────────────────────────────────────
-  // 字級原始值 (Font size)
-  //
-  // 僅供 `ThemeTextStyle` 組裝 `TextTheme` 使用。UI 端請勿直接引用 ——
-  // 字級的語意來源是 `Theme.of(context).textTheme`。
-  // ────────────────────────────────────────────
-  static const double textS = 12;
-  static const double textM = 14;
-  static const double textL = 16;
-  static const double textXL = 18;
-  static const double textXXL = 22;
 }
