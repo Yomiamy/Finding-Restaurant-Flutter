@@ -2,8 +2,8 @@ import 'dart:convert';
 
 import '../data_layer/dto/account_dto.dart';
 
-import '../utils/constants.dart';
-import '../utils/tuple.dart';
+import '../features/foundation/constants/app_constants.dart';
+import '../features/utils/app_utils.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -49,8 +49,7 @@ class BiometricSignInManager {
     } else {
       // 緩存登入資料代表登入過
       final prefs = await SharedPreferences.getInstance();
-      final accountInfoJsonStr =
-          prefs.getString(Constants.prefKeyAccountInfo);
+      final accountInfoJsonStr = prefs.getString(Constants.prefKeyAccountInfo);
 
       if (accountInfoJsonStr == null || accountInfoJsonStr.isEmpty) {
         return const Tuple2(null, '登入失敗, 請重新登入一次');

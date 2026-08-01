@@ -11,9 +11,8 @@ import '../firebase_options.dart';
 import '../flow/main/view/main_page.dart';
 import '../flow/splash/view/splash_page.dart';
 import '../main.dart';
-import '../utils/constants.dart';
-import '../utils/tuple.dart';
-import '../utils/ui_constants.dart';
+import '../features/foundation/constants/app_constants.dart';
+import '../features/utils/app_utils.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -40,8 +39,7 @@ class FcmManager {
   void _firebaseMessagingOpenHandler(RemoteMessage message) async {
     debugPrint('Handling a message open: ${message.messageId}');
 
-    String? storeId =
-        message.data[Constants.fcmNotificationPayloadKeyStoreId];
+    String? storeId = message.data[Constants.fcmNotificationPayloadKeyStoreId];
     Tuple2? arguments;
 
     if (storeId != null && storeId.isNotEmpty) {

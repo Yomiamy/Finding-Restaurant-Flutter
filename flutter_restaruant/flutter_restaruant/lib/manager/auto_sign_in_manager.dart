@@ -1,8 +1,8 @@
 import 'dart:convert';
 import '../data_layer/dto/account_dto.dart';
 
-import '../utils/constants.dart';
-import '../utils/tuple.dart';
+import '../features/foundation/constants/app_constants.dart';
+import '../features/utils/app_utils.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AutoSignInManager {

@@ -1,7 +1,7 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 
-import '../gen/colors.gen.dart';
+import '../../../gen/colors.gen.dart';
 import 'app_text_theme.dart';
 
 /// App 的 Material 3 主題。

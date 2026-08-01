@@ -8,8 +8,8 @@ import 'facebook_sign_in_manager.dart';
 import 'google_sign_in_manager.dart';
 import '../data_layer/dto/account_dto.dart';
 import '../domain/entities/user_entity.dart';
-import '../utils/constants.dart';
-import '../utils/tuple.dart';
+import '../features/foundation/constants/app_constants.dart';
+import '../features/utils/app_utils.dart';
 
 import 'mail_sign_in_up_manager.dart';
 
@@ -50,8 +50,7 @@ class SignInManager {
     try {
       _prefs = await SharedPreferences.getInstance();
     } on Exception catch (e, st) {
-      logger.e('載入 SharedPreferences 失敗，訪客旗標將視為未設定',
-          error: e, stackTrace: st);
+      logger.e('載入 SharedPreferences 失敗，訪客旗標將視為未設定', error: e, stackTrace: st);
     }
   }
 
@@ -83,8 +82,7 @@ class SignInManager {
         break;
       case AccountType.mail:
       default:
-        signInResult =
-            await _mailSignInUpManager.signInWithMail(mail, passwd);
+        signInResult = await _mailSignInUpManager.signInWithMail(mail, passwd);
         break;
     }
     accountDto = signInResult.item1;
@@ -106,8 +104,7 @@ class SignInManager {
     switch (accountType) {
       case AccountType.mail:
       default:
-        signUpResult =
-            await _mailSignInUpManager.signUpWithMail(mail, passwd);
+        signUpResult = await _mailSignInUpManager.signUpWithMail(mail, passwd);
         break;
     }
     accountDto = signUpResult.item1;

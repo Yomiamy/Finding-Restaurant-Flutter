@@ -5,7 +5,7 @@ import 'package:crypto/crypto.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../data_layer/dto/account_dto.dart';
 import '../domain/entities/user_entity.dart';
-import '../utils/tuple.dart';
+import '../features/utils/app_utils.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 class AppleSignInManager {

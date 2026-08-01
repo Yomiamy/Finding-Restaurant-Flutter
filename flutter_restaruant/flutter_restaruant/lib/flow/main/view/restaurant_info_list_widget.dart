@@ -9,7 +9,8 @@ import 'filter_tags_widget.dart';
 import 'main_page.dart';
 import '../../restaurant/view/restaurant_detail_page.dart';
 import '../../../model/filter_configs.dart';
-import '../../../utils/tuple.dart';
+import '../../../features/foundation/style/style.dart';
+import '../../../features/utils/app_utils.dart';
 import '../../../di/injection.dart';
 
 class RestaurantInfoListWidget extends StatelessWidget {
@@ -37,7 +38,7 @@ class RestaurantInfoListWidget extends StatelessWidget {
           return true;
         },
         child: ListView.builder(
-            padding: const EdgeInsets.only(top: 0, bottom: 0),
+            padding: const EdgeInsets.only(top: Sizes.zero, bottom: Sizes.zero),
             controller: _scrollController,
             itemCount: _summaryInfos.length + 2,
             itemBuilder: (context, index) {
@@ -46,15 +47,13 @@ class RestaurantInfoListWidget extends StatelessWidget {
               } else if (index == 1) {
                 return FilterTagsWidget(filterConfigs: _configs);
               } else {
-                RestaurantEntity summaryInfo =
-                    _summaryInfos[index - 2];
+                RestaurantEntity summaryInfo = _summaryInfos[index - 2];
 
                 return GestureDetector(
                     child: RestaurantItemCell(summaryInfo: summaryInfo),
                     onTap: () async {
                       Tuple2 arguments =
-                          Tuple2<RestaurantEntity, dynamic>(
-                              summaryInfo, null);
+                          Tuple2<RestaurantEntity, dynamic>(summaryInfo, null);
 
                       // Avoid duplicate push, use pushNamedAndRemoveUntil instead of push
                       // ignore: unawaited_futures

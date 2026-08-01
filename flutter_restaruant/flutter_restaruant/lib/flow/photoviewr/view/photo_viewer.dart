@@ -1,8 +1,9 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import '../../../utils/tuple.dart';
-import '../../../utils/ui_constants.dart';
+import '../../../features/foundation/style/style.dart';
+import '../../../features/utils/app_utils.dart';
+import '../../../features/foundation/constants/app_constants.dart';
 import '../../../generated/l10n.dart';
 import '../../../gen/colors.gen.dart';
 
@@ -27,12 +28,12 @@ class _PhotoViewerState extends State<PhotoViewer> {
     return Scaffold(
         appBar: AppBar(
             leading: PlatformIconButton(
-                padding: const EdgeInsets.all(0),
+                padding: const EdgeInsets.all(Sizes.zero),
                 onPressed: () => Navigator.of(context).pop(),
                 materialIcon:
                     const Icon(Icons.arrow_back, color: ColorName.backBtnColor),
-                cupertinoIcon:
-                    const Icon(CupertinoIcons.back, color: ColorName.backBtnColor)),
+                cupertinoIcon: const Icon(CupertinoIcons.back,
+                    color: ColorName.backBtnColor)),
             title: Text(S.current.photo_viewer_title,
                 style: const TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxhFontSize)),

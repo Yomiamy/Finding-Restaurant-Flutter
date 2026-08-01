@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/restaurant_business_time_entity.dart';
 import '../../../generated/l10n.dart';
-import '../../../utils/ui_constants.dart';
+import '../../../features/foundation/style/style.dart';
+import '../../../features/foundation/constants/app_constants.dart';
 
 class RestaurantBusinessHourCell extends StatelessWidget {
   final List<Widget> _businessTimeWidgets = <Widget>[];
@@ -32,8 +33,7 @@ class RestaurantBusinessHourCell extends StatelessWidget {
             _createBusinessTimeRow(isToday, dayStr, start, end);
       } else {
         businessTimeWidgets = businessTimeWidgetMap[yelpWeekDay]!;
-        businessTimeWidget =
-            _createBusinessTimeRow(isToday, '', start, end);
+        businessTimeWidget = _createBusinessTimeRow(isToday, '', start, end);
       }
       businessTimeWidgets.add(businessTimeWidget);
       businessTimeWidgetMap[yelpWeekDay] = businessTimeWidgets;
@@ -47,7 +47,7 @@ class RestaurantBusinessHourCell extends StatelessWidget {
   Widget _createBusinessTimeRow(
           bool isToday, String weekDay, String startTime, String endTime) =>
       Padding(
-          padding: const EdgeInsets.only(top: 5),
+          padding: const EdgeInsets.only(top: Sizes.space5),
           child: Stack(children: [
             Align(
                 alignment: Alignment.centerLeft,
@@ -65,7 +65,7 @@ class RestaurantBusinessHourCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(top: 10),
+        padding: const EdgeInsets.only(top: Sizes.space10),
         child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
           SizedBox(
               width: MediaQuery.of(context).size.width,
@@ -77,7 +77,8 @@ class RestaurantBusinessHourCell extends StatelessWidget {
                               fontSize: UIConstants.xhFontSize,
                               fontWeight: FontWeight.bold))))),
           Padding(
-              padding: const EdgeInsets.only(left: 10, right: 10),
+              padding: const EdgeInsets.only(
+                  left: Sizes.space10, right: Sizes.space10),
               child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: _businessTimeWidgets))

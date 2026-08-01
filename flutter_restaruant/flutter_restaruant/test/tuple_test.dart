@@ -1,4 +1,4 @@
-import 'package:flutter_restaruant/utils/tuple.dart';
+import 'package:flutter_restaruant/features/utils/app_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

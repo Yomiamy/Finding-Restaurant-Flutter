@@ -4,7 +4,8 @@ import '../../../domain/entities/restaurant_entity.dart';
 import '../../../flow/restaurant/bloc/restaurant_detail_bloc.dart';
 import '../../../flow/signinup/view/sign_in_page.dart';
 import '../../../manager/sign_in_manager.dart';
-import '../../../utils/ui_constants.dart';
+import '../../../features/foundation/style/style.dart';
+import '../../../features/foundation/constants/app_constants.dart';
 
 class RestaurantHeadCell extends StatelessWidget {
   static const int headImageH = 200;
@@ -48,15 +49,16 @@ class RestaurantHeadCell extends StatelessWidget {
             child: Align(
                 alignment: Alignment.topRight,
                 child: Padding(
-                    padding: const EdgeInsets.only(top: 10, right: 10),
+                    padding: const EdgeInsets.only(
+                        top: Sizes.space10, right: Sizes.space10),
                     child: CircleAvatar(
                         backgroundColor: Colors.white,
                         child: Image.asset(
                             _summaryInfo.favor
                                 ? 'images/ic_favor_fill.png'
                                 : 'images/ic_favor_empty.png',
-                            width: UIConstants.favorImageW,
-                            height: UIConstants.favorImageH,
+                            width: Sizes.favorImageW,
+                            height: Sizes.favorImageH,
                             fit: BoxFit.fill)))))
       ],
     );

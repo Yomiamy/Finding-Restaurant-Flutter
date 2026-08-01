@@ -1,5 +1,5 @@
 import 'package:dio/dio.dart';
-import '../../utils/constants.dart';
+import '../../features/foundation/constants/app_constants.dart';
 
 class DioClient {
   late Dio dio;

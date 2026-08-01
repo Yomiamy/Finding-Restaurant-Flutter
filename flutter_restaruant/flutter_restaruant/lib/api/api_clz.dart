@@ -2,7 +2,7 @@ import 'dio/dio_client.dart';
 import '../data_layer/dto/yelp_restaurant_detail_dto.dart';
 import '../data_layer/dto/yelp_review_dto.dart';
 import '../data_layer/dto/yelp_search_dto.dart';
-import '../utils/constants.dart';
+import '../features/foundation/constants/app_constants.dart';
 import 'package:logger/logger.dart';
 import 'package:retrofit/retrofit.dart';
 import 'package:dio/dio.dart' hide Headers;

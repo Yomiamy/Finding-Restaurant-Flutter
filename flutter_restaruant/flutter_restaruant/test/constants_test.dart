@@ -1,5 +1,5 @@
-import 'package:flutter_restaruant/utils/constants.dart';
-import 'package:flutter_restaruant/utils/ui_constants.dart';
+import 'package:flutter_restaruant/features/foundation/constants/app_constants.dart';
+import 'package:flutter_restaruant/features/foundation/style/style.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -11,14 +11,15 @@ void main() {
       expect(Constants.adAndroidInterstitialId, isNotEmpty);
       expect(Constants.adIosInterstitialId, isNotEmpty);
       expect(Constants.baseUrl, equals('https://api.yelp.com'));
-      expect(Constants.fcmNotificationChannelId, equals('fcm_notification_channel_id'));
+      expect(Constants.fcmNotificationChannelId,
+          equals('fcm_notification_channel_id'));
     });
 
     test('UIConstants camelCase naming and immutability', () {
       expect(UIConstants.appTitle, equals('尋找餐廳'));
       expect(UIConstants.noImage, equals('images/empty.png'));
-      expect(UIConstants.ratingImageW, equals(100.0));
-      expect(UIConstants.ratingImageH, equals(20.0));
+      expect(Sizes.ratingImageW, equals(100.0));
+      expect(Sizes.ratingImageH, equals(20.0));
       expect(UIConstants.mapDefaultLocation.latitude, equals(25.048036));
       expect(UIConstants.mapDefaultLocation.longitude, equals(121.517063));
     });

@@ -9,7 +9,7 @@ import '../../domain/entities/restaurant_detail_entity.dart';
 import '../../domain/entities/restaurant_entity.dart';
 import '../../domain/entities/review_entity.dart';
 import '../../domain/repositories/restaurant_detail_repository.dart';
-import '../../utils/constants.dart';
+import '../../features/foundation/constants/app_constants.dart';
 
 class RestaurantDetailRepo implements RestaurantDetailRepository {
   final FavorDataSource _favorDataSource;

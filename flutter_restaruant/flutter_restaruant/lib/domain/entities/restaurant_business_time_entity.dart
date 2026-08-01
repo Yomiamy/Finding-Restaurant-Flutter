@@ -1,5 +1,5 @@
 import '../../data_layer/dto/yelp_restaurant_business_time_dto.dart';
-import '../../utils/utils.dart';
+import '../../features/utils/app_utils.dart';
 
 class RestaurantBusinessTimeEntity {
   final bool? isOvernight;
@@ -29,7 +29,6 @@ class RestaurantBusinessTimeEntity {
         end: end,
         day: day,
       );
-
 
   String get dayStr => getWeekDayStrByIndex(day ?? 0);
 

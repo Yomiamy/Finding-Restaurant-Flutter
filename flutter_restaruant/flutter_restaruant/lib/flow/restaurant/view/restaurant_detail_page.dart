@@ -7,12 +7,13 @@ import '../../../component/ad/interstitial_ad_state.dart';
 import '../../../component/cell/restaurant_detail/restaurant_detail_cell_collection.dart';
 import '../../../domain/entities/restaurant_entity.dart';
 import '../../../manager/ad_counter_manager.dart';
-import '../../../utils/tuple.dart';
-import '../../../utils/ui_constants.dart';
+import '../../../features/utils/app_utils.dart';
+import '../../../features/foundation/constants/app_constants.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../bloc/restaurant_detail_bloc.dart';
 import '../../../generated/l10n.dart';
 import '../../../gen/colors.gen.dart';
+import '../../../features/foundation/style/style.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   static const routeName = '/RestaurantDetailPage';
@@ -57,9 +58,10 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
     return Scaffold(
         appBar: AppBar(
             leading: IconButton(
-                padding: const EdgeInsets.all(0),
+                padding: const EdgeInsets.all(Sizes.zero),
                 onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.arrow_back, color: ColorName.backBtnColor)),
+                icon: const Icon(Icons.arrow_back,
+                    color: ColorName.backBtnColor)),
             title: BlocBuilder<RestaurantDetailBloc, RestaurantDetailState>(
                 bloc: _bloc,
                 builder: (context, state) {
@@ -74,7 +76,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 }),
             backgroundColor: ColorName.appPrimaryColor),
         body: Padding(
-            padding: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.only(bottom: Sizes.space10),
             child: BlocConsumer<RestaurantDetailBloc, RestaurantDetailState>(
                 bloc: _bloc,
                 listener: (context, state) {

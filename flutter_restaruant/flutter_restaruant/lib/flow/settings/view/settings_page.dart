@@ -7,11 +7,11 @@ import '../../signinup/view/sign_in_page.dart';
 import '../../splash/view/splash_page.dart';
 import '../../../manager/biometric_sign_in_manager.dart';
 import '../../../manager/sign_in_manager.dart';
-import '../../../utils/constants.dart';
-import '../../../utils/ui_constants.dart';
+import '../../../features/foundation/constants/app_constants.dart';
 import 'package:settings_ui/settings_ui.dart';
 import '../../../generated/l10n.dart';
 import '../../../gen/colors.gen.dart';
+import '../../../features/foundation/style/style.dart';
 
 class SettingsPage extends StatefulWidget {
   static const routeName = '/SettingsPage';
@@ -41,12 +41,12 @@ class _SettingsPageState extends State<SettingsPage> {
     return Scaffold(
         appBar: AppBar(
             leading: PlatformIconButton(
-                padding: const EdgeInsets.all(0),
+                padding: const EdgeInsets.all(Sizes.zero),
                 onPressed: () => Navigator.of(context).pop(),
                 materialIcon:
                     const Icon(Icons.arrow_back, color: ColorName.backBtnColor),
-                cupertinoIcon:
-                    const Icon(CupertinoIcons.back, color: ColorName.backBtnColor)),
+                cupertinoIcon: const Icon(CupertinoIcons.back,
+                    color: ColorName.backBtnColor)),
             title: PlatformText(S.current.settings_title,
                 style: const TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
@@ -131,7 +131,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     _settingsBloc.add(const LogoutEvent());
                   }),
             ),
-            const SizedBox(height: 20),
+            const SizedBox(height: Sizes.space20),
             GestureDetector(
               onTap: () {
                 _settingsBloc.add(AccountRemovalEvent(
@@ -148,7 +148,8 @@ class _SettingsPageState extends State<SettingsPage> {
 
     return CustomSettingsSection(
         child: Padding(
-            padding: const EdgeInsets.only(left: 25, top: 50, right: 25),
+            padding: const EdgeInsets.only(
+                left: Sizes.space25, top: Sizes.space50, right: Sizes.space25),
             child: child));
   }
 }

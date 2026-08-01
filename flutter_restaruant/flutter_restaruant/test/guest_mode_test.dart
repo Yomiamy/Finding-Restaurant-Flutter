@@ -4,7 +4,7 @@ import 'package:flutter_restaruant/data_layer/dto/account_dto.dart';
 import 'package:flutter_restaruant/domain/entities/restaurant_entity.dart';
 import 'package:flutter_restaruant/domain/entities/user_entity.dart';
 import 'package:flutter_restaruant/manager/sign_in_manager.dart';
-import 'package:flutter_restaruant/utils/constants.dart';
+import 'package:flutter_restaruant/features/foundation/constants/app_constants.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,7 +31,8 @@ void main() {
     // 建構 SignInManager 會連帶建立 BiometricSignInManager，後者在
     // 建構式中就呼叫 local_auth 的 platform channel。測試環境沒有原生
     // 實作，需先掛上 mock handler，否則會噴 MissingPluginException。
-    const MethodChannel channel = MethodChannel('plugins.flutter.io/local_auth');
+    const MethodChannel channel =
+        MethodChannel('plugins.flutter.io/local_auth');
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
       if (methodCall.method == 'getAvailableBiometrics') {

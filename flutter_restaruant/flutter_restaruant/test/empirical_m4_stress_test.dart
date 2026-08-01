@@ -1,10 +1,11 @@
 import 'package:flutter_restaruant/manager/ad_counter_manager.dart';
-import 'package:flutter_restaruant/utils/constants.dart';
-import 'package:flutter_restaruant/utils/ui_constants.dart';
+import 'package:flutter_restaruant/features/foundation/constants/app_constants.dart';
+import 'package:flutter_restaruant/features/foundation/style/style.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('Empirical Stress Tests - Milestone 4 Constants & AdCounterManager', () {
+  group('Empirical Stress Tests - Milestone 4 Constants & AdCounterManager',
+      () {
     late AdCounterManager manager;
 
     setUp(() {
@@ -18,7 +19,9 @@ void main() {
       expect(identical(manager1, manager2), isTrue);
     });
 
-    test('2. AdCounterManager 100-cycle stress test decrement and trigger frequency', () {
+    test(
+        '2. AdCounterManager 100-cycle stress test decrement and trigger frequency',
+        () {
       int adTriggerCount = 0;
       for (int i = 1; i <= 99; i++) {
         final shouldShow = manager.decrementAndCheckShouldShowAd();
@@ -59,7 +62,9 @@ void main() {
       expect(manager.interstitialAdCountDown, equals(3));
     });
 
-    test('4. Constants & UIConstants runtime integrity and camelCase verification', () {
+    test(
+        '4. Constants & UIConstants runtime integrity and camelCase verification',
+        () {
       // Verify Constants values
       expect(Constants.baseUrl, equals('https://api.yelp.com'));
       expect(Constants.connectionTimeout, equals(30000));
@@ -71,8 +76,8 @@ void main() {
       expect(UIConstants.appTitle, equals('尋找餐廳'));
       expect(UIConstants.loginTitle, equals('登入'));
       expect(UIConstants.favorTitle, equals('我喜好的店家'));
-      expect(UIConstants.ratingImageW, equals(100.0));
-      expect(UIConstants.ratingImageH, equals(20.0));
+      expect(Sizes.ratingImageW, equals(100.0));
+      expect(Sizes.ratingImageH, equals(20.0));
     });
   });
 }

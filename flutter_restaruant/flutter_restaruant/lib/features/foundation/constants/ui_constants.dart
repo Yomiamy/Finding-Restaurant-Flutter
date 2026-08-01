@@ -1,6 +1,8 @@
 import 'package:flutter/widgets.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
+import '../style/style.dart';
+
 class UIConstants {
   /// [FCM]
   static const fcmNotificationIcon = '@mipmap/ic_launcher';
@@ -11,12 +13,8 @@ class UIConstants {
   static const favorTitle = '我喜好的店家';
 
   static const String noImage = 'images/empty.png';
-  static const double ratingImageW = 100.0;
-  static const double ratingImageH = 20.0;
-  static const double favorImageH = 20.0;
-  static const double favorImageW = 20.0;
 
-  static const emptyWidget = SizedBox(height: 0);
+  static const emptyWidget = SizedBox(height: Sizes.zero);
 
   static const mapDefaultLocation = LatLng(25.048036, 121.517063);
   static const mapMyLocationMarkId = 'MAP_MY_LOCATION_MARK_ID';

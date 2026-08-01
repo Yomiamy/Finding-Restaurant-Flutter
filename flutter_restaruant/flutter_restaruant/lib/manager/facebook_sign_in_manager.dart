@@ -3,7 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 import '../data_layer/dto/account_dto.dart';
 import '../domain/entities/user_entity.dart';
-import '../utils/tuple.dart';
+import '../features/utils/app_utils.dart';
 
 class FacebookSignInManager {
   static final FacebookSignInManager _singleton =

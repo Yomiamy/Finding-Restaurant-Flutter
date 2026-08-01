@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/review_detail_entity.dart';
-import '../../../utils/rating_helper.dart';
-import '../../../utils/ui_constants.dart';
+import '../../../features/utils/app_utils.dart';
+import '../../../features/foundation/style/style.dart';
+import '../../../features/foundation/constants/app_constants.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
 
 class RestaurantCommentCell extends StatelessWidget {
   static const int _imageW = 100;
   static const int _imageH = 100;
-  static const double _ratingImageH = 20;
 
   final List<Widget> _commentWidgets = <Widget>[];
   final ChromeSafariBrowser _browser = ChromeSafariBrowser();
@@ -48,10 +48,11 @@ class RestaurantCommentCell extends StatelessWidget {
             debugPrint('Comment Url = $commentUrl');
             _browser.open(
                 url: WebUri(commentUrl),
-                settings: ChromeSafariBrowserSettings(barCollapsingEnabled: true));
+                settings:
+                    ChromeSafariBrowserSettings(barCollapsingEnabled: true));
           },
           child: Padding(
-              padding: const EdgeInsets.only(bottom: 10),
+              padding: const EdgeInsets.only(bottom: Sizes.space10),
               child: Row(
                   mainAxisSize: MainAxisSize.max,
                   crossAxisAlignment: CrossAxisAlignment.start,
@@ -73,7 +74,7 @@ class RestaurantCommentCell extends StatelessWidget {
                             fit: BoxFit.fill)),
                     Expanded(
                         child: Container(
-                            padding: const EdgeInsets.only(left: 10),
+                            padding: const EdgeInsets.only(left: Sizes.space10),
                             child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 mainAxisSize: MainAxisSize.min,
@@ -84,8 +85,7 @@ class RestaurantCommentCell extends StatelessWidget {
                                           fontSize: UIConstants.hFontSize),
                                       overflow: TextOverflow.ellipsis),
                                   SizedBox(
-                                      height:
-                                          RestaurantCommentCell._ratingImageH,
+                                      height: Sizes.ratingImageH,
                                       child: rateAsset),
                                   Text(comment,
                                       maxLines: 2,
@@ -95,7 +95,8 @@ class RestaurantCommentCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Padding(
-      padding: const EdgeInsets.only(left: 5, right: 5, top: 10),
+      padding: const EdgeInsets.only(
+          left: Sizes.space5, right: Sizes.space5, top: Sizes.space10),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: _commentWidgets,

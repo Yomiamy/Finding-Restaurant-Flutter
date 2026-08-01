@@ -1,7 +1,7 @@
 import 'package:flutter_restaruant/domain/repositories/sign_in_repository.dart';
 import 'package:flutter_restaruant/flow/signinup/bloc/sign_in_bloc.dart';
 import 'package:flutter_restaruant/domain/entities/user_entity.dart';
-import 'package:flutter_restaruant/utils/tuple.dart';
+import 'package:flutter_restaruant/features/utils/app_utils.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class MockSignInRepository implements SignInRepository {

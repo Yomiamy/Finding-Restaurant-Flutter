@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_restaruant/theme/app_theme.dart';
+import 'package:flutter_restaruant/features/foundation/style/style.dart';
 
 /// 鎖住「theme 在 iOS 與 Android 上都生效」。
 ///

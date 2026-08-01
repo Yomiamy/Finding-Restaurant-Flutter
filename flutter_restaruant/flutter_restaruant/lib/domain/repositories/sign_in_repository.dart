@@ -1,5 +1,5 @@
 import '../../domain/entities/user_entity.dart';
-import '../../utils/tuple.dart';
+import '../../features/utils/app_utils.dart';
 
 abstract interface class SignInRepository {
   Future<Tuple2<UserEntity?, String>> signInUp({
@@ -11,4 +11,3 @@ abstract interface class SignInRepository {
 
   Future<void> updateUserInfo(UserEntity? userEntity);
 }
-

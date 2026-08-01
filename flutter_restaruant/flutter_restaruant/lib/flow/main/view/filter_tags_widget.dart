@@ -4,7 +4,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/main_bloc.dart';
 import '../../../model/filter_configs.dart';
-import '../../../utils/ui_constants.dart';
+import '../../../features/foundation/style/style.dart';
+import '../../../features/foundation/constants/app_constants.dart';
 
 import 'main_page.dart';
 
@@ -26,8 +27,7 @@ class FilterTagsWidget extends StatelessWidget {
     }
 
     if (_filterConfigs.openAt != null && _filterConfigs.openAt! > 0) {
-      _filterConfigsMap[FilterConfigType.openAt] =
-          _filterConfigs.openAtDispStr;
+      _filterConfigsMap[FilterConfigType.openAt] = _filterConfigs.openAtDispStr;
     }
   }
 
@@ -51,7 +51,7 @@ class FilterTagsWidget extends StatelessWidget {
               final type = keys[index];
               final title = values[index];
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                padding: const EdgeInsets.symmetric(horizontal: Sizes.space4),
                 child: FilterChip(
                   label: Text(
                     title,

@@ -13,9 +13,8 @@ import '../../restaurant/view/restaurant_detail_page.dart';
 import '../../settings/view/settings_page.dart';
 import '../../../generated/l10n.dart';
 import '../../../model/filter_configs.dart';
-import '../../../utils/tuple.dart';
-import '../../../utils/ui_constants.dart';
-import '../../../utils/view_utils.dart';
+import '../../../features/utils/app_utils.dart';
+import '../../../features/foundation/constants/app_constants.dart';
 
 import '../bloc/main_bloc.dart';
 import '../../../gen/colors.gen.dart';
@@ -145,7 +144,8 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
             });
           }),
       ListTile(
-          leading: const Icon(Icons.filter_list, color: ColorName.appPrimaryColor),
+          leading:
+              const Icon(Icons.filter_list, color: ColorName.appPrimaryColor),
           title: Text(appLocalizations.filter_rules),
           onTap: () {
             Navigator.of(context).pop();
@@ -171,7 +171,8 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
             });
           }),
       ListTile(
-          leading: const Icon(Icons.navigation, color: ColorName.appPrimaryColor),
+          leading:
+              const Icon(Icons.navigation, color: ColorName.appPrimaryColor),
           title: Text(appLocalizations.map_my_loc_title),
           onTap: () {
             Navigator.of(context).pop();
@@ -225,8 +226,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           PlatformTextButton(
               onPressed: () {
                 _mainBloc.add(FilterListByKeyword(
-                    keyword: _filterKeyword,
-                    sortByStr: _configs.sortBy));
+                    keyword: _filterKeyword, sortByStr: _configs.sortBy));
                 _filterKeyword = '';
                 Navigator.pop(context);
               },
@@ -275,8 +275,8 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         return;
       }
 
-      Tuple2 arguments = Tuple2<RestaurantEntity, dynamic>(
-          summaryInfoFromNotification, null);
+      Tuple2 arguments =
+          Tuple2<RestaurantEntity, dynamic>(summaryInfoFromNotification, null);
       // Avoid duplicate push, use pushNamedAndRemoveUntil instead of push
       Navigator.of(context).pushNamedAndRemoveUntil(
           RestaurantDetailPage.routeName,
