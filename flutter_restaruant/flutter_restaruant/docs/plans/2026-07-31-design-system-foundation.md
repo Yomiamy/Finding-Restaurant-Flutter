@@ -33,7 +33,7 @@ T2 spacing   ───┤
 T6 @Deprecated ─┘（可與 T1/T2 並行，與 T3 無相依）
 ```
 
-T1 / T2 / T6 三個任務寫入路徑完全不重疊，**可完全並行**。T3 是 `main.dart` 的唯一 owner，必須等 T1、T2 完成（T3 要 import 它們）。T0 必須在 T3 之前完成（沒有基準線就無法驗 AC-7），但可與 T1/T2/T6 並行。
+T1 / T2 / T6 三個任務寫入路徑完全不重疊，**可完全並行**。T3 是 `main.dart` 的唯一 owner，必須等 T1 完成（T3 要 import `AppTextTheme`）；**T3 不依賴 T2** —— T2 的間距 token 不被 `main.dart` 引用，兩者可並行。T0 必須在 T3 之前完成（沒有基準線就無法驗 AC-7），但可與 T1/T2/T6 並行。
 
 **這個計畫刻意比報告 §6.4 小**：報告建議 4 個檔案，實際只需要 2 個。詳見 §2.3、§2.4。
 
@@ -180,11 +180,14 @@ abstract final class Dimens {
 
 ### 2.5 驗證策略：**不新增任何測試檔**
 
-**結論：不新增測試。既有 13 個測試檔全數保留，一個都不改。**
+**原結論：不新增測試。既有 13 個測試檔全數保留，一個都不改。**
+
+> **實作時的偏離（2026-08-01）**：最終新增了 `test/app_theme_platform_test.dart`，並修改 `test/filter_tags_widget_test.dart`。
+> 理由：`PlatformApp` 在 iOS 走 `CupertinoApp` 分支，`material:` 不生效，需靠 `builder:` 補一層 `Theme`——這是**跨平台的行為差異，不是資料宣告**，上面「測賦值運算子」的論證不適用。該測試直接掛載 `FindingRestaruantApp`，若 `main.dart` 的 `builder:` 層被移除，iOS case 會紅。
 
 理由：
 
-1. **S1 沒有新增任何邏輯分支**。新增的是 4 個 `static const double`、5 個 `TextStyle`、一個 `ThemeData` 建構。這些是資料宣告，測 `Dimens.space16 == 16` 是在測 Dart 的賦值運算子。
+1. **S1 沒有新增任何邏輯分支**。新增的是一批 `static const double`（間距、圓角、圖片尺寸、字級）、5 個 `TextStyle`、一個 `ThemeData` 建構。這些是資料宣告，測 `ThemeSize.space10 == 10` 是在測 Dart 的賦值運算子。
 2. **真正的風險是視覺 regression，測試抓不到**。M3 切換造成的內距、圓角、色彩變化，`flutter test` 完全看不見 —— 只有截圖比對能抓。把驗證力氣花在 T0/T5 的截圖上，比寫 golden test 划算得多（golden test 的基礎設施成本 > S1 本身）。
 3. **既有測試已經是最好的 regression 網**。`filter_tags_widget_test.dart` 用 `MaterialApp` 包裝（**不是** `FindingRestaruantApp`），所以它驗證的是「widget 結構不變」，不受 theme 影響 —— 這正是我們要的：theme 掛上後結構必須不變。
 
@@ -435,7 +438,7 @@ diff 更小（刪一行），但 M3 的 `FilterChip` 選中態預設是 `seconda
 | **波 3（序列）** | T4（FilterChip） | 需 T3 |
 | **波 4（序列）** | T5（驗證） | 需 T0 + T3 + T4 |
 
-**共 6 個任務，最大並行度 4。**
+**共 7 個任務（T0–T6），最大並行度 4。**
 
 > 若採 subagent-driven：波 1 開 4 個 subagent 平行執行（T0 需模擬器，實務上可能得由主 session 做）。
 > 若採 parallel session：波 1 的 T1 / T2 / T6 三個純程式碼任務適合分給 3 個 session，T0 由主 session 操作模擬器。
@@ -463,7 +466,7 @@ dart format --set-exit-if-changed lib/    # exit 0                   (AC-2)
 rtk flutter test        # 13 個測試檔全綠 (AC-4)
 ```
 
-**不新增測試**（§2.5）。既有測試的價值在於「theme 掛上後 widget 結構不變」，這正是 S1 要證明的事。
+**原則上不新增測試**（§2.5）。既有測試的價值在於「theme 掛上後 widget 結構不變」，這正是 S1 要證明的事。唯一例外是跨平台 theme 解析（`app_theme_platform_test.dart`），理由見 §2.5 的偏離註記。
 
 手動主流程（AC-5）：列表滾動載入 → 收藏切換 → 篩選套用 → 訪客模式。
 
