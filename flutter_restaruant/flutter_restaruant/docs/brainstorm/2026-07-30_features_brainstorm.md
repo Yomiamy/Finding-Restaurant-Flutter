@@ -477,6 +477,39 @@ lib/
 > **本章新增於 2026-07-31**，掛載於 Roadmap 的 **Phase 1.5（空間與視覺體驗升級）** 之下，為其前置地基。
 > 產出方式：直接檢視當前 `lib/` 原始碼，非採信既有文件敘述。
 
+## 📌 S1 交付覆核 (2026-08-03)
+
+**S1 Design System 地基已完成**（分支 `refactor/202607/57-design-system-foundation`，13 個 commit，`ef2f4e7` ～ `9c2ec3f`）。本節依**實際檢視程式碼**覆核，非採信 commit 訊息。
+
+**驗證實測（2026-08-03）**
+
+| 項目 | 結果 |
+| :--- | :--- |
+| `flutter analyze` | ✅ `No issues found!` |
+| `flutter test` | ✅ `All tests passed!`（54 tests / 14 檔） |
+
+**實作與 §6.4 原規劃的四項偏離**（規格與實作計畫已同步，本章此前未更新）：
+
+| # | 原規劃（§6.4） | 實際交付 | 原因 |
+| :--- | :--- | :--- | :--- |
+| A-1 | `lib/theme/` 四檔 | `lib/features/foundation/style/` 四檔，統一 `theme_` 前綴，走 `style_barrel.dart` | 改採 features-first；連帶 `lib/utils/` 整個解散並入 `lib/features/`（`utils/`、`constants/`、`extension/`） |
+| A-2 | `app_colors.dart` 放語意化 ColorScheme | `theme_color.dart` 只放 2 個品牌原始色 | 語意色由 `ColorScheme` 自身提供，另建一份是第二個真相來源 |
+| A-3 | `app_spacing.dart` 填實 `Dimens`，5 個 4 的倍數階梯 | `theme_size.dart` 的 `ThemeSize`，**10 個 5 的倍數階梯** + 圓角 + 圖片尺寸；`lib/utils/dimens.dart` 已刪除 | 階梯取自實測既有值，使既有使用點能一對一替換、零視覺變更 |
+| A-4 | FlutterGen 生成 `ColorName` | **整套生成鏈移除**：刪 `assets/colors.xml`、`lib/gen/colors.gen.dart` 與 pubspec 的 `flutter_gen:` 區塊，改手寫 `ThemeColor` | 2 個顏色不值得維持 xml + build_runner 工具鏈 |
+
+### 🔴 交付後才發現的事實：種子色映射不等於品牌色
+
+§6.4 的「色票以 `#D84A20` 為種子」隱含一個未經驗證的假設：`colorScheme.primary` 會**是**品牌橘。**實測不成立** ——
+`ColorScheme.fromSeed(seedColor: #D84A20)` 依 M3 tonal palette 將 primary 映射為 **`#8F4B38`（較濁的棕橘）**，非原色。
+
+後果：`colorScheme.primary` 與仍硬編 `ThemeColor.appPrimary` 的 **16 處使用點（7 個檔案）** 並存時有可見色差。這是零 `copyWith` 決策（D-4 額度用 0 個）的既定後果，非缺陷，但 §6.4 原文未預料到，於此更正。**S2 引入 `surface` 覆寫時須一併決定 primary 是否也要 `copyWith` 鎖回 `#D84A20`。**
+
+### 另一項計畫外發現：跨平台 theme 解析
+
+`PlatformApp` 在 iOS 走 `CupertinoApp` 分支，`material:` **不生效**。原計畫僅掛 `material:`，實測 iOS 端 Material widget 取不到 ThemeData。最終實作補了三層：`cupertino:`（`CupertinoThemeData`）、`builder:`（外包一層 `Theme`），並鎖 `themeMode: ThemeMode.light` + `darkTheme` 指向同一份 light，避免系統深色模式下狀態列與淺色內容相衝。
+
+因此**新增了一個測試檔** `test/app_theme_platform_test.dart`（原計畫 §2.5 定「不新增任何測試」）—— 這是跨平台行為差異而非資料宣告，若 `builder:` 層被移除，iOS case 會紅。
+
 ---
 
 ## 6.1 觸發原因：這個 App 沒有 Theme
@@ -560,7 +593,11 @@ lib/
 
 ## 6.4 架構設計：Design System 地基
 
-### 目錄結構
+>
+> **📍 2026-08-03 更新**：該按鈕現位於 `sign_in_page.dart:183`（S1 的 token 遷移使行號位移），**顏色未改，仍是硬編碼藍**。S1 依規格 §4.3 定案不動它 —— 它不是 theme 缺失造成的（是明寫顏色，掛 theme 對它零影響），改它會讓 S1「除 FilterChip 外外觀不變」的驗收失去意義。列為債務 T-1，**S3 連同灰色訪客入口（T-5）整頁處理**。該檔的 `ThemeColor` / `ThemeSize` token 遷移則已於 S1 完成。
+> ⚠️ **本節為 2026-07-31 的規劃原文，路徑與識別字已不等於現況。** 實際交付見本章開頭的「S1 交付覆核 (2026-08-03)」，偏離四項（A-1～A-4）已列表說明。以下保留原樣以存證當時的推導。
+
+### 目錄結構（規劃）
 
 ```
 lib/theme/
@@ -575,6 +612,17 @@ lib/theme/
 1. **`PlatformApp` 掛載 theme**（整個改動的起點）
    ```dart
    PlatformApp(
+### 目錄結構（實際交付）
+
+```
+lib/features/foundation/style/
+├── style_barrel.dart      # 對外唯一入口
+├── theme_data.dart        # AppThemeData：materialLight + cupertinoLight
+├── theme_color.dart       # ThemeColor：2 個品牌原始色（手寫，非 FlutterGen）
+├── theme_text_style.dart  # ThemeTextStyle（TextTheme）+ ThemeFontSize（原始值）
+└── theme_size.dart        # ThemeSize：間距 / 圓角 / 圖片尺寸
+```
+
      material: (_, __) => MaterialAppData(theme: AppTheme.light),
      // ...既有參數
    )
@@ -742,12 +790,22 @@ lib/theme/
 
 ### 分階段落地（每階段可獨立 PR、獨立驗證）
 
-| 階段 | 內容 | 依賴 | 使用者可感知度 |
-| :--- | :--- | :--- | :---: |
-| **S1 地基** | `lib/theme/` 建立、`PlatformApp` 掛 `material:`、token 定義 | 無 | 低（僅 FilterChip 藍→橘） |
-| **S2 共用元件** | ItemCell、RatingStars、Skeleton、EmptyDataWidget | S1 | **高**（列表與最愛同時改觀） |
-| **S3 頁面改造** | 詳情頁、登入頁、列表頁 | S2 | **高** |
-| **S4 收尾** | 篩選頁、Splash、移除假延遲、清理舊常數 | S3 | 中 |
+| 階段 | 內容 | 依賴 | 使用者可感知度 | 狀態 |
+| :--- | :--- | :--- | :---: | :---: |
+| **S1 地基** | `lib/features/foundation/style/` 建立、`PlatformApp` 掛 `material:`／`cupertino:`／`builder:`、token 定義 | 無 | 低（僅 FilterChip 藍→橘） | ✅ **已完成 (2026-08-03)** |
+| **S2 共用元件** | ItemCell、RatingStars、Skeleton、EmptyDataWidget | S1 | **高**（列表與最愛同時改觀） | ⬜ 待辦 |
+| **S3 頁面改造** | 詳情頁、登入頁、列表頁 | S2 | **高** | ⬜ 待辦 |
+| **S4 收尾** | 篩選頁、Splash、移除假延遲、清理舊常數 | S3 | 中 | ⬜ 待辦 |
+
+### S1 移交 S2 的債務清單
+
+| # | 債務 | 承接 |
+| :--- | :--- | :---: |
+| T-1 | `sign_in_page.dart:183` 硬編碼藍 `Color.fromARGB(255, 5, 97, 245)`，品牌識別錯誤。S1 依 §4.3 定案不修（改它會污染「除 FilterChip 外外觀不變」的地基驗證，且單改主按鈕會做出「橘按鈕配灰入口」的半成品） | **S3** |
+| T-2 | 33 處裸 `Colors.xxx`、13 個檔案（2026-08-03 複測數字未變） | S2 / S3 / S4 |
+| T-3 | 10 個 `@Deprecated` 字級常數、29 處使用、14 個檔案待遷移 | S4，之後獨立 PR 移除 |
+| T-6 | 奶油白 `surface` (`#FFFBF7`) 覆寫，D-4 的 3 個 `copyWith` 額度完整保留 | **S2** |
+| **T-9（新增）** | **`colorScheme.primary` = `#8F4B38` ≠ 品牌色 `#D84A20`**，與 16 處硬編 `ThemeColor.appPrimary`（7 檔）並存有色差。須決定是否 `copyWith` 鎖回品牌色 | **S2** |
 
 > **順序理由**：S2 完成後列表與最愛兩畫面同時改觀，是最快看到成果的切點。S1 單獨看幾乎無變化，但為 S2/S3 的前提。
 
@@ -809,7 +867,7 @@ lib/theme/
 | Phase 1.5: 空間與視覺體驗升級 (Spatial UX & Polish)                               |
 |                                                                                   |
 |  ── 6.x UI 視覺重塑（本章，前置地基）──                                           |
-|   • [ ] S1 Design System 地基 (ThemeData / ColorScheme / token)                   |
+|   • [x] S1 Design System 地基 (ThemeData / ColorScheme / token) ✅ 2026-08-03     |
 |   • [ ] S2 共用元件重塑 (ItemCell / RatingStars / Skeleton / Empty)               |
 |   • [ ] S3 頁面改造 (詳情頁 / 登入頁 / 列表頁)                                    |
 |   • [ ] S4 收尾 (篩選頁 / Splash / 移除假延遲 / 清理舊常數)                       |
@@ -825,3 +883,4 @@ lib/theme/
 
 *第 6 章產出時間：2026-07-31*
 *產出方式：直接檢視 `lib/` 當前原始碼（分支 `release/202607/release-1.4.0(30)`, commit `c8c40ae`）*
+*S1 交付覆核：2026-08-03（分支 `refactor/202607/57-design-system-foundation`, commit `9c2ec3f`）—— 實測 `flutter analyze` 零警告、`flutter test` 54 tests 全綠*
