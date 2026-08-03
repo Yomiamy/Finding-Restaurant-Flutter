@@ -1,15 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_restaruant/data_layer/dto/yelp_restaurant_summary_dto.dart';
-import 'package:flutter_restaruant/data_layer/dto/yelp_restaurant_detail_dto.dart';
-import 'package:flutter_restaruant/data_layer/dto/yelp_review_dto.dart';
-import 'package:flutter_restaruant/data_layer/dto/account_dto.dart';
-import 'package:flutter_restaruant/domain/entities/restaurant_entity.dart';
-import 'package:flutter_restaruant/domain/entities/restaurant_detail_entity.dart';
-import 'package:flutter_restaruant/domain/entities/review_entity.dart';
-import 'package:flutter_restaruant/domain/entities/user_entity.dart';
-import 'package:flutter_restaruant/domain/entities/restaurant_category_entity.dart';
-import 'package:flutter_restaruant/domain/entities/restaurant_location_entity.dart';
-
+import 'package:flutter_restaruant/data_layer/dto/dto_barrel.dart';
+import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 
 void main() {
   group('Domain Entities & DTO Separation Tests', () {
@@ -24,8 +15,8 @@ void main() {
       expect(entity3 == entity4, true);
     });
 
-
-    test('YelpRestaurantSummaryDto converts to/from RestaurantEntity correctly', () {
+    test('YelpRestaurantSummaryDto converts to/from RestaurantEntity correctly',
+        () {
       final dto = YelpRestaurantSummaryDto(
         id: 'rest_01',
         name: 'Gourmet Place',
@@ -81,8 +72,10 @@ void main() {
       expect(reviewEntity.possibleLanguages, contains('zh'));
     });
 
-    test('Category and Location getters function cleanly in domain entities', () {
-      const category = RestaurantCategoryEntity(alias: 'sushi', title: 'Japanese Sushi');
+    test('Category and Location getters function cleanly in domain entities',
+        () {
+      const category =
+          RestaurantCategoryEntity(alias: 'sushi', title: 'Japanese Sushi');
       const location = RestaurantLocationEntity(
         address1: '123 Main St',
         city: 'Taipei',
@@ -96,7 +89,8 @@ void main() {
       );
 
       expect(restaurant.categoriesStr, 'Japanese Sushi');
-      expect(restaurant.location?.displayAddressStr, '123 Main St, Taipei City');
+      expect(
+          restaurant.location?.displayAddressStr, '123 Main St, Taipei City');
     });
 
     test('AccountDto to UserEntity mapping', () {

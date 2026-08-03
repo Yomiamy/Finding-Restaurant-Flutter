@@ -1,5 +1,5 @@
 import 'package:flutter/foundation.dart';
-import '../../utils/constants.dart';
+import '../../features/foundation/constants/constants_barrel.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'dart:io';
 

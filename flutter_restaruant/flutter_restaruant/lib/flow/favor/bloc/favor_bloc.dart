@@ -1,6 +1,6 @@
 import 'package:bloc/bloc.dart';
-import '../../../domain/entities/restaurant_entity.dart';
-import '../../../domain/repositories/favor_repository.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../../../domain/repositories/repositories_barrel.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 part 'favor_event.dart';

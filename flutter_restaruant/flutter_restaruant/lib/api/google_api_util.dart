@@ -1,5 +1,5 @@
 import 'package:sprintf/sprintf.dart';
-import '../utils/constants.dart';
+import '../features/foundation/constants/constants_barrel.dart';
 
 class GoogleApiUtil {
   static String createStaticMapUrl(

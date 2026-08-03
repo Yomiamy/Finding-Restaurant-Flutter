@@ -1,8 +1,8 @@
 import 'dart:async';
-import '../../domain/repositories/settings_repository.dart';
-import '../../manager/sign_in_manager.dart';
-import '../../utils/constants.dart';
-import '../../utils/utils.dart';
+import '../../domain/repositories/repositories_barrel.dart';
+import '../../manager/manager_barrel.dart';
+import '../../features/foundation/constants/constants_barrel.dart';
+import '../../features/utils/utils_barrel.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class SettingsRepo implements SettingsRepository {

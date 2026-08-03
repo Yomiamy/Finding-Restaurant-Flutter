@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import '../../../domain/entities/restaurant_entity.dart';
-import '../../../utils/ui_constants.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../generated/l10n.dart';
 

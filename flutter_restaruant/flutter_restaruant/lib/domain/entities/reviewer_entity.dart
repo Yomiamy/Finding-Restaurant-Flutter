@@ -1,4 +1,4 @@
-import '../../data_layer/dto/yelp_reviewer_dto.dart';
+import '../../data_layer/dto/dto_barrel.dart';
 
 class ReviewerEntity {
   final String? name;
@@ -19,4 +19,3 @@ class ReviewerEntity {
         imageUrl: imageUrl,
       );
 }
-

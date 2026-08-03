@@ -1,12 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../../domain/entities/restaurant_detail_entity.dart';
-import '../../../utils/constants.dart';
-import '../../../utils/rating_helper.dart';
-import '../../../utils/ui_constants.dart';
-import '../../../utils/utils.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
 import 'package:sprintf/sprintf.dart';
 import '../../../generated/l10n.dart';
+import '../../../features/foundation/style/style_barrel.dart';
 import 'package:url_launcher/url_launcher.dart';
 
 class RestaurantInfoCell extends StatelessWidget {
@@ -24,19 +23,20 @@ class RestaurantInfoCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String category = _detailInfo
-            .categories
+    String category = _detailInfo.categories
             ?.map((category) => category.title ?? '')
             .join(' ') ??
         '';
-    bool isOpen = (_detailInfo.hours != null &&
-            _detailInfo.hours!.isNotEmpty)
+    bool isOpen = (_detailInfo.hours != null && _detailInfo.hours!.isNotEmpty)
         ? (_detailInfo.hours![0].isOpenNow ?? false)
         : false;
     String openStatus = isOpen ? 'OPEN' : 'CLOSE';
 
     return Padding(
-        padding: const EdgeInsets.only(left: 5, right: 5, top: 10),
+        padding: const EdgeInsets.only(
+            left: ThemeSize.space5,
+            right: ThemeSize.space5,
+            top: ThemeSize.space10),
         child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
           SizedBox(
               width: RestaurantInfoCell._mapImageH.toDouble(),
@@ -58,22 +58,19 @@ class RestaurantInfoCell extends StatelessWidget {
                       fit: BoxFit.fill))),
           Expanded(
               child: Container(
-                  padding: const EdgeInsets.only(left: 10),
+                  padding: const EdgeInsets.only(left: ThemeSize.space10),
                   child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: <Widget>[
-                        Text(
-                            _detailInfo
-                                    .location
-                                    ?.displayAddressStr ??
-                                '',
+                        Text(_detailInfo.location?.displayAddressStr ?? '',
                             style: const TextStyle(fontWeight: FontWeight.w700),
                             overflow: TextOverflow.ellipsis),
                         Row(children: <Widget>[
                           Text(S.current.store_phone,
-                              style: const TextStyle(fontWeight: FontWeight.w700)),
-                          const SizedBox(width: 10),
+                              style:
+                                  const TextStyle(fontWeight: FontWeight.w700)),
+                          const SizedBox(width: ThemeSize.space10),
                           GestureDetector(
                               onTap: () {
                                 String phoneStr = _detailInfo.phone ?? '';
@@ -97,10 +94,10 @@ class RestaurantInfoCell extends StatelessWidget {
                         DecoratedBox(
                             decoration: const BoxDecoration(
                                 color: Colors.red,
-                                borderRadius:
-                                    BorderRadius.all(Radius.circular(15.0))),
+                                borderRadius: BorderRadius.all(
+                                    Radius.circular(ThemeSize.radiusTag))),
                             child: Padding(
-                                padding: const EdgeInsets.all(3),
+                                padding: const EdgeInsets.all(ThemeSize.space3),
                                 child: Text(openStatus,
                                     style: const TextStyle(
                                         fontSize: UIConstants.lFontSize,

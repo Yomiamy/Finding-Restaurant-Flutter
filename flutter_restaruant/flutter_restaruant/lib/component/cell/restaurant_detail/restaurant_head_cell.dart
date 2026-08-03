@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../domain/entities/restaurant_entity.dart';
-import '../../../flow/restaurant/bloc/restaurant_detail_bloc.dart';
-import '../../../flow/signinup/view/sign_in_page.dart';
-import '../../../manager/sign_in_manager.dart';
-import '../../../utils/ui_constants.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../../../flow/restaurant/bloc/bloc_barrel.dart';
+import '../../../flow/signinup/view/view_barrel.dart';
+import '../../../manager/manager_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 
 class RestaurantHeadCell extends StatelessWidget {
   static const int headImageH = 200;
@@ -48,15 +49,16 @@ class RestaurantHeadCell extends StatelessWidget {
             child: Align(
                 alignment: Alignment.topRight,
                 child: Padding(
-                    padding: const EdgeInsets.only(top: 10, right: 10),
+                    padding: const EdgeInsets.only(
+                        top: ThemeSize.space10, right: ThemeSize.space10),
                     child: CircleAvatar(
                         backgroundColor: Colors.white,
                         child: Image.asset(
                             _summaryInfo.favor
                                 ? 'images/ic_favor_fill.png'
                                 : 'images/ic_favor_empty.png',
-                            width: UIConstants.favorImageW,
-                            height: UIConstants.favorImageH,
+                            width: ThemeSize.favorImageW,
+                            height: ThemeSize.favorImageH,
                             fit: BoxFit.fill)))))
       ],
     );

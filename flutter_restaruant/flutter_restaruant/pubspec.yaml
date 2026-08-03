@@ -101,7 +101,6 @@ flutter:
   uses-material-design: true
 
   assets:
-  - assets/colors.xml
   - images/empty.png
   - images/icon_signinup_icon.gif
   - images/icon_setting_icon.gif
@@ -124,8 +123,3 @@ flutter_intl:
   enabled: true
   arb-dir: lib/l10n
   output-dir: lib/generated
-
-flutter_gen:
-  colors:
-    inputs:
-    - assets/colors.xml

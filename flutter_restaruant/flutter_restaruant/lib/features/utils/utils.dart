@@ -63,7 +63,8 @@ class Utils {
     }
 
     return Geolocator.getCurrentPosition(
-        locationSettings: const LocationSettings(accuracy: LocationAccuracy.high));
+        locationSettings:
+            const LocationSettings(accuracy: LocationAccuracy.high));
   }
 
   static bool isLocaleZh() => Platform.localeName.contains('zh');

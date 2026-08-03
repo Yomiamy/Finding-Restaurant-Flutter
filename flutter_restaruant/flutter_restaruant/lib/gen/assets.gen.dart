@@ -104,11 +104,7 @@ class $ImagesGen {
 }
 
 abstract final class Assets {
-  static const String colors = 'assets/colors.xml';
   static const $ImagesGen images = $ImagesGen();
-
-  /// List of all assets
-  static List<String> get values => [colors];
 }
 
 class AssetGenImage {

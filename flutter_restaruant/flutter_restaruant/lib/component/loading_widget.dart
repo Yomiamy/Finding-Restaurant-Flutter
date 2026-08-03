@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import '../features/foundation/style/style_barrel.dart';
+
 class LoadingWidget extends StatelessWidget {
   final String text;
 
@@ -9,7 +11,7 @@ class LoadingWidget extends StatelessWidget {
   Widget build(BuildContext context) =>
       Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
         const CircularProgressIndicator(),
-        const SizedBox(height: 20),
+        const SizedBox(height: ThemeSize.space20),
         Text(text)
       ]);
 }

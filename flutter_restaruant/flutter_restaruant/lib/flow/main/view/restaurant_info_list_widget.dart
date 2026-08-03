@@ -1,16 +1,16 @@
 import 'package:flutter/widgets.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../component/ad/banner_ad.dart';
-import '../../../component/ad/banner_ad_state.dart';
-import '../../../component/cell/main_page/restaurant_item_cell.dart';
-import '../../../domain/entities/restaurant_entity.dart';
-import '../bloc/main_bloc.dart';
+import '../../../component/ad/ad_barrel.dart';
+import '../../../component/cell/main_page/main_page_barrel.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../bloc/bloc_barrel.dart';
 import 'filter_tags_widget.dart';
 import 'main_page.dart';
-import '../../restaurant/view/restaurant_detail_page.dart';
-import '../../../model/filter_configs.dart';
-import '../../../utils/tuple.dart';
-import '../../../di/injection.dart';
+import '../../restaurant/view/view_barrel.dart';
+import '../../../model/model_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
+import '../../../di/di_barrel.dart';
 
 class RestaurantInfoListWidget extends StatelessWidget {
   final ScrollController _scrollController = ScrollController();
@@ -37,7 +37,8 @@ class RestaurantInfoListWidget extends StatelessWidget {
           return true;
         },
         child: ListView.builder(
-            padding: const EdgeInsets.only(top: 0, bottom: 0),
+            padding: const EdgeInsets.only(
+                top: ThemeSize.zero, bottom: ThemeSize.zero),
             controller: _scrollController,
             itemCount: _summaryInfos.length + 2,
             itemBuilder: (context, index) {
@@ -46,15 +47,13 @@ class RestaurantInfoListWidget extends StatelessWidget {
               } else if (index == 1) {
                 return FilterTagsWidget(filterConfigs: _configs);
               } else {
-                RestaurantEntity summaryInfo =
-                    _summaryInfos[index - 2];
+                RestaurantEntity summaryInfo = _summaryInfos[index - 2];
 
                 return GestureDetector(
                     child: RestaurantItemCell(summaryInfo: summaryInfo),
                     onTap: () async {
                       Tuple2 arguments =
-                          Tuple2<RestaurantEntity, dynamic>(
-                              summaryInfo, null);
+                          Tuple2<RestaurantEntity, dynamic>(summaryInfo, null);
 
                       // Avoid duplicate push, use pushNamedAndRemoveUntil instead of push
                       // ignore: unawaited_futures

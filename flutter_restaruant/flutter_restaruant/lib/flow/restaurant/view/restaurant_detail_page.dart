@@ -1,18 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../../../component/empty_data_widget.dart';
-import '../../../component/loading_widget.dart';
-import '../../../component/ad/interstitial_ad.dart';
-import '../../../component/ad/interstitial_ad_state.dart';
-import '../../../component/cell/restaurant_detail/restaurant_detail_cell_collection.dart';
-import '../../../domain/entities/restaurant_entity.dart';
-import '../../../manager/ad_counter_manager.dart';
-import '../../../utils/tuple.dart';
-import '../../../utils/ui_constants.dart';
+import '../../../component/component_barrel.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../../../manager/manager_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../bloc/restaurant_detail_bloc.dart';
+import '../bloc/bloc_barrel.dart';
 import '../../../generated/l10n.dart';
-import '../../../gen/colors.gen.dart';
+import '../../../features/foundation/style/style_barrel.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   static const routeName = '/RestaurantDetailPage';
@@ -57,9 +53,9 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
     return Scaffold(
         appBar: AppBar(
             leading: IconButton(
-                padding: const EdgeInsets.all(0),
+                padding: const EdgeInsets.all(ThemeSize.zero),
                 onPressed: () => Navigator.of(context).pop(),
-                icon: const Icon(Icons.arrow_back, color: ColorName.backBtnColor)),
+                icon: const Icon(Icons.arrow_back, color: ThemeColor.backBtn)),
             title: BlocBuilder<RestaurantDetailBloc, RestaurantDetailState>(
                 bloc: _bloc,
                 builder: (context, state) {
@@ -72,9 +68,9 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                     return const Text('');
                   }
                 }),
-            backgroundColor: ColorName.appPrimaryColor),
+            backgroundColor: ThemeColor.appPrimary),
         body: Padding(
-            padding: const EdgeInsets.only(bottom: 10),
+            padding: const EdgeInsets.only(bottom: ThemeSize.space10),
             child: BlocConsumer<RestaurantDetailBloc, RestaurantDetailState>(
                 bloc: _bloc,
                 listener: (context, state) {

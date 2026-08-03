@@ -1,13 +1,13 @@
 import 'dart:async';
 
 import 'package:get_it/get_it.dart';
-import '../../api/api_clz.dart';
-import '../datasources/favor_data_source.dart';
-import '../dto/yelp_search_dto.dart';
-import '../../domain/entities/restaurant_entity.dart';
-import '../../domain/repositories/main_repository.dart';
-import '../../model/filter_configs.dart';
-import '../../utils/constants.dart';
+import '../../api/api_barrel.dart';
+import '../datasources/datasources_barrel.dart';
+import '../dto/dto_barrel.dart';
+import '../../domain/entities/entities_barrel.dart';
+import '../../domain/repositories/repositories_barrel.dart';
+import '../../model/model_barrel.dart';
+import '../../features/foundation/constants/constants_barrel.dart';
 
 class MainRepo implements MainRepository {
   static const int _maxItemsCountInList = 50;
@@ -35,8 +35,8 @@ class MainRepo implements MainRepository {
   }
 
   @override
-  Future<List<RestaurantEntity>> fetchYelpSearchInfo(double lat,
-      double lng, int? price, int? openAt, String? sortByStr) async {
+  Future<List<RestaurantEntity>> fetchYelpSearchInfo(double lat, double lng,
+      int? price, int? openAt, String? sortByStr) async {
     if (_isLoading) {
       // If new items is loading, then don't handle new fetching request until the old one completed.
       return await filterByKeyword(_keyword, sortByStr);
@@ -57,13 +57,11 @@ class MainRepo implements MainRepository {
 
       Map<String, dynamic> favorsMap = await _favorDataSource.fetchFavorsMap();
 
-      List<RestaurantEntity> fetchedEntities = (searchDto.businesses ?? [])
-          .map((dto) {
-            bool isFavor = favorsMap.containsKey(dto.id);
-            return RestaurantEntity.fromDto(dto).copyWith(favor: isFavor);
-          })
-          .toList();
-
+      List<RestaurantEntity> fetchedEntities =
+          (searchDto.businesses ?? []).map((dto) {
+        bool isFavor = favorsMap.containsKey(dto.id);
+        return RestaurantEntity.fromDto(dto).copyWith(favor: isFavor);
+      }).toList();
 
       summaryInfoSet.addAll(fetchedEntities);
 
@@ -84,8 +82,7 @@ class MainRepo implements MainRepository {
     _keyword = keyword;
 
     if (keyword.isNotEmpty) {
-      List<RestaurantEntity> filteredList =
-          summaryInfoSet.where((element) {
+      List<RestaurantEntity> filteredList = summaryInfoSet.where((element) {
         return (element.name?.contains(keyword) ?? false) ||
             (element.categoriesStr.contains(keyword)) ||
             (element.location?.displayAddressStr.contains(keyword) ?? false);

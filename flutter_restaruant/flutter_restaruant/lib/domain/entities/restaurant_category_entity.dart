@@ -1,4 +1,4 @@
-import '../../data_layer/dto/yelp_restaurant_category_dto.dart';
+import '../../data_layer/dto/dto_barrel.dart';
 
 class RestaurantCategoryEntity {
   final String? alias;
@@ -20,4 +20,3 @@ class RestaurantCategoryEntity {
         title: title,
       );
 }
-

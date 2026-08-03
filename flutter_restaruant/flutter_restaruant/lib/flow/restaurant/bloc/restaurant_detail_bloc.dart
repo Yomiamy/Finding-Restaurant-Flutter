@@ -1,9 +1,7 @@
 import 'package:bloc/bloc.dart';
-import '../../../api/google_api_util.dart';
-import '../../../domain/entities/restaurant_detail_entity.dart';
-import '../../../domain/entities/restaurant_entity.dart';
-import '../../../domain/entities/review_entity.dart';
-import '../../../domain/repositories/restaurant_detail_repository.dart';
+import '../../../api/api_barrel.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../../../domain/repositories/repositories_barrel.dart';
 import 'package:meta/meta.dart';
 import 'package:equatable/equatable.dart';
 
@@ -22,10 +20,10 @@ class RestaurantDetailBloc
       try {
         emit(const InProgress());
 
-        final RestaurantDetailEntity detailInfo = await _detailRepository
-            .fetchYelpRestaurantDetailInfo(event.id);
-        final ReviewEntity reviewInfo = await _detailRepository
-            .fetchYelpRestaurantReviewInfo(event.id);
+        final RestaurantDetailEntity detailInfo =
+            await _detailRepository.fetchYelpRestaurantDetailInfo(event.id);
+        final ReviewEntity reviewInfo =
+            await _detailRepository.fetchYelpRestaurantReviewInfo(event.id);
 
         double lat = detailInfo.coordinates?.latitude ?? 0;
         double lng = detailInfo.coordinates?.longitude ?? 0;

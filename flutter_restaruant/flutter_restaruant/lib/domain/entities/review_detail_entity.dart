@@ -1,4 +1,4 @@
-import '../../data_layer/dto/yelp_review_detail_dto.dart';
+import '../../data_layer/dto/dto_barrel.dart';
 import 'reviewer_entity.dart';
 
 class ReviewDetailEntity {
@@ -37,4 +37,3 @@ class ReviewDetailEntity {
         url: url,
       );
 }
-

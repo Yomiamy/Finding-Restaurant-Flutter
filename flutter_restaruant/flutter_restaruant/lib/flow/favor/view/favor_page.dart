@@ -2,15 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import '../../../component/empty_data_widget.dart';
-import '../../../component/loading_widget.dart';
-import '../../../component/cell/main_page/restaurant_item_cell.dart';
-import '../../../domain/entities/restaurant_entity.dart';
-import '../bloc/favor_bloc.dart';
-import '../../restaurant/view/restaurant_detail_page.dart';
-import '../../../utils/tuple.dart';
-import '../../../utils/ui_constants.dart';
-import '../../../gen/colors.gen.dart';
+import '../../../component/component_barrel.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../bloc/bloc_barrel.dart';
+import '../../restaurant/view/view_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 
 class FavorPage extends StatefulWidget {
   static const routeName = '/FavorPage';
@@ -37,16 +35,16 @@ class _FavorPageState extends State<FavorPage> {
     return Scaffold(
         appBar: AppBar(
             leading: PlatformIconButton(
-                padding: const EdgeInsets.all(0),
+                padding: const EdgeInsets.all(ThemeSize.zero),
                 onPressed: () => Navigator.of(context).pop(),
                 materialIcon:
-                    const Icon(Icons.arrow_back, color: ColorName.backBtnColor),
+                    const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
                 cupertinoIcon:
-                    const Icon(CupertinoIcons.back, color: ColorName.backBtnColor)),
+                    const Icon(CupertinoIcons.back, color: ThemeColor.backBtn)),
             title: const Text(UIConstants.favorTitle,
                 style: TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxxhFontSize)),
-            backgroundColor: ColorName.appPrimaryColor),
+            backgroundColor: ThemeColor.appPrimary),
         body: BlocBuilder<FavorBloc, FavorState>(
             bloc: _favorBloc,
             builder: (context, state) {
@@ -56,7 +54,8 @@ class _FavorPageState extends State<FavorPage> {
                 List<RestaurantEntity> favorInfos = state.favorInfos;
 
                 return ListView.builder(
-                    padding: const EdgeInsets.only(top: 0, bottom: 0),
+                    padding: const EdgeInsets.only(
+                        top: ThemeSize.zero, bottom: ThemeSize.zero),
                     itemCount: favorInfos.length,
                     itemBuilder: (context, index) {
                       RestaurantEntity favorInfo = favorInfos[index];

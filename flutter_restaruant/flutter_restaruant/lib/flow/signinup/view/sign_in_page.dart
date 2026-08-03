@@ -3,16 +3,16 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import '../../../component/loading_widget.dart';
-import '../bloc/sign_in_bloc.dart';
+import '../../../component/component_barrel.dart';
+import '../bloc/bloc_barrel.dart';
 import '../../../generated/l10n.dart';
-import '../../../manager/sign_in_manager.dart';
-import '../../../utils/ui_constants.dart';
+import '../../../manager/manager_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
-import '../../../gen/colors.gen.dart';
-import '../../main/view/main_page.dart';
-import '../../splash/view/splash_page.dart';
+import '../../main/view/view_barrel.dart';
+import '../../splash/view/view_barrel.dart';
 
 class SignInPage extends StatefulWidget {
   static const routeName = '/SignInPage';
@@ -52,8 +52,8 @@ class _SignInPageState extends State<SignInPage> {
         // 詳情頁／設定頁 pushNamed 進來（有返回鍵）。因此不能比照其他頁面
         // 寫死 leading——那會讓 Splash 路徑也長出一顆按不動的返回鍵。
         // 交給 Flutter 依 canPop() 決定是否顯示，這裡只負責上色。
-        iconTheme: const IconThemeData(color: ColorName.backBtnColor),
-        backgroundColor: ColorName.appPrimaryColor,
+        iconTheme: const IconThemeData(color: ThemeColor.backBtn),
+        backgroundColor: ThemeColor.appPrimary,
       ),
       body: BlocConsumer<SignInBloc, SignInState>(
         listener: (context, state) {
@@ -100,7 +100,8 @@ class _SignInPageState extends State<SignInPage> {
                 flex: 1,
                 child: SingleChildScrollView(
                   child: Padding(
-                      padding: const EdgeInsets.only(left: 30, right: 30),
+                      padding: const EdgeInsets.only(
+                          left: ThemeSize.space30, right: ThemeSize.space30),
                       child: Column(children: <Widget>[
                         showInput(state),
                         showSignInUpBtns(),
@@ -121,7 +122,8 @@ class _SignInPageState extends State<SignInPage> {
           children: <Widget>[showEmailInput(), showPasswordInput()]));
 
   Widget showEmailInput() => Padding(
-      padding: const EdgeInsets.fromLTRB(30.0, 0.0, 30.0, 0.0),
+      padding: const EdgeInsets.fromLTRB(
+          ThemeSize.space30, ThemeSize.zero, ThemeSize.space30, ThemeSize.zero),
       child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
         const Icon(
           Icons.mail,
@@ -129,7 +131,7 @@ class _SignInPageState extends State<SignInPage> {
         ),
         Expanded(
             child: Padding(
-                padding: const EdgeInsets.only(left: 10),
+                padding: const EdgeInsets.only(left: ThemeSize.space10),
                 child: PlatformTextFormField(
                     maxLines: 1,
                     autofocus: false,
@@ -147,7 +149,8 @@ class _SignInPageState extends State<SignInPage> {
       ]));
 
   Widget showPasswordInput() => Padding(
-      padding: const EdgeInsets.fromLTRB(30.0, 15.0, 30.0, 0.0),
+      padding: const EdgeInsets.fromLTRB(ThemeSize.space30, ThemeSize.space15,
+          ThemeSize.space30, ThemeSize.zero),
       child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
         const Icon(
           Icons.lock,
@@ -155,7 +158,7 @@ class _SignInPageState extends State<SignInPage> {
         ),
         Expanded(
             child: Padding(
-                padding: const EdgeInsets.only(left: 10),
+                padding: const EdgeInsets.only(left: ThemeSize.space10),
                 child: PlatformTextFormField(
                     maxLines: 1,
                     obscureText: true,
@@ -174,7 +177,7 @@ class _SignInPageState extends State<SignInPage> {
       ]));
 
   Widget showSignInUpBtns() => Padding(
-      padding: const EdgeInsets.only(top: 15),
+      padding: const EdgeInsets.only(top: ThemeSize.space15),
       child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
         PlatformElevatedButton(
             color: const Color.fromARGB(255, 5, 97, 245),
@@ -187,8 +190,7 @@ class _SignInPageState extends State<SignInPage> {
               if (_formKey.currentState != null &&
                   _formKey.currentState!.validate()) {
                 _formKey.currentState!.save();
-                _signInBloc.add(
-                    MailSignInEvent(mail: _email, passwd: _passwd));
+                _signInBloc.add(MailSignInEvent(mail: _email, passwd: _passwd));
               }
             }),
         Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
@@ -200,8 +202,8 @@ class _SignInPageState extends State<SignInPage> {
                 if (_formKey.currentState != null &&
                     _formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
-                  _signInBloc.add(
-                      MailSignUpEvent(mail: _email, passwd: _passwd));
+                  _signInBloc
+                      .add(MailSignUpEvent(mail: _email, passwd: _passwd));
                 }
               }),
           PlatformTextButton(
@@ -225,7 +227,7 @@ class _SignInPageState extends State<SignInPage> {
           text: S.current.signinup_with_google,
           onPressed: () => _signInBloc.add(GoogleSignInEvent()),
         ),
-        const SizedBox(height: 10),
+        const SizedBox(height: ThemeSize.space10),
         (Platform.isIOS)
             ? SignInButton(
                 Buttons.apple,
@@ -236,4 +238,3 @@ class _SignInPageState extends State<SignInPage> {
             : UIConstants.emptyWidget
       ]);
 }
-

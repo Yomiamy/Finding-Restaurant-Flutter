@@ -1,4 +1,4 @@
-import '../../data_layer/dto/yelp_restaurant_detail_dto.dart';
+import '../../data_layer/dto/dto_barrel.dart';
 import 'restaurant_category_entity.dart';
 import 'restaurant_coordinates_entity.dart';
 import 'restaurant_hours_entity.dart';
@@ -49,9 +49,7 @@ class RestaurantDetailEntity {
             ? RestaurantCoordinatesEntity.fromDto(dto.coordinates!)
             : null,
         photos: dto.photos,
-        hours: dto.hours
-            ?.map((e) => RestaurantHoursEntity.fromDto(e))
-            .toList(),
+        hours: dto.hours?.map((e) => RestaurantHoursEntity.fromDto(e)).toList(),
       );
 
   YelpRestaurantDetailDto get toDto => YelpRestaurantDetailDto(
@@ -68,4 +66,3 @@ class RestaurantDetailEntity {
         hours: hours?.map((e) => e.toDto).toList(),
       );
 }
-

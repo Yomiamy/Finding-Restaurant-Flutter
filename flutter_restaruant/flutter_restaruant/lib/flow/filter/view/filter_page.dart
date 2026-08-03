@@ -1,11 +1,11 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import '../../../model/filter_configs.dart';
-import '../../../utils/tuple.dart';
-import '../../../utils/ui_constants.dart';
+import '../../../model/model_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 import '../../../generated/l10n.dart';
-import '../../../gen/colors.gen.dart';
+import '../../../features/foundation/style/style_barrel.dart';
 
 class FilterPage extends StatefulWidget {
   static const routeName = '/FilterPage';
@@ -42,16 +42,16 @@ class _FilterPageState extends State<FilterPage> {
     return Scaffold(
         appBar: AppBar(
             leading: PlatformIconButton(
-                padding: const EdgeInsets.all(0),
+                padding: const EdgeInsets.all(ThemeSize.zero),
                 onPressed: () => Navigator.of(context).pop(),
                 materialIcon:
-                    const Icon(Icons.arrow_back, color: ColorName.backBtnColor),
+                    const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
                 cupertinoIcon:
-                    const Icon(CupertinoIcons.back, color: ColorName.backBtnColor)),
+                    const Icon(CupertinoIcons.back, color: ThemeColor.backBtn)),
             actions: [
               PlatformElevatedButton(
-                  color: ColorName.appPrimaryColor,
-                  padding: const EdgeInsets.all(0),
+                  color: ThemeColor.appPrimary,
+                  padding: const EdgeInsets.all(ThemeSize.zero),
                   onPressed: () {
                     FilterConfigs configs = FilterConfigs.fromUI(
                         priceIndex: _priceIndex,
@@ -69,11 +69,12 @@ class _FilterPageState extends State<FilterPage> {
             title: Text(S.current.filter_rules,
                 style: const TextStyle(
                     color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
-            backgroundColor: ColorName.appPrimaryColor),
+            backgroundColor: ThemeColor.appPrimary),
         body: ListView(children: <Widget>[
           // Price level
           Padding(
-              padding: const EdgeInsets.only(left: 20, top: 15),
+              padding: const EdgeInsets.only(
+                  left: ThemeSize.space20, top: ThemeSize.space15),
               child: Text(S.current.filter_price,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold,
@@ -87,7 +88,10 @@ class _FilterPageState extends State<FilterPage> {
 
           // Business hour
           Padding(
-              padding: const EdgeInsets.only(left: 20, top: 15, right: 20),
+              padding: const EdgeInsets.only(
+                  left: ThemeSize.space20,
+                  top: ThemeSize.space15,
+                  right: ThemeSize.space20),
               child: Text(S.current.filter_business_hour,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold,
@@ -105,7 +109,8 @@ class _FilterPageState extends State<FilterPage> {
 
           // Sorting rule
           Padding(
-              padding: const EdgeInsets.only(left: 20, top: 15),
+              padding: const EdgeInsets.only(
+                  left: ThemeSize.space20, top: ThemeSize.space15),
               child: Text(S.current.filter_sorting_rule,
                   style: const TextStyle(
                       fontWeight: FontWeight.bold,
@@ -135,7 +140,8 @@ class _FilterPageState extends State<FilterPage> {
     }
     return StatefulBuilder(
         builder: (context, setState) => Padding(
-            padding: const EdgeInsets.only(left: 5, top: 15),
+            padding: const EdgeInsets.only(
+                left: ThemeSize.space5, top: ThemeSize.space15),
             child: CupertinoSegmentedControl<int>(
                 groupValue: initValue,
                 children: children,

@@ -1,4 +1,4 @@
-import '../entities/restaurant_entity.dart';
+import '../entities/entities_barrel.dart';
 
 abstract interface class MainRepository {
   Set<RestaurantEntity> get summaryInfoSet;

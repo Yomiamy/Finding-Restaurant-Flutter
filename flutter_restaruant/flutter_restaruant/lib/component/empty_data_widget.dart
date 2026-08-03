@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../utils/ui_constants.dart';
+import '../features/foundation/constants/constants_barrel.dart';
 
 class EmptyDataWidget extends StatelessWidget {
   const EmptyDataWidget({super.key});

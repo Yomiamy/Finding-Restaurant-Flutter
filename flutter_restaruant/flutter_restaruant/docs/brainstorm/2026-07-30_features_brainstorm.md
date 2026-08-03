@@ -55,7 +55,7 @@ lib/
 ├── di/           # 【新增】get_it 依賴注入容器註冊
 ├── domain/       # 【新增】業務層 (entities/ 領域實體、repositories/ 抽象介面契約)
 ├── extension/    # 【新增】Dart extension 工具擴充
-├── flow/         # Feature-First 業務流 (8大 Flow: splash, signinup, main, restaurant, favor, filter, photoviewr, settings)
+├── flow/         # Feature-First 業務流 (8大 Flow: splash, signinup, main, restaurant, favor, filter, photo_viewer, settings)
 ├── gen/          # flutter_gen 自動生成顏色資源 (ColorName.appPrimaryColor 等)
 ├── generated/    # i18n 國際化生成程式碼 (ARB 檔: intl_en.arb, intl_zh_TW.arb)
 ├── l10n/         # 【新增】ARB 語系原始檔
@@ -552,7 +552,7 @@ lib/
 | **順帶** | 最愛 (`favor`) | 共用 cell，改完自動生效 |
 | **順帶** | 啟動頁 (`splash`) | `BoxFit.fill` → `cover`，一行 |
 | **建議做** | 篩選頁 (`filter`) | 搜尋主流程一環 |
-| **延後** | 設定 (`settings`)、看圖 (`photoviewr`) | 停留時間短、權重低 |
+| **延後** | 設定 (`settings`)、看圖 (`photo_viewer`) | 停留時間短、權重低 |
 
 > **登入頁提升為必做的原因**：初判為「可延後」，實際檢視 `sign_in_page.dart:180` 後修正 —— 主要登入按鈕為 `Color.fromARGB(255, 5, 97, 245)`（硬編碼藍），與 App 主色橘紅無關。這是新使用者的第一印象，且訪客模式入口（PR #56 新功能）目前是灰色小字，功能價值被 UI 埋沒。
 

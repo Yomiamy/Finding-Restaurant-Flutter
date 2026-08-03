@@ -6,14 +6,13 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import '../domain/entities/restaurant_entity.dart';
+import '../domain/entities/entities_barrel.dart';
 import '../firebase_options.dart';
-import '../flow/main/view/main_page.dart';
-import '../flow/splash/view/splash_page.dart';
+import '../flow/main/view/view_barrel.dart';
+import '../flow/splash/view/view_barrel.dart';
 import '../main.dart';
-import '../utils/constants.dart';
-import '../utils/tuple.dart';
-import '../utils/ui_constants.dart';
+import '../features/foundation/constants/constants_barrel.dart';
+import '../features/utils/utils_barrel.dart';
 
 @pragma('vm:entry-point')
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
@@ -40,8 +39,7 @@ class FcmManager {
   void _firebaseMessagingOpenHandler(RemoteMessage message) async {
     debugPrint('Handling a message open: ${message.messageId}');
 
-    String? storeId =
-        message.data[Constants.fcmNotificationPayloadKeyStoreId];
+    String? storeId = message.data[Constants.fcmNotificationPayloadKeyStoreId];
     Tuple2? arguments;
 
     if (storeId != null && storeId.isNotEmpty) {

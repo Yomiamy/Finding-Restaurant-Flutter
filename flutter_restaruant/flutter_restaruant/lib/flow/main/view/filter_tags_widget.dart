@@ -2,9 +2,10 @@ import 'dart:collection';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import '../bloc/main_bloc.dart';
-import '../../../model/filter_configs.dart';
-import '../../../utils/ui_constants.dart';
+import '../bloc/bloc_barrel.dart';
+import '../../../model/model_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 
 import 'main_page.dart';
 
@@ -26,8 +27,7 @@ class FilterTagsWidget extends StatelessWidget {
     }
 
     if (_filterConfigs.openAt != null && _filterConfigs.openAt! > 0) {
-      _filterConfigsMap[FilterConfigType.openAt] =
-          _filterConfigs.openAtDispStr;
+      _filterConfigsMap[FilterConfigType.openAt] = _filterConfigs.openAtDispStr;
     }
   }
 
@@ -51,14 +51,15 @@ class FilterTagsWidget extends StatelessWidget {
               final type = keys[index];
               final title = values[index];
               return Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                padding:
+                    const EdgeInsets.symmetric(horizontal: ThemeSize.space4),
                 child: FilterChip(
                   label: Text(
                     title,
                     style: const TextStyle(fontSize: UIConstants.xhFontSize),
                   ),
                   selected: true,
-                  selectedColor: Theme.of(context).primaryColor,
+                  selectedColor: Theme.of(context).colorScheme.primary,
                   checkmarkColor: Colors.white,
                   labelStyle: const TextStyle(color: Colors.white),
                   onSelected: (_) {

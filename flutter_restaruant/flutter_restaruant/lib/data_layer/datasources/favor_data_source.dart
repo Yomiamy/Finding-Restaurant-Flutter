@@ -3,9 +3,9 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../dto/yelp_restaurant_summary_dto.dart';
-import '../../domain/entities/restaurant_entity.dart';
-import '../../manager/sign_in_manager.dart';
+import '../dto/dto_barrel.dart';
+import '../../domain/entities/entities_barrel.dart';
+import '../../manager/manager_barrel.dart';
 
 /// 最愛餐廳在 Firestore 的單一存取點。
 ///

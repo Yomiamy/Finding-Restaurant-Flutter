@@ -1,8 +1,8 @@
 import 'package:flutter/foundation.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../data_layer/dto/account_dto.dart';
-import '../domain/entities/user_entity.dart';
-import '../utils/tuple.dart';
+import '../data_layer/dto/dto_barrel.dart';
+import '../domain/entities/entities_barrel.dart';
+import '../features/utils/utils_barrel.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class GoogleSignInManager {

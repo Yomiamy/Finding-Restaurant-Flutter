@@ -8,7 +8,7 @@ part of 'result_vo.dart';
 
 ResultVo _$ResultVoFromJson(Map<String, dynamic> json) => ResultVo(
       code: (json['code'] as num?)?.toInt() ?? -1,
-      msg: json['msg'] as String? ?? "N/A",
+      msg: json['msg'] as String? ?? 'N/A',
       obj: json['obj'],
     );
 

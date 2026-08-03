@@ -1,24 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import '../../../component/empty_data_widget.dart';
-import '../../../component/loading_widget.dart';
-import '../../../component/ad/app_open_ad_state.dart';
-import '../../../domain/entities/restaurant_entity.dart';
-import '../../favor/view/favor_page.dart';
-import '../../filter/view/filter_page.dart';
+import '../../../component/component_barrel.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../../favor/view/view_barrel.dart';
+import '../../filter/view/view_barrel.dart';
 import 'map_widget.dart';
 import 'restaurant_info_list_widget.dart';
-import '../../restaurant/view/restaurant_detail_page.dart';
-import '../../settings/view/settings_page.dart';
+import '../../restaurant/view/view_barrel.dart';
+import '../../settings/view/view_barrel.dart';
 import '../../../generated/l10n.dart';
-import '../../../model/filter_configs.dart';
-import '../../../utils/tuple.dart';
-import '../../../utils/ui_constants.dart';
-import '../../../utils/view_utils.dart';
+import '../../../model/model_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 
-import '../bloc/main_bloc.dart';
-import '../../../gen/colors.gen.dart';
+import '../bloc/bloc_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
 
 class MainPage extends StatefulWidget {
   static const routeName = '/MainPage';
@@ -81,7 +78,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           style: const TextStyle(
               color: Colors.white, fontSize: UIConstants.xxxxhFontSize),
         ),
-        backgroundColor: ColorName.appPrimaryColor,
+        backgroundColor: ThemeColor.appPrimary,
         leading: IconButton(
             padding: EdgeInsets.zero,
             onPressed: () => _openDrawer(),
@@ -127,7 +124,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         child: SafeArea(
             child: ListView(padding: EdgeInsets.zero, children: [
       DrawerHeader(
-          decoration: const BoxDecoration(color: ColorName.appPrimaryColor),
+          decoration: const BoxDecoration(color: ThemeColor.appPrimary),
           child: Align(
               alignment: Alignment.bottomLeft,
               child: Text(appLocalizations.main_page_title,
@@ -136,7 +133,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                       fontSize: UIConstants.xxxhFontSize,
                       fontWeight: FontWeight.bold)))),
       ListTile(
-          leading: const Icon(Icons.search, color: ColorName.appPrimaryColor),
+          leading: const Icon(Icons.search, color: ThemeColor.appPrimary),
           title: Text(appLocalizations.keyword_search),
           onTap: () {
             Navigator.of(context).pop();
@@ -145,7 +142,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
             });
           }),
       ListTile(
-          leading: const Icon(Icons.filter_list, color: ColorName.appPrimaryColor),
+          leading: const Icon(Icons.filter_list, color: ThemeColor.appPrimary),
           title: Text(appLocalizations.filter_rules),
           onTap: () {
             Navigator.of(context).pop();
@@ -154,7 +151,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
             });
           }),
       ListTile(
-          leading: const Icon(Icons.map, color: ColorName.appPrimaryColor),
+          leading: const Icon(Icons.map, color: ThemeColor.appPrimary),
           title: Text(
             _isListMode
                 ? appLocalizations.map_mode
@@ -171,7 +168,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
             });
           }),
       ListTile(
-          leading: const Icon(Icons.navigation, color: ColorName.appPrimaryColor),
+          leading: const Icon(Icons.navigation, color: ThemeColor.appPrimary),
           title: Text(appLocalizations.map_my_loc_title),
           onTap: () {
             Navigator.of(context).pop();
@@ -180,7 +177,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
             });
           }),
       ListTile(
-          leading: const Icon(Icons.favorite, color: ColorName.appPrimaryColor),
+          leading: const Icon(Icons.favorite, color: ThemeColor.appPrimary),
           title: Text(appLocalizations.favorite_stores),
           onTap: () {
             Navigator.of(context).pop();
@@ -189,7 +186,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
             });
           }),
       ListTile(
-          leading: const Icon(Icons.settings, color: ColorName.appPrimaryColor),
+          leading: const Icon(Icons.settings, color: ThemeColor.appPrimary),
           title: Text(appLocalizations.settings_title),
           onTap: () {
             Navigator.of(context).pop();
@@ -225,8 +222,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           PlatformTextButton(
               onPressed: () {
                 _mainBloc.add(FilterListByKeyword(
-                    keyword: _filterKeyword,
-                    sortByStr: _configs.sortBy));
+                    keyword: _filterKeyword, sortByStr: _configs.sortBy));
                 _filterKeyword = '';
                 Navigator.pop(context);
               },
@@ -275,8 +271,8 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         return;
       }
 
-      Tuple2 arguments = Tuple2<RestaurantEntity, dynamic>(
-          summaryInfoFromNotification, null);
+      Tuple2 arguments =
+          Tuple2<RestaurantEntity, dynamic>(summaryInfoFromNotification, null);
       // Avoid duplicate push, use pushNamedAndRemoveUntil instead of push
       Navigator.of(context).pushNamedAndRemoveUntil(
           RestaurantDetailPage.routeName,

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_restaruant/flow/main/view/filter_tags_widget.dart';
-import 'package:flutter_restaruant/model/filter_configs.dart';
+import 'package:flutter_restaruant/flow/main/view/view_barrel.dart';
+import 'package:flutter_restaruant/model/model_barrel.dart';
+import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
 
 void main() {
   testWidgets('FilterTagsWidget renders FilterChip for active filter configs',
@@ -12,6 +13,7 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        theme: AppThemeData.materialLight,
         home: Scaffold(
           body: FilterTagsWidget(filterConfigs: filterConfigs),
         ),
@@ -25,6 +27,10 @@ void main() {
     expect(find.text(filterConfigs.getPriceDispStr(2)), findsOneWidget);
     expect(find.text(filterConfigs.getSortingRuleDispStr('rating')),
         findsOneWidget);
+
+    // 鎖住著色來源：chip 必須取自 theme 的 colorScheme，而非 Material 預設。
+    final chip = tester.widget<FilterChip>(find.byType(FilterChip).first);
+    expect(chip.selectedColor, AppThemeData.materialLight.colorScheme.primary);
   });
 
   testWidgets(

@@ -1,8 +1,8 @@
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
-import '../../../domain/repositories/sign_in_repository.dart';
-import '../../../domain/entities/user_entity.dart';
-import '../../../utils/tuple.dart';
+import '../../../domain/repositories/repositories_barrel.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
 
 part 'sign_in_event.dart';
 
@@ -45,13 +45,12 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         type = AccountType.none;
       }
 
-      Tuple2<UserEntity?, String> result =
-          await _signInRepository.signInUp(
-                accountType: type,
-                isSignUp: isSignUp,
-                mail: mail,
-                passwd: passwd,
-              );
+      Tuple2<UserEntity?, String> result = await _signInRepository.signInUp(
+        accountType: type,
+        isSignUp: isSignUp,
+        mail: mail,
+        passwd: passwd,
+      );
       UserEntity? userEntity = result.item1;
 
       if (userEntity != null) {

@@ -1,7 +1,8 @@
 import 'package:flutter/material.dart';
-import '../../../flow/photoviewr/view/photo_viewer.dart';
-import '../../../utils/tuple.dart';
-import '../../../utils/ui_constants.dart';
+import '../../../flow/photo_viewer/view/view_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
 
 class RestaurantImageCell extends StatelessWidget {
   static const int _imageH = 200;
@@ -13,13 +14,13 @@ class RestaurantImageCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => Container(
-      padding: const EdgeInsets.only(top: 10),
+      padding: const EdgeInsets.only(top: ThemeSize.space10),
       height: MediaQuery.of(context).size.width / 3,
       child: ListView.builder(
           scrollDirection: Axis.horizontal,
           itemCount: _photos.length,
           itemBuilder: (context, index) => Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 5),
+              padding: const EdgeInsets.symmetric(horizontal: ThemeSize.space5),
               child: GestureDetector(
                 onTap: () {
                   String photoUrl = _photos[index];
