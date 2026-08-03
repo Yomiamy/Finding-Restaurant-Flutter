@@ -541,6 +541,11 @@ lib/
 
 > **最後一項為實錘**：篩選標籤目前顯示藍色、AppBar 顯示橘色，同一畫面兩種主色。這不是設計選擇，是缺少 theme 的直接後果。
 
+> **📐 上表三處數字經 S1 規格實測訂正**（`docs/features/2026-07-31-design-system-foundation.md` §6，本表保留原值以存證）：
+> * 裸用 `Colors.xxx` 實為 **33 處、13 個檔案**（非 12 處 5 檔，規模低估近 3 倍）。**2026-08-03 複測仍為 33 處 13 檔** —— S1 依 §4.2 刻意不掃除，債務 T-2 完整留給 S2/S3/S4。
+> * 字級常數實為 **10 個**（非 12 個），位於 `lib/utils/ui_constants.dart:25-34`（現已遷至 `lib/features/foundation/constants/ui_constants.dart`），被使用 **29 次、跨 14 個檔案**。S1 已全數標 `@Deprecated` 且未移除；2026-08-03 複測使用點仍為 29 處，待 S4 遷移。
+> * `filter_tags_widget.dart` 位於 **`lib/flow/main/view/`**（非 `lib/flow/filter/`）。
+
 ### 🐧 Linus 式判斷
 
 > 「在沒有 ThemeData 的情況下談美化，等於每個畫面各自貼一次膠帶。改一個顏色要動 20 個檔案 —— 這不是樣式問題，是**資料結構問題**。設計 token 就是 UI 的資料結構，它現在不存在。
@@ -588,13 +593,13 @@ lib/
 | **延後** | 設定 (`settings`)、看圖 (`photoviewr`) | 停留時間短、權重低 |
 
 > **登入頁提升為必做的原因**：初判為「可延後」，實際檢視 `sign_in_page.dart:180` 後修正 —— 主要登入按鈕為 `Color.fromARGB(255, 5, 97, 245)`（硬編碼藍），與 App 主色橘紅無關。這是新使用者的第一印象，且訪客模式入口（PR #56 新功能）目前是灰色小字，功能價值被 UI 埋沒。
+>
+> **📍 2026-08-03 更新**：該按鈕現位於 `sign_in_page.dart:183`（S1 的 token 遷移使行號位移），**顏色未改，仍是硬編碼藍**。S1 依規格 §4.3 定案不動它 —— 它不是 theme 缺失造成的（是明寫顏色，掛 theme 對它零影響），改它會讓 S1「除 FilterChip 外外觀不變」的驗收失去意義。列為債務 T-1，**S3 連同灰色訪客入口（T-5）整頁處理**。該檔的 `ThemeColor` / `ThemeSize` token 遷移則已於 S1 完成。
 
 ---
 
 ## 6.4 架構設計：Design System 地基
 
->
-> **📍 2026-08-03 更新**：該按鈕現位於 `sign_in_page.dart:183`（S1 的 token 遷移使行號位移），**顏色未改，仍是硬編碼藍**。S1 依規格 §4.3 定案不動它 —— 它不是 theme 缺失造成的（是明寫顏色，掛 theme 對它零影響），改它會讓 S1「除 FilterChip 外外觀不變」的驗收失去意義。列為債務 T-1，**S3 連同灰色訪客入口（T-5）整頁處理**。該檔的 `ThemeColor` / `ThemeSize` token 遷移則已於 S1 完成。
 > ⚠️ **本節為 2026-07-31 的規劃原文，路徑與識別字已不等於現況。** 實際交付見本章開頭的「S1 交付覆核 (2026-08-03)」，偏離四項（A-1～A-4）已列表說明。以下保留原樣以存證當時的推導。
 
 ### 目錄結構（規劃）
@@ -607,11 +612,6 @@ lib/theme/
 └── app_spacing.dart    # 間距 / 圓角 token，填滿現在空的 Dimens
 ```
 
-### 關鍵實作點
-
-1. **`PlatformApp` 掛載 theme**（整個改動的起點）
-   ```dart
-   PlatformApp(
 ### 目錄結構（實際交付）
 
 ```
@@ -623,6 +623,11 @@ lib/features/foundation/style/
 └── theme_size.dart        # ThemeSize：間距 / 圓角 / 圖片尺寸
 ```
 
+### 關鍵實作點
+
+1. **`PlatformApp` 掛載 theme**（整個改動的起點）
+   ```dart
+   PlatformApp(
      material: (_, __) => MaterialAppData(theme: AppTheme.light),
      // ...既有參數
    )
@@ -638,6 +643,9 @@ lib/features/foundation/style/
    * **覆寫上限 3 個**，每個須於 PR 說明理由
    * 超過 3 個代表種子色選錯，應調種子色而非繼續補丁
 
+   > **⚠️ 實作更正（2026-08-03）**：S1 定案零 `copyWith`（3 個額度完整保留給 S2），故奶油白 `surface` 未交付。
+   > 更重要的是，**`fromSeed` 產出的 `primary` 是 `#8F4B38` 而非種子色 `#D84A20`** —— 上方寫法隱含「primary 即品牌橘」的假設並不成立。詳見本章開頭的交付覆核。
+
 3. **字級改語意命名**
    * `UIConstants.xxxxhFontSize` → `Theme.of(context).textTheme.titleLarge`
    * 舊常數**保留並標 `@Deprecated`**，避免一次性編譯失敗
@@ -645,6 +653,8 @@ lib/features/foundation/style/
 4. **`Dimens` 填實**
    * `space4 / space8 / space12 / space16 / space24`
    * `radiusCard = 16`、`radiusChip = 20`、`radiusImage = 12`
+
+   > **⚠️ 實作更正（2026-08-03）**：改為 `ThemeSize`（`theme_size.dart`），階梯取**實測既有值的 5 的倍數**（`space3/4/5/10/15/20/25/30/50` + `zero`），非上列 4 的倍數 —— 目的是讓既有使用點一對一替換、零視覺變更。另含 `radiusTag = 15` 與 4 個圖片尺寸常數。空殼 `lib/utils/dimens.dart` 已刪除。
 
 ### 破壞性評估
 
@@ -829,11 +839,12 @@ lib/features/foundation/style/
 
 ### 實作時待決事項
 
-| # | 事項 | 判準 |
-| :--- | :--- | :--- |
-| 1 | 骨架屏自繪 vs `shimmer` 套件 | 先自繪；超過 40 行改用套件 |
-| 2 | 舊 `UIConstants` 字級常數何時刪 | S4 標 `@Deprecated`；全數遷移後另開獨立 PR 移除 |
-| 3 | `Colors.grey` 全域掃除 | 各階段順手改；S4 做最後一次 grep 確認歸零 |
+| # | 事項 | 判準 | 狀態 |
+| :--- | :--- | :--- | :--- |
+| 1 | 骨架屏自繪 vs `shimmer` 套件 | 先自繪；超過 40 行改用套件 | S2 待決（專案目前無此依賴） |
+| 2 | 舊 `UIConstants` 字級常數何時刪 | S4 標 `@Deprecated`；全數遷移後另開獨立 PR 移除 | ⏩ **提前於 S1 完成標記**（10 個常數全數標 `@Deprecated` 且未移除）；遷移仍歸 S4 |
+| 3 | `Colors.grey` 全域掃除 | 各階段順手改；S4 做最後一次 grep 確認歸零 | S1 刻意不掃（維持 AC-7 乾淨驗證），33 處原封不動 |
+| **4（新增）** | `colorScheme.primary` 是否 `copyWith` 鎖回 `#D84A20` | 見 T-9。與 T-6 的 `surface` 覆寫一併決定，共用 D-4 的 3 個額度 | **S2 待決** |
 
 ---
 
