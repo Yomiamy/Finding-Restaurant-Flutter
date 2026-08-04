@@ -11,6 +11,44 @@
 
 ---
 
+## 📌 實查校正紀錄 (Codebase Re-verification — 2026-08-05)
+
+本次以直接檢視 `lib/` 當前程式碼（branch `main` @ `f643502`）校正既有記載與實況的落差。驗證基準：`flutter analyze` → **`No issues found!`**（維持零警告）。
+
+**新增一項待開發項目（依需求指定最高優先）**
+
+| 項目 | 優先級 | 說明 |
+| :--- | :---: | :--- |
+| **整合 `flutter_inspector_kit`**（見 **§2.0 F-0.1**） | **P-1（先於所有既有項目）** | pub.dev `1.9.0`，`dio ^5.2.0` 與本專案 `^5.6.0` 相容。⚠️ 需求原文為 `flutter_inspect_kit`，pub.dev 查無，**正確名為 `flutter_inspector_kit`**。必須以 `kDebugMode` 圍住，否則會把含 `authToken` 的請求 body 暴露給終端使用者 |
+
+> 連帶調整：§3 RICE 表新增一列並將原排名 5～16 順延為 6～17；§4 Roadmap Phase 1 進度改記 9/13；§6.9 Phase 1.5 順序表新增 P-1 前置段。
+
+**四項實查更正（未新增／未否決任何既有項目）**
+
+**四項更正（已就地寫入各章節）**
+
+| # | 章節 | 原記載 | 實查結果 |
+| :--- | :--- | :--- | :--- |
+| C-1 | §6.5 破壞性評估 | `RatingHelper` **2 處**呼叫 | **3 處** —— 漏計 `restaurant_comment_cell.dart`，S2 effort 上修 |
+| C-2 | §S1 覆核 / §6.7 T-9 | 硬編 `appPrimary` **16 處／7 檔** | **19 處／8 檔** |
+| C-3 | §6.6.3 列表頁 | `FilterTagsWidget` 待改 `colorScheme.primary` | ✅ **已完成**（`filter_tags_widget.dart:62`），S1 掛 theme 時順帶生效 |
+| C-4 | §1.2 缺陷 2、5 | 路徑 `lib/utils/constants.dart`、`fcm_manager.dart:53` | 路徑改為 **`lib/features/foundation/constants/constants.dart`**（§6.4 A-1 已解散 `lib/utils/`）；行號更正為 `:51` |
+
+**複測吻合、未漂移者**（毋須更正）
+
+| 項目 | 記載 | 複測 |
+| :--- | :--- | :--- |
+| T-2 裸 `Colors.xxx` | 33 處／13 檔 | ✅ 一致 |
+| T-3 `@Deprecated` 字級常數 | 10 個常數、29 處使用、14 檔 | ✅ 一致 |
+| P0 三項（API Key／假延遲／`didUpdateWidget`） | 全未修 | ✅ 一致，全數仍未修 |
+| §1.2 缺陷 4 Firestore 單 doc 覆寫 | 未修 | ✅ `favor_data_source.dart:23,81` 仍 `merge: false` 全量覆寫 |
+| S2 產物 `RatingStars` / `RestaurantListSkeleton` | 未建立 | ✅ 全 `lib/` 查無 |
+| Phase 1.5 三項（Carousel／fluster／情境標籤） | 未動工 | ✅ 無 `PageController`、`pubspec.yaml` 無 `fluster` |
+
+> **教訓（供後續 effort 估計參考）**：本次兩處數字更正（C-1、C-2）**皆往低估方向偏**，且都偏在「動到的既有使用點數量」而非「要寫的新程式碼」。C-4 更是整批路徑過時 —— **照舊路徑 grep 會查無，容易誤判成「已修」**。往後標 trivial／low 的項目，動工前先重 grep 一次使用點。
+
+---
+
 ## 📌 進度覆核摘要 (Progress Review — 2026-07-30)
 
 初版報告產出於 2026-07-26。本次依 07-26～07-30 期間實際落地的變更（截至 `d4aa8f1`, v1.4.0+30）覆核全文。**覆核方式為直接檢視當前程式碼，而非採信 commit 訊息**，故部分原標記為完成的項目已被更正。
@@ -108,7 +146,7 @@ lib/
    * `lib/flow/splash/view/splash_page.dart:16-20`: 在 `build()` 內寫入 `addPostFrameCallback` 搭配 `Future.delayed(Duration(seconds: 3))` 導航。
 
 2. **🔴 仍未修復 — 硬編碼 API 金鑰與敏感 Token (Hardcoded Secrets)**
-   * **現況（2026-07-30 覆核）**：金鑰僅隨常數改名為 `camelCase`，**明碼仍留在版控中**。`lib/utils/constants.dart:30` 的 `staticMapApiKey` 與 `:40` 的 `authToken` 皆未移除。此為當前**唯一未解的 P0 安全風險**，且既有金鑰已外洩於 git 歷史，修復時必須同步「撤銷並輪替 (revoke & rotate)」，僅搬移位置無效。
+   * **現況（2026-08-05 複測，仍未修）**：金鑰僅隨常數改名為 `camelCase`，**明碼仍留在版控中**。⚠️ **路徑已變更** —— 因 §6.4 A-1 解散 `lib/utils/`，現位於 **`lib/features/foundation/constants/constants.dart:30`** 的 `staticMapApiKey` 與 `:40` 的 `authToken`，皆未移除。（照舊路徑 `lib/utils/constants.dart` grep 會查無，勿誤判為已修）此為當前**唯一未解的 P0 安全風險**，且既有金鑰已外洩於 git 歷史，修復時必須同步「撤銷並輪替 (revoke & rotate)」，僅搬移位置無效。
    * 原始稽核紀錄：`constants.dart:37` `AUTH_TOKEN` (Yelp Fusion Token)、`constants.dart:27` `STATIC_MAP_API_KEY` (Google Maps Key)。
 
 3. **✅ 已修復 — Yelp 分頁邏輯錯誤 (`MainRepository` → `MainRepo`)**
@@ -119,7 +157,7 @@ lib/
    * **現況（2026-07-30 覆核）**：邏輯雖已抽出至 `lib/data_layer/datasources/`（`FavorDataSource`），但資料結構未動 —— 仍是單一 Document `favors/{uid}` 搭配 `set(favorsMap, SetOptions(merge: false))` 全量覆寫。1MB 上限與併發寫入覆蓋的風險完全未解除。此項對應 F-2.1 Subcollection 重構（P1）。
 
 5. **🔴 仍未修復 — 硬編碼人工假延遲 (Hardcoded Fake Delays)**
-   * **現況（2026-07-30 覆核）**：三處延遲全數保留 —— `main_bloc.dart:56` 過濾 2 秒、`fcm_manager.dart:53` 推播導航 8 秒、`splash_page.dart:22` 啟動頁 3 秒。啟動頁延遲屬品牌曝光的合理設計，但過濾與推播導航的延遲純屬無謂等待，應移除。
+   * **現況（2026-08-05 複測，仍未修）**：三處延遲全數保留 —— `main_bloc.dart:56` 過濾 2 秒、`fcm_manager.dart:51`（行號更正，原記 `:53`）推播導航 8 秒、`splash_page.dart:22` 啟動頁 3 秒。啟動頁延遲屬品牌曝光的合理設計，但過濾與推播導航的延遲純屬無謂等待，應移除。
 
 6. **✅ 已修復 — `FilterPage` UI 狀態被覆蓋重置 Bug (State Reset Bug)**
    * **現況**：`lib/flow/filter/view/filter_page.dart:27-36` 已改為在 `didChangeDependencies()` 搭配 `_isInit` 旗標僅初始化一次，`build()` 回歸純淨。使用者調整條件不再被舊參數覆寫。
@@ -186,6 +224,57 @@ lib/
 ---
 
 ## 2. 全方位創新功能提案與既有 UX 優化 (Comprehensive Feature Ideation & UX Optimization)
+
+### 2.0 開發者工具地基：整合 `flutter_inspector_kit` (P-1，最高優先) — ⬜ 待辦
+
+> **定位**：這**不是產品功能，是修其他所有項目時的量測工具**。排在最前面的理由不是它最有價值，而是**它讓後面每一項都更快、更有證據**——先裝溫度計，再治病。
+
+#### F-0.1 整合 `flutter_inspector_kit` 除錯套件
+
+* **套件**：[`flutter_inspector_kit`](https://pub.dev/packages/flutter_inspector_kit) — pub.dev 已發布，**最新版 `1.9.0`**，MIT 授權，支援 Android／iOS／Web／Windows／macOS／Linux 全平台。
+* **⚠️ 名稱更正**：需求提及的 `flutter_inspect_kit` 於 pub.dev **不存在**；正確套件名為 **`flutter_inspector_kit`**（`inspector`，非 `inspect`）。
+
+**相依相容性（2026-08-05 實查 `pubspec.yaml`）**
+
+| 項目 | 套件需求 | 本專案現況 | 判定 |
+| :--- | :--- | :--- | :---: |
+| `dio` | `^5.2.0` | `^5.6.0` | 🟢 相容 |
+| Dart SDK | Flutter 套件 | `>=3.5.0 <4.0.0` | 🟢 相容 |
+| 新增傳遞相依 | `flutter_local_notifications` `^22.0.0`、`share_plus` `^13.0.0`、`web` `^1.1.0` | 皆未安裝 | 🟡 新增 3 個傳遞相依 |
+
+**接線點（皆已實查存在，無須先重構）**
+
+| # | 接線 | 位置 | 說明 |
+| :--- | :--- | :--- | :--- |
+| 1 | 建立單一 `FlutterInspector` 實例 | `lib/di/` | 沿用既有 GetIt 註冊，與現行 DI 慣例一致 |
+| 2 | Dio 攔截器 | `lib/api/dio/dio_client.dart:24,29` | 已有 `dio.interceptors.addAll(...)` 掛載點，**加一行即可** |
+| 3 | `navigatorObservers` | `lib/main.dart:51` `PlatformApp` | `PlatformApp` 支援頂層 `navigatorObservers`，Material／Cupertino 兩分支共用 |
+| 4 | 喚起手勢 | `lib/main.dart:79` `builder:` | **既有 `builder:` 層**（S1 為跨平台 theme 而加）可直接包 `FlutterInspectorMagicalTap`，無須新增層級 |
+
+**🔴 必要防線：絕不可進 production build**
+
+此為除錯工具，**必須以 `kDebugMode` 圍住**，否則等同把完整網路請求／回應 body（含 `authToken`）暴露給終端使用者——**會讓 §1.2 缺陷 2 的金鑰外洩風險從「git 歷史」擴大到「線上 App」**。
+
+* 攔截器、observer、FAB 掛載一律包 `if (kDebugMode)`；
+* 驗收時須確認 release build 的 bundle 不含 dashboard UI（tree-shaking 生效）。
+
+**為什麼排 P-1（先於 P0 安全修復）**
+
+不是因為它比洩漏金鑰更嚴重，而是**它是後續每一項的量測前提**，且 effort 極低（0.5）：
+
+| 後續項目 | 裝了它之後 |
+| :--- | :--- |
+| §1.2 缺陷 5 移除假延遲 | Network tab 直接看出**真實 round-trip 時間**，證明 2 秒延遲純屬多餘；移除後若閃爍，timeline 能指出被掩蓋的 race condition（§6.6 破壞性評估正是要求驗這件事） |
+| §1.2 缺陷 3 Yelp 分頁 | 逐筆檢視 `offset` 參數與回傳筆數，分頁重複與否一眼可見 |
+| §1.2 缺陷 7 Marker 未連動 | Navigator tab + Console 對照，確認 rebuild 是否真的觸發 |
+| §1.2 缺陷 2 API Key | 可實地確認 header 中的 `authToken` 是否已改由 broker 供給 |
+| S2／S3 視覺改造 | 診斷報告一鍵導出，附網路與導航 timeline，回報視覺問題時附得上證據 |
+
+* **Effort**: 0.5（4 個接線點，全部是既有掛載點加行，無重構）
+* **破壞性評估**: 🟢 —— 全數包在 `kDebugMode` 內，release 行為零改變；套件本身設計為「絕不破壞宿主 App」（錯誤鉤子鏈接而非覆蓋）
+* **驗收**: `flutter analyze` 維持 `No issues found!`；debug build 可喚起 dashboard 並看到 Yelp 請求；**release build 確認無 dashboard**
+
+---
 
 ### 2.1 搜尋與地圖體驗 (Map & Spatial Search)
 
@@ -352,7 +441,8 @@ lib/
 | ✅ **修復 `build()` 側邊效應反模式** | 既有修復 | 10 | 3.0 | 100% | 0.5 | **60.0** | 28.5 | 1 | **已完成** |
 | ✅ **修復 Yelp API 分頁邏輯 Bug** | 既有修復 | 9 | 2.5 | 100% | 0.5 | **45.0** | 23.75 | 2 | **已完成** |
 | ✅ **修復 `FilterPage` 狀態重置 Bug** | 既有修復 | 8 | 2.5 | 100% | 0.5 | **40.0** | 23.75 | 3 | **已完成** |
-| 🔴 **移除硬編碼 API Key (改用 Server-side Broker)** | 安全修復 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | 4 | **P0（唯一未解）** |
+| 🔵 **整合 `flutter_inspector_kit` 除錯套件** | 開發工具 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | 4 | **P-1（最高，先於所有項目）** |
+| 🔴 **移除硬編碼 API Key (改用 Server-side Broker)** | 安全修復 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | 5 | **P0（唯一未解安全風險）** |
 | ✅ **對照組風格: 目錄架構與層級分離重構** | 架構重構 | 10 | 3.0 | 100% | 2.0 | **15.0** | 24.0 | - | **已完成** |
 | ✅ **對照組風格: 導入全域依賴注入 (GetIt)** | 架構重構 | 10 | 2.5 | 100% | 1.5 | **16.6** | 21.2 | - | **已完成** |
 | ✅ **對照組風格: DTO 與 Domain Entity 分離** | 架構重構 | 10 | 2.5 | 100% | 1.5 | **16.6** | 21.2 | - | **已完成** |
@@ -361,20 +451,20 @@ lib/
 | ✅ **訪客模式 (Guest Mode)** | 轉化優化 | 10 | 2.0 | 100% | 1.0 | **20.0** | 18.0 | - | **已完成** |
 | 🔴 **移除無謂假延遲 (過濾 2s / 推播 8s)** | 既有修復 | 9 | 1.5 | 100% | 0.5 | **27.0** | 14.25 | - | **P0** |
 | 🔴 **`MapWidget` 實作 `didUpdateWidget` 連動 Marker** | 既有修復 | 8 | 2.0 | 100% | 0.5 | **32.0** | 19.0 | - | **P0** |
-| **地圖與 BottomSheet 雙向連動 Carousel** | 空間 UX | 9 | 3.0 | 90% | 1.5 | **16.2** | 22.95 | 5 | **P1** |
+| **地圖與 BottomSheet 雙向連動 Carousel** | 空間 UX | 9 | 3.0 | 90% | 1.5 | **16.2** | 22.95 | 6 | **P1** |
 | ✅ **調整側選單功能項目順序** | UX 優化 | 10 | 1.0 | 100% | 0.5 | **20.0** | 10.0 | - | **已完成** |
 | **列表底部載入更多動畫** | UX 優化 | 9 | 1.0 | 100% | 0.5 | **18.0** | 10.0 | - | **P1** |
-| **情境化探索標籤 (#一人食等)** | 搜尋優化 | 9 | 2.0 | 90% | 1.0 | **16.2** | 16.2 | 6 | **P1** |
-| **`fluster` 圖標動態聚類** | 效能優化 | 8 | 2.0 | 90% | 1.0 | **14.4** | 16.2 | 7 | **P1** |
-| **骨架屏 Shimmer 載入與離線快取** | UX 優化 | 9 | 1.5 | 100% | 1.0 | **13.5** | 13.5 | 8 | **P1** |
-| **Firestore Subcollection 口袋名單** | 資料架構 | 7 | 2.0 | 90% | 1.0 | **12.6** | 14.4 | 9 | **P1** |
-| **輕量化線上微訂位 Time-Slot 選擇器** | 商業轉化 | 7 | 3.0 | 80% | 2.0 | **8.4** | 19.2 | 10 | **P1** |
-| **自訂美食地圖社群共編** | 社群生態 | 6 | 2.0 | 80% | 2.0 | **4.8** | 9.6 | 11 | **P2** |
-| **線上候位與動態隊列 FCM 追蹤** | 商業轉化 | 5 | 2.5 | 80% | 2.5 | **4.0** | 10.0 | 12 | **P2** |
-| **AI 多模態 Vision 菜單翻譯** | AI 創新 | 6 | 2.5 | 80% | 2.5 | **4.8** | 12.0 | 13 | **P2** |
-| **個人味蕾配對度 (0-100% Match)** | AI 創新 | 7 | 2.0 | 70% | 2.5 | **3.92** | 9.8 | 14 | **P2** |
-| **自然語言選店助手與命運轉盤** | AI 創新 | 6 | 2.0 | 70% | 2.0 | **4.2** | 11.2 | 15 | **P2** |
-| **雙排瀑布流 UGC 食記與短影片** | 內容生態 | 5 | 2.0 | 70% | 3.0 | **2.33** | 9.8 | 16 | **P2** |
+| **情境化探索標籤 (#一人食等)** | 搜尋優化 | 9 | 2.0 | 90% | 1.0 | **16.2** | 16.2 | 7 | **P1** |
+| **`fluster` 圖標動態聚類** | 效能優化 | 8 | 2.0 | 90% | 1.0 | **14.4** | 16.2 | 8 | **P1** |
+| **骨架屏 Shimmer 載入與離線快取** | UX 優化 | 9 | 1.5 | 100% | 1.0 | **13.5** | 13.5 | 9 | **P1** |
+| **Firestore Subcollection 口袋名單** | 資料架構 | 7 | 2.0 | 90% | 1.0 | **12.6** | 14.4 | 10 | **P1** |
+| **輕量化線上微訂位 Time-Slot 選擇器** | 商業轉化 | 7 | 3.0 | 80% | 2.0 | **8.4** | 19.2 | 11 | **P1** |
+| **自訂美食地圖社群共編** | 社群生態 | 6 | 2.0 | 80% | 2.0 | **4.8** | 9.6 | 12 | **P2** |
+| **線上候位與動態隊列 FCM 追蹤** | 商業轉化 | 5 | 2.5 | 80% | 2.5 | **4.0** | 10.0 | 13 | **P2** |
+| **AI 多模態 Vision 菜單翻譯** | AI 創新 | 6 | 2.5 | 80% | 2.5 | **4.8** | 12.0 | 14 | **P2** |
+| **個人味蕾配對度 (0-100% Match)** | AI 創新 | 7 | 2.0 | 70% | 2.5 | **3.92** | 9.8 | 15 | **P2** |
+| **自然語言選店助手與命運轉盤** | AI 創新 | 6 | 2.0 | 70% | 2.0 | **4.2** | 11.2 | 16 | **P2** |
+| **雙排瀑布流 UGC 食記與短影片** | 內容生態 | 5 | 2.0 | 70% | 3.0 | **2.33** | 9.8 | 17 | **P2** |
 
 ---
 
@@ -386,7 +476,8 @@ lib/
 +-----------------------------------------------------------------------------------+
 |                           STRATEGIC PRODUCT ROADMAP                               |
 +-----------------------------------------------------------------------------------+
-| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 9/12 ✅         |
+| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 9/13 ✅         |
+|   • [ ] P-1 整合 flutter_inspector_kit ⚡ 最高優先，後續各項的量測前提           |
 |   • [x] P0 修復 `build()` 側邊效應反模式                                          |
 |   • [x] P0 修復 Yelp API 分頁邏輯 Bug                                              |
 |   • [x] P0 修復 `FilterPage` 狀態重置 Bug                                          |
@@ -504,7 +595,7 @@ lib/
 §6.4 的「色票以 `#D84A20` 為種子」隱含一個未經驗證的假設：`colorScheme.primary` 會**是**品牌橘。**實測不成立** ——
 `ColorScheme.fromSeed(seedColor: #D84A20)` 依 M3 tonal palette 將 primary 映射為 **`#8F4B38`（較濁的棕橘）**，非原色。
 
-後果：`colorScheme.primary` 與仍硬編 `ThemeColor.appPrimary` 的 **16 處使用點（7 個檔案）** 並存時有可見色差。這是零 `copyWith` 決策（D-4 額度用 0 個）的既定後果，非缺陷，但 §6.4 原文未預料到，於此更正。**S2 引入 `surface` 覆寫時須一併決定 primary 是否也要 `copyWith` 鎖回 `#D84A20`。**
+後果：`colorScheme.primary` 與仍硬編 `ThemeColor.appPrimary` 的 **19 處使用點（8 個檔案）**（2026-08-05 複測更正，原記 16 處／7 檔）並存時有可見色差。這是零 `copyWith` 決策（D-4 額度用 0 個）的既定後果，非缺陷，但 §6.4 原文未預料到，於此更正。**S2 引入 `surface` 覆寫時須一併決定 primary 是否也要 `copyWith` 鎖回 `#D84A20`。**
 
 ### 另一項計畫外發現：跨平台 theme 解析
 
@@ -738,7 +829,7 @@ lib/features/foundation/style/
 | 項目 | 等級 | 說明 |
 | :--- | :---: | :--- |
 | 刪除 11 張星等 PNG | 🟢 | 僅 `RatingHelper` 引用，已確認 |
-| `RatingHelper` API 變更 | 🟡 | 2 處呼叫（item cell、info cell）須同步改 |
+| `RatingHelper` API 變更 | 🟡 | **3 處**呼叫（item cell、info cell、**comment cell**）須同步改。⚠️ 2026-08-05 複測更正：原記「2 處」漏計 `restaurant_comment_cell.dart`，S2 effort 據此上修 |
 | 卡片高度由 110 變動 | 🟢 | `RestaurantItemCell.itemH` 雖為 public static，但經 grep 確認**僅在自身檔案內引用**（`:23`、`:44`），無外部依賴 |
 | 距離格式改變 | 🟢 | 純顯示層 |
 
@@ -771,7 +862,7 @@ lib/features/foundation/style/
 * 卡片間距與 padding 全數走 token
 * **新增列表底部載入更多指示器** ← 現況完全無指示（`restaurant_info_list_widget.dart` 觸發 `FetchSearchInfo` 但 UI 無反應）
 * 首次載入改用 `RestaurantListSkeleton`
-* `FilterTagsWidget` 的 `Theme.of(context).primaryColor` 修正為 `colorScheme.primary`（掛 theme 後自動正確）
+* ~~`FilterTagsWidget` 的 `Theme.of(context).primaryColor` 修正為 `colorScheme.primary`~~ → ✅ **已完成**（2026-08-05 複測：`filter_tags_widget.dart:62` 已為 `Theme.of(context).colorScheme.primary`，S1 掛 theme 時順帶生效，S3 無須再做）
 
 ### 6.6.4 篩選頁 (`filter`) — 建議做
 
@@ -817,7 +908,7 @@ lib/features/foundation/style/
 | T-2 | 33 處裸 `Colors.xxx`、13 個檔案（2026-08-03 複測數字未變） | S2 / S3 / S4 |
 | T-3 | 10 個 `@Deprecated` 字級常數、29 處使用、14 個檔案待遷移 | S4，之後獨立 PR 移除 |
 | T-6 | 奶油白 `surface` (`#FFFBF7`) 覆寫，D-4 的 3 個 `copyWith` 額度完整保留 | **S2** |
-| **T-9（新增）** | **`colorScheme.primary` = `#8F4B38` ≠ 品牌色 `#D84A20`**，與 16 處硬編 `ThemeColor.appPrimary`（7 檔）並存有色差。須決定是否 `copyWith` 鎖回品牌色 | **S2** |
+| **T-9（新增）** | **`colorScheme.primary` = `#8F4B38` ≠ 品牌色 `#D84A20`**，與 **19 處**硬編 `ThemeColor.appPrimary`（**8 檔**）並存有色差。須決定是否 `copyWith` 鎖回品牌色。⚠️ 2026-08-05 複測更正：原記 16 處／7 檔 | **S2** |
 
 > **順序理由**：S2 完成後列表與最愛兩畫面同時改觀，是最快看到成果的切點。S1 單獨看幾乎無變化，但為 S2/S3 的前提。
 
@@ -879,6 +970,9 @@ lib/features/foundation/style/
 +-----------------------------------------------------------------------------------+
 | Phase 1.5: 空間與視覺體驗升級 (Spatial UX & Polish)                               |
 |                                                                                   |
+|  ── P-1 開發工具地基（先於一切，見 §2.0）──                                       |
+|   • [ ] 整合 flutter_inspector_kit (kDebugMode 圍住，release 零改變)              |
+|                                                                                   |
 |  ── 6.x UI 視覺重塑（本章，前置地基）──                                           |
 |   • [x] S1 Design System 地基 (ThemeData / ColorScheme / token) ✅ 2026-08-03     |
 |   • [ ] S2 共用元件重塑 (ItemCell / RatingStars / Skeleton / Empty)               |
@@ -897,3 +991,5 @@ lib/features/foundation/style/
 *第 6 章產出時間：2026-07-31*
 *產出方式：直接檢視 `lib/` 當前原始碼（分支 `release/202607/release-1.4.0(30)`, commit `c8c40ae`）*
 *S1 交付覆核：2026-08-03（分支 `refactor/202607/57-design-system-foundation`, commit `9c2ec3f`）—— 實測 `flutter analyze` 零警告、`flutter test` 54 tests 全綠*
+*實查校正：2026-08-05（分支 `main`, commit `f643502`）—— 見文首「實查校正紀錄」，4 項更正、6 項複測吻合、新增 P-1 項目；`flutter analyze` 維持 `No issues found!`*
+*檔名日期前綴同步更新為 `2026-08-05`（原 `2026-08-03`，以 `git mv` 改名保留檔案歷史）。**內文各處的 `2026-08-03` 為 S1 交付與複測的事件日期，屬史實紀錄，不隨檔名更動。***
