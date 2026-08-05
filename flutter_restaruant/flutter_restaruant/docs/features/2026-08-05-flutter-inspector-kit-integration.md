@@ -173,12 +173,12 @@
 
 **緩解手段**
 
-1. **`kDebugMode` guard 為強制設計約束**：DI 註冊、Dio 攔截器、`navigatorObservers`、喚起手勢，四個接線點**無一例外**必須位於 `kDebugMode` 判斷之內。`kDebugMode` 是編譯期常數，release build 中該分支為 dead code，會被 tree-shaking 移除。
+1. **`kDebugMode` guard 為強制設計約束**：DI 註冊、Dio 攔截器、`navigatorObservers`、喚起手勢、常駐 FAB（2026-08-05 新增），五個接線點**無一例外**必須位於 `kDebugMode` 判斷之內。`kDebugMode` 是編譯期常數，release build 中該分支為 dead code，會被 tree-shaking 移除。
 2. **驗收硬條件**：AC-4（release 無進入點）、AC-5（release 不註冊攔截器）、AC-6（release bundle 不含 dashboard UI）為**合併前必過項**，任一不過即不得合併。
 3. **實機驗證，非程式碼審閱**：AC-4 必須以**實際安裝的 release build** 驗證，不接受「看程式碼覺得應該沒問題」。
 4. **不因此延後缺陷 2 的修復**：本項緩解的是「不讓風險擴大」，**不等於風險已解除**。硬編碼金鑰仍須依 §1.2 缺陷 2 獨立處理（含 revoke & rotate）。
 
-> **殘餘風險**：即使 AC-4～6 全過，`kDebugMode` guard 的正確性仍依賴人為紀律。未來新增接線點時可能漏包。**本次不建 CI 防護（§4.2）**，此判斷的前提是接線點只有四個且集中在兩個檔案；若日後接線點增加，應重新評估。
+> **殘餘風險（2026-08-05 更新）**：即使 AC-4～6 全過，`kDebugMode` guard 的正確性仍依賴人為紀律。未來新增接線點時可能漏包。**本次不建 CI 防護（§4.2）**。原判斷前提是「接線點只有四個且集中在兩個檔案」——此前提已被打破：新增 FAB 進入點（`lib/flow/splash/view/splash_page.dart`）後現為**五個接線點、四個檔案**（詳見 `docs/plans/...md` §2.5、§3、§5.1）。文件自身設下的「若日後接線點增加，應重新評估」觸發條件已達成：重新評估結論為風險性質不變（仍是同一種「人為紀律」依賴），數量增加不代表控制力下降，`kDebugMode` guard 與 T5 的 `grep` 齊全檢查對每一處新接線點同樣有效。
 
 ### 5.2 🟡 R-2：新增傳遞相依帶來的相容性風險
 

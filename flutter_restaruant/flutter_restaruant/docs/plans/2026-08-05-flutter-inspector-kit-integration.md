@@ -423,11 +423,11 @@ rtk flutter run --debug
 
 **不做任何處理**（規格 §5.3 結論）。效能量測在 profile 模式進行，`kDebugMode` 為 `false`，`inspector` 為 `null`，不受影響。此處僅記錄：實作時**不得**因「怕慢」而加任何開關或設定——那是規格 §4.2 排除的「長期治理」。
 
-### R-4 🟢 套件穩定性
+### R-4 🟢 套件穩定性（2026-08-05 更新：`captureUncaughtErrors`／`showNetworkNotification` 決定已變更）
 
-- §2.3 明確**不開啟** `captureUncaughtErrors`，保證套件完全不觸碰宿主的 `FlutterError.onError` / `PlatformDispatcher.onError` / `ErrorWidget.builder`。這把規格 §5.4 的「chain 而非 override」進一步強化為「連 chain 都不做」。
-- §2.3 **不開啟** `showNetworkNotification`，避免 `flutter_local_notifications` 的權限提示污染 AC-9。
-- 移除成本：本計畫的異動集中在 1 個新檔 + 3 個既有檔的小段落，revert 成本等同一個小 PR（符合規格 §5.4 的預期）。
+- ~~§2.3 明確不開啟 `captureUncaughtErrors`，保證套件完全不觸碰宿主的 handler~~：此段已過時。§2.3 二次修訂後**改為開啟** `captureUncaughtErrors: true`。套件內部經查證（`uncaught_error_handler.dart`）對 `FlutterError.onError`／`PlatformDispatcher.onError`／`ErrorWidget.builder` 三者皆為 chain/wrap、非 override，原有錯誤處理不會被覆蓋，符合規格 §5.4「chain 而非 override」的安心前提。唯一實際副作用：`flutter_test` 會偵測到 `ErrorWidget.builder` 在測試期間被改動而判定失敗，已於 `test/app_theme_platform_test.dart` 以 `try/finally` 復原全域 hook 修復（見 §3 檔案異動清單的 test 例外說明）。
+- ~~§2.3 不開啟 `showNetworkNotification`，避免權限提示污染 AC-9~~：此段已過時。§2.3 二次修訂後**改為開啟** `showNetworkNotification: true`，debug build 首次啟動會跳系統通知權限對話框；此行為僅發生在 `kDebugMode` 分支內，不影響 release 的 AC-9。
+- 移除成本：本計畫的異動集中在 1 個新檔 + 4 個既有檔（`api_clz.dart`／`main.dart`／`splash_page.dart`／`app_theme_platform_test.dart`）的小段落，revert 成本仍等同一個小 PR（符合規格 §5.4 的預期）。
 
 ---
 
