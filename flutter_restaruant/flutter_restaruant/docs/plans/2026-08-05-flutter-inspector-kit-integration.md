@@ -105,22 +105,24 @@ final FlutterInspector? inspector = kDebugMode ? FlutterInspector(...) : null;
 
 **結論**：`main.dart` 的兩處接線用 `if (kDebugMode)` 明寫；`api_clz.dart` 因為在頂層初始化式中，同樣以 `if (kDebugMode)` 起手。四處 grep 得到，零例外。
 
-### 2.3 建構子參數的取捨：**幾乎全用預設值**
+### 2.3 建構子參數的取捨（2026-08-05 修訂：使用者明確要求開啟四項 debug 專屬功能）
 
-實測套件建構子有 13 個參數。規格 §4.2 明文「先用套件預設值」。逐項判定：
+實測套件建構子有 13 個參數。規格 §4.2 明文「先用套件預設值」，原始判定為「幾乎全用預設值」；使用者事後複查要求開啟 `showNetworkNotification`／`captureUncaughtErrors`／`captureLifecycleEvents` 並關閉 `redactSensitiveData`，逐項改判如下：
 
 | 參數 | 預設 | 決定 | 理由 |
 | :--- | :--- | :--- | :--- |
 | `slowRequestThreshold` | `2s` | **顯式設 `2s`** | DS-1 要證明「2 秒假延遲是多餘的」。閾值恰好對齊該數字，讓超標請求一眼可見。雖與預設同值，顯式寫出是**意圖宣告** |
-| `redactSensitiveData` | `true` | **不動（沿用 `true`）** | 直接呼應 §5.1 R-1。即便真的漏進 release，第二道防線仍在 |
-| `showNetworkNotification` | `false` | **不動** | 設 `true` 會觸發 `flutter_local_notifications` 的權限請求，是可見的行為改變，違反 AC-9 |
-| `navigatorKey` | `null` | **不動** | 僅服務 notification tap，上一項已關閉 |
-| `captureUncaughtErrors` | `false` | **不動** | 規格 §5.4 的安心前提正是「不劫持宿主錯誤處理」。設 `true` 會去動 `FlutterError.onError`，是 AC-9 的風險 |
-| `captureLifecycleEvents` | `false` | **不動** | §2 五個故事沒有一個需要它 |
+| `redactSensitiveData` | `true` | **改為 `false`** | 使用者要求 debug 時 Network 分頁完整顯示敏感欄位，不遮蔽，方便除錯核對真實 request/response。整個建構子仍在 `kDebugMode` 分支內，release 恆為 `null`，不影響 AC-9；§5.1 R-1 的「第二道防線」因此收斂為單靠 `kDebugMode` guard，殘餘風險見下方新增說明 |
+| `showNetworkNotification` | `false` | **改為 `true`** | 使用者要求 debug 時網路請求跳系統通知。僅在 `kDebugMode` 分支內生效，release 不受影響，AC-9 不成立的風險僅限「debug build 需要通知權限」，不涉及 release 行為 |
+| `navigatorKey` | `null` | **不動** | 未設定 `navigatorKey` 時 `showNetworkNotification` 的 tap-to-open 為 no-op（套件 `_openNetworkFromNotification` 對 `null` context 直接返回），不影響核心功能；如需點通知直接開啟 dashboard，可後續再補 |
+| `captureUncaughtErrors` | `false` | **改為 `true`** | 使用者要求 debug 時攔截未捕捉例外。已查證套件原始碼（`uncaught_error_handler.dart`）：`FlutterError.onError`／`PlatformDispatcher.onError`／`ErrorWidget.builder` 三處皆為 **chain/wrap**、非 override——記錄後接續呼叫原有 handler。且本專案未設定任何全域 error handler，無衝突可能。規格 §5.4「不劫持宿主錯誤處理」的安心前提由套件的 chain 機制保證，非規則本身禁止開啟 |
+| `captureLifecycleEvents` | `false` | **改為 `true`** | 使用者要求 debug 時記錄生命週期事件。套件用 `WidgetsBinding.addObserver`，本就支援多 observer 並存，不影響既有生命週期邏輯 |
 | `magicalTapCount` | `5` | **不動** | 5 連點的誤觸機率已足夠低 |
 | 其餘（`customTab` 等） | — | **不動** | 無需求 |
 
-> **只設一個參數**。每多設一個都是在「改造溫度計」（規格 §4.3）。
+> **範圍仍受 `kDebugMode` 單一分支界定**：四項改動全部發生在 `FlutterInspector(...)` 建構子內部，該建構子本身只在 `kDebugMode == true` 時才會被求值（見 §2.1），release 恆為 `null`。因此本次修訂不影響 AC-4／AC-6／AC-9 的 release 安全性，僅改變 debug build 的除錯資訊豐富度。
+>
+> **殘餘風險更新**：`redactSensitiveData: false` 拿掉了「即便漏進 release 仍有遮蔽」這道第二防線，現在完全依賴 `kDebugMode` guard 這唯一一層。此風險與 §6 R-1 的既有殘餘風險描述（「未來新增接線點可能漏包」）性質相同，緩解手段不變：T5 的 `grep kDebugMode` 四處齊全檢查、T6 的實機硬驗證。
 
 ### 2.4 Dio 攔截器的**插入順序**
 
