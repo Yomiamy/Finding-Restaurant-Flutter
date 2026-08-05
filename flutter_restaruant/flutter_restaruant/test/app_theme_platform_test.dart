@@ -1,3 +1,4 @@
+import 'dart:ui' as ui;
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_restaruant/di/di_barrel.dart';
@@ -20,10 +21,26 @@ void main() {
 
   for (final target in [TargetPlatform.iOS, TargetPlatform.android]) {
     testWidgets('AppThemeData 在 $target 上可被解析', (tester) async {
-      await tester.pumpWidget(Theme(
-        data: ThemeData(platform: target),
-        child: const FindingRestaruantApp(),
-      ));
+      // lib/di/inspector.dart 的 captureUncaughtErrors: true 會在
+      // FlutterInspector 建構子內立刻 attach 三個全域 error hook
+      // （FlutterError.onError／PlatformDispatcher.onError／
+      // ErrorWidget.builder）。`inspector` 是頂層 lazy final，全專案
+      // 只有本測試會 mount 真實 FindingRestaruantApp，故首次求值必在
+      // 此發生。flutter_test 對每個測試各自比對 pumpWidget 前後的
+      // ErrorWidget.builder，變動會被判定失敗——package:test 的
+      // tearDown() 在此驗證之後才執行，太晚救不了，必須在本 callback
+      // 結尾、pumpWidget 之後手動復原。
+      final originalErrorWidgetBuilder = ErrorWidget.builder;
+      final originalFlutterErrorOnError = FlutterError.onError;
+      final originalPlatformDispatcherOnError =
+          ui.PlatformDispatcher.instance.onError;
+
+      await tester.pumpWidget(
+        Theme(
+          data: ThemeData(platform: target),
+          child: const FindingRestaruantApp(),
+        ),
+      );
 
       // 由 navigatorKey 取得 route 之下的 context，確保讀到的是 app 實際
       // 套用的 theme，而非測試自建的外層 Theme。
@@ -33,6 +50,11 @@ void main() {
 
       // SplashPage 的 3 秒延遲不排掉會留下 pending timer，測試 framework 會報錯。
       await tester.pump(const Duration(seconds: 3));
+
+      ErrorWidget.builder = originalErrorWidgetBuilder;
+      FlutterError.onError = originalFlutterErrorOnError;
+      ui.PlatformDispatcher.instance.onError =
+          originalPlatformDispatcherOnError;
     });
   }
 }
