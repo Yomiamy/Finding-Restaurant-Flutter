@@ -114,7 +114,7 @@ final FlutterInspector? inspector = kDebugMode ? FlutterInspector(...) : null;
 | `slowRequestThreshold` | `2s` | **顯式設 `2s`** | DS-1 要證明「2 秒假延遲是多餘的」。閾值恰好對齊該數字，讓超標請求一眼可見。雖與預設同值，顯式寫出是**意圖宣告** |
 | `redactSensitiveData` | `true` | **改為 `false`** | 使用者要求 debug 時 Network 分頁完整顯示敏感欄位，不遮蔽，方便除錯核對真實 request/response。整個建構子仍在 `kDebugMode` 分支內，release 恆為 `null`，不影響 AC-9；§5.1 R-1 的「第二道防線」因此收斂為單靠 `kDebugMode` guard，殘餘風險見下方新增說明 |
 | `showNetworkNotification` | `false` | **改為 `true`** | 使用者要求 debug 時網路請求跳系統通知。僅在 `kDebugMode` 分支內生效，release 不受影響，AC-9 不成立的風險僅限「debug build 需要通知權限」，不涉及 release 行為 |
-| `navigatorKey` | `null` | **不動** | 未設定 `navigatorKey` 時 `showNetworkNotification` 的 tap-to-open 為 no-op（套件 `_openNetworkFromNotification` 對 `null` context 直接返回），不影響核心功能；如需點通知直接開啟 dashboard，可後續再補 |
+| `navigatorKey` | `null` | **改為傳入 `main.dart` 既有的 `navigatorKey`** | 未設定時 `showNetworkNotification` 的 tap-to-open 為 no-op（套件 `_openNetworkFromNotification` 對 `null` context 直接返回）。既然通知已開啟（見上一列），點通知應能實際開啟 dashboard，故沿用 app 既有的 `GlobalKey<NavigatorState>`（`lib/main.dart:21`，已是 `PlatformApp.navigatorKey`），`lib/di/inspector.dart` 以 `import '../main.dart' show navigatorKey;` 取得，不新增第二把 key |
 | `captureUncaughtErrors` | `false` | **改為 `true`** | 使用者要求 debug 時攔截未捕捉例外。已查證套件原始碼（`uncaught_error_handler.dart`）：`FlutterError.onError`／`PlatformDispatcher.onError`／`ErrorWidget.builder` 三處皆為 **chain/wrap**、非 override——記錄後接續呼叫原有 handler。且本專案未設定任何全域 error handler，無衝突可能。規格 §5.4「不劫持宿主錯誤處理」的安心前提由套件的 chain 機制保證，非規則本身禁止開啟 |
 | `captureLifecycleEvents` | `false` | **改為 `true`** | 使用者要求 debug 時記錄生命週期事件。套件用 `WidgetsBinding.addObserver`，本就支援多 observer 並存，不影響既有生命週期邏輯 |
 | `magicalTapCount` | `5` | **不動** | 5 連點的誤觸機率已足夠低 |
