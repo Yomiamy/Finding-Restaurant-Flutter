@@ -1,0 +1,28 @@
+import 'package:flutter/foundation.dart';
+import 'package:flutter_inspector_kit/flutter_inspector_kit.dart';
+
+import '../main.dart' show navigatorKey;
+
+/// Debug-only 除錯工具實例。release build 中恆為 `null`，
+/// 所有引用點因此成為 dead code 而被 tree-shaking 移除。
+///
+/// 以下參數皆為使用者明確要求開啟的 debug-only 行為，整個建構子都在
+/// `kDebugMode` 分支內，release 恆為 `null`，不影響 AC-9：
+/// - `showNetworkNotification`：debug 時網路請求跳系統通知
+/// - `navigatorKey`：沿用 app 既有的 `navigatorKey`，讓上述通知的
+///   tap-to-open 能實際定位到 `NavigatorState` 開啟 dashboard（未設定時
+///   為 no-op）
+/// - `captureUncaughtErrors`：debug 時攔截未捕捉例外
+/// - `captureLifecycleEvents`：debug 時記錄生命週期事件
+/// - `redactSensitiveData: false`：debug 時匯出／分享／複製診斷內容不遮蔽
+///   敏感欄位（畫面顯示本就不受此旗標影響）
+final FlutterInspector? inspector = kDebugMode
+    ? FlutterInspector(
+        slowRequestThreshold: const Duration(seconds: 2),
+        showNetworkNotification: true,
+        navigatorKey: navigatorKey,
+        captureUncaughtErrors: true,
+        captureLifecycleEvents: true,
+        redactSensitiveData: false,
+      )
+    : null;

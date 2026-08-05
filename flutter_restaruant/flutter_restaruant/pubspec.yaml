@@ -8,7 +8,7 @@ publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 version: 1.4.0+30
 
 environment:
-  sdk: '>=3.5.0 <4.0.0'
+  sdk: '>=3.10.1 <4.0.0'
 
 dependencies:
   # UI 元件與介面元件 (UI Components & Layouts)
@@ -69,6 +69,9 @@ dependencies:
   sprintf: ^7.0.0 # 字串格式化工具
   logger: ^2.4.0 # 多層級日誌紀錄工具 (Logger)
   crypto: ^3.0.3 # 加密與雜湊演算法 (MD5, SHA-256 等)
+
+  # 開發除錯工具 (Developer Tooling — debug only)
+  flutter_inspector_kit: ^1.9.0 # App 內除錯儀表板 (網路/導航/日誌)，全數以 kDebugMode 圍住
 
   # Standard Flutter SDK and core packages
   flutter:
