@@ -167,6 +167,7 @@ LogInterceptor (dio_client.dart:24, isLogEnabled 預設 true)
 - ❌ `lib/api/dio/dio_client.dart` — 勘誤 B 已說明理由，`LogInterceptor` 一併保留（規格 §4.2）
 - ❌ `lib/di/injection.dart` — §2.1 已說明不走 GetIt
 - ❌ `test/` 下任何檔案 — 規格 §4.2「不為 inspector 本身寫測試」
+  > **唯一例外（2026-08-05）**：`test/app_theme_platform_test.dart` 因 `captureUncaughtErrors: true`（§2.3）在該測試 mount 真實 `FindingRestaruantApp` 時觸發 `inspector` 首次求值，連帶把全域 `ErrorWidget.builder` 等 hook 換掉，導致 `flutter_test` 的逐測試 before/after 驗證判定失敗。修法是在該測試 callback 結尾復原三個全域 hook——這是**修復被本功能打壞的既有測試**，不是「為 inspector 本身寫新測試」，不違反本條禁令的原始意圖。
 - ❌ `lib/features/foundation/constants/constants.dart` — 規格 §4.2「不順便修既有缺陷」
 
 **平台設定**：`share_plus`（唯一新增傳遞相依）在 iOS/Android 上為純 Dart + 標準 platform channel，**無需**手動改 `AndroidManifest.xml` 或 `Info.plist`。若 `flutter build` 報缺設定，才依錯誤訊息處理（屬 T6 的例外處置，不預先做）。

@@ -14,7 +14,8 @@ import '../main.dart' show navigatorKey;
 ///   為 no-op）
 /// - `captureUncaughtErrors`：debug 時攔截未捕捉例外
 /// - `captureLifecycleEvents`：debug 時記錄生命週期事件
-/// - `redactSensitiveData: false`：debug 時 Network 分頁不遮蔽敏感欄位
+/// - `redactSensitiveData: false`：debug 時匯出／分享／複製診斷內容不遮蔽
+///   敏感欄位（畫面顯示本就不受此旗標影響）
 final FlutterInspector? inspector = kDebugMode
     ? FlutterInspector(
         slowRequestThreshold: const Duration(seconds: 2),

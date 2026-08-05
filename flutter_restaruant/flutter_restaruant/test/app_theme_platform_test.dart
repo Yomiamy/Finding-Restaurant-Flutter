@@ -35,26 +35,31 @@ void main() {
       final originalPlatformDispatcherOnError =
           ui.PlatformDispatcher.instance.onError;
 
-      await tester.pumpWidget(
-        Theme(
-          data: ThemeData(platform: target),
-          child: const FindingRestaruantApp(),
-        ),
-      );
+      // try/finally：測試主體若中途失敗（例如 expect 不通過），仍要復原
+      // 三個全域 hook，避免汙染下一次迭代（Android case）的 before/after
+      // 快照、掩蓋真正的失敗原因。
+      try {
+        await tester.pumpWidget(
+          Theme(
+            data: ThemeData(platform: target),
+            child: const FindingRestaruantApp(),
+          ),
+        );
 
-      // 由 navigatorKey 取得 route 之下的 context，確保讀到的是 app 實際
-      // 套用的 theme，而非測試自建的外層 Theme。
-      final scheme = Theme.of(navigatorKey.currentContext!).colorScheme;
+        // 由 navigatorKey 取得 route 之下的 context，確保讀到的是 app 實際
+        // 套用的 theme，而非測試自建的外層 Theme。
+        final scheme = Theme.of(navigatorKey.currentContext!).colorScheme;
 
-      expect(scheme.primary, AppThemeData.materialLight.colorScheme.primary);
+        expect(scheme.primary, AppThemeData.materialLight.colorScheme.primary);
 
-      // SplashPage 的 3 秒延遲不排掉會留下 pending timer，測試 framework 會報錯。
-      await tester.pump(const Duration(seconds: 3));
-
-      ErrorWidget.builder = originalErrorWidgetBuilder;
-      FlutterError.onError = originalFlutterErrorOnError;
-      ui.PlatformDispatcher.instance.onError =
-          originalPlatformDispatcherOnError;
+        // SplashPage 的 3 秒延遲不排掉會留下 pending timer，測試 framework 會報錯。
+        await tester.pump(const Duration(seconds: 3));
+      } finally {
+        ErrorWidget.builder = originalErrorWidgetBuilder;
+        FlutterError.onError = originalFlutterErrorOnError;
+        ui.PlatformDispatcher.instance.onError =
+            originalPlatformDispatcherOnError;
+      }
     });
   }
 }
