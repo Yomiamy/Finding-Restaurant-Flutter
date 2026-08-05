@@ -22,23 +22,22 @@ class _SplashPageState extends State<SplashPage> {
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       // Waiting building is finish and run.
       await Future.delayed(const Duration(seconds: 3));
-      if (mounted) {
-        // 訪客已在前次啟動選擇跳過登入，直接進主畫面。
-        final String routeName = SignInManager().isGuest
-            ? MainPage.routeName
-            : SignInPage.routeName;
-        // ignore: unawaited_futures
-        Navigator.of(context).pushReplacementNamed(routeName);
-      }
+      if (!mounted) return;
+
+      // 訪客已在前次啟動選擇跳過登入，直接進主畫面。
+      final String routeName = SignInManager().isGuest
+          ? MainPage.routeName
+          : SignInPage.routeName;
+      // ignore: unawaited_futures
+      Navigator.of(context).pushReplacementNamed(routeName);
 
       // 與 5 連點喚起手勢並存的第二進入點：常駐 FAB。此 context 來自
       // SplashPage 自身（已在 Navigator/Overlay 之下的路由 widget），
       // 與 main.dart builder 傳入的外層 context 不同，attach() 找得到
       // Overlay。
       final ins = kDebugMode ? inspector : null;
-      if (ins != null && mounted) {
-        ins.attach(context: context);
-      }
+      if (ins == null) return;
+      ins.attach(context: context);
     });
   }
 
