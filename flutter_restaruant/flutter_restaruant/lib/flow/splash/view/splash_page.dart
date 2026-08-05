@@ -35,9 +35,7 @@ class _SplashPageState extends State<SplashPage> {
       // SplashPage 自身（已在 Navigator/Overlay 之下的路由 widget），
       // 與 main.dart builder 傳入的外層 context 不同，attach() 找得到
       // Overlay。
-      final ins = kDebugMode ? inspector : null;
-      if (ins == null) return;
-      ins.attach(context: context);
+      if (kDebugMode) inspector?.attach(context: context);
     });
   }
 

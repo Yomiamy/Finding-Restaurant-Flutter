@@ -297,10 +297,12 @@ rtk flutter analyze
 # AC-8 — 既有 14 個測試檔全綠
 rtk flutter test
 
-# AC-5（程式碼審閱面）— 四個接線點必須全部 grep 得到 kDebugMode
-rtk proxy grep -rn "kDebugMode" lib/di/inspector.dart lib/api/api_clz.dart lib/main.dart
-# 預期：inspector.dart 1 處、api_clz.dart 1 處、main.dart 2 處（observer + builder）
-# 少於 4 處 → 有接線點漏包，退回 T3/T4
+# AC-5（程式碼審閱面）— 五個接線點必須全部 grep 得到 kDebugMode
+# （2026-08-05 修訂：新增 FAB 進入點後由 4 處增為 5 處，見 §2.5）
+rtk proxy grep -rn "kDebugMode" lib/di/inspector.dart lib/api/api_clz.dart lib/main.dart lib/flow/splash/view/splash_page.dart
+# 預期：inspector.dart 1 處、api_clz.dart 1 處、main.dart 2 處（observer + builder）、
+#       splash_page.dart 1 處（FAB attach）
+# 少於 5 處 → 有接線點漏包，退回對應任務
 ```
 
 ### 5.2 Release 硬驗證（T6）
