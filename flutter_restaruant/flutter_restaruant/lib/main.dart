@@ -40,17 +40,6 @@ void main() async {
     FcmManager().init();
 
     runApp(const FindingRestaruantApp());
-
-    // 與 5 連點喚起手勢並存的第二進入點：常駐 FAB。第一幀畫完後
-    // Navigator（連帶 Overlay）已掛載，navigatorKey.currentContext
-    // 才能被 Overlay.maybeOf 解析到。
-    final ins = kDebugMode ? inspector : null;
-    if (ins != null) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        final navContext = navigatorKey.currentContext;
-        if (navContext != null) ins.attach(context: navContext);
-      });
-    }
   });
 }
 
