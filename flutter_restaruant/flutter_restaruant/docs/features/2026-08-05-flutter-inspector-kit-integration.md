@@ -99,7 +99,7 @@
 
 | # | 條件 | 驗證方式 |
 | :--- | :--- | :--- |
-| **AC-1** | Debug build 中可透過套件提供的喚起手勢開啟 inspector dashboard | 模擬器／實機 debug build 實跑，執行手勢後 dashboard 顯示 |
+| **AC-1** | Debug build 中可透過套件提供的喚起手勢**或**常駐 FAB 開啟 inspector dashboard（2026-08-05 修訂：使用者要求 FAB 與五連點並存，兩者皆為 debug-only 進入點） | 模擬器／實機 debug build 實跑，執行手勢或點擊 FAB 後 dashboard 皆能顯示 |
 | **AC-2** | Dashboard 的 Network 分頁可看到**實際發出的 Yelp 搜尋請求**，含 URL、method、狀態碼、耗時，以及 request／response body | debug build 執行一次餐廳搜尋，於 Network 分頁確認該筆請求存在且欄位完整 |
 | **AC-3** | Dashboard 的 Navigator 分頁可看到頁面切換紀錄 | debug build 執行「列表 → 餐廳詳情 → 返回」，確認三筆導航事件被記錄 |
 
@@ -107,7 +107,7 @@
 
 | # | 條件 | 驗證方式 |
 | :--- | :--- | :--- |
-| **AC-4** | **Release build 中不存在任何 inspector 進入點**：無喚起手勢、無 FAB、無任何可觸發 dashboard 的路徑 | `flutter build` 產出 release 版本並實機安裝，於所有畫面嘗試喚起手勢，確認無反應 |
+| **AC-4** | **Release build 中不存在任何 inspector 進入點**：無喚起手勢、無 FAB、無任何可觸發 dashboard 的路徑（FAB 現為刻意新增的第二 debug-only 進入點，仍受同一 `kDebugMode` guard 約束，故本條驗收範圍不變） | `flutter build` 產出 release 版本並實機安裝，於所有畫面嘗試喚起手勢，並全螢幕檢視確認無 FAB 常駐，確認皆無反應 |
 | **AC-5** | **Release build 不註冊 inspector 的 Dio 攔截器與 navigator observer**：不記錄任何請求／回應 body | 檢視 release 路徑的接線是否全數位於 `kDebugMode` 判斷之內 |
 | **AC-6** | **Release bundle 經 tree-shaking 移除 dashboard UI** | 對 release 產物驗證 inspector dashboard 相關符號已不存在（具體驗證指令由 STAGE 0b 決定） |
 

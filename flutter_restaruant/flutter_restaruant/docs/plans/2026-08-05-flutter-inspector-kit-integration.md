@@ -138,13 +138,15 @@ LogInterceptor (dio_client.dart:24, isLogEnabled 預設 true)
 
 `sourceDio:` 參數傳 `dioClient.dio`（實測簽章 `FlutterInspectorDioInterceptor(this._inspector, {this.sourceDio})`，用途為 request replay）。
 
-### 2.5 `main.dart` 的兩處接線形狀
+### 2.5 `main.dart` 的接線形狀
 
 - **`navigatorObservers`**：`PlatformApp` 目前未使用此參數（實測 `main.dart:51-82` 確認）。新增 `navigatorObservers: kDebugMode && inspector != null ? [inspector!.navigatorObserver] : const []`。
   > **`!` 的正當性**：專案 style guide 禁止無法證明非空的 `!`。此處 `inspector != null` 已在同一表達式中證明，屬 Dart 型別提升可接受範圍；但為徹底避免 lint 摩擦，**優先採用區域變數提升**寫法（見 T4 描述）。
 - **喚起手勢**：既有 `builder:` 回傳 `Theme(data:..., child: child ?? const SizedBox.shrink())`。改為在 debug 時把 `Theme(...)` **再包一層** `FlutterInspectorMagicalTap`。實測其簽章為 `FlutterInspectorMagicalTap({required this.child, required this.onTap, this.tapCount = 5, this.timeout = ...})`——`child` 與 `onTap` 皆為 **required named**。內部是 `GestureDetector(behavior: HitTestBehavior.translucent)`，不吃掉子樹的點擊事件，對 AC-9 無影響。
 
-  順序必須是 `MagicalTap` 在**外**、`Theme` 在**內**：`onTap` 回呼需要的 `context` 來自 `builder` 的第一個參數（目前是 `_`，需改名為 `context`），而 dashboard 需要能找到 `Navigator`——`builder` 的 context 位於 `Navigator` 之下，可用。
+  **🔴 已修正的錯誤判斷（原文保留刪除線以留紀錄）**：~~`onTap` 回呼需要的 `context` 來自 `builder` 的第一個參數，而 dashboard 需要能找到 `Navigator`——`builder` 的 context 位於 `Navigator` 之下，可用。~~ 此判斷**錯誤**：`PlatformApp.builder` 的 `context` 語意上位於 `Navigator` **之上**（`builder` 存在的目的正是包裹整個 Navigator 樹的外殼），`openDashboard` 內部呼叫 `showGeneralDialog(context: context, ...)` 需要往上解析 `NavigatorState`，用這個 context 會在每次觸發時丟 `Navigator operation requested with a context that does not include a Navigator` assertion error。**實際修法**：改用 `navigatorKey.currentContext`（`NavigatorState` 自身的 context，位於 `Navigator` 之下）取代 `builder` 傳入的外層 `context`。
+
+- **常駐 FAB（2026-08-05 新增，與五連點並存）**：套件另提供 `FlutterInspector.attach({required BuildContext context, bool visible = true})`，把可拖曳的 `InspectorFab` 插入最近的 `Overlay`。這是**命令式** API（非 declarative widget），且同樣需要位於 `Overlay`（隨 `Navigator` 建立）之下的 context，與喚起手勢踩到同一個「`builder` context 位置不對」的坑。`FindingRestaruantApp` 是 `StatelessWidget`，沒有 `initState` 可用，改在 `main()` 的 `runApp(...)` 之後用 `WidgetsBinding.instance.addPostFrameCallback` 等第一幀畫完（此時 `Navigator`／`Overlay` 已掛載），取 `navigatorKey.currentContext` 呼叫一次 `inspector.attach(context: navContext)`。呼叫本身冪等（`_overlayEntry != null` 時 no-op），不需要 `detach()`——app 存活期間 FAB 常駐是預期行為。
 
 ---
 
@@ -158,7 +160,8 @@ LogInterceptor (dio_client.dart:24, isLogEnabled 預設 true)
 | 4 | `lib/di/di_barrel.dart` | `:1` 之後 | 新增 `export 'inspector.dart';` |
 | 5 | `lib/api/api_clz.dart` | import 區、`:42-55` 之間 | `dioClient` 建立後、`apiInstance` 建立前，插入 `kDebugMode` 分支呼叫 `dioClient.dio.interceptors.add(FlutterInspectorDioInterceptor(inspector!, sourceDio: dioClient.dio))` 的等價安全寫法 |
 | 6 | `lib/main.dart` | `:52` 附近（`navigatorKey:` 之後） | 新增 `navigatorObservers:` 參數 |
-| 7 | `lib/main.dart` | `:79-82` `builder:` | `_` → `context`，debug 時外包 `FlutterInspectorMagicalTap` |
+| 7 | `lib/main.dart` | `:79-82` `builder:` | `_` → `context`，debug 時外包 `FlutterInspectorMagicalTap`；`onTap` 用 `navigatorKey.currentContext`（非 `builder` 傳入的 `context`，見 §2.5 已修正的錯誤判斷） |
+| 8 | `lib/main.dart`（2026-08-05 新增） | `main()` 內 `runApp(...)` 之後 | `addPostFrameCallback` 呼叫一次 `inspector.attach(context: navigatorKey.currentContext)`，掛上常駐 FAB（見 §2.5） |
 
 **不動的檔案**（明確聲明，避免 implementer 誤觸）：
 - ❌ `lib/api/dio/dio_client.dart` — 勘誤 B 已說明理由，`LogInterceptor` 一併保留（規格 §4.2）
