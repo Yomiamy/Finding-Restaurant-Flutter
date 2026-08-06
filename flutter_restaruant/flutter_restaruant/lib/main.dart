@@ -86,14 +86,7 @@ class FindingRestaruantApp extends StatelessWidget {
       return ins == null
           ? theme
           : FlutterInspectorMagicalTap(
-              // `context` here (from PlatformApp.builder) sits above the
-              // Navigator, so showGeneralDialog can't resolve a
-              // NavigatorState from it. navigatorKey.currentContext is the
-              // NavigatorState's own context, which is below the Navigator.
-              onTap: () {
-                final navContext = navigatorKey.currentContext;
-                if (navContext != null) ins.openDashboard(navContext);
-              },
+              onTap: () => ins.openDashboard(),
               child: theme,
             );
     },
