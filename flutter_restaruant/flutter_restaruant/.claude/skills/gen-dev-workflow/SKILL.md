@@ -144,6 +144,11 @@ description: |
     STAGE 6：清理 Worktree（獨立入口，由你手動觸發）
     ──────────────────────────────────────────────────
     觸發方式：PR **實際合併後**，你說「PR #42 合併了，清理 worktree」
+    → 【文件同步】先呼叫 gen-sync-docs-by-branchs skill，
+      以當前處理的分支為目標，將該分支的實際變更回寫到
+      docs 下的發想／結構說明文件（brainstorm、architecture 等）
+    → 【提交同步結果】同步完成後呼叫 gen-commit skill 將
+      文件變更 commit 進 git（避免同步結果在清理 worktree 時遺失）
     → 呼叫 worktree-close-cleanup skill 移除 STAGE 1 建立的 worktree
     → 只移除 worktree 本身，**對應 branch 一律保留、不刪除**
       （worktree-close-cleanup 的既有規則，不因併入此流程而改變）
@@ -210,8 +215,8 @@ STAGE 1 建立分支與工作區時，**不論從哪個入口進來**，最後�
    cp "<repo-root>/<spec 路徑>" "<worktree-path>/<spec 路徑>"
    cp "<repo-root>/<plan 路徑>" "<worktree-path>/<plan 路徑>"
    ```
-   - 用**複製**不用 commit + cherry-pick：規劃文件在原 repo 尚未 commit，複製過去後由 STAGE 2 的實作 commit 一併帶進 branch，不需在 base branch 上多留一個 commit。
-   - 複製後**驗證兩個檔案都存在於新 worktree**，缺任一個就停下回報，不要帶著壞掉的路徑進 STAGE 2。
+   - 用**複製**不用 commit + cherry-pick：規劃文件在原 repo 尚未 commit，複製過去後在 worktree 中呼叫 `gen-commit` 將文件 commit，不需在 base branch 上多留一個 commit。
+   - 複製後**驗證兩個檔案都存在於新 worktree**，缺任一個就停下回報，並於確認存在後執行 `gen-commit`，不要帶著未 commit 的狀態進 STAGE 2。
    - 路徑維持 repo 相對路徑不變（例 `docs/plans/2026-05-03-cart.md`），所以 state 檔的 `spec`/`plan` 欄位**不需改寫**，切目錄後自然指向新 worktree 內的同名檔。
    - **原 repo 的那兩份留著不刪**：它們是規劃階段的產物，刪除等於在使用者還沒確認流程走完前銷毀資料。
    - issue-id 路徑（跳過 STAGE 0a/0b）沒有這兩份文件，本步驟略過。
@@ -327,7 +332,7 @@ state 檔的**所有**建立、讀取、更新一律透過本 skill 的 `scripts
 |------|------|
 | 流程啟動（STAGE 0a） | `wf-state.sh init` → 回傳 pending 檔路徑（內含 wf-id） |
 | jump / quick 啟動（已知 branch） | `wf-state.sh init --mode jump\|quick --stage <S> --branch <branch>` |
-| STAGE 1 建好 worktree | `wf-state.sh promote <pending-檔> --branch <branch> --dest <worktree>/.claude/workflow-state` |
+| STAGE 1 建好 worktree | `wf-state.sh promote <pending-檔> --branch <branch> --dest <worktree>/.claude/workflow-state` （注意：sequence 模式下 `promote` 後須依序執行 `advance 0b --confirmed` → `advance 1 --confirmed` 推進 stage 後，才能執行 `stage-done 1`，詳見下方生命週期表） |
 | 欄位更新（spec/plan/issue/pr…） | `wf-state.sh set <檔> k=v`（`stage` 與確認旗標**改不了**，防繞過棘輪） |
 | stage 完成、進入暫停點 | `wf-state.sh stage-done <檔> <stage>` |
 | STAGE 2 單一任務完成 | `wf-state.sh task-done <檔> <n>` |
@@ -389,7 +394,7 @@ worktree 建立後改帶 branch slug，不再需要 workflow-id：
 | 時機 | 動作 |
 |------|------|
 | STAGE 0a 啟動（流程剛開始，還沒 worktree，在原 repo 目錄） | `wf-state.sh init` → 腳本產生 `<wf-id>` 並於原 repo 建 `.pending-<wf-id>.json` → 之後進度行都帶 `[<wf-id>]` |
-| STAGE 1 建好 worktree 後 | `wf-state.sh promote <pending-檔> --branch <branch> --dest <worktree>/.claude/workflow-state` → 腳本補上 `branch` 欄位（`workflow_id` 保留，便於追溯）、寫入新 worktree、刪除原 repo 的 pending 檔；主對話 `cd` 進新 worktree |
+| STAGE 1 建好 worktree 後 | `wf-state.sh promote <pending-檔> --branch <branch> --dest <worktree>/.claude/workflow-state` → 腳本補上 `branch` 欄位（`workflow_id` 保留，便於追溯）、寫入新 worktree、刪除原 repo 的 pending 檔；主對話 `cd` 進新 worktree。<br><br>**🔴 STAGE 1 收尾必讀 (Bug 1.6 Workaround)**：`promote` 不會推進 stage（維持 `0a`）。在 `sequence` 模式下，`promote` 完**不可直接** `stage-done <檔> 1`（會被 guard 擋下）。請**務必依序執行**：<br>1. `wf-state.sh advance <檔> 0b --confirmed`<br>2. `wf-state.sh advance <檔> 1 --confirmed`<br>3. `wf-state.sh stage-done <檔> 1`（進入暫停點等待確認） |
 | STAGE 1 之後每次寫入 | 對新 worktree 內的 `<branch-slug>.json` 跑 `set` / `stage-done` / `task-done` / `advance`，因 worktree 本身已隔離，零衝突 |
 | 直接 jump 進 STAGE 1+（已知 branch，已在該 worktree 內） | 略過 pending，`wf-state.sh init --mode jump --stage <S> --branch <branch>` 直接建當前 worktree 的 `<branch-slug>.json` |
 
@@ -609,7 +614,7 @@ Model 別名綁在各 agent 檔的 frontmatter（`.claude/agents/*.md`），本�
 | 3 審查 | reviewer | 最強推論 | — | 根因判斷需最強推論，且不該讓產出代碼的同源 model 自審 |
 | 4 發布 | publisher（內部用 gen-pr skill） | 輕量 | ✦ Diff 分析 → PR 草稿（Claude 校對）| PR 描述由 gen-pr 產（Summary + 修正問題/修正方式），publisher 負責 push + gh pr create；重活已委派 agy，且發布前有暫停點人肉把關 |
 | 5 回覆 PR Review | responder（→ reviewer → publisher） | responder: 輕量；reviewer: 最強推論；publisher: 輕量 | — | responder 逐條意見判斷用輕量即可；中間 reviewer 是交叉驗證的把關點，吃重推論不降級 |
-| 6 清理 Worktree | worktree-close-cleanup skill | —（skill 於主對話執行） | ✦ git worktree remove | 純 IO，且只移除 worktree、不刪 branch，決策成本低 |
+| 6 清理 Worktree | gen-sync-docs-by-branchs → gen-commit → worktree-close-cleanup skill | —（skill 於主對話執行） | ✦ git worktree remove | 先同步文件再 commit，確保 docs 反映分支最終狀態；之後純 IO 移除 worktree、不刪 branch |
 
 ### STAGE 2 implementer 內部的 model 分級
 
@@ -827,6 +832,8 @@ const findings = (await parallel([
 # PR 合併後清理 worktree（STAGE 6）
 /gen-dev-workflow cleanup <branch-name>
 → 寫入狀態檔 { stage: 6, mode: "jump", branch: "<branch-name>" }
+→ 呼叫 gen-sync-docs-by-branchs skill，以 <branch-name> 為目標同步文件
+→ 同步完成後呼叫 gen-commit skill 將文件變更 commit（避免清理 worktree 時遺失）
 → 呼叫 worktree-close-cleanup skill 移除該 branch 對應的 worktree
 → 只移除 worktree，branch 本身保留不刪除（純 IO，無 model/effort 可調）
 ```
