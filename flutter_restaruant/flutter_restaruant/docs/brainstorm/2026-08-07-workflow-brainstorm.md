@@ -24,7 +24,7 @@
 
 ## 0. 完成度總覽（Bug 1.x / Gap 2.1–2.5 核對於 2026-07-21 · Gap 2.6 增補於 2026-08-07）
 
-> 狀態依 [`docs/features/2026-07-18-gen-dev-workflow-analysis.md`](../features/2026-07-18-gen-dev-workflow-analysis.md) 核對標注。✅ 已修 ｜ 🟡 部分 ｜ ⬜ 待修。
+> 狀態依 [`docs/architecture/2026-08-12-gen-dev-workflow-analysis.md`](../architecture/2026-08-12-gen-dev-workflow-analysis.md) 核對標注。✅ 已修 ｜ 🟡 部分 ｜ ⬜ 待修。（原引用 `docs/features/2026-07-18-...`，該檔已隨文件搬遷／改名不存在。）
 >
 > **🔍 實查校正 (2026-08-06)**：本註記原寫「`wf-state.sh` 不在本 repo，無法直接讀原始碼，
 > 故以該份 analysis 為權威來源」——**此前提已不成立**。該腳本就在本 repo 的
@@ -1177,7 +1177,7 @@ Orchestrator 維護一份持續更新的 `progress.md`，記錄：已完成的 M
 > ⚠️ **已知邊界**：Claude 無法自行清空 context，故批次為「自動接續 + 使用者 `/clear` 換場」
 > 而非全自動。真無人值守需走 cron 驅動（每次喚醒即全新 context），未實作。
 
-> **流程教訓**：本文件與 `2026-08-05-features-brainstorm.md` 兩份腦力激盪文件，
+> **流程教訓**：本文件與 `2026-08-14-features-brainstorm.md` 兩份腦力激盪文件，
 > 累計已出現 **6 次「標為待辦、實際已完成」**（features 側：§D6、§P8；workflow 側：§5.1~§5.4 四項），
 > 以及 **1 次反向漂移**（features 側 §P7 的教訓段落被誤讀為現存問題，已於 2026-08-06 補時間錨註記）。
 > **兩個方向的根源相同：狀態敘述沒有綁定時間點。** 本次更新即為預防第 7 次——
