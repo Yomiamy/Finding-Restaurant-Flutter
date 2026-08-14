@@ -5,16 +5,27 @@ description: |
   也可用既有 GitHub issue id 直接進入 STAGE 1（跳過 STAGE 0a/0b 規劃），例如「開發 issue #42」「處理 #54」。
   PR 實際合併後，可另外觸發 STAGE 6 清理該 PR 對應的 worktree（branch 一律保留不刪除）。
   小修正可走 quick 模式（單暫停點、不建 worktree），例如「快速修正 <描述>」「/gen-dev-workflow quick #54」。
-  觸發條件：dev workflow, 開始開發, 新功能開發, 幫我做 X 功能, 繼續, 繼續上次, 繼續開發, /gen-dev-workflow, 開發 issue #<id>, 處理 #<id>, 快速修正, quick fix, PR #<id> 合併了 清理 worktree
+  多個獨立需求可走 batch 模式（各自 worktree/branch/PR 依序執行，每項間需使用者 /clear 換新 context），例如「依序做完這幾項」「/gen-dev-workflow batch §P4 §P6 #42」「繼續批次」。
+  暫停頻率可用 pause_level 調整（strict 預設全停／balanced 只停關鍵三點／autonomous 全不停）。
+  觸發條件：dev workflow, 開始開發, 新功能開發, 幫我做 X 功能, 繼續, 繼續上次, 繼續開發, /gen-dev-workflow, 開發 issue #<id>, 處理 #<id>, 快速修正, quick fix, PR #<id> 合併了 清理 worktree, batch, 批次, 依序做完, 繼續批次, 不要中途問我
 ---
 
 # Dev Workflow（自動編排模式）
 
 你是整個開發流程的**總指揮**。使用者給你一個需求，你自動驅動所有 agent 跑完整個週期，只在必要時暫停。
 
-> **委派後端：antigravity-cli (`agy`)。** brancher、implementer、publisher 透過 Bash 呼叫 `agy -p` 委派（stdin 管道傳 prompt + `--print-timeout`）。
-> 需求：`agy` 須在 PATH（預設於 `~/.local/bin/agy`）。
-> `agy` 不在 PATH 時各 agent 會自動退回 Fallback 模式，功能仍可運作但不會委派給 `agy`。
+> **委派後端：`gemini-mcp-tool`（MCP 工具 `mcp__gemini-cli__ask-gemini`）。** brancher、implementer、publisher 透過此 MCP 工具委派。
+> 需求：`gemini-cli` MCP server 已在 Claude Code 設定中啟用（`npx -y gemini-mcp-tool@1.1.8`，鎖定版本避免 rug-pull；升級前先確認 `npm view gemini-mcp-tool version` 並人工審查再調整）。
+> MCP 不可用時各 agent 會自動退回 Fallback 模式，功能仍可運作但不會委派。
+>
+> **為何不是 `agy -p`：** 底層後端相同（`gemini-mcp-tool` 內部就是走 antigravity-cli），但 **`agy -p` headless 路徑實際不可用**——不吃 stdin、權限會卡死，委派一律落到 fallback。MCP 路徑則實測可寫檔、可跑 shell、可 `git commit`，是同一個後端唯一能真正委派的傳輸層。
+>
+> 🔴 **三條委派紀律（每次派發都適用）：**
+> 1. **工作目錄寫死在 prompt 裡**——MCP 呼叫無法指定 cwd，不寫絕對路徑，子進程可能在主 repo 而非 worktree 動手。
+> 2. **跨出工作目錄一律先問**——派發 prompt 必須明令：需要存取／修改該目錄以外的檔案時，停止並回報，不自行動手。
+> 3. **回報不等於事實**——子進程說「已完成、已 commit」是宣稱。驗收一律親自跑 `git log` / `git status` / 測試確認。
+>
+> ⚠️ **已知限制：MCP 呼叫無法帶 `--print-timeout`。** 長任務沒有逾時控制，卡住只能人為中斷——派發前把任務拆到合理粒度。
 
 > **多 workflow 並行：** 同一 repo 可同時跑多個獨立 workflow（多個終端 / 多個 session）。STAGE 1 起隔離 key 是**獨立 worktree**（沿用 `ticket-id-dev-prep` 規則建立）——每個 workflow 跑在自己的 worktree 目錄裡，state 檔天然分開存放，彼此零衝突，不需要任何鎖或中央索引。唯一需要額外處理的窗口是「兩個流程都還在 STAGE 0a/0b（尚無 worktree，仍在原 repo 目錄）」，靠 **workflow-id** 持久化區分（見「狀態追蹤」章節）。
 
@@ -64,7 +75,7 @@ description: |
     │     見「分支與 Worktree 建立」章節）              │
     │  ⏸ 暫停：展示 Issue 標題/內容 + 分支/worktree 名稱│
     │          等使用者確認或修改                       │
-    │  → agy 執行 gh issue create                   │
+    │  → 委派執行 gh issue create                     │
     │  → brancher 依 ticket-id-dev-prep 規則建立       │
     │    worktree + branch（見下方章節），主對話 cd     │
     │    進新 worktree 繼續後續所有 stage               │
@@ -80,7 +91,7 @@ description: |
     │     • 否則 → 🔴 序列逐任務                        │
     │  → 逐任務選 model：機械性→快/便宜｜整合→標準     │
     │     ｜設計判斷/跨層→最強（見 Model 策略章節）    │
-    │  → agy 實作任務，verifier 兩階段驗收          │
+    │  → 委派實作任務，verifier 兩階段驗收          │
     │  🪶 Ponytail：派發模板必附〈規則塊〉，驗收把  │
     │     計畫外抽象/依賴/防禦分支當品質不佳退回    │
     │  ⏸ 每個任務（或每批並行）完成後暫停：            │
@@ -92,7 +103,7 @@ description: |
                            ▼
     ┌─────────────────────────────────────────────────┐
     │  STAGE 3：審查                                    │
-    │  → 呼叫 reviewer agent（不委派 agy，親自判斷）  │
+    │  → 呼叫 reviewer agent（不委派，親自判斷）      │
     │  → 已 opt-in → 多 angle 對抗式審查（Workflow    │
     │    平行 verifier 找 bug，reviewer 收斂判斷）     │
     │  🪶 Ponytail：第五 lens「過度工程/可簡化」找    │
@@ -110,7 +121,7 @@ description: |
     │  → 呼叫 publisher agent                         │
     │  → publisher 內部用 gen-pr skill 產 PR 描述      │
     │    （gen-pr 格式：Summary + 修正問題/修正方式）   │
-    │  → agy 分析 Diff，Claude 校對草稿             │
+    │  → 委派分析 Diff，Claude 校對草稿              │
     │  ⏸ 暫停：展示 PR 草稿，等使用者確認發布          │
     └──────────────────────┬──────────────────────────┘
                            │ 使用者確認
@@ -128,7 +139,7 @@ description: |
     session 目前的 effort；要維持 stage 間差異化，派發時
     須明確帶 effort 參數。詳見下方「Model 與委派策略」章節。
     主對話（總指揮）本身不換 model；切換發生在委派出去的
-    子進程——agy（STAGE 2 逐任務動態分級）與 STAGE 2 驗收
+    子進程——MCP 委派（STAGE 2 逐任務動態分級）與 STAGE 2 驗收
     委派的 verifier agent。
 
     ──────────────────────────────────────────────────
@@ -144,6 +155,11 @@ description: |
     STAGE 6：清理 Worktree（獨立入口，由你手動觸發）
     ──────────────────────────────────────────────────
     觸發方式：PR **實際合併後**，你說「PR #42 合併了，清理 worktree」
+    → 【文件同步】先呼叫 gen-sync-docs-by-branchs skill，
+      以當前處理的分支為目標，將該分支的實際變更回寫到
+      docs 下的發想／結構說明文件（brainstorm、architecture 等）
+    → 【提交同步結果】同步完成後呼叫 gen-commit skill 將
+      文件變更 commit 進 git（避免同步結果在清理 worktree 時遺失）
     → 呼叫 worktree-close-cleanup skill 移除 STAGE 1 建立的 worktree
     → 只移除 worktree 本身，**對應 branch 一律保留、不刪除**
       （worktree-close-cleanup 的既有規則，不因併入此流程而改變）
@@ -168,6 +184,22 @@ description: |
 | PR 草稿完成後 | 展示草稿，問「確認發布嗎？」 | 使用者確認 |
 
 **不應該暫停的情況：** 分支建立、任務間自動切換、STAGE 2 內部失敗 retry、STAGE 3 審查失敗退回 STAGE 2、測試執行、並行單元間的協調。這些全部自動處理（失敗 retry 與退回路徑見「並行執行契約」章節）。
+
+### 暫停粒度（`pause_level`）
+
+上表是 `strict`（預設）的行為。使用者可在流程啟動時選擇較鬆的粒度——`wf-state.sh init --pause-level <L>`，或流程中途 `wf-state.sh set <檔> pause_level=<L>`：
+
+| level | Stage 關卡 | STAGE 2 任務間 | 適用 |
+|:---|:---|:---|:---|
+| `strict`（預設） | 全停（上表七項） | **每個任務都停** | 不熟的功能、要盯著看 |
+| `balanced` | 只停 `0b` 計畫確認 / `2` 實作整體完成 / `4` PR 發布前 | **不停** | 計畫已看過，想一路跑到 PR |
+| `autonomous` | 全不停 | 不停 | 批次佇列、純機械性改動 |
+
+**判定的唯一來源是腳本的 `should_pause()`**，你不需要自己判斷該不該停——照常在每個暫停點呼叫 `stage-done` / `task-done`，看它回傳的訊息：印「等待使用者確認」就停下來問，印「自動推進 / 自動繼續下個任務」就直接繼續。
+
+🔴 **`pause_level` 只關掉「等使用者點頭」，不關掉任何守衛**：stage 轉移表、任務數校驗（`completed_tasks` vs `total_tasks`）、schema 校驗一律照常生效。欄位缺失或值異常一律退回 `strict`——壞掉的方向偏向多停一次，不偏向少停一次。
+
+⚠️ **`autonomous` 會讓 `gh pr create` 不經你過目就執行**（STAGE 4 暫停點被關掉）。發 PR 是對外動作，除非使用者明確要求無人值守，否則優先建議 `balanced`。
 
 **主動中斷（非暫停）：** context > 150k 時依 Token Budget Gate 主動保存並切 session，這不是暫停點，是保護性中斷。
 
@@ -203,7 +235,19 @@ STAGE 1 建立分支與工作區時，**不論從哪個入口進來**，最後�
    ```
    base branch 預設 `origin/main`，除非使用者明確要求其他 base。若目標 branch 或 worktree 路徑已存在，停止並回報，不默默重用或覆蓋。
 4. **最小設定檢查**：`cd` 進新 worktree 後執行 `git branch --show-current` 與 `git status --short` 驗證，並 `flutter pub get`（依 `ticket-id-dev-prep` 的「設定完成規則」，若專案有本地限定設定檔如 `.env`、簽章檔，同步進新 worktree）。
-5. **主對話切換工作目錄**：後續 STAGE 2–4 的所有 Bash 指令與檔案操作都在新 worktree 路徑下執行，state 檔（見「狀態追蹤」章節）也寫在新 worktree 內的 `.claude/workflow-state/`，與主 repo 分開、互不干擾。
+5. **🔴 帶入 STAGE 0a/0b 產出的規劃文件**（正常路徑必做）：功能規格與實作計畫是在**原 repo 目錄**產出的未 commit 檔案，新 worktree 從 `origin/main` 拉出來時**不會有它們**。若不搬，state 檔記的 `spec`/`plan` 路徑切進 worktree 後指向不存在的檔，STAGE 2 的 implementer 讀不到計畫。
+   ```bash
+   # 於原 repo 執行；<repo-root> 為原 repo 路徑，<worktree-path> 為步驟 3 建立的目錄
+   mkdir -p "<worktree-path>/docs/features" "<worktree-path>/docs/plans"
+   cp "<repo-root>/<spec 路徑>" "<worktree-path>/<spec 路徑>"
+   cp "<repo-root>/<plan 路徑>" "<worktree-path>/<plan 路徑>"
+   ```
+   - 用**複製**不用 commit + cherry-pick：規劃文件在原 repo 尚未 commit，複製過去後在 worktree 中呼叫 `gen-commit` 將文件 commit，不需在 base branch 上多留一個 commit。
+   - 複製後**驗證兩個檔案都存在於新 worktree**，缺任一個就停下回報，並於確認存在後執行 `gen-commit`，不要帶著未 commit 的狀態進 STAGE 2。
+   - 路徑維持 repo 相對路徑不變（例 `docs/plans/2026-05-03-cart.md`），所以 state 檔的 `spec`/`plan` 欄位**不需改寫**，切目錄後自然指向新 worktree 內的同名檔。
+   - **原 repo 的那兩份留著不刪**：它們是規劃階段的產物，刪除等於在使用者還沒確認流程走完前銷毀資料。
+   - issue-id 路徑（跳過 STAGE 0a/0b）沒有這兩份文件，本步驟略過。
+6. **主對話切換工作目錄**：後續 STAGE 2–4 的所有 Bash 指令與檔案操作都在新 worktree 路徑下執行，state 檔（見「狀態追蹤」章節）也寫在新 worktree 內的 `.claude/workflow-state/`，與主 repo 分開、互不干擾。
 
 ### 與 STAGE 2 並行任務用的 `isolation: 'worktree'` 的區別
 
@@ -270,7 +314,7 @@ quick <描述或 #issue>
    - 只有描述 → 不開 issue，branch 名 <prefix>/YYYYMM/<slug>
    - prefix/slug 規則沿用 ticket-id-dev-prep
   ▼
-② 主對話直接實作（不委派 implementer/agy——小修正本來就在「不委派」硬規則內）
+② 主對話直接實作（不委派 implementer/MCP——小修正本來就在「不委派」硬規則內）
    - 不拆任務、不逐任務暫停；模糊需求仍問（≤2 個問題）
    - 改完跑相關測試（不重跑整套）
   ▼
@@ -286,7 +330,75 @@ quick <描述或 #issue>
 - state 檔照寫：`wf-state.sh init --mode quick --branch <branch>` 建 `<branch-slug>.json`（存原 repo `.claude/workflow-state/`）——中斷後「繼續」照常續接，PR MERGED 照常自動刪檔。quick 不套用 stage 轉移表，但 schema 校驗與暫停點棘輪照常生效（唯一暫停點：PR 草稿確認前 `stage-done <檔> <目前-stage>`，確認後 `confirm` 再發布）。
 - 不建 worktree ⇒ 同一 repo **同時只能跑一個 quick**（需要多並行就走完整流程的 worktree 隔離）。
 - 中途發現超出小修正範圍（多檔設計判斷、新依賴、要動架構）→ 停下告知，`wf-state.sh upgrade <檔>`（單向 quick→sequence，stage 落在 2）升級轉入完整流程。升級後**必須立即**建立對應的 worktree（沿用 ticket-id-dev-prep 規則），將 Root 中未 commit 的變更帶入新工作區，用 `wf-state.sh promote` 將狀態 JSON 移至新工作區，並 `cd` 進入該工作區以確保物理隔離。
-- Token Budget Gate 照常適用。
+- Token Budget Gate 照常適用（`> 150k` 切 session 規則不變；`100–150k` 的強制 MCP 委派不適用於 Quick 的直接實作步驟，Quick 模式本來就不委派 implementer）。
+
+---
+
+## 批次模式（多個獨立 workflow 依序執行）
+
+**觸發**：`/gen-dev-workflow batch <項目1> <項目2> ...`，或使用者說「依序做完這幾項」。
+
+**與 STAGE 2 多任務的區別**（最常見的誤解，先釐清）：
+
+| | STAGE 2 的 T1/T2/T3 | 批次模式的項目 1/2/3 |
+|:---|:---|:---|
+| 來源 | **同一份**實作計畫拆出的子任務 | **各自獨立**的需求 / issue |
+| worktree | 共用一個 | **各自一個** |
+| branch / PR | 共用一個，最後合成一個 PR | **各自一個 branch、各自一個 PR** |
+| 控制粒度 | `pause_level` | 批次佇列 |
+
+使用者說「一次做多個任務」時，**先確認是哪一種**——若他要的是各自獨立的 PR，那是批次模式，`pause_level` 解決不了。
+
+### 🔴 核心限制：Claude 無法自行清空 context
+
+批次的每一項都要**全新 context** 才不會累積爆掉，但清 context 是 session 層級操作，**只有使用者能做**。所以批次模式不是「全自動」，而是**自動接續 + 使用者按兩下鍵盤**：
+
+```text
+/gen-dev-workflow batch §P4 §P6 #42
+  │
+  ▼
+wf-state.sh batch-init "§P4..." "§P6..." "#42" --pause-level balanced
+  → 產生 .batch-<id>.json（存原 repo .claude/workflow-state/）
+  ▼
+wf-state.sh batch-next → 取得第 1 項
+  ▼
+跑完整 sequence 流程（0a→4）：各自 issue / worktree / branch / PR
+  ├─ 用批次檔記的 pause_level 建該項的 state 檔
+  └─ cd 進該項的 worktree 執行
+  ▼
+PR 開好 → wf-state.sh batch-done --pr <url> --branch <branch>
+  ▼
+⏸ 輸出交接提示，流程在此停止：
+   「§P4 完成 ✦ PR: <url>
+     批次剩餘 2 項（§P6、#42）。
+     請 /clear 後輸入「繼續批次」，會自動接下一項。」
+  ▼
+使用者 /clear + 輸入「繼續批次」
+  ▼
+新 session：wf-state.sh batch-next → 取得第 2 項 → 重複上述
+  ▼
+batch-next 回傳 DONE → 輸出總結（各項 status / PR 連結），刪除批次檔
+```
+
+**規則：**
+
+- **批次檔永遠留在原 repo** 的 `.claude/workflow-state/`，不隨 worktree 移動——它是跨 workflow 的，不屬於任何單一 branch。
+- **`cd` 紀律**：每項跑完必須 `cd` 回原 repo 再收尾，否則下一項的 `batch-next` 會在錯誤的工作目錄找不到批次檔。
+- **建議搭配 `--pause-level balanced`**：批次的意義是減少打斷，每項若還停五次就失去意義。但**不建議 `autonomous`**——那會讓三個 PR 都不經過目就發出去。
+- **失敗處理**：某項失敗（STAGE 3 審查連續退回、tier 升級後仍失敗）→ `batch-fail --note "<原因>"`，游標照常前進到下一項。**一項失敗不中止整個批次**——各項獨立，沒有理由讓後面的陪葬。最終總結會列出失敗項讓使用者決定要不要重跑。
+- **中止**：使用者說「停止批次」→ `batch-abort`。只刪批次檔，**已建立的 branch / PR / worktree 一律保留**（沿用「branch 永不自動刪除」的既有紀律）。
+- **`batch-next` 回傳 DONE 後**才刪批次檔，並輸出總結表（項目 / status / PR 連結 / 失敗原因）。
+
+**「繼續批次」的定位流程**（新 session 進來時）：
+
+```
+→ .claude/workflow-state/.batch-*.json
+   ├─ 0 個 → 告知「找不到進行中的批次」，不自行猜測
+   ├─ 1 個 → 讀取，batch-next 取下一項，繼續
+   └─ ≥2 個 → 列出讓使用者選（腳本本身也會 die 要求明示）
+```
+
+> ⚠️ 批次檔與「本 session 的 state 檔以外，一律不碰」不衝突——批次檔是**使用者明確建立的佇列**，不是別的流程的 workflow state。但同樣的紀律適用：**不因為看到某個批次檔就自行接續它**，要使用者說「繼續批次」才動。
 
 ---
 
@@ -315,13 +427,18 @@ state 檔的**所有**建立、讀取、更新一律透過本 skill 的 `scripts
 |------|------|
 | 流程啟動（STAGE 0a） | `wf-state.sh init` → 回傳 pending 檔路徑（內含 wf-id） |
 | jump / quick 啟動（已知 branch） | `wf-state.sh init --mode jump\|quick --stage <S> --branch <branch>` |
-| STAGE 1 建好 worktree | `wf-state.sh promote <pending-檔> --branch <branch> --dest <worktree>/.claude/workflow-state` |
+| STAGE 1 建好 worktree | `wf-state.sh promote <pending-檔> --branch <branch> --dest <worktree>/.claude/workflow-state` （注意：sequence 模式下 `promote` 後須依序執行 `advance 0b --confirmed` → `advance 1 --confirmed` 推進 stage 後，才能執行 `stage-done 1`，詳見下方生命週期表） |
 | 欄位更新（spec/plan/issue/pr…） | `wf-state.sh set <檔> k=v`（`stage` 與確認旗標**改不了**，防繞過棘輪） |
 | stage 完成、進入暫停點 | `wf-state.sh stage-done <檔> <stage>` |
 | STAGE 2 單一任務完成 | `wf-state.sh task-done <檔> <n>` |
 | 使用者確認（stage 不變，如 STAGE 2 任務間） | `wf-state.sh confirm <檔>` |
 | 使用者確認並推進 stage | `wf-state.sh advance <檔> <next> --confirmed` |
 | quick 升級完整流程 | `wf-state.sh upgrade <檔> [--confirmed]`（單向 quick→sequence，stage 落在 2；有暫停點等待確認時須帶 `--confirmed`） |
+| 設定暫停粒度 | `wf-state.sh init --pause-level strict\|balanced\|autonomous`，或中途 `wf-state.sh set <檔> pause_level=<L>`（見「暫停粒度」章節） |
+| 建立批次佇列 | `wf-state.sh batch-init <項目> ... [--pause-level <L>]` → 回傳批次檔路徑 |
+| 取批次下一項 | `wf-state.sh batch-next [<檔>]`（全跑完回傳 `DONE`；省略檔名自動定位唯一批次） |
+| 批次項目完成 / 失敗 | `wf-state.sh batch-done [<檔>] [--pr <url>] [--branch <b>]` ／ `batch-fail [<檔>] [--note <s>]` |
+| 中止批次 | `wf-state.sh batch-abort [<檔>]`（只刪批次檔，branch/PR/worktree 保留） |
 | 續接時讀取 | `wf-state.sh get <檔>`（讀取即校驗，腐壞檔立即失敗而非靜默續接） |
 
 > 腳本路徑：`.claude/skills/gen-dev-workflow/scripts/wf-state.sh`（相對當前工作目錄的 repo root；`cd` 進 worktree 後用 worktree 內的同路徑 checkout）。
@@ -377,7 +494,7 @@ worktree 建立後改帶 branch slug，不再需要 workflow-id：
 | 時機 | 動作 |
 |------|------|
 | STAGE 0a 啟動（流程剛開始，還沒 worktree，在原 repo 目錄） | `wf-state.sh init` → 腳本產生 `<wf-id>` 並於原 repo 建 `.pending-<wf-id>.json` → 之後進度行都帶 `[<wf-id>]` |
-| STAGE 1 建好 worktree 後 | `wf-state.sh promote <pending-檔> --branch <branch> --dest <worktree>/.claude/workflow-state` → 腳本補上 `branch` 欄位（`workflow_id` 保留，便於追溯）、寫入新 worktree、刪除原 repo 的 pending 檔；主對話 `cd` 進新 worktree |
+| STAGE 1 建好 worktree 後 | `wf-state.sh promote <pending-檔> --branch <branch> --dest <worktree>/.claude/workflow-state` → 腳本補上 `branch` 欄位（`workflow_id` 保留，便於追溯）、寫入新 worktree、刪除原 repo 的 pending 檔；主對話 `cd` 進新 worktree。<br><br>**🔴 STAGE 1 收尾必讀 (Bug 1.6 Workaround)**：`promote` 不會推進 stage（維持 `0a`）。在 `sequence` 模式下，`promote` 完**不可直接** `stage-done <檔> 1`（會被 guard 擋下）。請**務必依序執行**：<br>1. `wf-state.sh advance <檔> 0b --confirmed`<br>2. `wf-state.sh advance <檔> 1 --confirmed`<br>3. `wf-state.sh stage-done <檔> 1`（進入暫停點等待確認） |
 | STAGE 1 之後每次寫入 | 對新 worktree 內的 `<branch-slug>.json` 跑 `set` / `stage-done` / `task-done` / `advance`，因 worktree 本身已隔離，零衝突 |
 | 直接 jump 進 STAGE 1+（已知 branch，已在該 worktree 內） | 略過 pending，`wf-state.sh init --mode jump --stage <S> --branch <branch>` 直接建當前 worktree 的 `<branch-slug>.json` |
 
@@ -526,7 +643,7 @@ worktree 建立後改帶 branch slug，不再需要 workflow-id：
 |---|---|
 | < 60k | 正常流程，不做任何事 |
 | 60–100k | ⚠️ 提示使用者「context 已 <用量>，建議精簡」。委派 agent 時要求只回報摘要，不回貼完整 diff / 檔案內容 |
-| 100–150k | ⚠️ 強制走委派路徑：implementer / publisher 一律走 agy 委派（即使 fallback 條件成立也不自行讀大檔），主對話只保留高層判斷 |
+| 100–150k | ⚠️ 完整流程且 MCP 可用時：implementer / publisher 強制走 MCP 委派（不自行讀大檔），主對話只保留高層判斷。**MCP 不可用時走 Fallback 或按下方 `> 150k` 規則切 session，不得因此卡住等待 MCP 恢復**。Quick 模式本無 implementer 委派（見「Quick 模式」①②），此行不適用於其直接實作步驟 |
 | > 150k | ⛔ **強制 checkpoint，主動切 session** — 走下方「context 超標切 session 閉環」 |
 
 ### context 超標切 session 閉環
@@ -548,6 +665,8 @@ worktree 建立後改帶 branch slug，不再需要 workflow-id：
      請開新 session 後輸入『繼續』或 /gen-dev-workflow，會自動從 STAGE <N> 接續。」
 5. 停止，不再繼續任何 stage
 ```
+
+> **批次模式下的 Token Gate**：批次的每一項本來就靠使用者 `/clear` 換全新 context，所以正常情況不該在單項內撞到 150k。若真的撞到（單項過大），照上述閉環處理**該項自己的 state 檔**即可——批次檔不動、游標不前進，使用者續接後會接回同一項的 STAGE N，而不是跳到下一項。**絕不因為 context 超標就 `batch-done`**，那會把做到一半的項目標記成完成。
 
 續接時（新 session 讀到 `"interrupted_by": "context_budget"`）：
 ```
@@ -575,7 +694,7 @@ Model 別名綁在各 agent 檔的 frontmatter（`.claude/agents/*.md`），本�
 | 最強推論 | `model: opus` | `effort: xhigh` | planner、reviewer、verifier |
 | 標準 | `model: sonnet` | `effort: max` | implementer |
 | 輕量 | `model: sonnet` | `effort: high` | brancher、responder、publisher |
-| 快/便宜 | agy 內部 fast model（不在 Claude 側綁定） | — | STAGE 2 機械性任務 |
+| 快/便宜 | 委派後端內部 fast model（不在 Claude 側綁定） | — | STAGE 2 機械性任務 |
 
 **綁定原則：**
 - model 一律用**別名**（`opus`/`sonnet`），不綁版本 ID——CLI 自動解析到當代 model。這部分仍綁 frontmatter，不受 effort 變動影響。
@@ -589,15 +708,15 @@ Model 別名綁在各 agent 檔的 frontmatter（`.claude/agents/*.md`），本�
 
 ### Stage 層級的基準分配
 
-| Stage | Agent | 推論等級 | agy 委派 | 不委派的原因 |
+| Stage | Agent | 推論等級 | MCP 委派 | 不委派的原因 |
 |-------|-------|-----------|------------|------------|
 | 0a/0b 規劃 | planner | 最強推論 | — | 設計與計畫拆解是最高槓桿推論，錯了後面全錯 |
 | 1 建立 Issue + Worktree | gen-gh-issue skill + brancher | 輕量 | ✦ gh issue create/view, git worktree add, flutter pub get | Issue body 由 gen-gh-issue 產（五區段 zh-tw，或 issue-id 路徑由 brancher 解析既有 issue），brancher 依 ticket-id-dev-prep 規則建立 worktree + branch，皆純 IO |
 | 2 實作 | implementer | 標準（逐任務再分級，**見下方分級**） | ✦ 代碼+測試+commit（驗收委派 verifier：最強推論）| — |
 | 3 審查 | reviewer | 最強推論 | — | 根因判斷需最強推論，且不該讓產出代碼的同源 model 自審 |
-| 4 發布 | publisher（內部用 gen-pr skill） | 輕量 | ✦ Diff 分析 → PR 草稿（Claude 校對）| PR 描述由 gen-pr 產（Summary + 修正問題/修正方式），publisher 負責 push + gh pr create；重活已委派 agy，且發布前有暫停點人肉把關 |
+| 4 發布 | publisher（內部用 gen-pr skill） | 輕量 | ✦ Diff 分析 → PR 草稿（Claude 校對）| PR 描述由 gen-pr 產（Summary + 修正問題/修正方式），publisher 負責 push + gh pr create；重活已委派，且發布前有暫停點人肉把關 |
 | 5 回覆 PR Review | responder（→ reviewer → publisher） | responder: 輕量；reviewer: 最強推論；publisher: 輕量 | — | responder 逐條意見判斷用輕量即可；中間 reviewer 是交叉驗證的把關點，吃重推論不降級 |
-| 6 清理 Worktree | worktree-close-cleanup skill | —（skill 於主對話執行） | ✦ git worktree remove | 純 IO，且只移除 worktree、不刪 branch，決策成本低 |
+| 6 清理 Worktree | gen-sync-docs-by-branchs → gen-commit → worktree-close-cleanup skill | —（skill 於主對話執行） | — | 先同步文件再 commit，確保 docs 反映分支最終狀態；之後由主對話親自執行 `git worktree remove`（不委派 MCP），事後驗證 `git worktree list` / `git branch --list` |
 
 ### STAGE 2 implementer 內部的 model 分級
 
@@ -615,16 +734,17 @@ planner 在實作計畫中**應為每個任務標註複雜度等級**，implemen
 
 驗收（spec compliance → code quality 兩階段）**不沿用主對話當前 model**，而是**委派 verifier agent** 執行——其 frontmatter 綁定 `model: opus`（effort 需依推論等級表明確帶 `xhigh`，見上方「effort 不在 frontmatter 裡」），opus 取不到時由 CLI fallback 鏈自動落到可用的最強 model。
 
-這麼設計的原因與 STAGE 3 相同——**產出代碼的 agy 可能用便宜/快 model，驗收刻意用最強推論交叉檢查**，不讓同源 model 自審，維持「驗收等級 ≥ 實作等級」的把關強度。
+這麼設計的原因與 STAGE 3 相同——**產出代碼的委派後端可能用便宜/快 model，驗收刻意用最強推論交叉檢查**，不讓同源 model 自審，維持「驗收等級 ≥ 實作等級」的把關強度。
 
 > 落地方式：`Task("verifier", ..., effort: "xhigh")` 或 Workflow 的 `agent('驗收任務...', {agentType: 'verifier', effort: 'xhigh', ...})` 執行（見「用 Claude Workflow 執行並行」章節的 verify 階段）。這是 STAGE 2 唯一會脫離「主對話 model」的環節；`effort: 'xhigh'` 不可省略，省略會落回 session 當前 effort。
 
-### 不委派 agy 的硬規則
+### 不委派的硬規則
 
-以下情況即使 agy 可用也**不委派**（短文直生反而更省一次 context 來回）：
+以下情況即使 MCP 委派可用也**不委派**（短文直生反而更省一次 context 來回）：
 - commit message 生成（實作 model 依 diff 直生）
 - 單一檔案 < 50 行的小修正
-- STAGE 3 審查報告（reviewer 親自判斷，不可委派 agy。註：可選的「多 angle 對抗式審查」用 Claude Workflow 的 verifier 平行找 bug 作為輸入，reviewer 仍親自收斂判斷並產出報告，兩者不衝突——見「用 Claude Workflow 執行並行」章節）
+- STAGE 3 審查報告（reviewer 親自判斷，不可委派。註：可選的「多 angle 對抗式審查」用 Claude Workflow 的 verifier 平行找 bug 作為輸入，reviewer 仍親自收斂判斷並產出報告，兩者不衝突——見「用 Claude Workflow 執行並行」章節）
+- **對外動作一律自己執行**：`gh pr create`、`git push` 不委派子進程動手，且須先通過對應暫停點
 
 ---
 
@@ -741,10 +861,10 @@ const findings = (await parallel([
   () => agent(`以「過度工程/可簡化」視角審查 <branch> 的 diff 對照已確認的 plan：挑出計畫沒要求卻新增的抽象（單一實作的 interface、單一產品的 factory、永不變的 config、留給未來的 scaffolding、可用既有 helper/stdlib 取代的自製輪子）。每條 finding 必附刪除方案（刪哪些行、刪後 diff 是否更小、既有測試是否仍過）。絕不把信任邊界輸入驗證、防資料遺失、security、a11y 列為可簡化項。`,
     {label: 'review:過度工程', effort: 'xhigh', schema: FINDING_SCHEMA}),
 ])).filter(Boolean).flatMap(r => r.findings)
-// 回到主對話：reviewer 親自收斂 findings、去重、判定真偽 → 寫審查報告 → 暫停展示（不委派 agy）
+// 回到主對話：reviewer 親自收斂 findings、去重、判定真偽 → 寫審查報告 → 暫停展示（不委派）
 ```
 
-> 不變式：審查報告由 reviewer（最強推論）親自產出，**不委派 agy**。多 angle 只是提高召回率的輸入，不取代 reviewer 的最終判斷。退回 STAGE 2 的條件與層級不變。
+> 不變式：審查報告由 reviewer（最強推論）親自產出，**不委派**。多 angle 只是提高召回率的輸入，不取代 reviewer 的最終判斷。退回 STAGE 2 的條件與層級不變。
 >
 > 「過度工程/可簡化」lens 的 finding 屬獨立類別：僅「plan 未要求的新抽象」或「刪除即嚴格更小 diff 且測試仍過」兩種情況可列 Important 並觸發退回 STAGE 2；其餘列為非阻擋建議。與 correctness/security 衝突時後者勝出。（reviewer 收斂判準詳見 `reviewer.md`。）
 
@@ -754,8 +874,28 @@ const findings = (await parallel([
 
 | Command | Stage | Action |
 |---------|-------|--------|
-| `/gen-dev-workflow` | — | 查看目前流程狀態 / 開始新流程 |
-| `/gen-dev-workflow quick <描述或 #issue>` | — | 小修正快速通道（單暫停點，見「Quick 模式」章節） |
+### 一、啟動型（決定 mode）
+
+| Command | Mode | Action |
+|---------|------|--------|
+| `幫我做 <描述>` ／ `/gen-dev-workflow` | `sequence` | 完整流程 0a→4（**預設**）：產 spec+plan、建 worktree、拆任務、verifier 驗收、多 lens 審查 |
+| `開發 issue #<id>` ／ `處理 #<id>` | `sequence` | 同上，但跳過 0a/0b（規格已在 issue 內） |
+| `/gen-dev-workflow quick <描述或 #issue>` | `quick` | 小修正快速通道：單暫停點、不建 worktree、不產規劃文件。限 ≤3 檔（見「Quick 模式」章節） |
+| `/gen-dev-workflow batch <項目1> <項目2> ...` | — | 批次佇列：多項**各自** worktree/branch/PR 依序執行（見「批次模式」章節） |
+
+### 二、續接／管理型
+
+| Command | Action |
+|---------|--------|
+| `繼續` ／ `繼續上次` | 接續本 session 或當前 branch 的未完成流程 |
+| `繼續批次` | `/clear` 後於新 session 接續批次的下一項 |
+| `停止批次` | 中止批次（只刪佇列檔，branch/PR/worktree 保留） |
+| `PR #<id> 合併了，清理 worktree` | STAGE 6：同步文件 → commit → 移除 worktree（branch 保留） |
+
+### 三、跳入型（`mode: jump`）
+
+| Command | Stage | Action |
+|---------|-------|--------|
 | `/gen-dev-workflow spec <description>` | 0a | 撰寫功能規格 |
 | `/gen-dev-workflow plan <spec-path>` | 0b | 產出實作計畫 |
 | `/gen-dev-workflow branch <issue>` | 1 | 建立 Issue + Worktree |
@@ -763,6 +903,46 @@ const findings = (await parallel([
 | `/gen-dev-workflow code-review <branch>` | 3 | 執行代碼審查 |
 | `/gen-dev-workflow publish <branch>` | 4 | 建立 PR |
 | `/gen-dev-workflow review #<PR>` | 5 | 處理 PR review 意見 |
+| `/gen-dev-workflow cleanup <branch>` | 6 | PR 合併後清理 worktree（branch 保留）|
+
+### 四、選項：`--pause-level`（決定停幾次）
+
+**與 mode 正交**——mode 決定「有哪些階段」，`pause_level` 決定「這些階段跑完要不要問使用者」。任何**啟動型**指令都可在最後加 `--pause-level strict|balanced|autonomous`（省略 → `strict`）：
+
+```bash
+幫我做 §P4 快速複製 Diagnostic Snippet --pause-level balanced
+開發 issue #42 --pause-level balanced
+/gen-dev-workflow batch "§P4 ..." "§P6 ..." --pause-level balanced
+```
+
+| level | Stage 關卡 | 任務間 | 停幾次 |
+|---|---|---|:---:|
+| `strict`（預設） | 全停 | 每個任務都停 | 2＋N |
+| `balanced` | 只停 `0b` 計畫／`2` 實作整體／`4` PR 前 | 不停 | 3 |
+| `autonomous` | 全不停 | 不停 | 0 |
+
+**等價的自然語言**（不想打選項時，下列說法一律解析為對應 level）：
+
+| 使用者說 | 解析為 |
+|---|---|
+| 「中途不要問我」「不要停」「一路跑完」 | `balanced` |
+| 「完全不要問」「全自動」「無人值守」 | `autonomous`（⚠️ 須先警示，見下） |
+| 「每步都讓我確認」「盯緊一點」 | `strict` |
+
+**流程中途改變粒度**：使用者說「接下來不要再問了」→ `wf-state.sh set <檔> pause_level=balanced`，即刻生效於後續暫停點。
+
+🔴 **選 `autonomous` 前必須先警示一次**：「這會讓 `gh pr create` 不經你過目直接執行，確定嗎？」——獲明確同意才寫入。這是唯一在設定階段就要確認的 level，因為它關掉的是對外動作的最後一道關卡。
+
+⚠️ **`quick` + `balanced` 無作用**：quick 不拆任務（無 task 迴圈可關）、stage 是自由標籤（不匹配 `0b`/`2`/`4`），腳本會明示短路回 `strict`（`wf-state.sh:146-148`）。只有 `autonomous` 對 quick 有實效——關掉它唯一的 PR 暫停點。使用者若對 quick 指定 `balanced`，**直接告知無差別**，不要假裝有效果。
+
+### 組合速查
+
+| 需求 | 指令 |
+|---|---|
+| 改個字串、≤3 檔 | `/gen-dev-workflow quick <描述>` |
+| 新功能，想全程盯著 | `幫我做 <描述>`（什麼都不加） |
+| 新功能，計畫看過就放手 | `幫我做 <描述> --pause-level balanced` |
+| 多個獨立需求、各自 PR | `/gen-dev-workflow batch "<A>" "<B>" --pause-level balanced` |
 | `/gen-dev-workflow cleanup <branch>` | 6 | PR 合併後清理 worktree（branch 保留）|
 
 ---
@@ -815,6 +995,8 @@ const findings = (await parallel([
 # PR 合併後清理 worktree（STAGE 6）
 /gen-dev-workflow cleanup <branch-name>
 → 寫入狀態檔 { stage: 6, mode: "jump", branch: "<branch-name>" }
+→ 呼叫 gen-sync-docs-by-branchs skill，以 <branch-name> 為目標同步文件
+→ 同步完成後呼叫 gen-commit skill 將文件變更 commit（避免清理 worktree 時遺失）
 → 呼叫 worktree-close-cleanup skill 移除該 branch 對應的 worktree
 → 只移除 worktree，branch 本身保留不刪除（純 IO，無 model/effort 可調）
 ```
