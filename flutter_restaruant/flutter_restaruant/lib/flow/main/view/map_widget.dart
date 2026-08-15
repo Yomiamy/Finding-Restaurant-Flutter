@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/foundation.dart';
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -27,7 +28,7 @@ class _MapPageState extends State<MapWidget> {
   @override
   void didUpdateWidget(covariant MapWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
-    if (widget._summaryInfos != oldWidget._summaryInfos) {
+    if (!listEquals(widget._summaryInfos, oldWidget._summaryInfos)) {
       setState(() {
         _updateMarkers();
       });
@@ -74,11 +75,11 @@ class _MapPageState extends State<MapWidget> {
         _currentPos = position;
       },
       onCameraIdle: () {
-        if (_myLocMarker != null) {
-          _markers.remove(_myLocMarker);
-        }
-
         setState(() {
+          if (_myLocMarker != null) {
+            _markers.remove(_myLocMarker);
+          }
+
           _myLocMarker = Marker(
             position: _currentPos!.target,
             markerId: const MarkerId(UIConstants.mapMyLocationMarkId),
