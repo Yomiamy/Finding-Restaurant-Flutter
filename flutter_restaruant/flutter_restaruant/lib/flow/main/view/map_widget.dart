@@ -4,6 +4,7 @@ import '../../../domain/entities/entities_barrel.dart';
 import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../generated/l10n.dart';
+import '../../../component/cell/main_page/restaurant_item_cell.dart';
 
 class MapWidget extends StatefulWidget {
   final List<RestaurantEntity> _summaryInfos;
@@ -19,9 +20,16 @@ class _MapPageState extends State<MapWidget> {
   Marker? _myLocMarker;
   Set<Marker> _markers = {};
 
+  GoogleMapController? _mapController;
+  late final PageController _pageController;
+  List<RestaurantEntity> _validRestaurants = [];
+  int _selectedIndex = 0;
+
   @override
   void initState() {
     super.initState();
+    _pageController = PageController(viewportFraction: 0.85);
+    _updateValidRestaurants();
     _updateMarkers();
   }
 
@@ -30,30 +38,57 @@ class _MapPageState extends State<MapWidget> {
     super.didUpdateWidget(oldWidget);
     if (!listEquals(widget._summaryInfos, oldWidget._summaryInfos)) {
       setState(() {
+        _updateValidRestaurants();
+        _selectedIndex = 0;
         _updateMarkers();
       });
     }
   }
 
+  @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _updateValidRestaurants() {
+    _validRestaurants = widget._summaryInfos.where((info) {
+      return info.id != null &&
+          info.coordinates?.latitude != null &&
+          info.coordinates?.longitude != null;
+    }).toList();
+  }
+
   void _updateMarkers() {
-    Iterable<Marker> ite = widget._summaryInfos
-        .where(
-          (summaryInfo) =>
-              summaryInfo.id != null &&
-              summaryInfo.coordinates?.latitude != null &&
-              summaryInfo.coordinates?.longitude != null,
-        )
-        .map(
-          (summaryInfo) => Marker(
-            markerId: MarkerId(summaryInfo.id!),
-            position: LatLng(
-              summaryInfo.coordinates!.latitude!,
-              summaryInfo.coordinates!.longitude!,
-            ),
-            infoWindow: InfoWindow(title: summaryInfo.name),
-            icon: BitmapDescriptor.defaultMarker,
-          ),
-        );
+    Iterable<Marker> ite = _validRestaurants.asMap().entries.map((entry) {
+      final index = entry.key;
+      final summaryInfo = entry.value;
+
+      return Marker(
+        markerId: MarkerId(summaryInfo.id!),
+        position: LatLng(
+          summaryInfo.coordinates!.latitude!,
+          summaryInfo.coordinates!.longitude!,
+        ),
+        infoWindow: InfoWindow(title: summaryInfo.name),
+        icon: BitmapDescriptor.defaultMarkerWithHue(
+          _selectedIndex == index
+              ? BitmapDescriptor.hueBlue
+              : BitmapDescriptor.hueRed,
+        ),
+        onTap: () {
+          _pageController.animateToPage(
+            index,
+            duration: const Duration(milliseconds: 300),
+            curve: Curves.easeInOut,
+          );
+          setState(() {
+            _selectedIndex = index;
+            _updateMarkers();
+          });
+        },
+      );
+    });
 
     _markers = {};
     _markers.addAll(ite);
@@ -65,33 +100,78 @@ class _MapPageState extends State<MapWidget> {
 
   @override
   Widget build(BuildContext context) {
-    return GoogleMap(
-      initialCameraPosition: const CameraPosition(
-        target: UIConstants.mapDefaultLocation,
-      ),
-      markers: _markers,
-      myLocationEnabled: true,
-      onCameraMove: (position) {
-        _currentPos = position;
-      },
-      onCameraIdle: () {
-        setState(() {
-          if (_myLocMarker != null) {
-            _markers.remove(_myLocMarker);
-          }
+    return Stack(
+      children: [
+        GoogleMap(
+          initialCameraPosition: const CameraPosition(
+            target: UIConstants.mapDefaultLocation,
+          ),
+          onMapCreated: (controller) {
+            _mapController = controller;
+          },
+          markers: _markers,
+          myLocationEnabled: true,
+          onCameraMove: (position) {
+            _currentPos = position;
+          },
+          onCameraIdle: () {
+            setState(() {
+              if (_myLocMarker != null) {
+                _markers.remove(_myLocMarker);
+              }
 
-          _myLocMarker = Marker(
-            position: _currentPos!.target,
-            markerId: const MarkerId(UIConstants.mapMyLocationMarkId),
-            infoWindow: InfoWindow(title: S.current.map_my_loc_title),
-            icon: BitmapDescriptor.defaultMarkerWithHue(
-              BitmapDescriptor.hueYellow,
+              _myLocMarker = Marker(
+                position: _currentPos!.target,
+                markerId: const MarkerId(UIConstants.mapMyLocationMarkId),
+                infoWindow: InfoWindow(title: S.current.map_my_loc_title),
+                icon: BitmapDescriptor.defaultMarkerWithHue(
+                  BitmapDescriptor.hueYellow,
+                ),
+              );
+
+              _markers.add(_myLocMarker!);
+            });
+          },
+        ),
+        if (_validRestaurants.isNotEmpty)
+          Positioned(
+            bottom: 20,
+            left: 0,
+            right: 0,
+            height: 130,
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: _validRestaurants.length,
+              onPageChanged: (index) {
+                setState(() {
+                  _selectedIndex = index;
+                  _updateMarkers();
+                });
+                final restaurant = _validRestaurants[index];
+                _mapController?.animateCamera(
+                  CameraUpdate.newLatLng(
+                    LatLng(
+                      restaurant.coordinates!.latitude!,
+                      restaurant.coordinates!.longitude!,
+                    ),
+                  ),
+                );
+              },
+              itemBuilder: (context, index) {
+                return Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  child: Card(
+                    clipBehavior: Clip.antiAlias,
+                    elevation: 4.0,
+                    child: RestaurantItemCell(
+                      summaryInfo: _validRestaurants[index],
+                    ),
+                  ),
+                );
+              },
             ),
-          );
-
-          _markers.add(_myLocMarker!);
-        });
-      },
+          ),
+      ],
     );
   }
 }
