@@ -5,6 +5,9 @@ import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../generated/l10n.dart';
 import '../../../component/cell/main_page/restaurant_item_cell.dart';
+import '../../../features/utils/utils_barrel.dart';
+import '../../restaurant/view/view_barrel.dart';
+import 'main_page.dart';
 
 class MapWidget extends StatefulWidget {
   final List<RestaurantEntity> _summaryInfos;
@@ -160,11 +163,27 @@ class _MapPageState extends State<MapWidget> {
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 4.0),
-                  child: Card(
-                    clipBehavior: Clip.antiAlias,
-                    elevation: 4.0,
-                    child: RestaurantItemCell(
-                      summaryInfo: _validRestaurants[index],
+                  child: GestureDetector(
+                    onTap: () {
+                      final summaryInfo = _validRestaurants[index];
+                      final arguments = Tuple2<RestaurantEntity, dynamic>(
+                        summaryInfo,
+                        null,
+                      );
+                      // Avoid duplicate push, use pushNamedAndRemoveUntil instead of push
+                      // ignore: unawaited_futures
+                      Navigator.of(context).pushNamedAndRemoveUntil(
+                        RestaurantDetailPage.routeName,
+                        ModalRoute.withName(MainPage.routeName),
+                        arguments: arguments,
+                      );
+                    },
+                    child: Card(
+                      clipBehavior: Clip.antiAlias,
+                      elevation: 4.0,
+                      child: RestaurantItemCell(
+                        summaryInfo: _validRestaurants[index],
+                      ),
                     ),
                   ),
                 );
