@@ -3,6 +3,13 @@
 > **📝 合併紀錄**：
 > 本文件整併了 `2026-07-17` 與 `2026-07-30` 的腦力激盪記錄。依據時間軸與完成度，前半部記錄歷史遺留 Bug、流程漏洞的分析與修復；後半部基於系統穩固的基礎，進行開源多 Agent 框架的深度比對，並提出 2.0 架構的具體優化提案。
 >
+> **🔴 2026-08-10 重大變更：委派傳輸層由 `agy -p` headless 改為 `gemini-mcp-tool`（MCP）。**
+> 底層後端不變（`gemini-mcp-tool` 內部就是 antigravity-cli），換掉的是**傳輸層**。
+> 這直接推翻了本文件兩處的既有結論——**§2.3 痛點三**（agy 強耦合與退出碼遮蔽）與
+> **§3 提案 4 `wf-exec.sh`**（原被定性為「為一條已不走的路徑寫轉接層」）。
+> 委派不是死路，是傳輸層壞掉；換掉之後 orchestrator 模式才第一次真正成立。
+> 詳見各節的 2026-08-10 校正註記。
+>
 > **2026-08-06 補記**：SKILL.md STAGE 6（清理 Worktree）新增「文件同步」前置步驟——執行清理前先呼叫 gen-sync-docs-by-branchs（以當前分支為目標同步文件）→ gen-commit（將同步結果 commit），確保 worktree 移除前 docs 已反映分支最終狀態。此為已落地的流程變更。
 >
 > **⚠️ 2026-08-06 狀態校正（重要）**：本文件 §5 的 5 項 teamwork-preview 借鏡提案，
@@ -17,7 +24,7 @@
 
 ## 0. 完成度總覽（Bug 1.x / Gap 2.1–2.5 核對於 2026-07-21 · Gap 2.6 增補於 2026-08-07）
 
-> 狀態依 [`docs/features/2026-07-18-gen-dev-workflow-analysis.md`](../features/2026-07-18-gen-dev-workflow-analysis.md) 核對標注。✅ 已修 ｜ 🟡 部分 ｜ ⬜ 待修。
+> 狀態依 [`docs/architecture/2026-08-12-gen-dev-workflow-analysis.md`](../architecture/2026-08-12-gen-dev-workflow-analysis.md) 核對標注。✅ 已修 ｜ 🟡 部分 ｜ ⬜ 待修。（原引用 `docs/features/2026-07-18-...`，該檔已隨文件搬遷／改名不存在。）
 >
 > **🔍 實查校正 (2026-08-06)**：本註記原寫「`wf-state.sh` 不在本 repo，無法直接讀原始碼，
 > 故以該份 analysis 為權威來源」——**此前提已不成立**。該腳本就在本 repo 的
@@ -70,9 +77,26 @@
 * **現象**：自 STAGE 1 起，狀態 JSON 會被 promote 並搬移到各 Worktree 的 `.claude/workflow-state/` 中，而 Root 倉庫對應的 JSON 會被刪除。
 * **瓶頸**：當使用者在 Root 倉庫重新啟動 Claude session 並嘗試呼叫 `continue` 時，根目錄的 Agent 由於對 Worktree 目錄毫無感知，會判定「找不到任何活動中的工作流」。
 
-### 2.3. 外部 `agy` CLI 強相依
+### 2.3. 外部 `agy` CLI 強相依 — 🔄 已改善（2026-08-10 換傳輸層）
 * **現象**：流程的核心委派動作（如 brancher、implementer、publisher）完全依賴外部 `agy` 命令。
 * **限制**：若 `agy` 未正確配置在 PATH，退回 Fallback 模式後的行為描述含糊。且由於 Fallback 模式無法有效委派，整條流程的優勢將不復存在。
+
+> **🔍 2026-08-10 校正**：本節的問題比原本描述的**更嚴重**——實際上 `agy` 就算在 PATH 裡
+> （實查 `/Users/yomiry/.local/bin/agy`，v1.1.11），**`agy -p` headless 路徑仍不可用**：
+> 不吃 stdin、權限會卡死。也就是說委派**一直**落在 fallback，「流程優勢不復存在」不是假設情境，
+> 是常態。
+>
+> **已採取的對策**：傳輸層改走 MCP 工具 `mcp__gemini-cli__ask-gemini`（後端仍是 antigravity-cli）。
+> 實測驗證通過：可寫新檔、可改既有檔、可跑 shell、可 `git commit`（commit hash 與磁碟狀態
+> 均經第三方驗證，非採信子進程回報）。
+>
+> **殘餘限制**（換傳輸層解決不了的）：
+> 1. **仍是單一外部依賴**——MCP server 掛掉照樣退 fallback，只是失效點從 CLI 移到 MCP。
+> 2. **無法指定 cwd**——工作目錄只能靠 prompt 寫絕對路徑約束，屬文件層自律，非程式強制。
+>    這與 Gap 2.6 是同一類結構性弱點：**約束寫在 prompt 裡 = 沒有強制力**。
+> 3. **無 `--print-timeout` 對應物**——長任務無逾時控制，卡住只能人為中斷。
+> 4. **退出碼遮蔽問題換了形式但沒消失**——MCP 回傳的是文字，沒有 exit code 概念；
+>    子進程宣稱「測試通過」同樣不可採信，仍須主對話親自跑測試驗證。
 
 ---
 
@@ -213,7 +237,7 @@
 * **解決方案**：
   在 `wf-state.sh` 中新增 `prune` 命令，允許使用者或系統定期清理建立時間大於 7 天的 `.pending-*.json` 檔案。
 
-### Gap 2.6: 獨立入口（STAGE 5/6）完全繞過狀態機 — ⬜ 待修（2026-08-07 實例）
+### Gap 2.6: 獨立入口（STAGE 5/6）完全繞過狀態機 — ✅ 已修（2026-08-14 方案 A + C 落地）
 
 * **漏洞描述**：既有守衛（棘輪、轉移表、任務數校驗）**只在 `wf-state.sh` 被呼叫時才生效**。STAGE 5/6 是不在 `0a→0b→1→2→3→4` 主鏈上的獨立入口，缺少前後階段的銜接慣性，LLM 容易在「處理 review 意見」的任務心智下直接派發 responder/reviewer，**全程不碰腳本**——此時沒有任何機制會察覺流程正在推進。
 
@@ -225,25 +249,13 @@
 
   **連帶損害**：STAGE 5 流程的第三步（publisher 更新 PR 描述）一併被遺漏，因為沒有 state 推進來提示還有後續步驟。若此時換 session 續接，新 session 會誤判 STAGE 5 尚未執行而重跑。
 
-* **解決方案**（建議 A + C 併行，跳過 B）：
-
-  **A. 文件層——獨立入口的首步硬性化**
-  在 SKILL.md 的 STAGE 5/6 區塊開頭，把 state 推進寫成不可跳過的第一步而非隱含前提：
-  ```
-  STAGE 5：回覆 PR Review（獨立入口）
-  🔴 第一步（不可跳過）：wf-state.sh advance <檔> 5 --confirmed
-     ↑ 未執行此步就派發 responder = 流程違規
-  → 呼叫 responder agent...
-  ```
-  成本最低，但**仍只是叮嚀**——本次違規時 SKILL.md 已寫明正確流程（含 `{ stage: 5, mode: "jump" }` 的寫入指示）卻仍被漏掉，證明純文件層不足以獨立成為對策。
-
-  **B. 腳本層——`assert-stage` 子命令**：❌ **不採用**。
-  新增 `wf-state.sh assert-stage <檔> 5`（stage 不符則 exit 1）雖比 A 強，但**與 A 共享同一個失效前提**（都要求 LLM 主動呼叫腳本）。多一個子命令卻換不到實質保障，不划算。
-
-  **C. Hook 層——唯一真正的強制**
-  以 `PreToolUse` hook 攔截 `Agent` 工具呼叫：偵測到派發 `responder`/`reviewer`/`publisher` 時，檢查當前 worktree 的 state 檔 stage 是否已推進至對應階段，未推進則**阻擋該次呼叫**並回傳提示。
-  * **為何有效**：執行者是 harness 而非 LLM，這是唯一「想繞也繞不過」的層級。
-  * **代價**：hook 邏輯需維護；且會誤擋「流程外單獨派發 reviewer 做零星審查」的正當用法——需評估是否加白名單，或退而採「警告但不阻擋」。此取捨需由使用者依實際使用習慣決定。
+* **落地解決方案（2026-08-14 · 方案 A + C 併行）**：
+  1. **方案 A（文件層硬性化）**：`SKILL.md` 的 STAGE 5/6 區塊開頭加粗標示 `🔴 第一步（不可跳過）：推進狀態至 STAGE 5/6`，並明確規範未推進即派發 responder 屬流程違規。
+  2. **方案 C（Hook 層強制攔截）**：新增 `.claude/hooks/wf-guard-stage-check.sh`，在 `PreToolUse` 攔截 `Agent`（Claude）與 `invoke_subagent`（Antigravity）呼叫：
+     - 若派發 `responder` 且當前 worktree 存在 active workflow state，檢查 `stage` 是否為 `5`；
+     - 若未推進（如停在 `4`），Hook 直接以 exit 1 阻擋派發，並在 stderr 輸出精確的修復指令（`wf-state.sh advance <state_file> 5 --confirmed`）；
+     - **防誤殺保護**：若目錄下無 workflow 狀態檔（流程外單獨調用），Hook 直接 exit 0 放行。
+  3. **轉移表補全**：`wf-state.sh:legal_transition()` 補上 `4->5`、`5->4`、`5->5`、`4->6`、`5->6`、`6->done` 等轉移路徑，確保 sequence 流程回覆 PR 時推進無阻。
 
 * **設計啟示**：本 Gap 揭露的是守衛架構的**結構性盲點**，而非單點疏失——「守衛需要被呼叫才生效」。任何未來新增的獨立入口（非主鏈階段）都會重現同一漏洞，因此對策應落在**入口攔截層**，而非繼續往 `wf-state.sh` 內部堆校驗。
 
@@ -390,9 +402,18 @@ Bug 1.6 的 promote 斷裂**不影響此搬移步驟**——搬移是在 promote
 - **現象與瓶頸**：當工作流推進至 STAGE 1 並促動（promote）狀態 JSON 至 Worktree 目錄（`.claude/workflow-state/`）後，Root 倉庫對應的 JSON 會被刪除。當使用者在 Root 倉庫重新開啟 Claude session 試圖執行 `continue` 續接時，系統會回報「找不到任何活動中的工作流」。
 - **根因分析**：雖然 `SKILL.md` 規範了跨 Worktree 搜尋，但當 CLI 或入口腳本在 Root 執行時，缺乏全域掃描機制，且缺標準化的 Worktree 狀態檢索匯流排。
 
-### 2.3 痛點三：外部 `agy` CLI 強耦合與退出碼遮蔽漏洞
+### 2.3 痛點三：外部 `agy` CLI 強耦合與退出碼遮蔽漏洞 — 🔄 已改善（2026-08-10 換傳輸層）
 - **現象與瓶頸**：流程的核心子 Agent 委派動作高度依賴外部 `agy` CLI 命令。然而當 `agy` 執行內層指令失敗（例如 `flutter test` 返回非零退出碼 `1`）時，封裝腳本因未正確傳播內層退出碼，誤將狀態捕捉為 `0` (Success)，導致測試失敗卻被系統認定為成功的致命誤判。
 - **根因分析**：舊版執行腳本在 `agy` 命令返回後未紀錄 `$?` 便進入警告與 fallback 區塊，吞掉了原始 Exception。
+
+> **🔍 2026-08-10 校正**（與前半部 §2.3 為同一議題，此處為第二部分的重述）：
+> 委派已改走 MCP（`mcp__gemini-cli__ask-gemini`），**不再經過 bash 子進程，沒有 `$?` 可傳播**——
+> 「退出碼遮蔽」這個具體形狀消失了。
+>
+> 但**核心風險換了外衣仍在**：MCP 回傳純文字，一樣沒有成功/失敗的機器可判訊號，
+> 子進程宣稱「測試通過」與舊版 exit 0 誤判**危害等價**。
+> 對策不是轉接層（見 §3 提案 4 的不採用理由），而是**驗收紀律**：
+> 主對話親自跑測試與 `git log` / `git status` 驗證，不採信回報文字。
 
 ### 2.4 痛點四：不安全的 Git 回滾與 Metadata 破壞風險
 - **現象與瓶頸**：當審查退回或任務失敗觸發自動回滾（Rollback）時：
@@ -630,7 +651,19 @@ exit $EXIT_CODE
 
 ---
 
-### 提案 4：退出碼保留之跨引擎執行層 (`wf-exec.sh`)
+### 提案 4：退出碼保留之跨引擎執行層 (`wf-exec.sh`) — ❌ 不採用（2026-08-10 前提已變）
+
+> **🔍 2026-08-10 校正**：本提案的前提是「委派走 `agy -p`，需要一層 bash 轉接保退出碼」。
+> 2026-08-10 起委派改走 **MCP 工具呼叫**，**不再經過 bash 子進程**——
+> 沒有 `$?` 可保留，`wf-exec.sh` 這個形狀已無對應物。
+>
+> 但**它要解決的問題沒有消失，只是換了形式**：MCP 回傳純文字，同樣沒有 exit code，
+> 子進程宣稱「測試通過 / 已 commit」一樣不可採信。
+> **對策不是寫轉接層，而是驗收紀律**——已寫進 `implementer.md` 的
+> 「回報不等於事實」與 SKILL.md 委派紀律第 3 條：主對話親自跑
+> `git log` / `git status` / 測試確認，不採信回報文字。
+>
+> 下方原規格保留作決策紀錄，**不列入待辦**。
 
 #### 1. 設計規格
 - **退出碼精準傳播**：捕獲 `agy` 或 Native 子指令執行後之回傳碼 `RC=$?`，並立即執行 `exit $RC`，杜絕任何測試/編譯失敗被遮蔽為成功 (Exit 0) 的漏洞。
@@ -1115,9 +1148,10 @@ Orchestrator 維護一份持續更新的 `progress.md`，記錄：已完成的 M
 | §5.5 Handoff | ✅ 需求已覆蓋 | SKILL.md:545-575 state 檔 + WIP commit 交接（不採 `HANDOFF.md`） |
 | §3 提案 1 `pause_level` | ✅ **已完成**（2026-08-06 · `9bce068`） | `wf-state.sh:141` `should_pause()` 單一判定來源；`:172` `apply_sets()` 白名單含 `pause_level` + enum 校驗；`:269`/`:286` 為 `stage-done`/`task-done` 兩個呼叫端；SKILL.md:179 暫停粒度章節、:872 選項語法 |
 | **批次佇列**（非原提案，2026-08-06 新增） | ✅ **已完成**（`9bce068`） | `wf-state.sh:349-430` `batch-init`/`batch-get`/`batch-next`/`batch-done`/`batch-fail`/`batch-abort`；獨立 schema + `batch_write` 原子寫入；SKILL.md:328 批次模式章節 |
+| **Gap 2.6 獨立入口狀態防護**（2026-08-14 補正） | ✅ **已完成**（2026-08-14 · 方案 A+C） | `SKILL.md:146` 首步硬性化；`.claude/hooks/wf-guard-stage-check.sh` PreToolUse 攔截 responder 派發；`.agents/hooks.json` 與 `.claude/settings.local.json` 掛載；`wf-state.sh:98` 補齊 `4->5` 轉移表 |
 | §3 提案 2 `cmd_rollback.sh` | ⬜ **未實作** | 全專案查無此檔；SKILL.md 內 `rollback` / `回滾` 零命中 |
 | §3 提案 3 `wf-truncate.sh` | ⬜ **未實作** | `scripts/` 下僅有 `wf-state.sh` |
-| §3 提案 4 `wf-exec.sh` | ⚠️ **建議重新定性** | 同上查無此檔。但其目的是「`agy` CLI 退出碼保留 + fallback」，而 `agy` headless 實際已不可用、委派一律走 fallback 路徑——**為一條已不走的路徑寫轉接層，是在解決不存在的問題**。動工前應先確認前提是否還成立 |
+| §3 提案 4 `wf-exec.sh` | ❌ **不採用**（2026-08-10 定案） | 前提已變：委派改走 MCP 工具呼叫，不經 bash 子進程，沒有 `$?` 可保留，此形狀無對應物。其要解決的「回報不可信」問題改由**驗收紀律**覆蓋（`implementer.md`「回報不等於事實」+ SKILL.md 委派紀律第 3 條）。**前一版的判斷（「agy headless 不可用 ⇒ 委派已死 ⇒ 不必寫轉接層」）方向對、結論錯**——不可用的是傳輸層，不是委派本身；正解是換傳輸層，不是放棄委派 |
 
 **修正結論**：§5 的 5 項（teamwork-preview 借鏡）**全數已處理**，本文件此前仍將其列為
 「待實施藍圖」，屬狀態欄漂移。§3 的提案 1（`pause_level`）已於 2026-08-06 落地，
@@ -1143,7 +1177,7 @@ Orchestrator 維護一份持續更新的 `progress.md`，記錄：已完成的 M
 > ⚠️ **已知邊界**：Claude 無法自行清空 context，故批次為「自動接續 + 使用者 `/clear` 換場」
 > 而非全自動。真無人值守需走 cron 驅動（每次喚醒即全新 context），未實作。
 
-> **流程教訓**：本文件與 `2026-08-05-features-brainstorm.md` 兩份腦力激盪文件，
+> **流程教訓**：本文件與 `2026-08-14-features-brainstorm.md` 兩份腦力激盪文件，
 > 累計已出現 **6 次「標為待辦、實際已完成」**（features 側：§D6、§P8；workflow 側：§5.1~§5.4 四項），
 > 以及 **1 次反向漂移**（features 側 §P7 的教訓段落被誤讀為現存問題，已於 2026-08-06 補時間錨註記）。
 > **兩個方向的根源相同：狀態敘述沒有綁定時間點。** 本次更新即為預防第 7 次——
