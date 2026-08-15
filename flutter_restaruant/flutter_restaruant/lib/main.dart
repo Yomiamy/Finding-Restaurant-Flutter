@@ -4,6 +4,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:logger/logger.dart';
 import 'features/foundation/constants/constants_barrel.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -28,19 +29,22 @@ void main() async {
   final initFuture = MobileAds.instance.initialize();
   getIt.registerSingleton<BannerADState>(BannerADState(initFuture));
 
-  Future.wait([
-    Constants.init(),
-    // Firebase Init
-    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
-    S.load(ui.PlatformDispatcher.instance.locale),
-    // 於 runApp 前載入，使 isGuest 可被 UI 同步查詢
-    SignInManager().loadPrefs(),
-    // ignore: unawaited_futures
-  ]).then((_) {
-    FcmManager().init();
+  try {
+    await Future.wait([
+      Constants.init(),
+      // Firebase Init
+      Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+      S.load(ui.PlatformDispatcher.instance.locale),
+      // 於 runApp 前載入，使 isGuest 可被 UI 同步查詢
+      SignInManager().loadPrefs(),
+    ]);
+  } catch (e, st) {
+    Logger().e('Initialization failed', error: e, stackTrace: st);
+  }
 
-    runApp(const FindingRestaruantApp());
-  });
+  FcmManager().init();
+
+  runApp(const FindingRestaruantApp());
 }
 
 class FindingRestaruantApp extends StatelessWidget {
