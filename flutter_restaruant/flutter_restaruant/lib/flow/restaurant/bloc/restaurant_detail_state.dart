@@ -27,20 +27,21 @@ class Success extends RestaurantDetailState {
   final ReviewEntity reviewInfo;
   final String staticMapUrl;
 
-  const Success(
-      {required this.detailInfo,
-      required this.reviewInfo,
-      required this.staticMapUrl});
+  const Success({
+    required this.detailInfo,
+    required this.reviewInfo,
+    required this.staticMapUrl,
+  });
 
   @override
   List<Object> get props => [
-        detailInfo.name ?? '',
-        detailInfo.imageUrl ?? '',
-        detailInfo.reviewCount ?? 0,
-        detailInfo.rating ?? 0,
-        staticMapUrl,
-        reviewInfo.reviews?.length ?? 0,
-      ];
+    detailInfo.name ?? '',
+    detailInfo.imageUrl ?? '',
+    detailInfo.reviewCount ?? 0,
+    detailInfo.rating ?? 0,
+    staticMapUrl,
+    reviewInfo.reviews?.length ?? 0,
+  ];
 
   @override
   String toString() => 'Success get detail info $detailInfo';

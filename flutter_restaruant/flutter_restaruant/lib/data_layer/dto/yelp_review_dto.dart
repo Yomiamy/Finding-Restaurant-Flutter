@@ -9,15 +9,10 @@ class YelpReviewDto {
   List<String>? possibleLanguages;
   List<YelpReviewDetailDto>? reviews;
 
-  YelpReviewDto({
-    this.total,
-    this.possibleLanguages,
-    this.reviews,
-  });
+  YelpReviewDto({this.total, this.possibleLanguages, this.reviews});
 
   factory YelpReviewDto.fromJson(Map<String, dynamic> json) =>
       _$YelpReviewDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$YelpReviewDtoToJson(this);
 }
-

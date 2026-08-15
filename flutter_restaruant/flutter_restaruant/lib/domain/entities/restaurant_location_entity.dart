@@ -31,14 +31,14 @@ class RestaurantLocationEntity {
       );
 
   YelpRestaurantLocationDto get toDto => YelpRestaurantLocationDto(
-        address1: address1,
-        address2: address2,
-        address3: address3,
-        city: city,
-        country: country,
-        state: state,
-        displayAddress: displayAddress,
-      );
+    address1: address1,
+    address2: address2,
+    address3: address3,
+    city: city,
+    country: country,
+    state: state,
+    displayAddress: displayAddress,
+  );
 
   String get displayAddressStr => displayAddress?.join('') ?? '';
 }

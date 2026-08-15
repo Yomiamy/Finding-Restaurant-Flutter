@@ -26,8 +26,9 @@ class BiometricSignInManager {
   Future<void> initBioSignInInfo() async {
     _availableBiometrics = await _localAuth.getAvailableBiometrics();
     isSupportBiometricAuth = _availableBiometrics.isNotEmpty;
-    isSupportFingerPrintAuth =
-        _availableBiometrics.contains(BiometricType.fingerprint);
+    isSupportFingerPrintAuth = _availableBiometrics.contains(
+      BiometricType.fingerprint,
+    );
     isSupportFaceIdAuth = _availableBiometrics.contains(BiometricType.face);
   }
 
@@ -41,8 +42,9 @@ class BiometricSignInManager {
       return const Tuple2(null, '');
     }
 
-    bool isSignInSuccess =
-        await _localAuth.authenticate(localizedReason: '請使用生物識別認證進行登入');
+    bool isSignInSuccess = await _localAuth.authenticate(
+      localizedReason: '請使用生物識別認證進行登入',
+    );
 
     if (!isSignInSuccess) {
       return const Tuple2(null, '');
@@ -55,8 +57,9 @@ class BiometricSignInManager {
         return const Tuple2(null, '登入失敗, 請重新登入一次');
       }
 
-      AccountDto accountDto =
-          AccountDto.fromJson(jsonDecode(accountInfoJsonStr));
+      AccountDto accountDto = AccountDto.fromJson(
+        jsonDecode(accountInfoJsonStr),
+      );
       return Tuple2(accountDto, '');
     }
   }

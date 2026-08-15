@@ -6,22 +6,17 @@ class ReviewEntity {
   final List<String>? possibleLanguages;
   final List<ReviewDetailEntity>? reviews;
 
-  const ReviewEntity({
-    this.total,
-    this.possibleLanguages,
-    this.reviews,
-  });
+  const ReviewEntity({this.total, this.possibleLanguages, this.reviews});
 
   factory ReviewEntity.fromDto(YelpReviewDto dto) => ReviewEntity(
-        total: dto.total,
-        possibleLanguages: dto.possibleLanguages,
-        reviews:
-            dto.reviews?.map((e) => ReviewDetailEntity.fromDto(e)).toList(),
-      );
+    total: dto.total,
+    possibleLanguages: dto.possibleLanguages,
+    reviews: dto.reviews?.map((e) => ReviewDetailEntity.fromDto(e)).toList(),
+  );
 
   YelpReviewDto get toDto => YelpReviewDto(
-        total: total,
-        possibleLanguages: possibleLanguages,
-        reviews: reviews?.map((e) => e.toDto).toList(),
-      );
+    total: total,
+    possibleLanguages: possibleLanguages,
+    reviews: reviews?.map((e) => e.toDto).toList(),
+  );
 }

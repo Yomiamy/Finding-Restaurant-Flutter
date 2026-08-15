@@ -55,19 +55,19 @@ class RestaurantEntity {
       );
 
   YelpRestaurantSummaryDto get toDto => YelpRestaurantSummaryDto(
-        id: id,
-        name: name,
-        imageUrl: imageUrl,
-        reviewCount: reviewCount,
-        rating: rating,
-        price: price,
-        phone: phone,
-        distance: distance,
-        categories: categories?.map((e) => e.toDto).toList(),
-        location: location?.toDto,
-        coordinates: coordinates?.toDto,
-        favor: favor,
-      );
+    id: id,
+    name: name,
+    imageUrl: imageUrl,
+    reviewCount: reviewCount,
+    rating: rating,
+    price: price,
+    phone: phone,
+    distance: distance,
+    categories: categories?.map((e) => e.toDto).toList(),
+    location: location?.toDto,
+    coordinates: coordinates?.toDto,
+    favor: favor,
+  );
 
   String get categoriesStr =>
       categories?.map((category) => category.title ?? '').join(' ') ?? '';

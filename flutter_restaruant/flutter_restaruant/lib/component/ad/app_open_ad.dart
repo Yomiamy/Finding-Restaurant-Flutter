@@ -10,18 +10,22 @@ class AppOpenAD {
   /// Load an AppOpenAd.
   void loadAd() {
     AppOpenAd.load(
-        adUnitId: adState.adUnitId,
-        // orientation: AppOpenAd.orientationPortrait,
-        request: const AdRequest(),
-        adLoadCallback: AppOpenAdLoadCallback(onAdLoaded: (ad) {
+      adUnitId: adState.adUnitId,
+      // orientation: AppOpenAd.orientationPortrait,
+      request: const AdRequest(),
+      adLoadCallback: AppOpenAdLoadCallback(
+        onAdLoaded: (ad) {
           // adState.appOpenAd = ad;
           adState.appOpenAd = this;
           ad.fullScreenContentCallback = adState.adListener;
 
           ad.show();
-        }, onAdFailedToLoad: (error) {
+        },
+        onAdFailedToLoad: (error) {
           // Handle the error.
           debugPrint('AppOpenAd failed to load: $error');
-        }));
+        },
+      ),
+    );
   }
 }

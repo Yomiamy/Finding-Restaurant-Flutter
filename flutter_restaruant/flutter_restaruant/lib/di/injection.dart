@@ -22,11 +22,14 @@ void setupInjection() {
 
   // Repositories
   getIt.registerLazySingleton<MainRepository>(
-      () => MainRepo(favorDataSource: getIt<FavorDataSource>()));
+    () => MainRepo(favorDataSource: getIt<FavorDataSource>()),
+  );
   getIt.registerLazySingleton<RestaurantDetailRepository>(
-      () => RestaurantDetailRepo(favorDataSource: getIt<FavorDataSource>()));
+    () => RestaurantDetailRepo(favorDataSource: getIt<FavorDataSource>()),
+  );
   getIt.registerLazySingleton<FavorRepository>(
-      () => FavorRepo(favorDataSource: getIt<FavorDataSource>()));
+    () => FavorRepo(favorDataSource: getIt<FavorDataSource>()),
+  );
   getIt.registerLazySingleton<SignInRepository>(() => SignInRepo());
   getIt.registerLazySingleton<SettingsRepository>(() => const SettingsRepo());
 }

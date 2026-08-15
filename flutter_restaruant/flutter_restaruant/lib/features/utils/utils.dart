@@ -8,16 +8,18 @@ import 'package:url_launcher/url_launcher_string.dart';
 class Utils {
   static String? encodeQueryParameters(Map<String, String> params) => params
       .entries
-      .map((e) =>
-          '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}')
+      .map(
+        (e) => '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}',
+      )
       .join('&');
 
-  static void openUrl(
-      {String? rawUrl,
-      String? scheme,
-      String? host,
-      String path = '',
-      Map<String, String> parameters = const <String, String>{}}) async {
+  static void openUrl({
+    String? rawUrl,
+    String? scheme,
+    String? host,
+    String path = '',
+    Map<String, String> parameters = const <String, String>{},
+  }) async {
     if (rawUrl != null && rawUrl.isNotEmpty) {
       // ignore: unawaited_futures
       launchUrlString(rawUrl);
@@ -59,12 +61,13 @@ class Utils {
     if (permission == LocationPermission.deniedForever) {
       // Permissions are denied forever, handle appropriately.
       throw Exception(
-          'Location permissions are permanently denied, we cannot request permissions.');
+        'Location permissions are permanently denied, we cannot request permissions.',
+      );
     }
 
     return Geolocator.getCurrentPosition(
-        locationSettings:
-            const LocationSettings(accuracy: LocationAccuracy.high));
+      locationSettings: const LocationSettings(accuracy: LocationAccuracy.high),
+    );
   }
 
   static bool isLocaleZh() => Platform.localeName.contains('zh');

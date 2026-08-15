@@ -21,8 +21,10 @@ class AppleSignInManager {
     const charset =
         '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
     final random = Random.secure();
-    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
-        .join();
+    return List.generate(
+      length,
+      (_) => charset[random.nextInt(charset.length)],
+    ).join();
   }
 
   /// Returns the sha256 hash of [input] in hex notation.
@@ -53,30 +55,34 @@ class AppleSignInManager {
       if (appleCredential.identityToken == null) {
         // 未登入
         return const Tuple2<AccountDto?, String>(
-            null, 'Error occurred, please retry again');
+          null,
+          'Error occurred, please retry again',
+        );
       }
 
       // Create an `OAuthCredential` from the credential returned by Apple.
-      final oauthCredential = OAuthProvider('apple.com').credential(
-        idToken: appleCredential.identityToken,
-        rawNonce: rawNonce,
-      );
+      final oauthCredential = OAuthProvider(
+        'apple.com',
+      ).credential(idToken: appleCredential.identityToken, rawNonce: rawNonce);
 
       // Sign in the user with Firebase. If the nonce we generated earlier does
       // not match the nonce in `appleCredential.identityToken`, sign in will fail.
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(oauthCredential);
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithCredential(oauthCredential);
       AccountDto accountDto = AccountDto(
-          type: AccountType.apple,
-          uid: userCredential.user?.uid ?? '',
-          account: userCredential.user?.email ?? '');
+        type: AccountType.apple,
+        uid: userCredential.user?.uid ?? '',
+        account: userCredential.user?.email ?? '',
+      );
 
       return Tuple2(accountDto, '');
     } on Exception catch (e) {
       // 登入錯誤
       debugPrint('AppleSignInManager, error = $e');
       return Tuple2(
-          null, 'Apple sign in fail, please retry again\n${e.toString()}');
+        null,
+        'Apple sign in fail, please retry again\n${e.toString()}',
+      );
     }
   }
 

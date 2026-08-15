@@ -37,7 +37,9 @@ class SettingsRepo implements SettingsRepository {
 
     // ignore: unawaited_futures
     prefs.setBool(
-        Constants.prefKeyBiometricAuthSetting, newBiometricAuthSetting);
+      Constants.prefKeyBiometricAuthSetting,
+      newBiometricAuthSetting,
+    );
 
     return newBiometricAuthSetting;
   }
@@ -51,8 +53,9 @@ class SettingsRepo implements SettingsRepository {
     }
 
     Utils.openUrl(
-        rawUrl:
-            'mailto:o1984531@gmail.com?subject=$subject&body=${bodyPrefix + account}');
+      rawUrl:
+          'mailto:o1984531@gmail.com?subject=$subject&body=${bodyPrefix + account}',
+    );
     return true;
   }
 }

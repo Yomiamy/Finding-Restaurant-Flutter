@@ -16,8 +16,8 @@ class MainBloc extends Bloc<MainEvent, MainState> {
   final MainRepository _mainRepository;
 
   MainBloc({required MainRepository repository})
-      : _mainRepository = repository,
-        super(const MainInitial()) {
+    : _mainRepository = repository,
+      super(const MainInitial()) {
     on<FetchSearchInfo>((event, emit) async {
       try {
         final Position currentPos = await Utils.getCurrentPosition();
@@ -54,8 +54,8 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       emit(const InProgress());
 
       await Future.delayed(const Duration(seconds: 2));
-      final List<RestaurantEntity> filterInfos =
-          await _mainRepository.filterByKeyword(event.keyword, event.sortByStr);
+      final List<RestaurantEntity> filterInfos = await _mainRepository
+          .filterByKeyword(event.keyword, event.sortByStr);
 
       if (filterInfos.isNotEmpty) {
         emit(Success(summaryInfos: filterInfos));

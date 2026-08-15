@@ -9,8 +9,8 @@ class SettingsBloc extends Bloc<SettingsEvent, SettingsState> {
   final SettingsRepository _settingsRepository;
 
   SettingsBloc({required SettingsRepository repository})
-      : _settingsRepository = repository,
-        super(SettingsInitial()) {
+    : _settingsRepository = repository,
+      super(SettingsInitial()) {
     on<InitBioAuthSettingEvent>((event, emit) async {
       emit(const InProgress());
 

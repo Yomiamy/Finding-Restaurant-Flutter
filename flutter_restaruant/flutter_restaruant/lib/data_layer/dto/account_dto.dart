@@ -9,11 +9,7 @@ class AccountDto {
   String? account;
   AccountType type;
 
-  AccountDto({
-    required this.type,
-    this.uid,
-    this.account,
-  });
+  AccountDto({required this.type, this.uid, this.account});
 
   factory AccountDto.fromJson(Map<String, dynamic> json) =>
       _$AccountDtoFromJson(json);

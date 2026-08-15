@@ -27,4 +27,3 @@ class YelpRestaurantLocationDto {
 
   Map<String, dynamic> toJson() => _$YelpRestaurantLocationDtoToJson(this);
 }
-

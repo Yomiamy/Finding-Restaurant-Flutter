@@ -12,20 +12,25 @@ class RestaurantDetailRepo implements RestaurantDetailRepository {
   final FavorDataSource _favorDataSource;
 
   RestaurantDetailRepo({FavorDataSource? favorDataSource})
-      : _favorDataSource = favorDataSource ?? FavorDataSource();
+    : _favorDataSource = favorDataSource ?? FavorDataSource();
 
   @override
   Future<RestaurantDetailEntity> fetchYelpRestaurantDetailInfo(
-      String id) async {
-    YelpRestaurantDetailDto detailDto =
-        await GetIt.I<APIClz>().business(id, Constants.locale);
+    String id,
+  ) async {
+    YelpRestaurantDetailDto detailDto = await GetIt.I<APIClz>().business(
+      id,
+      Constants.locale,
+    );
     return RestaurantDetailEntity.fromDto(detailDto);
   }
 
   @override
   Future<ReviewEntity> fetchYelpRestaurantReviewInfo(String id) async {
-    YelpReviewDto reviewDto =
-        await GetIt.I<APIClz>().review(id, Constants.locale);
+    YelpReviewDto reviewDto = await GetIt.I<APIClz>().review(
+      id,
+      Constants.locale,
+    );
     return ReviewEntity.fromDto(reviewDto);
   }
 

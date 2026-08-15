@@ -9,8 +9,9 @@ part of 'yelp_search_dto.dart';
 YelpSearchDto _$YelpSearchDtoFromJson(Map<String, dynamic> json) =>
     YelpSearchDto(
       businesses: (json['businesses'] as List<dynamic>?)
-          ?.map((e) =>
-              YelpRestaurantSummaryDto.fromJson(e as Map<String, dynamic>))
+          ?.map(
+            (e) => YelpRestaurantSummaryDto.fromJson(e as Map<String, dynamic>),
+          )
           .toList(),
       total: (json['total'] as num?)?.toInt(),
     );

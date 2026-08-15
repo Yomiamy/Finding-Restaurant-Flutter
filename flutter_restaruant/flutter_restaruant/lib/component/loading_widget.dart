@@ -8,10 +8,12 @@ class LoadingWidget extends StatelessWidget {
   const LoadingWidget({super.key, this.text = 'Loading...'});
 
   @override
-  Widget build(BuildContext context) =>
-      Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-        const CircularProgressIndicator(),
-        const SizedBox(height: ThemeSize.space20),
-        Text(text)
-      ]);
+  Widget build(BuildContext context) => Column(
+    mainAxisSize: MainAxisSize.min,
+    children: <Widget>[
+      const CircularProgressIndicator(),
+      const SizedBox(height: ThemeSize.space20),
+      Text(text),
+    ],
+  );
 }

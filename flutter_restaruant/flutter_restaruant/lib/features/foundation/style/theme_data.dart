@@ -16,9 +16,7 @@ import 'theme_text_style.dart';
 abstract final class AppThemeData {
   static final ThemeData materialLight = ThemeData(
     useMaterial3: true,
-    colorScheme: ColorScheme.fromSeed(
-      seedColor: ThemeColor.appPrimary,
-    ),
+    colorScheme: ColorScheme.fromSeed(seedColor: ThemeColor.appPrimary),
     textTheme: ThemeTextStyle.textTheme,
   );
 

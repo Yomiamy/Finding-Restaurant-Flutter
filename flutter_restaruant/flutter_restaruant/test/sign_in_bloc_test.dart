@@ -90,10 +90,7 @@ void main() {
 
       await expectLater(
         bloc.stream,
-        emitsInOrder([
-          const InProgress(),
-          isA<SignInInitial>(),
-        ]),
+        emitsInOrder([const InProgress(), isA<SignInInitial>()]),
       );
     });
 

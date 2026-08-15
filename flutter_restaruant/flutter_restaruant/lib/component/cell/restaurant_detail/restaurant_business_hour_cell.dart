@@ -7,14 +7,16 @@ import '../../../features/foundation/constants/constants_barrel.dart';
 class RestaurantBusinessHourCell extends StatelessWidget {
   final List<Widget> _businessTimeWidgets = <Widget>[];
 
-  RestaurantBusinessHourCell(
-      {super.key = const Key('RestaurantBusinessCell'),
-      required List<RestaurantBusinessTimeEntity> businessTimeInfos}) {
+  RestaurantBusinessHourCell({
+    super.key = const Key('RestaurantBusinessCell'),
+    required List<RestaurantBusinessTimeEntity> businessTimeInfos,
+  }) {
     _initBusinessTimeWidgets(businessTimeInfos);
   }
 
   void _initBusinessTimeWidgets(
-      List<RestaurantBusinessTimeEntity> businessTimeInfos) {
+    List<RestaurantBusinessTimeEntity> businessTimeInfos,
+  ) {
     Map<int, List<Widget>> businessTimeWidgetMap = <int, List<Widget>>{};
     int nowWeekDay = DateTime.now().weekday;
 
@@ -29,8 +31,12 @@ class RestaurantBusinessHourCell extends StatelessWidget {
 
       if (!businessTimeWidgetMap.containsKey(yelpWeekDay)) {
         businessTimeWidgets = <Widget>[];
-        businessTimeWidget =
-            _createBusinessTimeRow(isToday, dayStr, start, end);
+        businessTimeWidget = _createBusinessTimeRow(
+          isToday,
+          dayStr,
+          start,
+          end,
+        );
       } else {
         businessTimeWidgets = businessTimeWidgetMap[yelpWeekDay]!;
         businessTimeWidget = _createBusinessTimeRow(isToday, '', start, end);
@@ -45,43 +51,68 @@ class RestaurantBusinessHourCell extends StatelessWidget {
   }
 
   Widget _createBusinessTimeRow(
-          bool isToday, String weekDay, String startTime, String endTime) =>
-      Padding(
-          padding: const EdgeInsets.only(top: ThemeSize.space5),
-          child: Stack(children: [
-            Align(
-                alignment: Alignment.centerLeft,
-                child: Text(weekDay,
-                    style: TextStyle(
-                        fontWeight:
-                            isToday ? FontWeight.bold : FontWeight.normal))),
-            Align(
-                alignment: Alignment.centerRight,
-                child: Text('$startTime - $endTime',
-                    style: TextStyle(
-                        fontWeight:
-                            isToday ? FontWeight.bold : FontWeight.normal)))
-          ]));
+    bool isToday,
+    String weekDay,
+    String startTime,
+    String endTime,
+  ) => Padding(
+    padding: const EdgeInsets.only(top: ThemeSize.space5),
+    child: Stack(
+      children: [
+        Align(
+          alignment: Alignment.centerLeft,
+          child: Text(
+            weekDay,
+            style: TextStyle(
+              fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ),
+        Align(
+          alignment: Alignment.centerRight,
+          child: Text(
+            '$startTime - $endTime',
+            style: TextStyle(
+              fontWeight: isToday ? FontWeight.bold : FontWeight.normal,
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 
   @override
   Widget build(BuildContext context) => Padding(
-        padding: const EdgeInsets.only(top: ThemeSize.space10),
-        child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-          SizedBox(
-              width: MediaQuery.of(context).size.width,
-              child: DecoratedBox(
-                  decoration: const BoxDecoration(color: Colors.grey),
-                  child: Center(
-                      child: Text(S.current.business_hour,
-                          style: const TextStyle(
-                              fontSize: UIConstants.xhFontSize,
-                              fontWeight: FontWeight.bold))))),
-          Padding(
-              padding: const EdgeInsets.only(
-                  left: ThemeSize.space10, right: ThemeSize.space10),
-              child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: _businessTimeWidgets))
-        ]),
-      );
+    padding: const EdgeInsets.only(top: ThemeSize.space10),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        SizedBox(
+          width: MediaQuery.of(context).size.width,
+          child: DecoratedBox(
+            decoration: const BoxDecoration(color: Colors.grey),
+            child: Center(
+              child: Text(
+                S.current.business_hour,
+                style: const TextStyle(
+                  fontSize: UIConstants.xhFontSize,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ),
+          ),
+        ),
+        Padding(
+          padding: const EdgeInsets.only(
+            left: ThemeSize.space10,
+            right: ThemeSize.space10,
+          ),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: _businessTimeWidgets,
+          ),
+        ),
+      ],
+    ),
+  );
 }

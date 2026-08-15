@@ -31,13 +31,17 @@ class UIConstants {
   static const double hFontSize = 16;
   @Deprecated('改用 Theme.of(context).textTheme.titleMedium')
   static const double xhFontSize = 18;
-  @Deprecated('無等價角色：titleMedium 是 18，替換會縮小 2pt。'
-      'S4 遷移時需逐點確認（實測 1 處）')
+  @Deprecated(
+    '無等價角色：titleMedium 是 18，替換會縮小 2pt。'
+    'S4 遷移時需逐點確認（實測 1 處）',
+  )
   static const double xxhFontSize = 20;
   @Deprecated('改用 Theme.of(context).textTheme.titleLarge')
   static const double xxxhFontSize = 22;
-  @Deprecated('無等價角色：titleLarge 是 22，替換會縮小 2pt。'
-      'S4 遷移時需逐點確認（實測 2 處）')
+  @Deprecated(
+    '無等價角色：titleLarge 是 22，替換會縮小 2pt。'
+    'S4 遷移時需逐點確認（實測 2 處）',
+  )
   static const double xxxxhFontSize = 24;
   @Deprecated('改用 Theme.of(context).textTheme（無對應角色，未被使用）')
   static const double xxxxxhFontSize = 26;

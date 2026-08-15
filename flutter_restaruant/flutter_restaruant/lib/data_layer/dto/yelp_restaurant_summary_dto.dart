@@ -51,4 +51,3 @@ class YelpRestaurantSummaryDto {
   @override
   int get hashCode => id?.hashCode ?? 0;
 }
-

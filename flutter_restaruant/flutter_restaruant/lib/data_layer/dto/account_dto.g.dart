@@ -7,10 +7,10 @@ part of 'account_dto.dart';
 // **************************************************************************
 
 AccountDto _$AccountDtoFromJson(Map<String, dynamic> json) => AccountDto(
-      type: $enumDecode(_$AccountTypeEnumMap, json['type']),
-      uid: json['uid'] as String?,
-      account: json['account'] as String?,
-    );
+  type: $enumDecode(_$AccountTypeEnumMap, json['type']),
+  uid: json['uid'] as String?,
+  account: json['account'] as String?,
+);
 
 Map<String, dynamic> _$AccountDtoToJson(AccountDto instance) =>
     <String, dynamic>{

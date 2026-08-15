@@ -15,20 +15,20 @@ class RestaurantBusinessTimeEntity {
   });
 
   factory RestaurantBusinessTimeEntity.fromDto(
-          YelpRestaurantBusinessTimeDto dto) =>
-      RestaurantBusinessTimeEntity(
-        isOvernight: dto.isOvernight,
-        start: dto.start,
-        end: dto.end,
-        day: dto.day,
-      );
+    YelpRestaurantBusinessTimeDto dto,
+  ) => RestaurantBusinessTimeEntity(
+    isOvernight: dto.isOvernight,
+    start: dto.start,
+    end: dto.end,
+    day: dto.day,
+  );
 
   YelpRestaurantBusinessTimeDto get toDto => YelpRestaurantBusinessTimeDto(
-        isOvernight: isOvernight,
-        start: start,
-        end: end,
-        day: day,
-      );
+    isOvernight: isOvernight,
+    start: start,
+    end: end,
+    day: day,
+  );
 
   String get dayStr => getWeekDayStrByIndex(day ?? 0);
 

@@ -33,49 +33,64 @@ class _FavorPageState extends State<FavorPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-        appBar: AppBar(
-            leading: PlatformIconButton(
-                padding: const EdgeInsets.all(ThemeSize.zero),
-                onPressed: () => Navigator.of(context).pop(),
-                materialIcon:
-                    const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
-                cupertinoIcon:
-                    const Icon(CupertinoIcons.back, color: ThemeColor.backBtn)),
-            title: const Text(UIConstants.favorTitle,
-                style: TextStyle(
-                    color: Colors.white, fontSize: UIConstants.xxxxhFontSize)),
-            backgroundColor: ThemeColor.appPrimary),
-        body: BlocBuilder<FavorBloc, FavorState>(
-            bloc: _favorBloc,
-            builder: (context, state) {
-              if (state is InProgress) {
-                return const Center(child: LoadingWidget());
-              } else if (state is Success) {
-                List<RestaurantEntity> favorInfos = state.favorInfos;
+      appBar: AppBar(
+        leading: PlatformIconButton(
+          padding: const EdgeInsets.all(ThemeSize.zero),
+          onPressed: () => Navigator.of(context).pop(),
+          materialIcon: const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
+          cupertinoIcon: const Icon(
+            CupertinoIcons.back,
+            color: ThemeColor.backBtn,
+          ),
+        ),
+        title: const Text(
+          UIConstants.favorTitle,
+          style: TextStyle(
+            color: Colors.white,
+            fontSize: UIConstants.xxxxhFontSize,
+          ),
+        ),
+        backgroundColor: ThemeColor.appPrimary,
+      ),
+      body: BlocBuilder<FavorBloc, FavorState>(
+        bloc: _favorBloc,
+        builder: (context, state) {
+          if (state is InProgress) {
+            return const Center(child: LoadingWidget());
+          } else if (state is Success) {
+            List<RestaurantEntity> favorInfos = state.favorInfos;
 
-                return ListView.builder(
-                    padding: const EdgeInsets.only(
-                        top: ThemeSize.zero, bottom: ThemeSize.zero),
-                    itemCount: favorInfos.length,
-                    itemBuilder: (context, index) {
-                      RestaurantEntity favorInfo = favorInfos[index];
+            return ListView.builder(
+              padding: const EdgeInsets.only(
+                top: ThemeSize.zero,
+                bottom: ThemeSize.zero,
+              ),
+              itemCount: favorInfos.length,
+              itemBuilder: (context, index) {
+                RestaurantEntity favorInfo = favorInfos[index];
 
-                      return GestureDetector(
-                          child: RestaurantItemCell(summaryInfo: favorInfo),
-                          onTap: () async {
-                            Tuple2 arguments =
-                                Tuple2<RestaurantEntity, dynamic>(
-                                    favorInfo, null);
-                            await Navigator.of(context).pushNamed(
-                                RestaurantDetailPage.routeName,
-                                arguments: arguments);
+                return GestureDetector(
+                  child: RestaurantItemCell(summaryInfo: favorInfo),
+                  onTap: () async {
+                    Tuple2 arguments = Tuple2<RestaurantEntity, dynamic>(
+                      favorInfo,
+                      null,
+                    );
+                    await Navigator.of(context).pushNamed(
+                      RestaurantDetailPage.routeName,
+                      arguments: arguments,
+                    );
 
-                            _favorBloc.add(const FetchFavorInfoEvent(true));
-                          });
-                    });
-              } else {
-                return const EmptyDataWidget();
-              }
-            }));
+                    _favorBloc.add(const FetchFavorInfoEvent(true));
+                  },
+                );
+              },
+            );
+          } else {
+            return const EmptyDataWidget();
+          }
+        },
+      ),
+    );
   }
 }

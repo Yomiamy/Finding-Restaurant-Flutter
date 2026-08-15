@@ -9,15 +9,10 @@ class YelpRestaurantHoursDto {
   String? hoursType;
   List<YelpRestaurantBusinessTimeDto>? open;
 
-  YelpRestaurantHoursDto({
-    this.isOpenNow,
-    this.hoursType,
-    this.open,
-  });
+  YelpRestaurantHoursDto({this.isOpenNow, this.hoursType, this.open});
 
   factory YelpRestaurantHoursDto.fromJson(Map<String, dynamic> json) =>
       _$YelpRestaurantHoursDtoFromJson(json);
 
   Map<String, dynamic> toJson() => _$YelpRestaurantHoursDtoToJson(this);
 }
-

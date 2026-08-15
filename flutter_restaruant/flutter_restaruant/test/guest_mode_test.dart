@@ -30,15 +30,16 @@ void main() {
     // 建構 SignInManager 會連帶建立 BiometricSignInManager，後者在
     // 建構式中就呼叫 local_auth 的 platform channel。測試環境沒有原生
     // 實作，需先掛上 mock handler，否則會噴 MissingPluginException。
-    const MethodChannel channel =
-        MethodChannel('plugins.flutter.io/local_auth');
+    const MethodChannel channel = MethodChannel(
+      'plugins.flutter.io/local_auth',
+    );
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-      if (methodCall.method == 'getAvailableBiometrics') {
-        return <String>[];
-      }
-      return null;
-    });
+          if (methodCall.method == 'getAvailableBiometrics') {
+            return <String>[];
+          }
+          return null;
+        });
   });
 
   // SignInManager 是 singleton，每個測試都需重置，避免狀態互相污染。
@@ -120,9 +121,10 @@ void main() {
       await SignInManager().markAsGuest();
 
       expect(
-          () => FavorDataSource()
-              .toggleFavor(const RestaurantEntity(id: 'any-id')),
-          throwsStateError);
+        () =>
+            FavorDataSource().toggleFavor(const RestaurantEntity(id: 'any-id')),
+        throwsStateError,
+      );
     });
   });
 }

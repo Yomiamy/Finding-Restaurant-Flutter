@@ -6,11 +6,7 @@ class RestaurantHoursEntity {
   final String? hoursType;
   final List<RestaurantBusinessTimeEntity>? open;
 
-  const RestaurantHoursEntity({
-    this.isOpenNow,
-    this.hoursType,
-    this.open,
-  });
+  const RestaurantHoursEntity({this.isOpenNow, this.hoursType, this.open});
 
   factory RestaurantHoursEntity.fromDto(YelpRestaurantHoursDto dto) =>
       RestaurantHoursEntity(
@@ -22,8 +18,8 @@ class RestaurantHoursEntity {
       );
 
   YelpRestaurantHoursDto get toDto => YelpRestaurantHoursDto(
-        isOpenNow: isOpenNow,
-        hoursType: hoursType,
-        open: open?.map((e) => e.toDto).toList(),
-      );
+    isOpenNow: isOpenNow,
+    hoursType: hoursType,
+    open: open?.map((e) => e.toDto).toList(),
+  );
 }

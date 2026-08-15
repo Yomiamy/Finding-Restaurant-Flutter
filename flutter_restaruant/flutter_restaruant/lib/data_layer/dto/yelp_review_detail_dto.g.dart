@@ -19,12 +19,12 @@ YelpReviewDetailDto _$YelpReviewDetailDtoFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$YelpReviewDetailDtoToJson(
-        YelpReviewDetailDto instance) =>
-    <String, dynamic>{
-      'id': instance.id,
-      'rating': instance.rating,
-      'user': instance.user,
-      'text': instance.text,
-      'time_created': instance.timeCreated,
-      'url': instance.url,
-    };
+  YelpReviewDetailDto instance,
+) => <String, dynamic>{
+  'id': instance.id,
+  'rating': instance.rating,
+  'user': instance.user,
+  'text': instance.text,
+  'time_created': instance.timeCreated,
+  'url': instance.url,
+};

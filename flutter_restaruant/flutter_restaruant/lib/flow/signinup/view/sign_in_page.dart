@@ -63,7 +63,8 @@ class _SignInPageState extends State<SignInPage> {
             _goToMainPage(context);
           } else if (state is SignUpSuccess) {
             Fluttertoast.showToast(
-                msg: S.current.email_signup_success_hint_msg);
+              msg: S.current.email_signup_success_hint_msg,
+            );
             // ignore: unawaited_futures
             _goToMainPage(context);
           } else if (state is Failure) {
@@ -83,12 +84,16 @@ class _SignInPageState extends State<SignInPage> {
   /// 顯示錯誤內容的舊畫面。
   Future<void> _goToMainPage(BuildContext context) =>
       Navigator.of(context).pushNamedAndRemoveUntil(
-          MainPage.routeName, ModalRoute.withName(SplashPage.routeName));
+        MainPage.routeName,
+        ModalRoute.withName(SplashPage.routeName),
+      );
 
-  Widget _buildView(SignInState state) => Stack(children: <Widget>[
-        ConstrainedBox(
-          constraints: const BoxConstraints.expand(),
-          child: Column(children: <Widget>[
+  Widget _buildView(SignInState state) => Stack(
+    children: <Widget>[
+      ConstrainedBox(
+        constraints: const BoxConstraints.expand(),
+        child: Column(
+          children: <Widget>[
             Expanded(
               flex: 1,
               child: Image.asset(
@@ -97,144 +102,196 @@ class _SignInPageState extends State<SignInPage> {
               ),
             ),
             Expanded(
-                flex: 1,
-                child: SingleChildScrollView(
-                  child: Padding(
-                      padding: const EdgeInsets.only(
-                          left: ThemeSize.space30, right: ThemeSize.space30),
-                      child: Column(children: <Widget>[
-                        showInput(state),
-                        showSignInUpBtns(),
-                        show3rdSignInUpBtns(),
-                      ])),
-                ))
-          ]),
+              flex: 1,
+              child: SingleChildScrollView(
+                child: Padding(
+                  padding: const EdgeInsets.only(
+                    left: ThemeSize.space30,
+                    right: ThemeSize.space30,
+                  ),
+                  child: Column(
+                    children: <Widget>[
+                      showInput(state),
+                      showSignInUpBtns(),
+                      show3rdSignInUpBtns(),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
         ),
-        (state is InProgress)
-            ? const Center(child: LoadingWidget(text: ''))
-            : UIConstants.emptyWidget
-      ]);
+      ),
+      (state is InProgress)
+          ? const Center(child: LoadingWidget(text: ''))
+          : UIConstants.emptyWidget,
+    ],
+  );
 
   Widget showInput(SignInState state) => Form(
-      key: _formKey,
-      child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: <Widget>[showEmailInput(), showPasswordInput()]));
+    key: _formKey,
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[showEmailInput(), showPasswordInput()],
+    ),
+  );
 
   Widget showEmailInput() => Padding(
-      padding: const EdgeInsets.fromLTRB(
-          ThemeSize.space30, ThemeSize.zero, ThemeSize.space30, ThemeSize.zero),
-      child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
-        const Icon(
-          Icons.mail,
-          color: Colors.grey,
-        ),
+    padding: const EdgeInsets.fromLTRB(
+      ThemeSize.space30,
+      ThemeSize.zero,
+      ThemeSize.space30,
+      ThemeSize.zero,
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        const Icon(Icons.mail, color: Colors.grey),
         Expanded(
-            child: Padding(
-                padding: const EdgeInsets.only(left: ThemeSize.space10),
-                child: PlatformTextFormField(
-                    maxLines: 1,
-                    autofocus: false,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) => (value == null || value.isEmpty)
-                        ? S.current.email_invalid_hint_msg
-                        : null,
-                    onSaved: (value) => _email = value!,
-                    hintText: S.current.email_invalid_hint_title,
-                    cupertino: (_, __) => CupertinoTextFormFieldData(
-                        // Assign a default cupertino decoration
-                        decoration: const PlatformTextField()
-                            .createCupertinoWidget(context)
-                            .decoration))))
-      ]));
+          child: Padding(
+            padding: const EdgeInsets.only(left: ThemeSize.space10),
+            child: PlatformTextFormField(
+              maxLines: 1,
+              autofocus: false,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (value) => (value == null || value.isEmpty)
+                  ? S.current.email_invalid_hint_msg
+                  : null,
+              onSaved: (value) => _email = value!,
+              hintText: S.current.email_invalid_hint_title,
+              cupertino: (_, __) => CupertinoTextFormFieldData(
+                // Assign a default cupertino decoration
+                decoration: const PlatformTextField()
+                    .createCupertinoWidget(context)
+                    .decoration,
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 
   Widget showPasswordInput() => Padding(
-      padding: const EdgeInsets.fromLTRB(ThemeSize.space30, ThemeSize.space15,
-          ThemeSize.space30, ThemeSize.zero),
-      child: Row(mainAxisSize: MainAxisSize.max, children: <Widget>[
-        const Icon(
-          Icons.lock,
-          color: Colors.grey,
-        ),
+    padding: const EdgeInsets.fromLTRB(
+      ThemeSize.space30,
+      ThemeSize.space15,
+      ThemeSize.space30,
+      ThemeSize.zero,
+    ),
+    child: Row(
+      mainAxisSize: MainAxisSize.max,
+      children: <Widget>[
+        const Icon(Icons.lock, color: Colors.grey),
         Expanded(
-            child: Padding(
-                padding: const EdgeInsets.only(left: ThemeSize.space10),
-                child: PlatformTextFormField(
-                    maxLines: 1,
-                    obscureText: true,
-                    autofocus: false,
-                    autovalidateMode: AutovalidateMode.onUserInteraction,
-                    validator: (value) => (value == null || value.isEmpty)
-                        ? S.current.passwd_invalid_hint_msg
-                        : null,
-                    onSaved: (value) => _passwd = value!,
-                    hintText: S.current.passwd_invalid_hint_title,
-                    cupertino: (_, __) => CupertinoTextFormFieldData(
-                        // Assign a default cupertino decoration
-                        decoration: const PlatformTextField()
-                            .createCupertinoWidget(context)
-                            .decoration))))
-      ]));
+          child: Padding(
+            padding: const EdgeInsets.only(left: ThemeSize.space10),
+            child: PlatformTextFormField(
+              maxLines: 1,
+              obscureText: true,
+              autofocus: false,
+              autovalidateMode: AutovalidateMode.onUserInteraction,
+              validator: (value) => (value == null || value.isEmpty)
+                  ? S.current.passwd_invalid_hint_msg
+                  : null,
+              onSaved: (value) => _passwd = value!,
+              hintText: S.current.passwd_invalid_hint_title,
+              cupertino: (_, __) => CupertinoTextFormFieldData(
+                // Assign a default cupertino decoration
+                decoration: const PlatformTextField()
+                    .createCupertinoWidget(context)
+                    .decoration,
+              ),
+            ),
+          ),
+        ),
+      ],
+    ),
+  );
 
   Widget showSignInUpBtns() => Padding(
-      padding: const EdgeInsets.only(top: ThemeSize.space15),
-      child: Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
+    padding: const EdgeInsets.only(top: ThemeSize.space15),
+    child: Column(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
         PlatformElevatedButton(
-            color: const Color.fromARGB(255, 5, 97, 245),
-            child: Text(S.current.signin_btn_title,
+          color: const Color.fromARGB(255, 5, 97, 245),
+          child: Text(
+            S.current.signin_btn_title,
+            style: const TextStyle(
+              fontSize: UIConstants.xhFontSize,
+              fontWeight: FontWeight.bold,
+              color: Colors.white,
+            ),
+          ),
+          onPressed: () {
+            if (_formKey.currentState != null &&
+                _formKey.currentState!.validate()) {
+              _formKey.currentState!.save();
+              _signInBloc.add(MailSignInEvent(mail: _email, passwd: _passwd));
+            }
+          },
+        ),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: <Widget>[
+            PlatformTextButton(
+              child: Text(
+                S.current.signup_title,
                 style: const TextStyle(
-                    fontSize: UIConstants.xhFontSize,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.white)),
-            onPressed: () {
-              if (_formKey.currentState != null &&
-                  _formKey.currentState!.validate()) {
-                _formKey.currentState!.save();
-                _signInBloc.add(MailSignInEvent(mail: _email, passwd: _passwd));
-              }
-            }),
-        Row(mainAxisAlignment: MainAxisAlignment.center, children: <Widget>[
-          PlatformTextButton(
-              child: Text(S.current.signup_title,
-                  style: const TextStyle(
-                      fontSize: UIConstants.mFontSize, color: Colors.grey)),
+                  fontSize: UIConstants.mFontSize,
+                  color: Colors.grey,
+                ),
+              ),
               onPressed: () {
                 if (_formKey.currentState != null &&
                     _formKey.currentState!.validate()) {
                   _formKey.currentState!.save();
-                  _signInBloc
-                      .add(MailSignUpEvent(mail: _email, passwd: _passwd));
+                  _signInBloc.add(
+                    MailSignUpEvent(mail: _email, passwd: _passwd),
+                  );
                 }
-              }),
-          PlatformTextButton(
-              child: Text(S.current.continue_as_guest,
-                  style: const TextStyle(
-                      fontSize: UIConstants.mFontSize, color: Colors.grey)),
+              },
+            ),
+            PlatformTextButton(
+              child: Text(
+                S.current.continue_as_guest,
+                style: const TextStyle(
+                  fontSize: UIConstants.mFontSize,
+                  color: Colors.grey,
+                ),
+              ),
               onPressed: () async {
                 await SignInManager().markAsGuest();
                 if (!mounted) return;
                 // ignore: unawaited_futures
                 _goToMainPage(context);
-              })
-        ])
-      ]));
-
-  Widget show3rdSignInUpBtns() =>
-      Column(mainAxisSize: MainAxisSize.min, children: <Widget>[
-        SignInButton(
-          Buttons.google,
-          elevation: 3.0,
-          text: S.current.signinup_with_google,
-          onPressed: () => _signInBloc.add(GoogleSignInEvent()),
+              },
+            ),
+          ],
         ),
-        const SizedBox(height: ThemeSize.space10),
-        (Platform.isIOS)
-            ? SignInButton(
-                Buttons.apple,
-                elevation: 3.0,
-                text: S.current.signinup_with_apple,
-                onPressed: () => _signInBloc.add(AppleSignInEvent()),
-              )
-            : UIConstants.emptyWidget
-      ]);
+      ],
+    ),
+  );
+
+  Widget show3rdSignInUpBtns() => Column(
+    mainAxisSize: MainAxisSize.min,
+    children: <Widget>[
+      SignInButton(
+        Buttons.google,
+        elevation: 3.0,
+        text: S.current.signinup_with_google,
+        onPressed: () => _signInBloc.add(GoogleSignInEvent()),
+      ),
+      const SizedBox(height: ThemeSize.space10),
+      (Platform.isIOS)
+          ? SignInButton(
+              Buttons.apple,
+              elevation: 3.0,
+              text: S.current.signinup_with_apple,
+              onPressed: () => _signInBloc.add(AppleSignInEvent()),
+            )
+          : UIConstants.emptyWidget,
+    ],
+  );
 }

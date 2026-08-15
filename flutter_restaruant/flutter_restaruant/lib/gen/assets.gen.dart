@@ -83,24 +83,24 @@ class $ImagesGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [
-        starRating05Of5,
-        starRating0Of5,
-        starRating15Of5,
-        starRating1Of5,
-        starRating25Of5,
-        starRating2Of5,
-        starRating35Of5,
-        starRating3Of5,
-        starRating45Of5,
-        starRating4Of5,
-        starRating5Of5,
-        empty,
-        icFavorEmpty,
-        icFavorFill,
-        iconSettingIcon,
-        iconSigninupIcon,
-        launchImage
-      ];
+    starRating05Of5,
+    starRating0Of5,
+    starRating15Of5,
+    starRating1Of5,
+    starRating25Of5,
+    starRating2Of5,
+    starRating35Of5,
+    starRating3Of5,
+    starRating45Of5,
+    starRating4Of5,
+    starRating5Of5,
+    empty,
+    icFavorEmpty,
+    icFavorFill,
+    iconSettingIcon,
+    iconSigninupIcon,
+    launchImage,
+  ];
 }
 
 abstract final class Assets {
@@ -174,15 +174,8 @@ class AssetGenImage {
     );
   }
 
-  ImageProvider provider({
-    AssetBundle? bundle,
-    String? package,
-  }) {
-    return AssetImage(
-      _assetName,
-      bundle: bundle,
-      package: package,
-    );
+  ImageProvider provider({AssetBundle? bundle, String? package}) {
+    return AssetImage(_assetName, bundle: bundle, package: package);
   }
 
   String get path => _assetName;

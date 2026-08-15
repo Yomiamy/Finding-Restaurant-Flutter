@@ -13,7 +13,4 @@ YelpReviewerDto _$YelpReviewerDtoFromJson(Map<String, dynamic> json) =>
     );
 
 Map<String, dynamic> _$YelpReviewerDtoToJson(YelpReviewerDto instance) =>
-    <String, dynamic>{
-      'name': instance.name,
-      'image_url': instance.imageUrl,
-    };
+    <String, dynamic>{'name': instance.name, 'image_url': instance.imageUrl};

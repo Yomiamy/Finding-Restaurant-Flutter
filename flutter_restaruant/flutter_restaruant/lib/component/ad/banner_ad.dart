@@ -52,14 +52,13 @@ class _BannerADState extends State<BannerAD> {
       color: Colors.grey,
       width: loadedSize.width.toDouble(),
       height: loadedSize.height.toDouble(),
-      child: AdWidget(
-        ad: loadedBanner,
-      ),
+      child: AdWidget(ad: loadedBanner),
     );
   }
 
   Future<AnchoredAdaptiveBannerAdSize?> anchoredAdaptiveBannerAdSize(
-      BuildContext context) async {
+    BuildContext context,
+  ) async {
     return await AdSize.getLargeAnchoredAdaptiveBannerAdSize(
       MediaQuery.of(context).size.width.toInt(),
     );

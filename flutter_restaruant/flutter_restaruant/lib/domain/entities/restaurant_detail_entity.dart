@@ -53,16 +53,16 @@ class RestaurantDetailEntity {
       );
 
   YelpRestaurantDetailDto get toDto => YelpRestaurantDetailDto(
-        name: name,
-        imageUrl: imageUrl,
-        isClosed: isClosed,
-        reviewCount: reviewCount,
-        rating: rating,
-        phone: phone,
-        categories: categories?.map((e) => e.toDto).toList(),
-        location: location?.toDto,
-        coordinates: coordinates?.toDto,
-        photos: photos,
-        hours: hours?.map((e) => e.toDto).toList(),
-      );
+    name: name,
+    imageUrl: imageUrl,
+    isClosed: isClosed,
+    reviewCount: reviewCount,
+    rating: rating,
+    phone: phone,
+    categories: categories?.map((e) => e.toDto).toList(),
+    location: location?.toDto,
+    coordinates: coordinates?.toDto,
+    photos: photos,
+    hours: hours?.map((e) => e.toDto).toList(),
+  );
 }

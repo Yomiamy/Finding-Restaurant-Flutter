@@ -39,8 +39,9 @@ class SignInRepo implements SignInRepository {
     }
 
     AccountDto? accountDto = _signInManager.accountDto;
-    UserEntity? userEntity =
-        accountDto != null ? UserEntity.fromDto(accountDto) : null;
+    UserEntity? userEntity = accountDto != null
+        ? UserEntity.fromDto(accountDto)
+        : null;
     await updateUserInfo(userEntity);
 
     return Tuple2<UserEntity?, String>(userEntity, signInUpResult.item2);
@@ -59,8 +60,9 @@ class SignInRepo implements SignInRepository {
     // ignore: unawaited_futures
     prefs.setString(Constants.prefKeyAccountInfo, jsonEncode(dto.toJson()));
 
-    DocumentReference ref =
-        FirebaseFirestore.instance.collection(userCollectionName).doc(dto.uid!);
+    DocumentReference ref = FirebaseFirestore.instance
+        .collection(userCollectionName)
+        .doc(dto.uid!);
     // ignore: unawaited_futures
     ref.set(dto.toJson());
   }

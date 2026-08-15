@@ -11,8 +11,10 @@ void main() {
       expect(Constants.adAndroidInterstitialId, isNotEmpty);
       expect(Constants.adIosInterstitialId, isNotEmpty);
       expect(Constants.baseUrl, equals('https://api.yelp.com'));
-      expect(Constants.fcmNotificationChannelId,
-          equals('fcm_notification_channel_id'));
+      expect(
+        Constants.fcmNotificationChannelId,
+        equals('fcm_notification_channel_id'),
+      );
     });
 
     test('UIConstants camelCase naming and immutability', () {
