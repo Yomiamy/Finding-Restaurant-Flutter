@@ -19,8 +19,8 @@ class MapWidget extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapWidget> {
-  CameraPosition? _currentPos;
-  Marker? _myLocMarker;
+  CameraPosition? _centerPos;
+  Marker? _centerLocMarker;
   Set<Marker> _markers = {};
 
   GoogleMapController? _mapController;
@@ -96,8 +96,8 @@ class _MapPageState extends State<MapWidget> {
     _markers = {};
     _markers.addAll(ite);
 
-    if (_myLocMarker != null) {
-      _markers.add(_myLocMarker!);
+    if (_centerLocMarker != null) {
+      _markers.add(_centerLocMarker!);
     }
   }
 
@@ -115,24 +115,24 @@ class _MapPageState extends State<MapWidget> {
           markers: _markers,
           myLocationEnabled: true,
           onCameraMove: (position) {
-            _currentPos = position;
+            _centerPos = position;
           },
           onCameraIdle: () {
             setState(() {
-              if (_myLocMarker != null) {
-                _markers.remove(_myLocMarker);
+              if (_centerLocMarker != null) {
+                _markers.remove(_centerLocMarker);
               }
 
-              _myLocMarker = Marker(
-                position: _currentPos!.target,
-                markerId: const MarkerId(UIConstants.mapMyLocationMarkId),
+              _centerLocMarker = Marker(
+                position: _centerPos!.target,
+                markerId: const MarkerId(UIConstants.mapCenterLocMarkId),
                 infoWindow: InfoWindow(title: S.current.map_my_loc_title),
                 icon: BitmapDescriptor.defaultMarkerWithHue(
                   BitmapDescriptor.hueYellow,
                 ),
               );
 
-              _markers.add(_myLocMarker!);
+              _markers.add(_centerLocMarker!);
             });
           },
         ),

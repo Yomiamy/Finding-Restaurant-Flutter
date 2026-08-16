@@ -17,7 +17,7 @@ class UIConstants {
   static const emptyWidget = SizedBox(height: ThemeSize.zero);
 
   static const mapDefaultLocation = LatLng(25.048036, 121.517063);
-  static const mapMyLocationMarkId = 'MAP_MY_LOCATION_MARK_ID';
+  static const mapCenterLocMarkId = 'MAP_CENTER_LOC_MARK_ID';
 
   // Font sizes
   // ponytail: 保留不刪，29 處使用點待 S4 遷移。移除是 S4 之後的獨立 PR。
