@@ -38,11 +38,11 @@ void main() async {
       // 於 runApp 前載入，使 isGuest 可被 UI 同步查詢
       SignInManager().loadPrefs(),
     ]);
+
+    await FcmManager().init();
   } catch (e, st) {
     Logger().e('Initialization failed', error: e, stackTrace: st);
   }
-
-  FcmManager().init();
 
   runApp(const FindingRestaruantApp());
 }

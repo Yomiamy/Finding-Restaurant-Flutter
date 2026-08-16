@@ -104,15 +104,15 @@ class FcmManager {
     }
   }
 
-  void init() async {
+  Future<void> init() async {
     if (Platform.isIOS) {
       // For iOS foreground notification
-      // ignore: unawaited_futures
-      FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-        alert: true,
-        badge: true,
-        sound: true,
-      );
+      await FirebaseMessaging.instance
+          .setForegroundNotificationPresentationOptions(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
     }
 
     const AndroidInitializationSettings initializationSettingsAndroid =
@@ -126,8 +126,7 @@ class FcmManager {
         );
 
     // Foreground messages opened
-    // ignore: unawaited_futures
-    _flutterLocalNotificationsPlugin.initialize(
+    await _flutterLocalNotificationsPlugin.initialize(
       settings: initializationSettings,
       onDidReceiveNotificationResponse: _firebaseForegroundMessagingOpenHandler,
     );
@@ -141,16 +140,14 @@ class FcmManager {
 
     // If the application is opened from a terminated state a Future containing a RemoteMessage will be returned.
     // Once consumed, the RemoteMessage will be returned.
-    // ignore: unawaited_futures
-    FirebaseMessaging.instance.getInitialMessage().then((message) {
-      debugPrint('Handling a init message: $message');
-      if (message == null) {
-        debugPrint('Handling a init message: message == null');
-        return;
-      }
+    final message = await FirebaseMessaging.instance.getInitialMessage();
+    debugPrint('Handling a init message: $message');
+    if (message == null) {
+      debugPrint('Handling a init message: message == null');
+      return;
+    }
 
-      _firebaseMessagingOpenHandler(message);
-    });
+    _firebaseMessagingOpenHandler(message);
   }
 
   Future<void> requestPermission() async {
