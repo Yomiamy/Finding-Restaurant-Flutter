@@ -499,7 +499,7 @@ lib/
                                          ▼
 +-----------------------------------------------------------------------------------+
 | Phase 1.5: 空間與視覺體驗升級 (Spatial UX & Polish)                               |
-|   • [ ] P1 地圖與 BottomSheet Carousel 雙向平滑連動                               |
+|   • ✅ P1 地圖與 BottomSheet Carousel 雙向平滑連動 (含點擊至詳情頁)                |
 |   • [ ] P1 列表底部載入更多動畫 (Load-More Indicator；LoadMore state 已具備)      |
 |   • [ ] P1 fluster 動態圖標聚類 (Clustering)                                      |
 |   • [ ] P1 情境化探索標籤 (#一人食 #深夜食堂 #約會不踩雷)                             |
@@ -984,7 +984,7 @@ lib/features/foundation/style/
 |   • [ ] S4 收尾 (篩選頁 / Splash / 移除假延遲 / 清理舊常數)                       |
 |                                                                                   |
 |  ── 原 Phase 1.5 剩餘項（依賴 S1 完成）──                                         |
-|   • [ ] P1 地圖與 BottomSheet Carousel 雙向平滑連動                               |
+|   • ✅ P1 地圖與 BottomSheet Carousel 雙向平滑連動 (含點擊至詳情頁)                |
 |   • [ ] P1 fluster 動態圖標聚類 (Clustering)                                      |
 |   • [ ] P1 情境化探索標籤 (#一人食 #深夜食堂 #約會不踩雷)                             |
 +-----------------------------------------------------------------------------------+
@@ -996,4 +996,4 @@ lib/features/foundation/style/
 *產出方式：直接檢視 `lib/` 當前原始碼（分支 `release/202607/release-1.4.0(30)`, commit `c8c40ae`）*
 *S1 交付覆核：2026-08-03（分支 `refactor/202607/57-design-system-foundation`, commit `9c2ec3f`）—— 實測 `flutter analyze` 零警告、`flutter test` 54 tests 全綠*
 *實查校正：2026-08-05（分支 `main`, commit `f643502`）—— 見文首「實查校正紀錄」，4 項更正、6 項複測吻合、新增 P-1 項目；`flutter analyze` 維持 `No issues found!`*
-*檔名日期前綴同步更新為 `2026-08-05`（原 `2026-08-03`，以 `git mv` 改名保留檔案歷史）。**內文各處的 `2026-08-03` 為 S1 交付與複測的事件日期，屬史實紀錄，不隨檔名更動。***
+*檔名日期前綴同步更新為 `2026-08-16`（原 `2026-08-05`，以 `git mv` 改名保留檔案歷史）。內文各處的舊日期屬史實紀錄，不隨檔名更動。*
