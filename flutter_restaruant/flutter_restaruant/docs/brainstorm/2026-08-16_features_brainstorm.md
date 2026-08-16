@@ -19,7 +19,7 @@
 
 | 項目 | 優先級 | 說明 |
 | :--- | :---: | :--- |
-| **整合 `flutter_inspector_kit`**（見 **§2.0 F-0.1**） | **P-1（先於所有既有項目）** | pub.dev `1.9.0`，`dio ^5.2.0` 與本專案 `^5.6.0` 相容。⚠️ 需求原文為 `flutter_inspect_kit`，pub.dev 查無，**正確名為 `flutter_inspector_kit`**。必須以 `kDebugMode` 圍住，否則會把含 `authToken` 的請求 body 暴露給終端使用者 |
+| ✅ **整合 `flutter_inspector_kit`**（見 **§2.0 F-0.1**）— **已於 2026-08-05 完成** | **P-1（先於所有既有項目）** | pub.dev `1.9.0`，`dio ^5.2.0` 與本專案 `^5.6.0` 相容。⚠️ 需求原文為 `flutter_inspect_kit`，pub.dev 查無，**正確名為 `flutter_inspector_kit`**。必須以 `kDebugMode` 圍住，否則會把含 `authToken` 的請求 body 暴露給終端使用者。**落地補充**：安裝時需將 Dart SDK 下限由 `3.5.0` 上修至 `3.10.1`；實際接線 5 處／4 檔（原估 4 處）|
 
 > 連帶調整：§3 RICE 表新增一列並將原排名 5～16 順延為 6～17；§4 Roadmap Phase 1 進度改記 9/13；§6.9 Phase 1.5 順序表新增 P-1 前置段。
 
@@ -93,7 +93,7 @@ lib/
 ├── di/           # 【新增】get_it 依賴注入容器註冊
 ├── domain/       # 【新增】業務層 (entities/ 領域實體、repositories/ 抽象介面契約)
 ├── extension/    # 【新增】Dart extension 工具擴充
-├── flow/         # Feature-First 業務流 (8大 Flow: splash, signinup, main, restaurant, favor, filter, photoviewr, settings)
+├── flow/         # Feature-First 業務流 (8大 Flow: splash, signinup, main, restaurant, favor, filter, photo_viewer, settings)
 ├── gen/          # flutter_gen 自動生成顏色資源 (ColorName.appPrimaryColor 等)
 ├── generated/    # i18n 國際化生成程式碼 (ARB 檔: intl_en.arb, intl_zh_TW.arb)
 ├── l10n/         # 【新增】ARB 語系原始檔
@@ -225,7 +225,7 @@ lib/
 
 ## 2. 全方位創新功能提案與既有 UX 優化 (Comprehensive Feature Ideation & UX Optimization)
 
-### 2.0 開發者工具地基：整合 `flutter_inspector_kit` (P-1，最高優先) — ⬜ 待辦
+### 2.0 開發者工具地基：整合 `flutter_inspector_kit` (P-1，最高優先) — ✅ 已於 2026-08-05 完成
 
 > **定位**：這**不是產品功能，是修其他所有項目時的量測工具**。排在最前面的理由不是它最有價值，而是**它讓後面每一項都更快、更有證據**——先裝溫度計，再治病。
 
@@ -239,17 +239,18 @@ lib/
 | 項目 | 套件需求 | 本專案現況 | 判定 |
 | :--- | :--- | :--- | :---: |
 | `dio` | `^5.2.0` | `^5.6.0` | 🟢 相容 |
-| Dart SDK | Flutter 套件 | `>=3.5.0 <4.0.0` | 🟢 相容 |
+| Dart SDK | Flutter 套件 | 原 `>=3.5.0 <4.0.0` | 🟡 **實際安裝時需上修至 `>=3.10.1`**（套件傳遞相依要求），已於本次一併調整 |
 | 新增傳遞相依 | `flutter_local_notifications` `^22.0.0`、`share_plus` `^13.0.0`、`web` `^1.1.0` | 皆未安裝 | 🟡 新增 3 個傳遞相依 |
 
-**接線點（皆已實查存在，無須先重構）**
+**接線點（實際落地為 5 處／4 檔，與原估的 4 處有出入）**
 
-| # | 接線 | 位置 | 說明 |
+| # | 接線 | 規劃位置 | 實際落地 |
 | :--- | :--- | :--- | :--- |
-| 1 | 建立單一 `FlutterInspector` 實例 | `lib/di/` | 沿用既有 GetIt 註冊，與現行 DI 慣例一致 |
-| 2 | Dio 攔截器 | `lib/api/dio/dio_client.dart:24,29` | 已有 `dio.interceptors.addAll(...)` 掛載點，**加一行即可** |
-| 3 | `navigatorObservers` | `lib/main.dart:51` `PlatformApp` | `PlatformApp` 支援頂層 `navigatorObservers`，Material／Cupertino 兩分支共用 |
-| 4 | 喚起手勢 | `lib/main.dart:79` `builder:` | **既有 `builder:` 層**（S1 為跨平台 theme 而加）可直接包 `FlutterInspectorMagicalTap`，無須新增層級 |
+| 1 | 建立單一 `FlutterInspector` 實例 | `lib/di/`（沿用 GetIt 註冊） | `lib/di/inspector.dart` —— **改用頂層 `final FlutterInspector?`**，`kDebugMode ? ... : null`，未走 GetIt（release 恆為 `null`，引用點成為 dead code 被 tree-shaking 移除，比 GetIt 註冊更能保證 AC-9） |
+| 2 | Dio 攔截器 | `lib/api/dio/dio_client.dart:24,29` | `lib/api/api_clz.dart` —— 掛載點實際在此檔，**排在既有 auth `InterceptorsWrapper` 之後**，確保攔得到已注入 header 的請求 |
+| 3 | `navigatorObservers` | `lib/main.dart:51` `PlatformApp` | 同規劃，`PlatformApp` 頂層掛載 |
+| 4 | 喚起手勢（5 連點） | `lib/main.dart:79` `builder:` | 同規劃包 `FlutterInspectorMagicalTap`；⚠️ 但 `onTap` **不可用 builder 的 `context`**（位於 Navigator 之上，`showGeneralDialog` 解析不到 `NavigatorState`），改由 `navigatorKey.currentContext` 取得 |
+| 5 | **常駐 FAB（`attach()`）** | *（原未規劃）* | `lib/flow/splash/view/splash_page.dart` —— 套件另一進入點，與 5 連點並存。需用路由 widget 自身的 `context`（已在 Overlay 之下）才找得到 `Overlay` |
 
 **🔴 必要防線：絕不可進 production build**
 
@@ -270,9 +271,12 @@ lib/
 | §1.2 缺陷 2 API Key | 可實地確認 header 中的 `authToken` 是否已改由 broker 供給 |
 | S2／S3 視覺改造 | 診斷報告一鍵導出，附網路與導航 timeline，回報視覺問題時附得上證據 |
 
-* **Effort**: 0.5（4 個接線點，全部是既有掛載點加行，無重構）
+* **Effort**: 0.5（實際 5 個接線點／4 檔，全部是既有掛載點加行，無重構——估計吻合）
 * **破壞性評估**: 🟢 —— 全數包在 `kDebugMode` 內，release 行為零改變；套件本身設計為「絕不破壞宿主 App」（錯誤鉤子鏈接而非覆蓋）
-* **驗收**: `flutter analyze` 維持 `No issues found!`；debug build 可喚起 dashboard 並看到 Yelp 請求；**release build 確認無 dashboard**
+* **驗收**: ✅ `flutter analyze` 維持 `No issues found!`；`flutter test` 54/54 通過
+* **落地後補充（2026-08-05）**：
+  * 啟用 `showNetworkNotification`／`captureUncaughtErrors`／`captureLifecycleEvents`，並設 `redactSensitiveData: false`（僅影響匯出／分享／複製路徑，畫面顯示本就不遮蔽）。全在 `kDebugMode` 分支內，不影響 release 零改變的結論。
+  * ⚠️ **`captureUncaughtErrors` 會在建構子內即時改寫三個全域 error hook**（`FlutterError.onError`／`PlatformDispatcher.onError`／`ErrorWidget.builder`）。`test/app_theme_platform_test.dart` 是全專案唯一 mount 真實 App 的測試，`flutter_test` 會比對 `pumpWidget` 前後的 `ErrorWidget.builder`，故該測試需在 `try/finally` 內自行復原三個 hook——**`tearDown()` 太晚，救不了**。日後若有新測試 mount 真實 App，同樣要處理。
 
 ---
 
@@ -441,7 +445,7 @@ lib/
 | ✅ **修復 `build()` 側邊效應反模式** | 既有修復 | 10 | 3.0 | 100% | 0.5 | **60.0** | 28.5 | 1 | **已完成** |
 | ✅ **修復 Yelp API 分頁邏輯 Bug** | 既有修復 | 9 | 2.5 | 100% | 0.5 | **45.0** | 23.75 | 2 | **已完成** |
 | ✅ **修復 `FilterPage` 狀態重置 Bug** | 既有修復 | 8 | 2.5 | 100% | 0.5 | **40.0** | 23.75 | 3 | **已完成** |
-| 🔵 **整合 `flutter_inspector_kit` 除錯套件** | 開發工具 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | 4 | **P-1（最高，先於所有項目）** |
+| ✅ **整合 `flutter_inspector_kit` 除錯套件** | 開發工具 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | 4 | **已完成**（2026-08-05） |
 | 🔴 **移除硬編碼 API Key (改用 Server-side Broker)** | 安全修復 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | 5 | **P0（唯一未解安全風險）** |
 | ✅ **對照組風格: 目錄架構與層級分離重構** | 架構重構 | 10 | 3.0 | 100% | 2.0 | **15.0** | 24.0 | - | **已完成** |
 | ✅ **對照組風格: 導入全域依賴注入 (GetIt)** | 架構重構 | 10 | 2.5 | 100% | 1.5 | **16.6** | 21.2 | - | **已完成** |
@@ -476,8 +480,8 @@ lib/
 +-----------------------------------------------------------------------------------+
 |                           STRATEGIC PRODUCT ROADMAP                               |
 +-----------------------------------------------------------------------------------+
-| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 9/13 ✅         |
-|   • [ ] P-1 整合 flutter_inspector_kit ⚡ 最高優先，後續各項的量測前提           |
+| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 10/13 ✅        |
+|   • [x] P-1 整合 flutter_inspector_kit ✅ 2026-08-05（量測地基就位）             |
 |   • [x] P0 修復 `build()` 側邊效應反模式                                          |
 |   • [x] P0 修復 Yelp API 分頁邏輯 Bug                                              |
 |   • [x] P0 修復 `FilterPage` 狀態重置 Bug                                          |
@@ -495,7 +499,7 @@ lib/
                                          ▼
 +-----------------------------------------------------------------------------------+
 | Phase 1.5: 空間與視覺體驗升級 (Spatial UX & Polish)                               |
-|   • [ ] P1 地圖與 BottomSheet Carousel 雙向平滑連動                               |
+|   • ✅ P1 地圖與 BottomSheet Carousel 雙向平滑連動 (含點擊至詳情頁)                |
 |   • [ ] P1 列表底部載入更多動畫 (Load-More Indicator；LoadMore state 已具備)      |
 |   • [ ] P1 fluster 動態圖標聚類 (Clustering)                                      |
 |   • [ ] P1 情境化探索標籤 (#一人食 #深夜食堂 #約會不踩雷)                             |
@@ -683,7 +687,7 @@ lib/
 | **順帶** | 最愛 (`favor`) | 共用 cell，改完自動生效 |
 | **順帶** | 啟動頁 (`splash`) | `BoxFit.fill` → `cover`，一行 |
 | **建議做** | 篩選頁 (`filter`) | 搜尋主流程一環 |
-| **延後** | 設定 (`settings`)、看圖 (`photoviewr`) | 停留時間短、權重低 |
+| **延後** | 設定 (`settings`)、看圖 (`photo_viewer`) | 停留時間短、權重低 |
 
 > **登入頁提升為必做的原因**：初判為「可延後」，實際檢視 `sign_in_page.dart:180` 後修正 —— 主要登入按鈕為 `Color.fromARGB(255, 5, 97, 245)`（硬編碼藍），與 App 主色橘紅無關。這是新使用者的第一印象，且訪客模式入口（PR #56 新功能）目前是灰色小字，功能價值被 UI 埋沒。
 >
@@ -971,7 +975,7 @@ lib/features/foundation/style/
 | Phase 1.5: 空間與視覺體驗升級 (Spatial UX & Polish)                               |
 |                                                                                   |
 |  ── P-1 開發工具地基（先於一切，見 §2.0）──                                       |
-|   • [ ] 整合 flutter_inspector_kit (kDebugMode 圍住，release 零改變)              |
+|   • [x] 整合 flutter_inspector_kit (kDebugMode 圍住，release 零改變) ✅ 08-05     |
 |                                                                                   |
 |  ── 6.x UI 視覺重塑（本章，前置地基）──                                           |
 |   • [x] S1 Design System 地基 (ThemeData / ColorScheme / token) ✅ 2026-08-03     |
@@ -980,7 +984,7 @@ lib/features/foundation/style/
 |   • [ ] S4 收尾 (篩選頁 / Splash / 移除假延遲 / 清理舊常數)                       |
 |                                                                                   |
 |  ── 原 Phase 1.5 剩餘項（依賴 S1 完成）──                                         |
-|   • [ ] P1 地圖與 BottomSheet Carousel 雙向平滑連動                               |
+|   • ✅ P1 地圖與 BottomSheet Carousel 雙向平滑連動 (含點擊至詳情頁)                |
 |   • [ ] P1 fluster 動態圖標聚類 (Clustering)                                      |
 |   • [ ] P1 情境化探索標籤 (#一人食 #深夜食堂 #約會不踩雷)                             |
 +-----------------------------------------------------------------------------------+
@@ -992,4 +996,4 @@ lib/features/foundation/style/
 *產出方式：直接檢視 `lib/` 當前原始碼（分支 `release/202607/release-1.4.0(30)`, commit `c8c40ae`）*
 *S1 交付覆核：2026-08-03（分支 `refactor/202607/57-design-system-foundation`, commit `9c2ec3f`）—— 實測 `flutter analyze` 零警告、`flutter test` 54 tests 全綠*
 *實查校正：2026-08-05（分支 `main`, commit `f643502`）—— 見文首「實查校正紀錄」，4 項更正、6 項複測吻合、新增 P-1 項目；`flutter analyze` 維持 `No issues found!`*
-*檔名日期前綴同步更新為 `2026-08-05`（原 `2026-08-03`，以 `git mv` 改名保留檔案歷史）。**內文各處的 `2026-08-03` 為 S1 交付與複測的事件日期，屬史實紀錄，不隨檔名更動。***
+*檔名日期前綴同步更新為 `2026-08-16`（原 `2026-08-05`，以 `git mv` 改名保留檔案歷史）。內文各處的舊日期屬史實紀錄，不隨檔名更動。*
