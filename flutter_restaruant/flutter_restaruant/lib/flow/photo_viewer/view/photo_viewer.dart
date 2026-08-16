@@ -25,29 +25,38 @@ class _PhotoViewerState extends State<PhotoViewer> {
     _photoUrl = args.item1;
 
     return Scaffold(
-        appBar: AppBar(
-            leading: PlatformIconButton(
-                padding: const EdgeInsets.all(ThemeSize.zero),
-                onPressed: () => Navigator.of(context).pop(),
-                materialIcon:
-                    const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
-                cupertinoIcon:
-                    const Icon(CupertinoIcons.back, color: ThemeColor.backBtn)),
-            title: Text(S.current.photo_viewer_title,
-                style: const TextStyle(
-                    color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
-            backgroundColor: ThemeColor.appPrimary),
-        body: InteractiveViewer(
-          // Set it to false
-          boundaryMargin: const EdgeInsets.all(100),
-          minScale: 0.5,
-          maxScale: 2,
-          child: FadeInImage.assetNetwork(
-              width: MediaQuery.of(context).size.width,
-              height: MediaQuery.of(context).size.height,
-              placeholder: UIConstants.noImage,
-              image: _photoUrl,
-              fit: BoxFit.contain),
-        ));
+      appBar: AppBar(
+        leading: PlatformIconButton(
+          padding: const EdgeInsets.all(ThemeSize.zero),
+          onPressed: () => Navigator.of(context).pop(),
+          materialIcon: const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
+          cupertinoIcon: const Icon(
+            CupertinoIcons.back,
+            color: ThemeColor.backBtn,
+          ),
+        ),
+        title: Text(
+          S.current.photo_viewer_title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: UIConstants.xxxhFontSize,
+          ),
+        ),
+        backgroundColor: ThemeColor.appPrimary,
+      ),
+      body: InteractiveViewer(
+        // Set it to false
+        boundaryMargin: const EdgeInsets.all(100),
+        minScale: 0.5,
+        maxScale: 2,
+        child: FadeInImage.assetNetwork(
+          width: MediaQuery.of(context).size.width,
+          height: MediaQuery.of(context).size.height,
+          placeholder: UIConstants.noImage,
+          image: _photoUrl,
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
   }
 }

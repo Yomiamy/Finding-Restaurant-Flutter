@@ -37,28 +37,38 @@ class _SettingsPageState extends State<SettingsPage> {
         BiometricSignInManager().isSupportBiometricAuth;
 
     return Scaffold(
-        appBar: AppBar(
-            leading: PlatformIconButton(
-                padding: const EdgeInsets.all(ThemeSize.zero),
-                onPressed: () => Navigator.of(context).pop(),
-                materialIcon:
-                    const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
-                cupertinoIcon:
-                    const Icon(CupertinoIcons.back, color: ThemeColor.backBtn)),
-            title: PlatformText(S.current.settings_title,
-                style: const TextStyle(
-                    color: Colors.white, fontSize: UIConstants.xxxhFontSize)),
-            backgroundColor: ThemeColor.appPrimary),
-        body: BlocConsumer<SettingsBloc, SettingsState>(
-            listener: (context, state) {
+      appBar: AppBar(
+        leading: PlatformIconButton(
+          padding: const EdgeInsets.all(ThemeSize.zero),
+          onPressed: () => Navigator.of(context).pop(),
+          materialIcon: const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
+          cupertinoIcon: const Icon(
+            CupertinoIcons.back,
+            color: ThemeColor.backBtn,
+          ),
+        ),
+        title: PlatformText(
+          S.current.settings_title,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: UIConstants.xxxhFontSize,
+          ),
+        ),
+        backgroundColor: ThemeColor.appPrimary,
+      ),
+      body: BlocConsumer<SettingsBloc, SettingsState>(
+        listener: (context, state) {
           if (state is LogoutSuccess) {
-            Navigator.of(context).pushNamedAndRemoveUntil(SignInPage.routeName,
-                ModalRoute.withName(SplashPage.routeName));
+            Navigator.of(context).pushNamedAndRemoveUntil(
+              SignInPage.routeName,
+              ModalRoute.withName(SplashPage.routeName),
+            );
           } else if (state is AccountRemovalSuccessState) {
             // Logout after request AccountRemovalEvent
             _settingsBloc.add(const LogoutEvent());
           }
-        }, builder: (context, state) {
+        },
+        builder: (context, state) {
           bool bioAuthSettingSwitchValue = false;
 
           if (state is ToggleBioAuthSettingState) {
@@ -67,38 +77,50 @@ class _SettingsPageState extends State<SettingsPage> {
             bioAuthSettingSwitchValue = state.settingValue;
           }
 
-          return SettingsList(sections: [
-            createHeadSection(),
-            createInfoSettingsSection(
-                bioAuthSettingSwitchValue, isSupportBiometricAuth),
-            createLogoutSection(),
-          ]);
-        }));
+          return SettingsList(
+            sections: [
+              createHeadSection(),
+              createInfoSettingsSection(
+                bioAuthSettingSwitchValue,
+                isSupportBiometricAuth,
+              ),
+              createLogoutSection(),
+            ],
+          );
+        },
+      ),
+    );
   }
 
   AbstractSettingsSection createHeadSection() => CustomSettingsSection(
-      child: Image.asset('images/icon_setting_icon.gif',
-          height: 230.0, width: 230.0));
+    child: Image.asset(
+      'images/icon_setting_icon.gif',
+      height: 230.0,
+      width: 230.0,
+    ),
+  );
 
   AbstractSettingsSection createInfoSettingsSection(
-          bool bioAuthSettingSwitchValue, bool isSupportBiometricAuth) =>
-      SettingsSection(
-          title: PlatformText(S.current.information_section_title),
-          tiles: <SettingsTile>[
-            SettingsTile(
-              leading: const Icon(Icons.info),
-              title: PlatformText(S.current.version_tile_title),
-              value: PlatformText(Constants.version),
-            ),
-            // TODO:判斷生物辨識
-            // SettingsTile.switchTile(
-            //     leading: Icon(Icons.fingerprint),
-            //     title: PlatformText('生物辨識'),
-            //     initialValue: bioAuthSettingSwitchValue,
-            //     onToggle: (value) {
-            //       this._settingsBloc.add(ToggleBioAuthSettingEvent());
-            //     })
-          ]);
+    bool bioAuthSettingSwitchValue,
+    bool isSupportBiometricAuth,
+  ) => SettingsSection(
+    title: PlatformText(S.current.information_section_title),
+    tiles: <SettingsTile>[
+      SettingsTile(
+        leading: const Icon(Icons.info),
+        title: PlatformText(S.current.version_tile_title),
+        value: PlatformText(Constants.version),
+      ),
+      // TODO:判斷生物辨識
+      // SettingsTile.switchTile(
+      //     leading: Icon(Icons.fingerprint),
+      //     title: PlatformText('生物辨識'),
+      //     initialValue: bioAuthSettingSwitchValue,
+      //     onToggle: (value) {
+      //       this._settingsBloc.add(ToggleBioAuthSettingEvent());
+      //     })
+    ],
+  );
 
   AbstractSettingsSection createLogoutSection() {
     // 訪客沒有帳號可登出或刪除，改提供轉為正式帳號的入口。
@@ -106,50 +128,70 @@ class _SettingsPageState extends State<SettingsPage> {
         ? SizedBox(
             height: 50,
             child: PlatformElevatedButton(
-                color: ThemeColor.appPrimary,
-                child: Text(S.current.signin_or_signup_title,
-                    style: const TextStyle(
-                        fontSize: UIConstants.xhFontSize,
-                        fontWeight: FontWeight.bold,
-                        color: Colors.white)),
-                onPressed: () =>
-                    Navigator.of(context).pushNamed(SignInPage.routeName)),
+              color: ThemeColor.appPrimary,
+              child: Text(
+                S.current.signin_or_signup_title,
+                style: const TextStyle(
+                  fontSize: UIConstants.xhFontSize,
+                  fontWeight: FontWeight.bold,
+                  color: Colors.white,
+                ),
+              ),
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(SignInPage.routeName),
+            ),
           )
-        : Column(mainAxisSize: MainAxisSize.min, children: [
-            SizedBox(
-              height: 50,
-              child: PlatformElevatedButton(
+        : Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SizedBox(
+                height: 50,
+                child: PlatformElevatedButton(
                   color: Colors.red,
-                  child: Text(S.current.logout_section_title,
-                      style: const TextStyle(
-                          fontSize: UIConstants.xhFontSize,
-                          fontWeight: FontWeight.bold,
-                          color: Colors.white)),
+                  child: Text(
+                    S.current.logout_section_title,
+                    style: const TextStyle(
+                      fontSize: UIConstants.xhFontSize,
+                      fontWeight: FontWeight.bold,
+                      color: Colors.white,
+                    ),
+                  ),
                   onPressed: () {
                     _settingsBloc.add(const LogoutEvent());
-                  }),
-            ),
-            const SizedBox(height: ThemeSize.space20),
-            GestureDetector(
-              onTap: () {
-                _settingsBloc.add(AccountRemovalEvent(
-                    subject: S.current.delete_account_email_subject,
-                    bodyPrefix: S.current.delete_account_email_body));
-              },
-              child: Text(S.current.delete_account_title,
+                  },
+                ),
+              ),
+              const SizedBox(height: ThemeSize.space20),
+              GestureDetector(
+                onTap: () {
+                  _settingsBloc.add(
+                    AccountRemovalEvent(
+                      subject: S.current.delete_account_email_subject,
+                      bodyPrefix: S.current.delete_account_email_body,
+                    ),
+                  );
+                },
+                child: Text(
+                  S.current.delete_account_title,
                   style: const TextStyle(
-                      fontSize: UIConstants.hFontSize,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.red)),
-            )
-          ]);
+                    fontSize: UIConstants.hFontSize,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.red,
+                  ),
+                ),
+              ),
+            ],
+          );
 
     return CustomSettingsSection(
-        child: Padding(
-            padding: const EdgeInsets.only(
-                left: ThemeSize.space25,
-                top: ThemeSize.space50,
-                right: ThemeSize.space25),
-            child: child));
+      child: Padding(
+        padding: const EdgeInsets.only(
+          left: ThemeSize.space25,
+          top: ThemeSize.space50,
+          right: ThemeSize.space25,
+        ),
+        child: child,
+      ),
+    );
   }
 }

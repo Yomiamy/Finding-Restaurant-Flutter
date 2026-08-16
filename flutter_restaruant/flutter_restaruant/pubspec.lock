@@ -655,10 +655,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_inspector_kit
-      sha256: "9ea03783984b721a5caf276ea1159952136a37ca04d61cc8fb48983840b3c5ab"
+      sha256: "29248bc192281030cf48e6850c31c99a2711fa967cc13b44fde0ba0e63ddde6a"
       url: "https://pub.dev"
     source: hosted
-    version: "2.0.0"
+    version: "2.2.0"
   flutter_lints:
     dependency: "direct dev"
     description:

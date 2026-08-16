@@ -5,8 +5,9 @@ import 'package:flutter_restaruant/model/model_barrel.dart';
 import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
 
 void main() {
-  testWidgets('FilterTagsWidget renders FilterChip for active filter configs',
-      (WidgetTester tester) async {
+  testWidgets('FilterTagsWidget renders FilterChip for active filter configs', (
+    WidgetTester tester,
+  ) async {
     final filterConfigs = FilterConfigs()
       ..price = 2
       ..sortBy = 'rating';
@@ -14,9 +15,7 @@ void main() {
     await tester.pumpWidget(
       MaterialApp(
         theme: AppThemeData.materialLight,
-        home: Scaffold(
-          body: FilterTagsWidget(filterConfigs: filterConfigs),
-        ),
+        home: Scaffold(body: FilterTagsWidget(filterConfigs: filterConfigs)),
       ),
     );
 
@@ -25,8 +24,10 @@ void main() {
     // Verify FilterChip widgets are rendered
     expect(find.byType(FilterChip), findsNWidgets(2));
     expect(find.text(filterConfigs.getPriceDispStr(2)), findsOneWidget);
-    expect(find.text(filterConfigs.getSortingRuleDispStr('rating')),
-        findsOneWidget);
+    expect(
+      find.text(filterConfigs.getSortingRuleDispStr('rating')),
+      findsOneWidget,
+    );
 
     // 鎖住著色來源：chip 必須取自 theme 的 colorScheme，而非 Material 預設。
     final chip = tester.widget<FilterChip>(find.byType(FilterChip).first);
@@ -34,20 +35,19 @@ void main() {
   });
 
   testWidgets(
-      'FilterTagsWidget returns SizedBox.shrink when filter configs empty',
-      (WidgetTester tester) async {
-    final filterConfigs = FilterConfigs();
+    'FilterTagsWidget returns SizedBox.shrink when filter configs empty',
+    (WidgetTester tester) async {
+      final filterConfigs = FilterConfigs();
 
-    await tester.pumpWidget(
-      MaterialApp(
-        home: Scaffold(
-          body: FilterTagsWidget(filterConfigs: filterConfigs),
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(body: FilterTagsWidget(filterConfigs: filterConfigs)),
         ),
-      ),
-    );
+      );
 
-    await tester.pump();
+      await tester.pump();
 
-    expect(find.byType(FilterChip), findsNothing);
-  });
+      expect(find.byType(FilterChip), findsNothing);
+    },
+  );
 }

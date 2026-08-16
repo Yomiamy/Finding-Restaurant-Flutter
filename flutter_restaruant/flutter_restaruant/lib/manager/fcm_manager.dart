@@ -18,9 +18,7 @@ import '../features/utils/utils_barrel.dart';
 Future<void> _firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   // If you're going to use other Firebase services in the background, such as Firestore,
   // make sure you call `initializeApp` before using other Firebase services.
-  await Firebase.initializeApp(
-    options: DefaultFirebaseOptions.currentPlatform,
-  );
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   debugPrint('Handling a background message ${message.messageId}');
 }
 
@@ -50,13 +48,16 @@ class FcmManager {
     // Delay navigation
     Future.delayed(const Duration(seconds: 8), () {
       navigatorKey.currentState?.pushNamedAndRemoveUntil(
-          MainPage.routeName, ModalRoute.withName(SplashPage.routeName),
-          arguments: arguments);
+        MainPage.routeName,
+        ModalRoute.withName(SplashPage.routeName),
+        arguments: arguments,
+      );
     });
   }
 
   void _firebaseForegroundMessagingOpenHandler(
-      NotificationResponse? notificationResponse) async {
+    NotificationResponse? notificationResponse,
+  ) async {
     String? payload = notificationResponse?.payload;
 
     debugPrint('Handling a message open: $payload');
@@ -81,34 +82,37 @@ class FcmManager {
       // Android app 前判顯示通知
       _flutterLocalNotificationsPlugin
           .show(
-              id: notification.hashCode,
-              title: notification.title,
-              body: notification.body,
-              notificationDetails: NotificationDetails(
-                android: AndroidNotificationDetails(
-                  Constants.fcmNotificationChannelId,
-                  Constants.fcmNotificationChannelName,
-                  channelDescription:
-                      Constants.fcmNotificationChannelDescription,
-                  icon: android.smallIcon,
-                  importance: Importance.max,
-                  priority: Priority.high,
-                  // other properties...
-                ),
+            id: notification.hashCode,
+            title: notification.title,
+            body: notification.body,
+            notificationDetails: NotificationDetails(
+              android: AndroidNotificationDetails(
+                Constants.fcmNotificationChannelId,
+                Constants.fcmNotificationChannelName,
+                channelDescription: Constants.fcmNotificationChannelDescription,
+                icon: android.smallIcon,
+                importance: Importance.max,
+                priority: Priority.high,
+                // other properties...
               ),
-              payload: const JsonEncoder().convert(message.data))
+            ),
+            payload: const JsonEncoder().convert(message.data),
+          )
           .onError((error, stackTrace) {
-        debugPrint('Handling a foreground message error: $error');
-      });
+            debugPrint('Handling a foreground message error: $error');
+          });
     }
   }
 
-  void init() async {
+  Future<void> init() async {
     if (Platform.isIOS) {
       // For iOS foreground notification
-      // ignore: unawaited_futures
-      FirebaseMessaging.instance.setForegroundNotificationPresentationOptions(
-          alert: true, badge: true, sound: true);
+      await FirebaseMessaging.instance
+          .setForegroundNotificationPresentationOptions(
+            alert: true,
+            badge: true,
+            sound: true,
+          );
     }
 
     const AndroidInitializationSettings initializationSettingsAndroid =
@@ -117,15 +121,15 @@ class FcmManager {
         DarwinInitializationSettings();
     const InitializationSettings initializationSettings =
         InitializationSettings(
-            android: initializationSettingsAndroid,
-            iOS: initializationSettingsIos);
+          android: initializationSettingsAndroid,
+          iOS: initializationSettingsIos,
+        );
 
     // Foreground messages opened
-    // ignore: unawaited_futures
-    _flutterLocalNotificationsPlugin.initialize(
-        settings: initializationSettings,
-        onDidReceiveNotificationResponse:
-            _firebaseForegroundMessagingOpenHandler);
+    await _flutterLocalNotificationsPlugin.initialize(
+      settings: initializationSettings,
+      onDidReceiveNotificationResponse: _firebaseForegroundMessagingOpenHandler,
+    );
     // Foreground messages display
     FirebaseMessaging.onMessage.listen(_firebaseMessagingForegroundHandler);
 
@@ -136,30 +140,28 @@ class FcmManager {
 
     // If the application is opened from a terminated state a Future containing a RemoteMessage will be returned.
     // Once consumed, the RemoteMessage will be returned.
-    // ignore: unawaited_futures
-    FirebaseMessaging.instance.getInitialMessage().then((message) {
-      debugPrint('Handling a init message: $message');
-      if (message == null) {
-        debugPrint('Handling a init message: message == null');
-        return;
-      }
+    final message = await FirebaseMessaging.instance.getInitialMessage();
+    debugPrint('Handling a init message: $message');
+    if (message == null) {
+      debugPrint('Handling a init message: message == null');
+      return;
+    }
 
-      _firebaseMessagingOpenHandler(message);
-    });
+    _firebaseMessagingOpenHandler(message);
   }
 
   Future<void> requestPermission() async {
     try {
-      NotificationSettings settings =
-          await FirebaseMessaging.instance.requestPermission(
-        alert: true,
-        announcement: false,
-        badge: true,
-        carPlay: false,
-        criticalAlert: false,
-        provisional: false,
-        sound: true,
-      );
+      NotificationSettings settings = await FirebaseMessaging.instance
+          .requestPermission(
+            alert: true,
+            announcement: false,
+            badge: true,
+            carPlay: false,
+            criticalAlert: false,
+            provisional: false,
+            sound: true,
+          );
       debugPrint('User granted permission: ${settings.authorizationStatus}');
     } on Exception catch (e) {
       debugPrint('FCM request fail, ${e.toString()}');

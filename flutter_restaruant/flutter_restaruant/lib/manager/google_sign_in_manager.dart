@@ -24,7 +24,9 @@ class GoogleSignInManager {
       if (googleAuth?.accessToken == null && googleAuth?.idToken == null) {
         // 未登入
         return const Tuple2<AccountDto?, String>(
-            null, 'Error occurred, please retry again');
+          null,
+          'Error occurred, please retry again',
+        );
       }
 
       // Create a new credential
@@ -34,19 +36,22 @@ class GoogleSignInManager {
       );
 
       // Once signed in, return the UserCredential
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
+      UserCredential userCredential = await FirebaseAuth.instance
+          .signInWithCredential(credential);
       AccountDto accountDto = AccountDto(
-          type: AccountType.google,
-          uid: userCredential.user?.uid ?? '',
-          account: userCredential.user?.email ?? '');
+        type: AccountType.google,
+        uid: userCredential.user?.uid ?? '',
+        account: userCredential.user?.email ?? '',
+      );
 
       return Tuple2(accountDto, '');
     } on Exception catch (e) {
       // 登入錯誤
       debugPrint('GoogleSignInManager, error = $e');
       return Tuple2(
-          null, 'Google sign in fail, please retry again\n${e.toString()}');
+        null,
+        'Google sign in fail, please retry again\n${e.toString()}',
+      );
     }
   }
 

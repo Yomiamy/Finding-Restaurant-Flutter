@@ -15,15 +15,15 @@ class FilterTagsWidget extends StatelessWidget {
       LinkedHashMap<FilterConfigType, String>();
 
   FilterTagsWidget({super.key, required FilterConfigs filterConfigs})
-      : _filterConfigs = filterConfigs {
+    : _filterConfigs = filterConfigs {
     if (_filterConfigs.sortBy != null && _filterConfigs.sortBy!.isNotEmpty) {
-      _filterConfigsMap[FilterConfigType.sortingRule] =
-          _filterConfigs.getSortingRuleDispStr(_filterConfigs.sortBy!);
+      _filterConfigsMap[FilterConfigType.sortingRule] = _filterConfigs
+          .getSortingRuleDispStr(_filterConfigs.sortBy!);
     }
 
     if (_filterConfigs.price != null && _filterConfigs.price! > 0) {
-      _filterConfigsMap[FilterConfigType.price] =
-          _filterConfigs.getPriceDispStr(_filterConfigs.price!);
+      _filterConfigsMap[FilterConfigType.price] = _filterConfigs
+          .getPriceDispStr(_filterConfigs.price!);
     }
 
     if (_filterConfigs.openAt != null && _filterConfigs.openAt! > 0) {
@@ -51,8 +51,9 @@ class FilterTagsWidget extends StatelessWidget {
               final type = keys[index];
               final title = values[index];
               return Padding(
-                padding:
-                    const EdgeInsets.symmetric(horizontal: ThemeSize.space4),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: ThemeSize.space4,
+                ),
                 child: FilterChip(
                   label: Text(
                     title,
@@ -66,10 +67,10 @@ class FilterTagsWidget extends StatelessWidget {
                     context
                         .findAncestorStateOfType<MainPageState>()
                         ?.updateState(() {
-                      final mainBloc = BlocProvider.of<MainBloc>(context);
-                      _filterConfigs.clearConfig(type);
-                      mainBloc.add(const Reset());
-                    });
+                          final mainBloc = BlocProvider.of<MainBloc>(context);
+                          _filterConfigs.clearConfig(type);
+                          mainBloc.add(const Reset());
+                        });
                   },
                 ),
               );

@@ -21,7 +21,9 @@ class FacebookSignInManager {
       if (loginResult.accessToken == null) {
         // 未登入
         return const Tuple2<AccountDto?, String>(
-            null, 'Error occurred, please retry again');
+          null,
+          'Error occurred, please retry again',
+        );
       }
 
       // Create a credential from the access token
@@ -31,20 +33,25 @@ class FacebookSignInManager {
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithCredential(facebookAuthCredential);
       AccountDto accountDto = AccountDto(
-          type: AccountType.facebook,
-          uid: userCredential.user?.uid ?? '',
-          account: userCredential.user?.email ?? '');
+        type: AccountType.facebook,
+        uid: userCredential.user?.uid ?? '',
+        account: userCredential.user?.email ?? '',
+      );
 
       return Tuple2(accountDto, '');
     } on FirebaseAuthException catch (e) {
       // 登入錯誤
       debugPrint('FacebookSignInManager, error = $e');
       if (e.code == 'account-exists-with-different-credential') {
-        return const Tuple2(null,
-            'An account already exists with a different credential. Please sign in using the original provider.');
+        return const Tuple2(
+          null,
+          'An account already exists with a different credential. Please sign in using the original provider.',
+        );
       } else {
         return Tuple2(
-            null, 'FB sign in fail, please retry again\n${e.toString()}');
+          null,
+          'FB sign in fail, please retry again\n${e.toString()}',
+        );
       }
     }
   }

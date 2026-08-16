@@ -19,22 +19,28 @@ import '../flow/splash/view/view_barrel.dart';
 final Map<String, WidgetBuilder> routesTable = <String, WidgetBuilder>{
   SplashPage.routeName: (context) => const SplashPage(),
   SignInPage.routeName: (context) => BlocProvider<SignInBloc>(
-      create: (_) => SignInBloc(repository: GetIt.I<SignInRepository>()),
-      child: const SignInPage()),
+    create: (_) => SignInBloc(repository: GetIt.I<SignInRepository>()),
+    child: const SignInPage(),
+  ),
   MainPage.routeName: (context) => BlocProvider<MainBloc>(
-      create: (_) => MainBloc(repository: GetIt.I<MainRepository>()),
-      child: const MainPage()),
+    create: (_) => MainBloc(repository: GetIt.I<MainRepository>()),
+    child: const MainPage(),
+  ),
   RestaurantDetailPage.routeName: (context) =>
       BlocProvider<RestaurantDetailBloc>(
-          create: (_) => RestaurantDetailBloc(
-              repository: GetIt.I<RestaurantDetailRepository>()),
-          child: const RestaurantDetailPage()),
+        create: (_) => RestaurantDetailBloc(
+          repository: GetIt.I<RestaurantDetailRepository>(),
+        ),
+        child: const RestaurantDetailPage(),
+      ),
   FavorPage.routeName: (context) => BlocProvider<FavorBloc>(
-      create: (_) => FavorBloc(repository: GetIt.I<FavorRepository>()),
-      child: const FavorPage()),
+    create: (_) => FavorBloc(repository: GetIt.I<FavorRepository>()),
+    child: const FavorPage(),
+  ),
   FilterPage.routeName: (context) => const FilterPage(),
   PhotoViewer.routeName: (context) => const PhotoViewer(),
   SettingsPage.routeName: (context) => BlocProvider<SettingsBloc>(
-      create: (_) => SettingsBloc(repository: GetIt.I<SettingsRepository>()),
-      child: const SettingsPage())
+    create: (_) => SettingsBloc(repository: GetIt.I<SettingsRepository>()),
+    child: const SettingsPage(),
+  ),
 };

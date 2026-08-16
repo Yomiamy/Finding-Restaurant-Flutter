@@ -19,8 +19,7 @@ enum SortBy {
 class FilterConfigs {
   // Price
   int? price;
-  int get priceIndex =>
-      (price == null || price! < 1) ? 0 : (price! - 1);
+  int get priceIndex => (price == null || price! < 1) ? 0 : (price! - 1);
 
   // Business hours
   int? openAt;
@@ -29,15 +28,14 @@ class FilterConfigs {
       : DateTime.now();
   int? get openAtInSec =>
       (openAt != null && openAt! > 0) ? openAt! ~/ 1000 : null;
-  String get openAtDispStr =>
-      DateFormat('MM-dd HH:mm').format(openAtDateTime);
+  String get openAtDispStr => DateFormat('MM-dd HH:mm').format(openAtDateTime);
 
   // Sorting rule
   String? sortBy;
   int get sortByIndex => (sortBy != null)
       ? SortBy.values
-          .firstWhere((element) => element.toShortString() == sortBy)
-          .index
+            .firstWhere((element) => element.toShortString() == sortBy)
+            .index
       : 0;
 
   String mapSortingRuleByIndex(int sortByIndex) {
@@ -57,10 +55,11 @@ class FilterConfigs {
 
   FilterConfigs();
 
-  FilterConfigs.fromUI(
-      {required int priceIndex,
-      required DateTime openAtDate,
-      required int sortingRuleIndex}) {
+  FilterConfigs.fromUI({
+    required int priceIndex,
+    required DateTime openAtDate,
+    required int sortingRuleIndex,
+  }) {
     price = priceIndex + 1;
     openAt = openAtDate.millisecondsSinceEpoch;
     sortBy = mapSortingRuleByIndex(sortingRuleIndex);
@@ -79,6 +78,7 @@ class FilterConfigs {
         break;
     }
   }
+
   String getPriceDispStr(int price) {
     switch (price) {
       case 1:

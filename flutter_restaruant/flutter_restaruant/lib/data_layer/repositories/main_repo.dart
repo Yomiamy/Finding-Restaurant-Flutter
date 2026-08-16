@@ -21,7 +21,7 @@ class MainRepo implements MainRepository {
   bool _isLoading = false;
 
   MainRepo({FavorDataSource? favorDataSource})
-      : _favorDataSource = favorDataSource ?? FavorDataSource() {
+    : _favorDataSource = favorDataSource ?? FavorDataSource() {
     reset();
   }
 
@@ -35,8 +35,13 @@ class MainRepo implements MainRepository {
   }
 
   @override
-  Future<List<RestaurantEntity>> fetchYelpSearchInfo(double lat, double lng,
-      int? price, int? openAt, String? sortByStr) async {
+  Future<List<RestaurantEntity>> fetchYelpSearchInfo(
+    double lat,
+    double lng,
+    int? price,
+    int? openAt,
+    String? sortByStr,
+  ) async {
     if (_isLoading) {
       // If new items is loading, then don't handle new fetching request until the old one completed.
       return await filterByKeyword(_keyword, sortByStr);
@@ -45,23 +50,25 @@ class MainRepo implements MainRepository {
     _isLoading = true;
     try {
       YelpSearchDto searchDto = await GetIt.I<APIClz>().businessesSearch(
-          term: 'Restaurants',
-          latitude: lat,
-          longitude: lng,
-          locale: Constants.locale,
-          price: price,
-          openAt: openAt,
-          sortBy: sortByStr,
-          limit: MainRepo._maxItemsCountInList,
-          offset: _offset);
+        term: 'Restaurants',
+        latitude: lat,
+        longitude: lng,
+        locale: Constants.locale,
+        price: price,
+        openAt: openAt,
+        sortBy: sortByStr,
+        limit: MainRepo._maxItemsCountInList,
+        offset: _offset,
+      );
 
       Map<String, dynamic> favorsMap = await _favorDataSource.fetchFavorsMap();
 
-      List<RestaurantEntity> fetchedEntities =
-          (searchDto.businesses ?? []).map((dto) {
-        bool isFavor = favorsMap.containsKey(dto.id);
-        return RestaurantEntity.fromDto(dto).copyWith(favor: isFavor);
-      }).toList();
+      List<RestaurantEntity> fetchedEntities = (searchDto.businesses ?? []).map(
+        (dto) {
+          bool isFavor = favorsMap.containsKey(dto.id);
+          return RestaurantEntity.fromDto(dto).copyWith(favor: isFavor);
+        },
+      ).toList();
 
       summaryInfoSet.addAll(fetchedEntities);
 
@@ -78,7 +85,9 @@ class MainRepo implements MainRepository {
 
   @override
   Future<List<RestaurantEntity>> filterByKeyword(
-      String keyword, String? sortByStr) async {
+    String keyword,
+    String? sortByStr,
+  ) async {
     _keyword = keyword;
 
     if (keyword.isNotEmpty) {
@@ -95,10 +104,13 @@ class MainRepo implements MainRepository {
   }
 
   List<RestaurantEntity> _getSortedInfoList(
-      String? sortByStr, List<RestaurantEntity> summaryInfos) {
+    String? sortByStr,
+    List<RestaurantEntity> summaryInfos,
+  ) {
     sortByStr = sortByStr ?? SortBy.bestMatch.toShortString();
-    SortBy sortBy = SortBy.values
-        .firstWhere((element) => element.toShortString() == sortByStr);
+    SortBy sortBy = SortBy.values.firstWhere(
+      (element) => element.toShortString() == sortByStr,
+    );
 
     summaryInfos.sort((info1, info2) {
       switch (sortBy) {
@@ -127,8 +139,9 @@ class MainRepo implements MainRepository {
 
   @override
   Future<RestaurantEntity> toggleFavor(RestaurantEntity summaryInfo) async {
-    RestaurantEntity updatedEntity =
-        await _favorDataSource.toggleFavor(summaryInfo);
+    RestaurantEntity updatedEntity = await _favorDataSource.toggleFavor(
+      summaryInfo,
+    );
 
     // Update in summaryInfoSet
     summaryInfoSet.remove(summaryInfo);

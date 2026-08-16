@@ -24,45 +24,54 @@ class RestaurantInfoListWidget extends StatelessWidget {
     MainBloc mainBloc = BlocProvider.of<MainBloc>(context);
 
     return NotificationListener<ScrollEndNotification>(
-        onNotification: (notification) {
-          if (_scrollController.position.atEdge) {
-            int? price = _configs.price;
-            int? openAt = _configs.openAtInSec;
-            String? sortBy = _configs.sortBy;
+      onNotification: (notification) {
+        if (_scrollController.position.atEdge) {
+          int? price = _configs.price;
+          int? openAt = _configs.openAtInSec;
+          String? sortBy = _configs.sortBy;
 
-            // Load more when scrolling reach the edge of ListView
-            mainBloc.add(
-                FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy));
+          // Load more when scrolling reach the edge of ListView
+          mainBloc.add(
+            FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy),
+          );
+        }
+        return true;
+      },
+      child: ListView.builder(
+        padding: const EdgeInsets.only(
+          top: ThemeSize.zero,
+          bottom: ThemeSize.zero,
+        ),
+        controller: _scrollController,
+        itemCount: _summaryInfos.length + 2,
+        itemBuilder: (context, index) {
+          if (index == 0) {
+            return BannerAD(adState: getIt<BannerADState>());
+          } else if (index == 1) {
+            return FilterTagsWidget(filterConfigs: _configs);
+          } else {
+            RestaurantEntity summaryInfo = _summaryInfos[index - 2];
+
+            return GestureDetector(
+              child: RestaurantItemCell(summaryInfo: summaryInfo),
+              onTap: () async {
+                Tuple2 arguments = Tuple2<RestaurantEntity, dynamic>(
+                  summaryInfo,
+                  null,
+                );
+
+                // Avoid duplicate push, use pushNamedAndRemoveUntil instead of push
+                // ignore: unawaited_futures
+                Navigator.of(context).pushNamedAndRemoveUntil(
+                  RestaurantDetailPage.routeName,
+                  ModalRoute.withName(MainPage.routeName),
+                  arguments: arguments,
+                );
+              },
+            );
           }
-          return true;
         },
-        child: ListView.builder(
-            padding: const EdgeInsets.only(
-                top: ThemeSize.zero, bottom: ThemeSize.zero),
-            controller: _scrollController,
-            itemCount: _summaryInfos.length + 2,
-            itemBuilder: (context, index) {
-              if (index == 0) {
-                return BannerAD(adState: getIt<BannerADState>());
-              } else if (index == 1) {
-                return FilterTagsWidget(filterConfigs: _configs);
-              } else {
-                RestaurantEntity summaryInfo = _summaryInfos[index - 2];
-
-                return GestureDetector(
-                    child: RestaurantItemCell(summaryInfo: summaryInfo),
-                    onTap: () async {
-                      Tuple2 arguments =
-                          Tuple2<RestaurantEntity, dynamic>(summaryInfo, null);
-
-                      // Avoid duplicate push, use pushNamedAndRemoveUntil instead of push
-                      // ignore: unawaited_futures
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                          RestaurantDetailPage.routeName,
-                          ModalRoute.withName(MainPage.routeName),
-                          arguments: arguments);
-                    });
-              }
-            }));
+      ),
+    );
   }
 }

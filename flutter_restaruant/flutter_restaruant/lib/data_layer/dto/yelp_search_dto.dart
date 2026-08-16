@@ -8,10 +8,7 @@ class YelpSearchDto {
   List<YelpRestaurantSummaryDto>? businesses;
   int? total;
 
-  YelpSearchDto({
-    this.businesses,
-    this.total,
-  });
+  YelpSearchDto({this.businesses, this.total});
 
   factory YelpSearchDto.fromJson(Map<String, dynamic> json) =>
       _$YelpSearchDtoFromJson(json);

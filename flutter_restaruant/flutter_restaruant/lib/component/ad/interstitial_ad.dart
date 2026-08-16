@@ -8,15 +8,18 @@ class IntersitialAD {
   const IntersitialAD({required this.adState});
 
   void load() => InterstitialAd.load(
-      adUnitId: adState.interstitialAdUnitId!,
-      request: const AdRequest(),
-      adLoadCallback:
-          InterstitialAdLoadCallback(onAdLoaded: (InterstitialAd ad) {
+    adUnitId: adState.interstitialAdUnitId!,
+    request: const AdRequest(),
+    adLoadCallback: InterstitialAdLoadCallback(
+      onAdLoaded: (InterstitialAd ad) {
         // Keep a reference to the ad so you can show it later.
         ad.fullScreenContentCallback = adState.adListener;
 
         ad.show();
-      }, onAdFailedToLoad: (LoadAdError error) {
+      },
+      onAdFailedToLoad: (LoadAdError error) {
         debugPrint('InterstitialAd failed to load: $error');
-      }));
+      },
+    ),
+  );
 }

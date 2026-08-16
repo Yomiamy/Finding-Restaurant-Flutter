@@ -45,8 +45,9 @@ class FavorDataSource {
     Map<String, dynamic> favorsMap = await fetchFavorsMap();
 
     return favorsMap.values.map((value) {
-      YelpRestaurantSummaryDto dto =
-          YelpRestaurantSummaryDto.fromJson(jsonDecode(value));
+      YelpRestaurantSummaryDto dto = YelpRestaurantSummaryDto.fromJson(
+        jsonDecode(value),
+      );
       dto.favor = true;
 
       return RestaurantEntity.fromDto(dto);

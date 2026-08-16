@@ -15,34 +15,36 @@ void main() {
       expect(entity3 == entity4, true);
     });
 
-    test('YelpRestaurantSummaryDto converts to/from RestaurantEntity correctly',
-        () {
-      final dto = YelpRestaurantSummaryDto(
-        id: 'rest_01',
-        name: 'Gourmet Place',
-        imageUrl: 'http://img.com/a.jpg',
-        reviewCount: 42,
-        rating: 4.5,
-        price: '\$\$',
-        phone: '123456',
-        distance: 120.5,
-        favor: true,
-      );
+    test(
+      'YelpRestaurantSummaryDto converts to/from RestaurantEntity correctly',
+      () {
+        final dto = YelpRestaurantSummaryDto(
+          id: 'rest_01',
+          name: 'Gourmet Place',
+          imageUrl: 'http://img.com/a.jpg',
+          reviewCount: 42,
+          rating: 4.5,
+          price: '\$\$',
+          phone: '123456',
+          distance: 120.5,
+          favor: true,
+        );
 
-      final entity = RestaurantEntity.fromDto(dto);
-      expect(entity.id, 'rest_01');
-      expect(entity.name, 'Gourmet Place');
-      expect(entity.reviewCount, 42);
-      expect(entity.rating, 4.5);
-      expect(entity.favor, true);
+        final entity = RestaurantEntity.fromDto(dto);
+        expect(entity.id, 'rest_01');
+        expect(entity.name, 'Gourmet Place');
+        expect(entity.reviewCount, 42);
+        expect(entity.rating, 4.5);
+        expect(entity.favor, true);
 
-      final backDto = entity.toDto;
-      expect(backDto.id, 'rest_01');
-      expect(backDto.name, 'Gourmet Place');
-      expect(backDto.reviewCount, 42);
-      expect(backDto.rating, 4.5);
-      expect(backDto.favor, true);
-    });
+        final backDto = entity.toDto;
+        expect(backDto.id, 'rest_01');
+        expect(backDto.name, 'Gourmet Place');
+        expect(backDto.reviewCount, 42);
+        expect(backDto.rating, 4.5);
+        expect(backDto.favor, true);
+      },
+    );
 
     test('YelpRestaurantDetailDto to RestaurantDetailEntity mapping', () {
       final detailDto = YelpRestaurantDetailDto(
@@ -72,26 +74,32 @@ void main() {
       expect(reviewEntity.possibleLanguages, contains('zh'));
     });
 
-    test('Category and Location getters function cleanly in domain entities',
-        () {
-      const category =
-          RestaurantCategoryEntity(alias: 'sushi', title: 'Japanese Sushi');
-      const location = RestaurantLocationEntity(
-        address1: '123 Main St',
-        city: 'Taipei',
-        displayAddress: ['123 Main St, ', 'Taipei City'],
-      );
+    test(
+      'Category and Location getters function cleanly in domain entities',
+      () {
+        const category = RestaurantCategoryEntity(
+          alias: 'sushi',
+          title: 'Japanese Sushi',
+        );
+        const location = RestaurantLocationEntity(
+          address1: '123 Main St',
+          city: 'Taipei',
+          displayAddress: ['123 Main St, ', 'Taipei City'],
+        );
 
-      const restaurant = RestaurantEntity(
-        id: '1',
-        categories: [category],
-        location: location,
-      );
+        const restaurant = RestaurantEntity(
+          id: '1',
+          categories: [category],
+          location: location,
+        );
 
-      expect(restaurant.categoriesStr, 'Japanese Sushi');
-      expect(
-          restaurant.location?.displayAddressStr, '123 Main St, Taipei City');
-    });
+        expect(restaurant.categoriesStr, 'Japanese Sushi');
+        expect(
+          restaurant.location?.displayAddressStr,
+          '123 Main St, Taipei City',
+        );
+      },
+    );
 
     test('AccountDto to UserEntity mapping', () {
       final accountDto = AccountDto(

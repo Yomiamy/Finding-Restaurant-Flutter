@@ -20,23 +20,26 @@ class AppOpenADState {
   final AppOpenADEvent appOpenADEventListener;
 
   AppOpenADState({required this.appOpenADEventListener}) {
-    adListener =
-        FullScreenContentCallback(onAdShowedFullScreenContent: (ad) {
-      isShowingAd = true;
-    }, onAdFailedToShowFullScreenContent: (ad, error) async {
-      isShowingAd = false;
-      appOpenAd = null;
+    adListener = FullScreenContentCallback(
+      onAdShowedFullScreenContent: (ad) {
+        isShowingAd = true;
+      },
+      onAdFailedToShowFullScreenContent: (ad, error) async {
+        isShowingAd = false;
+        appOpenAd = null;
 
-      // ignore: unawaited_futures
-      ad.dispose();
-      appOpenADEventListener.onAdFailedToShow();
-    }, onAdDismissedFullScreenContent: (ad) async {
-      isShowingAd = false;
-      appOpenAd = null;
+        // ignore: unawaited_futures
+        ad.dispose();
+        appOpenADEventListener.onAdFailedToShow();
+      },
+      onAdDismissedFullScreenContent: (ad) async {
+        isShowingAd = false;
+        appOpenAd = null;
 
-      // ignore: unawaited_futures
-      ad.dispose();
-      appOpenADEventListener.onAdDismissed();
-    });
+        // ignore: unawaited_futures
+        ad.dispose();
+        appOpenADEventListener.onAdDismissed();
+      },
+    );
   }
 }

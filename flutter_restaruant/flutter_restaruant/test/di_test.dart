@@ -12,15 +12,16 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() async {
-    const MethodChannel channel =
-        MethodChannel('plugins.flutter.io/local_auth');
+    const MethodChannel channel = MethodChannel(
+      'plugins.flutter.io/local_auth',
+    );
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-      if (methodCall.method == 'getAvailableBiometrics') {
-        return <String>[];
-      }
-      return null;
-    });
+          if (methodCall.method == 'getAvailableBiometrics') {
+            return <String>[];
+          }
+          return null;
+        });
 
     await GetIt.I.reset();
     setupInjection();
@@ -61,13 +62,15 @@ void main() {
       expect(repo, isA<MainRepository>());
     });
 
-    test('RestaurantDetailRepository resolves to RestaurantDetailRepository',
-        () {
-      expect(GetIt.I.isRegistered<RestaurantDetailRepository>(), isTrue);
-      final repo = GetIt.I<RestaurantDetailRepository>();
-      expect(repo, isA<RestaurantDetailRepository>());
-      expect(repo, isA<RestaurantDetailRepository>());
-    });
+    test(
+      'RestaurantDetailRepository resolves to RestaurantDetailRepository',
+      () {
+        expect(GetIt.I.isRegistered<RestaurantDetailRepository>(), isTrue);
+        final repo = GetIt.I<RestaurantDetailRepository>();
+        expect(repo, isA<RestaurantDetailRepository>());
+        expect(repo, isA<RestaurantDetailRepository>());
+      },
+    );
 
     test('FavorRepository resolves to FavorRepository', () {
       expect(GetIt.I.isRegistered<FavorRepository>(), isTrue);

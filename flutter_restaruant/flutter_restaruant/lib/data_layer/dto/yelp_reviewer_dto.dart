@@ -14,4 +14,3 @@ class YelpReviewerDto {
 
   Map<String, dynamic> toJson() => _$YelpReviewerDtoToJson(this);
 }
-

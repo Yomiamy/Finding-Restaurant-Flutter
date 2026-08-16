@@ -19,8 +19,9 @@ class AutoSignInManager {
     if (accountInfoJsonStr == null || accountInfoJsonStr.isEmpty) {
       return const Tuple2(null, '');
     } else {
-      AccountDto accountDto =
-          AccountDto.fromJson(jsonDecode(accountInfoJsonStr));
+      AccountDto accountDto = AccountDto.fromJson(
+        jsonDecode(accountInfoJsonStr),
+      );
       return Tuple2(accountDto, '');
     }
   }

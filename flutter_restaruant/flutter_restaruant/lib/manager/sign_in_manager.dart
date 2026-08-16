@@ -60,8 +60,11 @@ class SignInManager {
   Future<void> clearGuestFlag() async =>
       await _prefs?.remove(Constants.prefKeyGuestMode);
 
-  Future<Tuple2<AccountDto?, String>> signIn(AccountType accountType,
-      {String mail = '', String passwd = ''}) async {
+  Future<Tuple2<AccountDto?, String>> signIn(
+    AccountType accountType, {
+    String mail = '',
+    String passwd = '',
+  }) async {
     Tuple2<AccountDto?, String> signInResult = const Tuple2(null, '');
 
     switch (accountType) {
@@ -97,8 +100,11 @@ class SignInManager {
     return signInResult;
   }
 
-  Future<Tuple2<AccountDto?, String>> signUp(AccountType accountType,
-      {required String mail, required String passwd}) async {
+  Future<Tuple2<AccountDto?, String>> signUp(
+    AccountType accountType, {
+    required String mail,
+    required String passwd,
+  }) async {
     Tuple2<AccountDto?, String> signUpResult = const Tuple2(null, '');
 
     switch (accountType) {

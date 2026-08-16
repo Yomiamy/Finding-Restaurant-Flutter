@@ -29,11 +29,11 @@ class ReviewDetailEntity {
       );
 
   YelpReviewDetailDto get toDto => YelpReviewDetailDto(
-        id: id,
-        rating: rating,
-        user: user?.toDto,
-        text: text,
-        timeCreated: timeCreated,
-        url: url,
-      );
+    id: id,
+    rating: rating,
+    user: user?.toDto,
+    text: text,
+    timeCreated: timeCreated,
+    url: url,
+  );
 }

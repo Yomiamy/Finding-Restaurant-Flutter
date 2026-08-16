@@ -7,15 +7,16 @@ void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() {
-    const MethodChannel channel =
-        MethodChannel('plugins.flutter.io/local_auth');
+    const MethodChannel channel = MethodChannel(
+      'plugins.flutter.io/local_auth',
+    );
     TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
         .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-      if (methodCall.method == 'getAvailableBiometrics') {
-        return <String>[];
-      }
-      return null;
-    });
+          if (methodCall.method == 'getAvailableBiometrics') {
+            return <String>[];
+          }
+          return null;
+        });
   });
 
   group('Repository Architecture Tests', () {
@@ -37,11 +38,13 @@ void main() {
       expect(repo, isA<FavorRepository>());
     });
 
-    test('RestaurantDetailRepository implements RestaurantDetailRepository',
-        () {
-      final repo = RestaurantDetailRepo();
-      expect(repo, isA<RestaurantDetailRepository>());
-    });
+    test(
+      'RestaurantDetailRepository implements RestaurantDetailRepository',
+      () {
+        final repo = RestaurantDetailRepo();
+        expect(repo, isA<RestaurantDetailRepository>());
+      },
+    );
 
     test('SignInRepository implements SignInRepository', () {
       final repo = SignInRepo();

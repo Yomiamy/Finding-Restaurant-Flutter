@@ -21,4 +21,3 @@ class YelpRestaurantBusinessTimeDto {
 
   Map<String, dynamic> toJson() => _$YelpRestaurantBusinessTimeDtoToJson(this);
 }
-

@@ -12,7 +12,9 @@ class MailSignInUpManager {
   factory MailSignInUpManager() => _singleton;
 
   Future<Tuple2<AccountDto?, String>> signUpWithMail(
-      String mail, String passwd) async {
+    String mail,
+    String passwd,
+  ) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .createUserWithEmailAndPassword(email: mail, password: passwd);
@@ -24,9 +26,10 @@ class MailSignInUpManager {
       }
 
       AccountDto accountDto = AccountDto(
-          type: AccountType.mail,
-          uid: userCredential.user?.uid ?? '',
-          account: userCredential.user?.email ?? '');
+        type: AccountType.mail,
+        uid: userCredential.user?.uid ?? '',
+        account: userCredential.user?.email ?? '',
+      );
 
       return Tuple2(accountDto, '');
     } on FirebaseAuthException catch (e) {
@@ -57,7 +60,9 @@ class MailSignInUpManager {
   }
 
   Future<Tuple2<AccountDto?, String>> signInWithMail(
-      String mail, String passwd) async {
+    String mail,
+    String passwd,
+  ) async {
     try {
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithEmailAndPassword(email: mail, password: passwd);
@@ -69,9 +74,10 @@ class MailSignInUpManager {
       }
 
       AccountDto accountDto = AccountDto(
-          type: AccountType.mail,
-          uid: userCredential.user?.uid ?? '',
-          account: userCredential.user?.email ?? '');
+        type: AccountType.mail,
+        uid: userCredential.user?.uid ?? '',
+        account: userCredential.user?.email ?? '',
+      );
 
       return Tuple2(accountDto, '');
     } on FirebaseAuthException catch (e) {

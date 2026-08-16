@@ -12,8 +12,8 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
   final SignInRepository _signInRepository;
 
   SignInBloc({required SignInRepository repository})
-      : _signInRepository = repository,
-        super(SignInInitial()) {
+    : _signInRepository = repository,
+      super(SignInInitial()) {
     on<SignInEvent>((event, emit) async {
       emit(const InProgress());
 

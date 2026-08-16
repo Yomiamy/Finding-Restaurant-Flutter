@@ -9,8 +9,9 @@ class AppLifecycleReactor {
 
   void listenToAppStateChanges() {
     AppStateEventNotifier.startListening();
-    AppStateEventNotifier.appStateStream
-        .forEach((state) => _onAppStateChanged(state));
+    AppStateEventNotifier.appStateStream.forEach(
+      (state) => _onAppStateChanged(state),
+    );
   }
 
   void _onAppStateChanged(AppState appState) {
