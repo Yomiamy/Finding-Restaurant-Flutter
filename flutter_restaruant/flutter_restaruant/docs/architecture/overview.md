@@ -90,7 +90,7 @@ YelpRestaurantSummaryDto get toDto => ...
 - **Feature-First 目錄**：`lib/flow/<feature>/` 下再分 `bloc/` 與 `view/`，每個 feature 自成一個垂直切片（main、restaurant、favor、signinup、settings、splash、filter、photo_viewer）。
 - **BLoC 單向資料流**：`Bloc<Event, State>` + `Equatable`。State 以**具名子類別**表達（`MainInitial` / `InProgress` / `Success` / `Failure` / `LoadMoreSuccess` / `ToggleFavorSuccess`），而非單一 class 塞 `isLoading` 布林旗標——狀態互斥性由型別系統保證。
 - **`PlatformWidget<I, A>`**：泛型抽象類別，以 `Platform.isAndroid` / `Platform.isIOS` 分派到 `createAndroidWidget` / `createIosWidget`。子類別必須同時提供兩個平台的實作，**分歧在編譯期就被強制處理**。
-- **Design Tokens**：`lib/features/foundation/style/` 下的 `AppThemeData`、`ThemeColor`、`ThemeSize`、`ThemeTextStyle`。
+- **Design Tokens**：`lib/features/foundation/style/` 下的 `AppThemeData`、`ThemeColor`、`ThemeSize`、`ThemeFontSize`、`ThemeTextStyle`。
 
 ### 4. 跨層設施 (Cross-cutting)
 

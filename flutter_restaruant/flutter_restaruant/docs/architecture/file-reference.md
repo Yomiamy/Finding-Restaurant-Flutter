@@ -145,6 +145,7 @@
 | [`lib/features/foundation/style/theme_data.dart`](../../lib/features/foundation/style/theme_data.dart) | `AppThemeData` | App 主題定義。`materialLight` 的色票**只做 `ColorScheme.fromSeed`、零 `copyWith` 覆寫**；另提供 `cupertinoLight` 供 iOS 分支使用。 |
 | [`lib/features/foundation/style/theme_color.dart`](../../lib/features/foundation/style/theme_color.dart) | `ThemeColor` | 色彩 Token 常數。 |
 | [`lib/features/foundation/style/theme_size.dart`](../../lib/features/foundation/style/theme_size.dart) | `ThemeSize` | 尺寸與間距 Token 常數。 |
+| [`lib/features/foundation/style/theme_font_size.dart`](../../lib/features/foundation/style/theme_font_size.dart) | `ThemeFontSize` | 字級 Token 常數。 |
 | [`lib/features/foundation/style/theme_text_style.dart`](../../lib/features/foundation/style/theme_text_style.dart) | `ThemeTextStyle` | 文字樣式 Token。 |
 | [`lib/features/foundation/constants/constants.dart`](../../lib/features/foundation/constants/constants.dart) | `Constants` | 全域常數（API base URL、`authToken` 等）。 |
 | [`lib/features/foundation/constants/ui_constants.dart`](../../lib/features/foundation/constants/ui_constants.dart) | `UIConstants` | UI 專用常數。 |
