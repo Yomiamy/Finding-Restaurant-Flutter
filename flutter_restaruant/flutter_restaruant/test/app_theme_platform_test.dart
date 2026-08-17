@@ -1,4 +1,5 @@
 import 'dart:ui' as ui;
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_restaruant/di/di_barrel.dart';
@@ -30,6 +31,7 @@ void main() {
       // ErrorWidget.builder，變動會被判定失敗——package:test 的
       // tearDown() 在此驗證之後才執行，太晚救不了，必須在本 callback
       // 結尾、pumpWidget 之後手動復原。
+      debugDefaultTargetPlatformOverride = target;
       final originalErrorWidgetBuilder = ErrorWidget.builder;
       final originalFlutterErrorOnError = FlutterError.onError;
       final originalPlatformDispatcherOnError =
@@ -55,6 +57,7 @@ void main() {
         // SplashPage 的 3 秒延遲不排掉會留下 pending timer，測試 framework 會報錯。
         await tester.pump(const Duration(seconds: 3));
       } finally {
+        debugDefaultTargetPlatformOverride = null;
         ErrorWidget.builder = originalErrorWidgetBuilder;
         FlutterError.onError = originalFlutterErrorOnError;
         ui.PlatformDispatcher.instance.onError =
