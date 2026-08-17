@@ -30,14 +30,9 @@ abstract final class ThemeSize {
   static const double radiusTag = 15;
 
   // ────────────────────────────────────────────
-  // 圖示尺寸 (Icon)
+  // 圖示與圖片尺寸 (Icon & Image)
   // ────────────────────────────────────────────
-  static const double icon16 = 16;
-  static const double icon20 = 20;
-
-  // ────────────────────────────────────────────
-  // 圖片尺寸 (Image)
-  // ────────────────────────────────────────────
+  static const double image16 = 16;
   static const double image20 = 20;
   static const double image100 = 100;
   static const double image110 = 110;

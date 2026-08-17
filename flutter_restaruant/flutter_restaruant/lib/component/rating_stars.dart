@@ -15,19 +15,11 @@ class RatingStars extends StatelessWidget {
       mainAxisSize: MainAxisSize.min,
       children: List.generate(5, (index) {
         if (rating >= index + 1) {
-          return Icon(Icons.star, size: ThemeSize.icon16, color: color);
+          return Icon(Icons.star, size: ThemeSize.image16, color: color);
         } else if (rating >= index + 0.5) {
-          return Icon(
-            Icons.star_half,
-            size: ThemeSize.icon16,
-            color: color,
-          );
+          return Icon(Icons.star_half, size: ThemeSize.image16, color: color);
         } else {
-          return Icon(
-            Icons.star_border,
-            size: ThemeSize.icon16,
-            color: color,
-          );
+          return Icon(Icons.star_border, size: ThemeSize.image16, color: color);
         }
       }),
     );
