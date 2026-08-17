@@ -8,7 +8,7 @@ class RestaurantItemSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const SizedBox(
-      height: ThemeSize.size110 + ThemeSize.space10,
+      height: ThemeSize.size120,
       child: Padding(
         padding: EdgeInsets.only(
           left: ThemeSize.space10,

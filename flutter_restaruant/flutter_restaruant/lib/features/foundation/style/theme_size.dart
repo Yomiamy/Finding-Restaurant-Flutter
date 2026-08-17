@@ -36,6 +36,7 @@ abstract final class ThemeSize {
   static const double size20 = 20;
   static const double size100 = 100;
   static const double size110 = 110;
+  static const double size120 = 120;
 
   // ────────────────────────────────────────────
   // 骨架圖預設尺寸 (Skeleton)
