@@ -94,6 +94,7 @@ class RestaurantItemCell extends StatelessWidget {
                 ),
                 Text(
                   _summaryInfo.location?.displayAddressStr ?? '',
+                  maxLines: 2,
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(
