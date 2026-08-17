@@ -27,12 +27,8 @@ class RestaurantHeadCell extends StatelessWidget {
       children: <Widget>[
         FadeInImage.assetNetwork(
           placeholder: UIConstants.noImage,
-          imageErrorBuilder: (context, error, trace) => Image.asset(
-            UIConstants.noImage,
-            width: MediaQuery.of(context).size.width,
-            height: RestaurantHeadCell.headImageH.toDouble(),
-            fit: BoxFit.fill,
-          ),
+          imageErrorBuilder: (context, error, trace) =>
+              Image.asset(UIConstants.noImage),
           image: _imageUrl,
           imageCacheHeight: RestaurantHeadCell.headImageH,
           imageCacheWidth: MediaQuery.of(context).size.width.toInt(),
