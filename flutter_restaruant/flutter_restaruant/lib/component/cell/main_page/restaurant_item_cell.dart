@@ -55,7 +55,7 @@ class RestaurantItemCell extends StatelessWidget {
                     Text(
                       sprintf('%.2fm', [_summaryInfo.distance]),
                       style: const TextStyle(
-                        fontSize: UIConstants.mFontSize,
+                        fontSize: ThemeFontSize.fontSize14,
                         color: Colors.grey,
                       ),
                     ),
@@ -72,7 +72,7 @@ class RestaurantItemCell extends StatelessWidget {
                         child: Text(
                           '${_summaryInfo.reviewCount ?? 0}${S.current.review_count_suffix}',
                           style: const TextStyle(
-                            fontSize: UIConstants.mFontSize,
+                            fontSize: ThemeFontSize.fontSize14,
                             color: Colors.grey,
                           ),
                         ),
@@ -84,7 +84,7 @@ class RestaurantItemCell extends StatelessWidget {
                         child: Text(
                           _summaryInfo.price ?? '',
                           style: const TextStyle(
-                            fontSize: UIConstants.mFontSize,
+                            fontSize: ThemeFontSize.fontSize14,
                             color: Colors.grey,
                           ),
                         ),
@@ -101,7 +101,7 @@ class RestaurantItemCell extends StatelessWidget {
                   category,
                   overflow: TextOverflow.ellipsis,
                   style: const TextStyle(
-                    fontSize: UIConstants.mFontSize,
+                    fontSize: ThemeFontSize.fontSize14,
                     color: Colors.grey,
                   ),
                 ),

@@ -95,7 +95,7 @@ class RestaurantBusinessHourCell extends StatelessWidget {
               child: Text(
                 S.current.business_hour,
                 style: const TextStyle(
-                  fontSize: UIConstants.xhFontSize,
+                  fontSize: ThemeFontSize.fontSize18,
                   fontWeight: FontWeight.bold,
                 ),
               ),

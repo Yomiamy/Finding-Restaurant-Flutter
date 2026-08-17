@@ -47,7 +47,7 @@ class _FavorPageState extends State<FavorPage> {
           UIConstants.favorTitle,
           style: TextStyle(
             color: Colors.white,
-            fontSize: UIConstants.xxxxhFontSize,
+            fontSize: ThemeFontSize.fontSize24,
           ),
         ),
         backgroundColor: ThemeColor.appPrimary,

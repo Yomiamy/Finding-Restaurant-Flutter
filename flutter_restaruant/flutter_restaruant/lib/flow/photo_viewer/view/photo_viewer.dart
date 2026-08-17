@@ -39,7 +39,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
           S.current.photo_viewer_title,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: UIConstants.xxxhFontSize,
+            fontSize: ThemeFontSize.fontSize22,
           ),
         ),
         backgroundColor: ThemeColor.appPrimary,

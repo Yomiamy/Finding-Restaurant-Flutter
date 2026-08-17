@@ -86,7 +86,7 @@ class RestaurantCommentCell extends StatelessWidget {
                     name,
                     style: const TextStyle(
                       fontWeight: FontWeight.w700,
-                      fontSize: UIConstants.hFontSize,
+                      fontSize: ThemeFontSize.fontSize16,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),

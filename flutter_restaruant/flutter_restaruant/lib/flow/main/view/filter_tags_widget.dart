@@ -57,7 +57,7 @@ class FilterTagsWidget extends StatelessWidget {
                 child: FilterChip(
                   label: Text(
                     title,
-                    style: const TextStyle(fontSize: UIConstants.xhFontSize),
+                    style: const TextStyle(fontSize: ThemeFontSize.fontSize18),
                   ),
                   selected: true,
                   selectedColor: Theme.of(context).colorScheme.primary,

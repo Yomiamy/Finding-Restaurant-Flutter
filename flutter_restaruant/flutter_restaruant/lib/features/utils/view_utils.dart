@@ -16,7 +16,7 @@ class ViewUtils {
         title: PlatformText(
           title,
           style: const TextStyle(
-            fontSize: UIConstants.xxhFontSize,
+            fontSize: ThemeFontSize.fontSize20,
             fontWeight: FontWeight.bold,
           ),
         ),

@@ -108,7 +108,7 @@ class RestaurantInfoCell extends StatelessWidget {
                   Text(
                     '${_detailInfo.reviewCount ?? 0}${S.current.review_count_suffix}',
                     style: const TextStyle(
-                      fontSize: UIConstants.mFontSize,
+                      fontSize: ThemeFontSize.fontSize14,
                       color: Colors.grey,
                     ),
                   ),
@@ -124,7 +124,7 @@ class RestaurantInfoCell extends StatelessWidget {
                       child: Text(
                         openStatus,
                         style: const TextStyle(
-                          fontSize: UIConstants.lFontSize,
+                          fontSize: ThemeFontSize.fontSize12,
                           color: Colors.white,
                         ),
                       ),

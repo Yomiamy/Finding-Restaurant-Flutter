@@ -45,7 +45,7 @@ class _SignInPageState extends State<SignInPage> {
           S.current.signin_page_title,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: UIConstants.xxxhFontSize,
+            fontSize: ThemeFontSize.fontSize22,
           ),
         ),
         // 本頁有兩種進入方式：從 Splash 取代進來（無返回鍵），或訪客從
@@ -219,7 +219,7 @@ class _SignInPageState extends State<SignInPage> {
           child: Text(
             S.current.signin_btn_title,
             style: const TextStyle(
-              fontSize: UIConstants.xhFontSize,
+              fontSize: ThemeFontSize.fontSize18,
               fontWeight: FontWeight.bold,
               color: Colors.white,
             ),
@@ -239,7 +239,7 @@ class _SignInPageState extends State<SignInPage> {
               child: Text(
                 S.current.signup_title,
                 style: const TextStyle(
-                  fontSize: UIConstants.mFontSize,
+                  fontSize: ThemeFontSize.fontSize14,
                   color: Colors.grey,
                 ),
               ),
@@ -257,7 +257,7 @@ class _SignInPageState extends State<SignInPage> {
               child: Text(
                 S.current.continue_as_guest,
                 style: const TextStyle(
-                  fontSize: UIConstants.mFontSize,
+                  fontSize: ThemeFontSize.fontSize14,
                   color: Colors.grey,
                 ),
               ),

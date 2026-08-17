@@ -66,7 +66,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 state.detailInfo.name ?? '',
                 style: const TextStyle(
                   color: Colors.white,
-                  fontSize: UIConstants.xxxhFontSize,
+                  fontSize: ThemeFontSize.fontSize22,
                 ),
               );
             } else {

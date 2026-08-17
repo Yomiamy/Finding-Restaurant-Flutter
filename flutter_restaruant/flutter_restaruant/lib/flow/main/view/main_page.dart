@@ -81,7 +81,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         S.current.main_page_title,
         style: const TextStyle(
           color: Colors.white,
-          fontSize: UIConstants.xxxxhFontSize,
+          fontSize: ThemeFontSize.fontSize24,
         ),
       ),
       backgroundColor: ThemeColor.appPrimary,
@@ -152,7 +152,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                   appLocalizations.main_page_title,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: UIConstants.xxxhFontSize,
+                    fontSize: ThemeFontSize.fontSize22,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

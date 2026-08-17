@@ -20,9 +20,14 @@ abstract final class ThemeTextStyle {
 /// 僅供 `ThemeTextStyle` 組裝 `TextTheme` 使用。UI 端請勿直接引用 ——
 /// 字級的語意來源是 `Theme.of(context).textTheme`。
 abstract final class ThemeFontSize {
+  static const double fontSize10 = 10;
   static const double fontSize12 = 12;
   static const double fontSize14 = 14;
   static const double fontSize16 = 16;
   static const double fontSize18 = 18;
+  static const double fontSize20 = 20;
   static const double fontSize22 = 22;
+  static const double fontSize24 = 24;
+  static const double fontSize26 = 26;
+  static const double fontSize28 = 28;
 }
