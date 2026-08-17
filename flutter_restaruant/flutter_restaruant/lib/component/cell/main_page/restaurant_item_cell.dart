@@ -16,105 +16,102 @@ class RestaurantItemCell extends StatelessWidget {
   Widget build(BuildContext context) {
     final category = _summaryInfo.categoriesStr;
 
-    return SizedBox(
-      height: ThemeSize.size110 + ThemeSize.space10,
-      child: Padding(
-        padding: const EdgeInsets.only(
-          left: ThemeSize.space10,
-          right: ThemeSize.space5,
-          top: ThemeSize.space10,
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: <Widget>[
-            FadeInImage.assetNetwork(
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: ThemeSize.space10,
+        right: ThemeSize.space5,
+        top: ThemeSize.space10,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          FadeInImage.assetNetwork(
+            width: ThemeSize.size110,
+            height: ThemeSize.size110,
+            placeholder: UIConstants.noImage,
+            imageErrorBuilder: (context, error, trace) => Image.asset(
+              UIConstants.noImage,
               width: ThemeSize.size110,
               height: ThemeSize.size110,
-              placeholder: UIConstants.noImage,
-              imageErrorBuilder: (context, error, trace) => Image.asset(
-                UIConstants.noImage,
-                width: ThemeSize.size110,
-                height: ThemeSize.size110,
-                fit: BoxFit.fill,
-              ),
-              image: _summaryInfo.imageUrl ?? '',
-              imageCacheHeight: ThemeSize.size110.toInt(),
-              imageCacheWidth: ThemeSize.size110.toInt(),
-              placeholderCacheHeight: ThemeSize.size110.toInt(),
-              placeholderCacheWidth: ThemeSize.size110.toInt(),
               fit: BoxFit.fill,
             ),
-            const SizedBox(width: ThemeSize.space10),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: <Widget>[
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: Text(
-                          _summaryInfo.name ?? '',
-                          overflow: TextOverflow.ellipsis,
-                        ),
+            image: _summaryInfo.imageUrl ?? '',
+            imageCacheHeight: ThemeSize.size110.toInt(),
+            imageCacheWidth: ThemeSize.size110.toInt(),
+            placeholderCacheHeight: ThemeSize.size110.toInt(),
+            placeholderCacheWidth: ThemeSize.size110.toInt(),
+            fit: BoxFit.fill,
+          ),
+          const SizedBox(width: ThemeSize.space10),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        _summaryInfo.name ?? '',
+                        overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
-                        sprintf('%.2fm', [_summaryInfo.distance]),
-                        style: const TextStyle(
-                          fontSize: UIConstants.mFontSize,
-                          color: Colors.grey,
-                        ),
-                      ),
-                    ],
-                  ),
-                  Row(
-                    children: <Widget>[
-                      Expanded(
-                        child: RatingStars(rating: _summaryInfo.rating ?? 0.0),
-                      ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            '${_summaryInfo.reviewCount ?? 0}${S.current.review_count_suffix}',
-                            style: const TextStyle(
-                              fontSize: UIConstants.mFontSize,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                      ),
-                      Expanded(
-                        child: Align(
-                          alignment: Alignment.centerRight,
-                          child: Text(
-                            _summaryInfo.price ?? '',
-                            style: const TextStyle(
-                              fontSize: UIConstants.mFontSize,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                  Text(
-                    _summaryInfo.location?.displayAddressStr ?? '',
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  Text(
-                    category,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(
-                      fontSize: UIConstants.mFontSize,
-                      color: Colors.grey,
                     ),
+                    Text(
+                      sprintf('%.2fm', [_summaryInfo.distance]),
+                      style: const TextStyle(
+                        fontSize: UIConstants.mFontSize,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: RatingStars(rating: _summaryInfo.rating ?? 0.0),
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          '${_summaryInfo.reviewCount ?? 0}${S.current.review_count_suffix}',
+                          style: const TextStyle(
+                            fontSize: UIConstants.mFontSize,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          _summaryInfo.price ?? '',
+                          style: const TextStyle(
+                            fontSize: UIConstants.mFontSize,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  _summaryInfo.location?.displayAddressStr ?? '',
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  category,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: UIConstants.mFontSize,
+                    color: Colors.grey,
                   ),
-                ],
-              ),
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
