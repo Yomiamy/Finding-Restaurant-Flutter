@@ -60,8 +60,8 @@ class RestaurantHeadCell extends StatelessWidget {
                   _summaryInfo.favor
                       ? 'images/ic_favor_fill.png'
                       : 'images/ic_favor_empty.png',
-                  width: ThemeSize.image20,
-                  height: ThemeSize.image20,
+                  width: ThemeSize.size20,
+                  height: ThemeSize.size20,
                   fit: BoxFit.fill,
                 ),
               ),

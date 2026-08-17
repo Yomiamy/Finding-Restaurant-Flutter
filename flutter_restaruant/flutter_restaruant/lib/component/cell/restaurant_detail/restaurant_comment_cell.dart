@@ -90,7 +90,7 @@ class RestaurantCommentCell extends StatelessWidget {
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(height: ThemeSize.image20, child: rateAsset),
+                  SizedBox(height: ThemeSize.size20, child: rateAsset),
                   Text(comment, maxLines: 2, overflow: TextOverflow.ellipsis),
                 ],
               ),

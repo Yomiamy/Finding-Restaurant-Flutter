@@ -30,12 +30,12 @@ abstract final class ThemeSize {
   static const double radiusTag = 15;
 
   // ────────────────────────────────────────────
-  // 圖示與圖片尺寸 (Icon & Image)
+  // 一般尺寸 (Size)
   // ────────────────────────────────────────────
-  static const double image16 = 16;
-  static const double image20 = 20;
-  static const double image100 = 100;
-  static const double image110 = 110;
+  static const double size16 = 16;
+  static const double size20 = 20;
+  static const double size100 = 100;
+  static const double size110 = 110;
 
   // ────────────────────────────────────────────
   // 骨架圖預設尺寸 (Skeleton)
