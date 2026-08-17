@@ -1,4 +1,3 @@
-import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:bloc/bloc.dart';
 import '../../../domain/entities/entities_barrel.dart';
@@ -53,7 +52,6 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     on<FilterListByKeyword>((event, emit) async {
       emit(const InProgress());
 
-      await Future.delayed(const Duration(seconds: 2));
       final List<RestaurantEntity> filterInfos = await _mainRepository
           .filterByKeyword(event.keyword, event.sortByStr);
 

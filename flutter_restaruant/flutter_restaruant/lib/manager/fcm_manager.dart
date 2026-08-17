@@ -9,7 +9,6 @@ import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 import '../domain/entities/entities_barrel.dart';
 import '../firebase_options.dart';
 import '../flow/main/view/view_barrel.dart';
-import '../flow/splash/view/view_barrel.dart';
 import '../main.dart';
 import '../features/foundation/constants/constants_barrel.dart';
 import '../features/utils/utils_barrel.dart';
@@ -34,6 +33,8 @@ class FcmManager {
   late final FlutterLocalNotificationsPlugin _flutterLocalNotificationsPlugin =
       FlutterLocalNotificationsPlugin();
 
+  Tuple2? initialArguments;
+
   void _firebaseMessagingOpenHandler(RemoteMessage message) async {
     debugPrint('Handling a message open: ${message.messageId}');
 
@@ -45,14 +46,13 @@ class FcmManager {
       arguments = Tuple2<RestaurantEntity, dynamic>(summaryInfo, null);
     }
 
-    // Delay navigation
-    Future.delayed(const Duration(seconds: 8), () {
+    unawaited(
       navigatorKey.currentState?.pushNamedAndRemoveUntil(
         MainPage.routeName,
-        ModalRoute.withName(SplashPage.routeName),
+        (route) => route.isFirst,
         arguments: arguments,
-      );
-    });
+      ),
+    );
   }
 
   void _firebaseForegroundMessagingOpenHandler(
@@ -142,12 +142,14 @@ class FcmManager {
     // Once consumed, the RemoteMessage will be returned.
     final message = await FirebaseMessaging.instance.getInitialMessage();
     debugPrint('Handling a init message: $message');
-    if (message == null) {
-      debugPrint('Handling a init message: message == null');
-      return;
+    if (message != null) {
+      String? storeId =
+          message.data[Constants.fcmNotificationPayloadKeyStoreId];
+      if (storeId != null && storeId.isNotEmpty) {
+        RestaurantEntity summaryInfo = RestaurantEntity(id: storeId);
+        initialArguments = Tuple2<RestaurantEntity, dynamic>(summaryInfo, null);
+      }
     }
-
-    _firebaseMessagingOpenHandler(message);
   }
 
   Future<void> requestPermission() async {
