@@ -29,12 +29,8 @@ class RestaurantItemCell extends StatelessWidget {
             width: ThemeSize.size110,
             height: ThemeSize.size110,
             placeholder: UIConstants.noImage,
-            imageErrorBuilder: (context, error, trace) => Image.asset(
-              UIConstants.noImage,
-              width: ThemeSize.size110,
-              height: ThemeSize.size110,
-              fit: BoxFit.fill,
-            ),
+            imageErrorBuilder: (context, error, trace) =>
+                Image.asset(UIConstants.noImage),
             image: _summaryInfo.imageUrl ?? '',
             imageCacheHeight: ThemeSize.size110.toInt(),
             imageCacheWidth: ThemeSize.size110.toInt(),
