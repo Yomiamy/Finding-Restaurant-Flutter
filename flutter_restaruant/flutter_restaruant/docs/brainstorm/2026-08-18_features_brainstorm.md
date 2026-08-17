@@ -939,7 +939,7 @@ lib/features/foundation/style/
 | # | 事項 | 判準 | 狀態 |
 | :--- | :--- | :--- | :--- |
 | 1 | 骨架屏自繪 vs `shimmer` 套件 | 先自繪；超過 40 行改用套件 | S2 待決（專案目前無此依賴） |
-| 2 | 舊 `UIConstants` 字級常數何時刪 | S4 標 `@Deprecated`；全數遷移後另開獨立 PR 移除 | ⏩ **提前於 S1 完成標記**（10 個常數全數標 `@Deprecated` 且未移除）；遷移仍歸 S4 |
+| 2 | 舊 `UIConstants` 字級常數何時刪 | S4 標 `@Deprecated`；全數遷移後另開獨立 PR 移除 | ✅ **已於 S1 移除**（10 個常數全數移除並替換為 ThemeFontSize，PR #66 完成） |
 | 3 | `Colors.grey` 全域掃除 | 各階段順手改；S4 做最後一次 grep 確認歸零 | S1 刻意不掃（維持 AC-7 乾淨驗證），33 處原封不動 |
 | **4（新增）** | `colorScheme.primary` 是否 `copyWith` 鎖回 `#D84A20` | 見 T-9。與 T-6 的 `surface` 覆寫一併決定，共用 D-4 的 3 個額度 | **S2 待決** |
 

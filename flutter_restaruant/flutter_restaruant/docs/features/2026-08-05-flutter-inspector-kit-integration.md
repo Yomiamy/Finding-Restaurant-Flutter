@@ -1,7 +1,7 @@
 # F-0.1 — 整合 `flutter_inspector_kit` 除錯套件 (Developer Tooling Foundation)
 
 > 功能規格（STAGE 0a：What & Why）
-> 出處：`docs/brainstorm/2026-08-16_features_brainstorm.md` §2.0（F-0.1，P-1 最高優先）
+> 出處：`docs/brainstorm/2026-08-18_features_brainstorm.md` §2.0（F-0.1，P-1 最高優先）
 > 本文件**不含**實作步驟、逐行異動與任務拆分——那是 STAGE 0b 實作計畫的內容。
 > 撰寫日期：2026-08-05
 > 基準 commit：`2890610`（branch `main`）
@@ -20,7 +20,7 @@
 
 ### 1.1 現況：修 bug 全靠猜
 
-專案 `docs/brainstorm/2026-08-16_features_brainstorm.md` §1.2 目前累積 **4 項未解缺陷**（2026-08-05 複測），其中三項的修復與驗證都需要「看得到執行期真實行為」的能力，而現在沒有：
+專案 `docs/brainstorm/2026-08-18_features_brainstorm.md` §1.2 目前累積 **4 項未解缺陷**（2026-08-05 複測），其中三項的修復與驗證都需要「看得到執行期真實行為」的能力，而現在沒有：
 
 | 缺陷（§1.2） | 現況 | 缺少的量測能力 |
 | :--- | :--- | :--- |
