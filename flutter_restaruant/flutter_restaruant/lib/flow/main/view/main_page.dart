@@ -116,7 +116,12 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         if (state is InProgress ||
             state is MainInitial ||
             state is ResetSuccess) {
-          return const Center(child: LoadingWidget());
+          return _isListMode
+              ? ListView.builder(
+                  itemCount: 5,
+                  itemBuilder: (_, __) => const RestaurantItemSkeleton(),
+                )
+              : const Center(child: LoadingWidget());
         }
 
         if (_summaryInfos.isEmpty) {

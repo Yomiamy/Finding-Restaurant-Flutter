@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../features/foundation/constants/constants_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
+import '../../rating_stars.dart';
 import 'package:sprintf/sprintf.dart';
 import '../../../generated/l10n.dart';
 import '../../../features/foundation/style/style_barrel.dart';
@@ -103,7 +104,7 @@ class RestaurantInfoCell extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                     style: const TextStyle(color: Colors.grey),
                   ),
-                  RatingHelper.getRatingImage(_detailInfo.rating?.toString()),
+                  RatingStars(rating: (_detailInfo.rating ?? 0).toDouble()),
                   Text(
                     '${_detailInfo.reviewCount ?? 0}${S.current.review_count_suffix}',
                     style: const TextStyle(

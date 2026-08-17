@@ -86,6 +86,7 @@ dependencies:
     # 測試工具 (Testing Framework)
   integration_test:
     sdk: flutter
+  shimmer: ^3.0.0
 
 dev_dependencies:
   flutter_lints: ^5.0.0
@@ -107,17 +108,7 @@ flutter:
   - images/empty.png
   - images/icon_signinup_icon.gif
   - images/icon_setting_icon.gif
-  - images/Star_rating_0.5_of_5.png
-  - images/Star_rating_0_of_5.png
-  - images/Star_rating_1.5_of_5.png
-  - images/Star_rating_1_of_5.png
-  - images/Star_rating_2.5_of_5.png
-  - images/Star_rating_2_of_5.png
-  - images/Star_rating_3.5_of_5.png
-  - images/Star_rating_3_of_5.png
-  - images/Star_rating_4.5_of_5.png
-  - images/Star_rating_4_of_5.png
-  - images/Star_rating_5_of_5.png
+
   - images/launch_image.png
   - images/ic_favor_empty.png
   - images/ic_favor_fill.png
