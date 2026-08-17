@@ -7,10 +7,6 @@ import 'package:sprintf/sprintf.dart';
 import '../../rating_stars.dart';
 
 class RestaurantItemCell extends StatelessWidget {
-  static const int imageH = 110;
-  static const int imageW = 110;
-  static const double itemH = 110;
-
   final RestaurantEntity _summaryInfo;
 
   const RestaurantItemCell({super.key, required RestaurantEntity summaryInfo})
@@ -21,7 +17,7 @@ class RestaurantItemCell extends StatelessWidget {
     final category = _summaryInfo.categoriesStr;
 
     return SizedBox(
-      height: itemH,
+      height: ThemeSize.image110,
       child: Padding(
         padding: const EdgeInsets.only(
           left: ThemeSize.space10,
@@ -32,17 +28,17 @@ class RestaurantItemCell extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
             SizedBox(
-              width: imageW.toDouble(),
-              height: imageH.toDouble(),
+              width: ThemeSize.image110,
+              height: ThemeSize.image110,
               child: FadeInImage.assetNetwork(
                 placeholder: UIConstants.noImage,
                 imageErrorBuilder: (context, error, trace) =>
                     Image.asset(UIConstants.noImage),
                 image: _summaryInfo.imageUrl ?? '',
-                imageCacheHeight: imageH,
-                imageCacheWidth: imageW,
-                placeholderCacheHeight: imageH,
-                placeholderCacheWidth: imageW,
+                imageCacheHeight: ThemeSize.image110.toInt(),
+                imageCacheWidth: ThemeSize.image110.toInt(),
+                placeholderCacheHeight: ThemeSize.image110.toInt(),
+                placeholderCacheWidth: ThemeSize.image110.toInt(),
                 fit: BoxFit.fill,
               ),
             ),
