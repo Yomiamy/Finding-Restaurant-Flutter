@@ -13,23 +13,36 @@ abstract final class ThemeSize {
   static const double space3 = 3;
   static const double space4 = 4;
   static const double space5 = 5;
+  static const double space8 = 8;
   static const double space10 = 10;
   static const double space15 = 15;
+  static const double space16 = 16;
   static const double space20 = 20;
   static const double space25 = 25;
   static const double space30 = 30;
   static const double space50 = 50;
+  static const double space64 = 64;
 
   // ────────────────────────────────────────────
   // 圓角 (Radius)
   // ────────────────────────────────────────────
+  static const double radius8 = 8;
   static const double radiusTag = 15;
 
   // ────────────────────────────────────────────
-  // 圖片尺寸 (Image)
+  // 一般尺寸 (Size)
   // ────────────────────────────────────────────
-  static const double ratingImageW = 100;
-  static const double ratingImageH = 20;
-  static const double favorImageW = 20;
-  static const double favorImageH = 20;
+  static const double size16 = 16;
+  static const double size20 = 20;
+  static const double size100 = 100;
+  static const double size110 = 110;
+  static const double size120 = 120;
+
+  // ────────────────────────────────────────────
+  // 骨架圖預設尺寸 (Skeleton)
+  // ────────────────────────────────────────────
+  static const double skeletonTextHeightLg = 16;
+  static const double skeletonTextHeightMd = 14;
+  static const double skeletonTextWidthLg = 120;
+  static const double skeletonTextWidthMd = 80;
 }

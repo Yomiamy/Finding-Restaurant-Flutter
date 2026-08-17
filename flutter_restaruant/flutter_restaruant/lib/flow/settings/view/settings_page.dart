@@ -51,7 +51,7 @@ class _SettingsPageState extends State<SettingsPage> {
           S.current.settings_title,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: UIConstants.xxxhFontSize,
+            fontSize: ThemeFontSize.fontSize22,
           ),
         ),
         backgroundColor: ThemeColor.appPrimary,
@@ -132,7 +132,7 @@ class _SettingsPageState extends State<SettingsPage> {
               child: Text(
                 S.current.signin_or_signup_title,
                 style: const TextStyle(
-                  fontSize: UIConstants.xhFontSize,
+                  fontSize: ThemeFontSize.fontSize18,
                   fontWeight: FontWeight.bold,
                   color: Colors.white,
                 ),
@@ -151,7 +151,7 @@ class _SettingsPageState extends State<SettingsPage> {
                   child: Text(
                     S.current.logout_section_title,
                     style: const TextStyle(
-                      fontSize: UIConstants.xhFontSize,
+                      fontSize: ThemeFontSize.fontSize18,
                       fontWeight: FontWeight.bold,
                       color: Colors.white,
                     ),
@@ -174,7 +174,7 @@ class _SettingsPageState extends State<SettingsPage> {
                 child: Text(
                   S.current.delete_account_title,
                   style: const TextStyle(
-                    fontSize: UIConstants.hFontSize,
+                    fontSize: ThemeFontSize.fontSize16,
                     fontWeight: FontWeight.bold,
                     color: Colors.red,
                   ),

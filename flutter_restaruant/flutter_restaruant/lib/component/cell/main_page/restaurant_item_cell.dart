@@ -1,16 +1,12 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../generated/l10n.dart';
-import '../../../features/utils/utils_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:sprintf/sprintf.dart';
+import '../../rating_stars.dart';
 
 class RestaurantItemCell extends StatelessWidget {
-  static const int imageH = 110;
-  static const int imageW = 110;
-  static const double itemH = 110;
-
   final RestaurantEntity _summaryInfo;
 
   const RestaurantItemCell({super.key, required RestaurantEntity summaryInfo})
@@ -18,118 +14,101 @@ class RestaurantItemCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String category = _summaryInfo.categoriesStr;
+    final category = _summaryInfo.categoriesStr;
 
-    return SizedBox(
-      height: itemH,
-      child: Container(
-        padding: const EdgeInsets.only(
-          left: ThemeSize.space10,
-          right: ThemeSize.space5,
-          top: ThemeSize.space10,
-          bottom: ThemeSize.zero,
-        ),
-        child: Row(
-          mainAxisSize: MainAxisSize.max,
-          children: <Widget>[
-            SizedBox(
-              width: RestaurantItemCell.imageW.toDouble(),
-              height: RestaurantItemCell.imageH.toDouble(),
-              child: FadeInImage.assetNetwork(
-                placeholder: UIConstants.noImage,
-                imageErrorBuilder: (context, error, trace) =>
-                    Image.asset(UIConstants.noImage),
-                image: _summaryInfo.imageUrl ?? '',
-                imageCacheHeight: RestaurantItemCell.imageH,
-                imageCacheWidth: RestaurantItemCell.imageW,
-                placeholderCacheHeight: RestaurantItemCell.imageH,
-                placeholderCacheWidth: RestaurantItemCell.imageW,
-                fit: BoxFit.fill,
-              ),
-            ),
-            Expanded(
-              child: Container(
-                padding: const EdgeInsets.only(left: ThemeSize.space10),
-                child: SizedBox(
-                  height: RestaurantItemCell.itemH,
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: <Widget>[
-                      Flex(
-                        direction: Axis.horizontal,
-                        children: <Widget>[
-                          Expanded(
-                            child: Text(
-                              _summaryInfo.name ?? '',
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Text(
-                            sprintf('%.2fm', [_summaryInfo.distance]),
-                            style: const TextStyle(
-                              fontSize: UIConstants.mFontSize,
-                              color: Colors.grey,
-                            ),
-                          ),
-                        ],
-                      ),
-                      Flex(
-                        direction: Axis.horizontal,
-                        children: <Widget>[
-                          Expanded(
-                            flex: 1,
-                            child: RatingHelper.getRatingImage(
-                              _summaryInfo.rating?.toString(),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                '${_summaryInfo.reviewCount ?? 0}${S.current.review_count_suffix}',
-                                style: const TextStyle(
-                                  fontSize: UIConstants.mFontSize,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                          ),
-                          Expanded(
-                            flex: 1,
-                            child: Align(
-                              alignment: Alignment.centerRight,
-                              child: Text(
-                                _summaryInfo.price ?? '',
-                                style: const TextStyle(
-                                  fontSize: UIConstants.mFontSize,
-                                  color: Colors.grey,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Text(
-                        _summaryInfo.location?.displayAddressStr ?? '',
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: ThemeSize.space10,
+        right: ThemeSize.space5,
+        top: ThemeSize.space10,
+      ),
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: <Widget>[
+          FadeInImage.assetNetwork(
+            width: ThemeSize.size110,
+            height: ThemeSize.size110,
+            placeholder: UIConstants.noImage,
+            imageErrorBuilder: (context, error, trace) =>
+                Image.asset(UIConstants.noImage),
+            image: _summaryInfo.imageUrl ?? '',
+            imageCacheHeight: ThemeSize.size110.toInt(),
+            imageCacheWidth: ThemeSize.size110.toInt(),
+            placeholderCacheHeight: ThemeSize.size110.toInt(),
+            placeholderCacheWidth: ThemeSize.size110.toInt(),
+            fit: BoxFit.fill,
+          ),
+          const SizedBox(width: ThemeSize.space10),
+          Expanded(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: Text(
+                        _summaryInfo.name ?? '',
                         overflow: TextOverflow.ellipsis,
                       ),
-                      Text(
-                        category,
-                        overflow: TextOverflow.ellipsis,
-                        style: const TextStyle(
-                          fontSize: UIConstants.mFontSize,
-                          color: Colors.grey,
+                    ),
+                    Text(
+                      sprintf('%.2fm', [_summaryInfo.distance]),
+                      style: const TextStyle(
+                        fontSize: ThemeFontSize.fontSize14,
+                        color: Colors.grey,
+                      ),
+                    ),
+                  ],
+                ),
+                Row(
+                  children: <Widget>[
+                    Expanded(
+                      child: RatingStars(rating: _summaryInfo.rating ?? 0.0),
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          '${_summaryInfo.reviewCount ?? 0}${S.current.review_count_suffix}',
+                          style: const TextStyle(
+                            fontSize: ThemeFontSize.fontSize14,
+                            color: Colors.grey,
+                          ),
                         ),
                       ),
-                    ],
+                    ),
+                    Expanded(
+                      child: Align(
+                        alignment: Alignment.centerRight,
+                        child: Text(
+                          _summaryInfo.price ?? '',
+                          style: const TextStyle(
+                            fontSize: ThemeFontSize.fontSize14,
+                            color: Colors.grey,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                Text(
+                  _summaryInfo.location?.displayAddressStr ?? '',
+                  maxLines: 2,
+                  overflow: TextOverflow.ellipsis,
+                ),
+                Text(
+                  category,
+                  overflow: TextOverflow.ellipsis,
+                  style: const TextStyle(
+                    fontSize: ThemeFontSize.fontSize14,
+                    color: Colors.grey,
                   ),
                 ),
-              ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }

@@ -28,8 +28,19 @@ class _SplashPageState extends State<SplashPage> {
       final String routeName = SignInManager().isGuest
           ? MainPage.routeName
           : SignInPage.routeName;
-      // ignore: unawaited_futures
-      Navigator.of(context).pushReplacementNamed(routeName);
+
+      final initialArguments = FcmManager().initialArguments;
+      FcmManager().initialArguments = null; // Clear it
+
+      if (routeName == MainPage.routeName && initialArguments != null) {
+        unawaited(
+          Navigator.of(
+            context,
+          ).pushReplacementNamed(routeName, arguments: initialArguments),
+        );
+      } else {
+        unawaited(Navigator.of(context).pushReplacementNamed(routeName));
+      }
 
       // 與 5 連點喚起手勢並存的第二進入點：常駐 FAB。此 context 來自
       // SplashPage 自身（已在 Navigator/Overlay 之下的路由 widget），

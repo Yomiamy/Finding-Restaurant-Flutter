@@ -1,17 +1,37 @@
 import 'package:flutter/material.dart';
-import '../features/foundation/constants/constants_barrel.dart';
+import '../features/foundation/style/style_barrel.dart';
 
 class EmptyDataWidget extends StatelessWidget {
-  const EmptyDataWidget({super.key});
+  const EmptyDataWidget({
+    super.key,
+    this.message = '目前無任何資料',
+    this.icon = Icons.inbox_outlined,
+  });
+
+  final String message;
+  final IconData icon;
 
   @override
-  Widget build(BuildContext context) => const Center(
-    child: Text(
-      '目前無任何資料',
-      style: TextStyle(
-        fontWeight: FontWeight.bold,
-        fontSize: UIConstants.xxxhFontSize,
+  Widget build(BuildContext context) {
+    return Center(
+      child: Column(
+        mainAxisAlignment: MainAxisAlignment.center,
+        children: [
+          Icon(
+            icon,
+            size: ThemeSize.space64,
+            color: Theme.of(context).colorScheme.outline,
+          ),
+          const SizedBox(height: ThemeSize.space16),
+          Text(
+            message,
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
+              fontWeight: FontWeight.bold,
+              color: Theme.of(context).colorScheme.outline,
+            ),
+          ),
+        ],
       ),
-    ),
-  );
+    );
+  }
 }

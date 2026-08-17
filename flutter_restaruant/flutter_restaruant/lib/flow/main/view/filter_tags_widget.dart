@@ -5,7 +5,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../bloc/bloc_barrel.dart';
 import '../../../model/model_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
-import '../../../features/foundation/constants/constants_barrel.dart';
+
 
 import 'main_page.dart';
 
@@ -57,7 +57,7 @@ class FilterTagsWidget extends StatelessWidget {
                 child: FilterChip(
                   label: Text(
                     title,
-                    style: const TextStyle(fontSize: UIConstants.xhFontSize),
+                    style: const TextStyle(fontSize: ThemeFontSize.fontSize18),
                   ),
                   selected: true,
                   selectedColor: Theme.of(context).colorScheme.primary,

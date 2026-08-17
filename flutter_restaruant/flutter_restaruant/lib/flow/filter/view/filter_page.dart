@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import '../../../model/model_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
-import '../../../features/foundation/constants/constants_barrel.dart';
+
 import '../../../generated/l10n.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 
@@ -68,7 +68,7 @@ class _FilterPageState extends State<FilterPage> {
               S.current.apply,
               style: const TextStyle(
                 color: Colors.white,
-                fontSize: UIConstants.xhFontSize,
+                fontSize: ThemeFontSize.fontSize18,
               ),
             ),
           ),
@@ -77,7 +77,7 @@ class _FilterPageState extends State<FilterPage> {
           S.current.filter_rules,
           style: const TextStyle(
             color: Colors.white,
-            fontSize: UIConstants.xxxhFontSize,
+            fontSize: ThemeFontSize.fontSize22,
           ),
         ),
         backgroundColor: ThemeColor.appPrimary,
@@ -94,7 +94,7 @@ class _FilterPageState extends State<FilterPage> {
               S.current.filter_price,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: UIConstants.xxxhFontSize,
+                fontSize: ThemeFontSize.fontSize22,
               ),
             ),
           ),
@@ -117,7 +117,7 @@ class _FilterPageState extends State<FilterPage> {
               S.current.filter_business_hour,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: UIConstants.xxxhFontSize,
+                fontSize: ThemeFontSize.fontSize22,
               ),
             ),
           ),
@@ -144,7 +144,7 @@ class _FilterPageState extends State<FilterPage> {
               S.current.filter_sorting_rule,
               style: const TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: UIConstants.xxxhFontSize,
+                fontSize: ThemeFontSize.fontSize22,
               ),
             ),
           ),

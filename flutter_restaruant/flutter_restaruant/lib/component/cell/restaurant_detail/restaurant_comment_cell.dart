@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import '../../../domain/entities/entities_barrel.dart';
-import '../../../features/utils/utils_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import '../../rating_stars.dart';
 
 class RestaurantCommentCell extends StatelessWidget {
   static const int _imageW = 100;
@@ -23,8 +23,8 @@ class RestaurantCommentCell extends StatelessWidget {
     for (var reviewInfo in reviewInfos) {
       String headImgUrl = reviewInfo.user?.imageUrl ?? '';
       String name = reviewInfo.user?.name ?? '';
-      Widget rateAsset = RatingHelper.getRatingImage(
-        reviewInfo.rating?.toString(),
+      Widget rateAsset = RatingStars(
+        rating: (reviewInfo.rating ?? 0).toDouble(),
       );
       String comment = reviewInfo.text ?? '';
       String commentUrl = reviewInfo.url ?? '';
@@ -86,11 +86,11 @@ class RestaurantCommentCell extends StatelessWidget {
                     name,
                     style: const TextStyle(
                       fontWeight: FontWeight.w700,
-                      fontSize: UIConstants.hFontSize,
+                      fontSize: ThemeFontSize.fontSize16,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
-                  SizedBox(height: ThemeSize.ratingImageH, child: rateAsset),
+                  SizedBox(height: ThemeSize.size20, child: rateAsset),
                   Text(comment, maxLines: 2, overflow: TextOverflow.ellipsis),
                 ],
               ),

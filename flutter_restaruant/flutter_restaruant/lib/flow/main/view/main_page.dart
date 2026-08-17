@@ -12,7 +12,7 @@ import '../../settings/view/view_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../../../model/model_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
-import '../../../features/foundation/constants/constants_barrel.dart';
+
 
 import '../bloc/bloc_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
@@ -81,7 +81,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         S.current.main_page_title,
         style: const TextStyle(
           color: Colors.white,
-          fontSize: UIConstants.xxxxhFontSize,
+          fontSize: ThemeFontSize.fontSize24,
         ),
       ),
       backgroundColor: ThemeColor.appPrimary,
@@ -116,7 +116,12 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         if (state is InProgress ||
             state is MainInitial ||
             state is ResetSuccess) {
-          return const Center(child: LoadingWidget());
+          return _isListMode
+              ? ListView.builder(
+                  itemCount: 10,
+                  itemBuilder: (_, __) => const RestaurantItemSkeleton(),
+                )
+              : const Center(child: LoadingWidget());
         }
 
         if (_summaryInfos.isEmpty) {
@@ -147,7 +152,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                   appLocalizations.main_page_title,
                   style: const TextStyle(
                     color: Colors.white,
-                    fontSize: UIConstants.xxxhFontSize,
+                    fontSize: ThemeFontSize.fontSize22,
                     fontWeight: FontWeight.bold,
                   ),
                 ),

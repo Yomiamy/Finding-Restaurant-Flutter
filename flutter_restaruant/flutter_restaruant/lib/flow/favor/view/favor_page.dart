@@ -47,7 +47,7 @@ class _FavorPageState extends State<FavorPage> {
           UIConstants.favorTitle,
           style: TextStyle(
             color: Colors.white,
-            fontSize: UIConstants.xxxxhFontSize,
+            fontSize: ThemeFontSize.fontSize24,
           ),
         ),
         backgroundColor: ThemeColor.appPrimary,
@@ -56,7 +56,10 @@ class _FavorPageState extends State<FavorPage> {
         bloc: _favorBloc,
         builder: (context, state) {
           if (state is InProgress) {
-            return const Center(child: LoadingWidget());
+            return ListView.builder(
+              itemCount: 10,
+              itemBuilder: (_, __) => const RestaurantItemSkeleton(),
+            );
           } else if (state is Success) {
             List<RestaurantEntity> favorInfos = state.favorInfos;
 
