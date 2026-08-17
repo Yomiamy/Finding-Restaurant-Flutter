@@ -38,4 +38,12 @@ abstract final class ThemeSize {
   static const double favorImageH = 20;
   static const double ratingStarSize = 16;
   static const double restaurantItemImageSize = 110;
+
+  // ────────────────────────────────────────────
+  // 骨架圖預設尺寸 (Skeleton)
+  // ────────────────────────────────────────────
+  static const double skeletonTextHeightLg = 16;
+  static const double skeletonTextHeightMd = 14;
+  static const double skeletonTextWidthLg = 120;
+  static const double skeletonTextWidthMd = 80;
 }

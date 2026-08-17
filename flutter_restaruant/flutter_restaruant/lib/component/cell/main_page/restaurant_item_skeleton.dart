@@ -31,14 +31,20 @@ class RestaurantItemSkeleton extends StatelessWidget {
                 children: [
                   Skeleton(
                     width: double.infinity,
-                    height: ThemeFontSize.fontSize16,
+                    height: ThemeSize.skeletonTextHeightLg,
                   ),
-                  Skeleton(width: 120, height: ThemeFontSize.fontSize14),
+                  Skeleton(
+                    width: ThemeSize.skeletonTextWidthLg,
+                    height: ThemeSize.skeletonTextHeightMd,
+                  ),
                   Skeleton(
                     width: double.infinity,
-                    height: ThemeFontSize.fontSize14,
+                    height: ThemeSize.skeletonTextHeightMd,
                   ),
-                  Skeleton(width: 80, height: ThemeFontSize.fontSize14),
+                  Skeleton(
+                    width: ThemeSize.skeletonTextWidthMd,
+                    height: ThemeSize.skeletonTextHeightMd,
+                  ),
                 ],
               ),
             ),

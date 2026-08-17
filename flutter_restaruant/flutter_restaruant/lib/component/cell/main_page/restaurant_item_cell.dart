@@ -72,9 +72,7 @@ class RestaurantItemCell extends StatelessWidget {
                   Row(
                     children: <Widget>[
                       Expanded(
-                        child: RatingStars(
-                          rating: _summaryInfo.rating ?? 0.0,
-                        ),
+                        child: RatingStars(rating: _summaryInfo.rating ?? 0.0),
                       ),
                       Expanded(
                         child: Align(
