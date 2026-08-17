@@ -27,20 +27,22 @@ class RestaurantItemCell extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            SizedBox(
+            FadeInImage.assetNetwork(
               width: ThemeSize.size110,
               height: ThemeSize.size110,
-              child: FadeInImage.assetNetwork(
-                placeholder: UIConstants.noImage,
-                imageErrorBuilder: (context, error, trace) =>
-                    Image.asset(UIConstants.noImage),
-                image: _summaryInfo.imageUrl ?? '',
-                imageCacheHeight: ThemeSize.size110.toInt(),
-                imageCacheWidth: ThemeSize.size110.toInt(),
-                placeholderCacheHeight: ThemeSize.size110.toInt(),
-                placeholderCacheWidth: ThemeSize.size110.toInt(),
+              placeholder: UIConstants.noImage,
+              imageErrorBuilder: (context, error, trace) => Image.asset(
+                UIConstants.noImage,
+                width: ThemeSize.size110,
+                height: ThemeSize.size110,
                 fit: BoxFit.fill,
               ),
+              image: _summaryInfo.imageUrl ?? '',
+              imageCacheHeight: ThemeSize.size110.toInt(),
+              imageCacheWidth: ThemeSize.size110.toInt(),
+              placeholderCacheHeight: ThemeSize.size110.toInt(),
+              placeholderCacheWidth: ThemeSize.size110.toInt(),
+              fit: BoxFit.fill,
             ),
             const SizedBox(width: ThemeSize.space10),
             Expanded(
