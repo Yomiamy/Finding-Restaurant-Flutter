@@ -30,14 +30,17 @@ abstract final class ThemeSize {
   static const double radiusTag = 15;
 
   // ────────────────────────────────────────────
-  // 圖片/圖示尺寸 (Image / Icon)
+  // 圖示尺寸 (Icon)
   // ────────────────────────────────────────────
-  static const double ratingImageW = 100;
-  static const double ratingImageH = 20;
-  static const double favorImageW = 20;
-  static const double favorImageH = 20;
-  static const double ratingStarSize = 16;
-  static const double restaurantItemImageSize = 110;
+  static const double icon16 = 16;
+  static const double icon20 = 20;
+
+  // ────────────────────────────────────────────
+  // 圖片尺寸 (Image)
+  // ────────────────────────────────────────────
+  static const double image20 = 20;
+  static const double image100 = 100;
+  static const double image110 = 110;
 
   // ────────────────────────────────────────────
   // 骨架圖預設尺寸 (Skeleton)

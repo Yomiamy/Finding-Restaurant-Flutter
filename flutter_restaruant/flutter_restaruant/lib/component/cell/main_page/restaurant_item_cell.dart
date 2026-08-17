@@ -17,7 +17,7 @@ class RestaurantItemCell extends StatelessWidget {
     final category = _summaryInfo.categoriesStr;
 
     return SizedBox(
-      height: ThemeSize.image110,
+      height: ThemeSize.image110 + ThemeSize.space10,
       child: Padding(
         padding: const EdgeInsets.only(
           left: ThemeSize.space10,

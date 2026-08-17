@@ -8,7 +8,7 @@ class RestaurantItemSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return const SizedBox(
-      height: ThemeSize.restaurantItemImageSize,
+      height: ThemeSize.image110 + ThemeSize.space10,
       child: Padding(
         padding: EdgeInsets.only(
           left: ThemeSize.space10,
@@ -20,8 +20,8 @@ class RestaurantItemSkeleton extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Skeleton(
-              width: ThemeSize.restaurantItemImageSize,
-              height: ThemeSize.restaurantItemImageSize,
+              width: ThemeSize.image110,
+              height: ThemeSize.image110,
             ),
             SizedBox(width: ThemeSize.space10),
             Expanded(
