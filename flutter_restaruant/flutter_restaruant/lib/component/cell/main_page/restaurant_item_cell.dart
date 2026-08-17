@@ -94,7 +94,7 @@ class RestaurantItemCell extends StatelessWidget {
                 ),
                 Text(
                   _summaryInfo.location?.displayAddressStr ?? '',
-                  maxLines: 2,
+                  maxLines: 2,flutter_restaruant/flutter_restaruant/lib/component/cell/main_page/restaurant_item_skeleton.dart
                   overflow: TextOverflow.ellipsis,
                 ),
                 Text(

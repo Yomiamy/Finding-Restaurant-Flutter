@@ -14,7 +14,6 @@ class RestaurantItemSkeleton extends StatelessWidget {
           left: ThemeSize.space10,
           right: ThemeSize.space5,
           top: ThemeSize.space10,
-          bottom: ThemeSize.zero,
         ),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
