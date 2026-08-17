@@ -57,7 +57,7 @@ class _FavorPageState extends State<FavorPage> {
         builder: (context, state) {
           if (state is InProgress) {
             return ListView.builder(
-              itemCount: 5,
+              itemCount: 10,
               itemBuilder: (_, __) => const RestaurantItemSkeleton(),
             );
           } else if (state is Success) {

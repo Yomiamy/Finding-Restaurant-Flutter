@@ -118,7 +118,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
             state is ResetSuccess) {
           return _isListMode
               ? ListView.builder(
-                  itemCount: 5,
+                  itemCount: 10,
                   itemBuilder: (_, __) => const RestaurantItemSkeleton(),
                 )
               : const Center(child: LoadingWidget());
