@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../features/foundation/constants/constants_barrel.dart';
+import '../features/foundation/style/style_barrel.dart';
 
 class EmptyDataWidget extends StatelessWidget {
   const EmptyDataWidget({
@@ -17,14 +17,17 @@ class EmptyDataWidget extends StatelessWidget {
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          Icon(icon, size: 64.0, color: Colors.grey),
-          const SizedBox(height: 16.0),
+          Icon(
+            icon,
+            size: ThemeSize.space64,
+            color: Theme.of(context).colorScheme.outline,
+          ),
+          const SizedBox(height: ThemeSize.space16),
           Text(
             message,
-            style: const TextStyle(
+            style: Theme.of(context).textTheme.titleLarge?.copyWith(
               fontWeight: FontWeight.bold,
-              fontSize: UIConstants.xxxhFontSize,
-              color: Colors.grey,
+              color: Theme.of(context).colorScheme.outline,
             ),
           ),
         ],

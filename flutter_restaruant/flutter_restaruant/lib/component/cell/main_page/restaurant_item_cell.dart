@@ -74,7 +74,6 @@ class RestaurantItemCell extends StatelessWidget {
                       Expanded(
                         child: RatingStars(
                           rating: _summaryInfo.rating ?? 0.0,
-                          starSize: 14.0,
                         ),
                       ),
                       Expanded(

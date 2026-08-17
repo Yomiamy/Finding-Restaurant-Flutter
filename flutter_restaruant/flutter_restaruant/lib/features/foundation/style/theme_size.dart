@@ -13,23 +13,29 @@ abstract final class ThemeSize {
   static const double space3 = 3;
   static const double space4 = 4;
   static const double space5 = 5;
+  static const double space8 = 8;
   static const double space10 = 10;
   static const double space15 = 15;
+  static const double space16 = 16;
   static const double space20 = 20;
   static const double space25 = 25;
   static const double space30 = 30;
   static const double space50 = 50;
+  static const double space64 = 64;
 
   // ────────────────────────────────────────────
   // 圓角 (Radius)
   // ────────────────────────────────────────────
+  static const double radius8 = 8;
   static const double radiusTag = 15;
 
   // ────────────────────────────────────────────
-  // 圖片尺寸 (Image)
+  // 圖片/圖示尺寸 (Image / Icon)
   // ────────────────────────────────────────────
   static const double ratingImageW = 100;
   static const double ratingImageH = 20;
   static const double favorImageW = 20;
   static const double favorImageH = 20;
+  static const double ratingStarSize = 16;
+  static const double restaurantItemImageSize = 110;
 }
