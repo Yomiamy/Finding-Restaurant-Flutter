@@ -1,4 +1,4 @@
-import 'package:flutter/widgets.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../component/ad/ad_barrel.dart';
 import '../../../component/cell/main_page/main_page_barrel.dart';
@@ -16,8 +16,14 @@ class RestaurantInfoListWidget extends StatelessWidget {
   final ScrollController _scrollController = ScrollController();
   final List<RestaurantEntity> _summaryInfos;
   final FilterConfigs _configs;
+  final bool _isLoadingMore;
 
-  RestaurantInfoListWidget(this._summaryInfos, this._configs, {super.key});
+  RestaurantInfoListWidget(
+    this._summaryInfos,
+    this._configs, {
+    super.key,
+    bool isLoadingMore = false,
+  }) : _isLoadingMore = isLoadingMore;
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +31,7 @@ class RestaurantInfoListWidget extends StatelessWidget {
 
     return NotificationListener<ScrollEndNotification>(
       onNotification: (notification) {
-        if (_scrollController.position.atEdge) {
+        if (_scrollController.position.extentAfter == 0) {
           int? price = _configs.price;
           int? openAt = _configs.openAtInSec;
           String? sortBy = _configs.sortBy;
@@ -43,12 +49,17 @@ class RestaurantInfoListWidget extends StatelessWidget {
           bottom: ThemeSize.zero,
         ),
         controller: _scrollController,
-        itemCount: _summaryInfos.length + 2,
+        itemCount: _summaryInfos.length + 2 + (_isLoadingMore ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == 0) {
             return BannerAD(adState: getIt<BannerADState>());
           } else if (index == 1) {
             return FilterTagsWidget(filterConfigs: _configs);
+          } else if (index == _summaryInfos.length + 2) {
+            return const Padding(
+              padding: EdgeInsets.symmetric(vertical: ThemeSize.space16),
+              child: Center(child: CircularProgressIndicator()),
+            );
           } else {
             RestaurantEntity summaryInfo = _summaryInfos[index - 2];
 

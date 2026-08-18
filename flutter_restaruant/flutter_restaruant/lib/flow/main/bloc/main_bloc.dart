@@ -27,7 +27,20 @@ class MainBloc extends Bloc<MainEvent, MainState> {
         int? openAt = event.openAt;
         String? sortBy = event.sortBy;
 
-        if (!isLoadMore) {
+        if (isLoadMore) {
+          // Carry the list that is already on screen. Re-reading it from the
+          // repository would resurrect keyword-filtered-out items and make the
+          // list jump while the next page is still in flight.
+          final MainState current = state;
+          final List<RestaurantEntity> onScreen = switch (current) {
+            Success(:final summaryInfos) => summaryInfos,
+            LoadMoreSuccess(:final summaryInfos) => summaryInfos,
+            LoadMoreInProgress(:final summaryInfos) => summaryInfos,
+            _ => const <RestaurantEntity>[],
+          };
+
+          emit(LoadMoreInProgress(summaryInfos: onScreen));
+        } else {
           // If it is first loading, then display loading progress.
           emit(const InProgress());
         }

@@ -107,10 +107,12 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         }
       },
       builder: (context, state) {
-        if (state is Success || state is LoadMoreSuccess) {
-          _summaryInfos = (state is Success)
-              ? state.summaryInfos
-              : (state as LoadMoreSuccess).summaryInfos;
+        if (state is Success) {
+          _summaryInfos = state.summaryInfos;
+        } else if (state is LoadMoreSuccess) {
+          _summaryInfos = state.summaryInfos;
+        } else if (state is LoadMoreInProgress) {
+          _summaryInfos = state.summaryInfos;
         }
 
         if (state is InProgress ||
@@ -130,7 +132,11 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
 
         // display restaurant list
         return _isListMode
-            ? RestaurantInfoListWidget(_summaryInfos, _configs)
+            ? RestaurantInfoListWidget(
+                _summaryInfos,
+                _configs,
+                isLoadingMore: state is LoadMoreInProgress,
+              )
             : MapWidget(_summaryInfos);
       },
     );

@@ -48,6 +48,18 @@ class ResetSuccess extends MainState {
   String toString() => 'Sucess reset offset';
 }
 
+class LoadMoreInProgress extends MainState {
+  final List<RestaurantEntity> summaryInfos;
+
+  const LoadMoreInProgress({required this.summaryInfos});
+
+  @override
+  List<Object> get props => summaryInfos;
+
+  @override
+  String toString() => 'Loading more search info.';
+}
+
 class LoadMoreSuccess extends MainState {
   final List<RestaurantEntity> summaryInfos = [];
 
