@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../component/ad/ad_barrel.dart';
 import '../../../component/cell/main_page/main_page_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
+import '../../../features/foundation/extension/widget_extension.dart';
 import '../bloc/bloc_barrel.dart';
 import 'filter_tags_widget.dart';
 import 'main_page.dart';
@@ -40,20 +41,21 @@ class _RestaurantInfoListWidgetState extends State<RestaurantInfoListWidget> {
   void didUpdateWidget(RestaurantInfoListWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
+    // Only react to the moment loading starts.
+    if (oldWidget._isLoadingMore || !widget._isLoadingMore) return;
+
     // The indicator is appended below the current bottom, so the viewport stays
     // pinned where it was and the spinner renders off-screen. Extend the scroll
     // to reveal it once loading starts.
-    if (!oldWidget._isLoadingMore && widget._isLoadingMore) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        if (!_scrollController.hasClients) return;
+    runAfterFrame(() {
+      if (!_scrollController.hasClients) return;
 
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
-          duration: const Duration(milliseconds: 200),
-          curve: Curves.easeOut,
-        );
-      });
-    }
+      _scrollController.animateTo(
+        _scrollController.position.maxScrollExtent,
+        duration: const Duration(milliseconds: 200),
+        curve: Curves.easeOut,
+      );
+    });
   }
 
   @override
