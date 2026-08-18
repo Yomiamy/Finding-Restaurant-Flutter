@@ -29,8 +29,14 @@ class RestaurantItemCell extends StatelessWidget {
             width: ThemeSize.size110,
             height: ThemeSize.size110,
             placeholder: UIConstants.noImage,
-            imageErrorBuilder: (context, error, trace) =>
-                Image.asset(UIConstants.noImage),
+            // FadeInImage 的 width/height 不會傳給 errorBuilder 回傳的 widget，
+            // 這裡必須自行約束，否則載圖失敗時會用原圖尺寸撐爆外層 Row。
+            imageErrorBuilder: (context, error, trace) => Image.asset(
+              UIConstants.noImage,
+              width: ThemeSize.size110,
+              height: ThemeSize.size110,
+              fit: BoxFit.fill,
+            ),
             image: _summaryInfo.imageUrl ?? '',
             imageCacheHeight: ThemeSize.size110.toInt(),
             imageCacheWidth: ThemeSize.size110.toInt(),
