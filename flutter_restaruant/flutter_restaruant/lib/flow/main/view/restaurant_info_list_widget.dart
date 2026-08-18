@@ -12,18 +12,55 @@ import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../di/di_barrel.dart';
 
-class RestaurantInfoListWidget extends StatelessWidget {
-  final ScrollController _scrollController = ScrollController();
+class RestaurantInfoListWidget extends StatefulWidget {
   final List<RestaurantEntity> _summaryInfos;
   final FilterConfigs _configs;
   final bool _isLoadingMore;
 
-  RestaurantInfoListWidget(
+  const RestaurantInfoListWidget(
     this._summaryInfos,
     this._configs, {
     super.key,
     bool isLoadingMore = false,
   }) : _isLoadingMore = isLoadingMore;
+
+  @override
+  State<RestaurantInfoListWidget> createState() =>
+      _RestaurantInfoListWidgetState();
+}
+
+class _RestaurantInfoListWidgetState extends State<RestaurantInfoListWidget> {
+  final ScrollController _scrollController = ScrollController();
+
+  List<RestaurantEntity> get _summaryInfos => widget._summaryInfos;
+  FilterConfigs get _configs => widget._configs;
+  bool get _isLoadingMore => widget._isLoadingMore;
+
+  @override
+  void didUpdateWidget(RestaurantInfoListWidget oldWidget) {
+    super.didUpdateWidget(oldWidget);
+
+    // The indicator is appended below the current bottom, so the viewport stays
+    // pinned where it was and the spinner renders off-screen. Extend the scroll
+    // to reveal it once loading starts.
+    if (!oldWidget._isLoadingMore && widget._isLoadingMore) {
+      WidgetsBinding.instance.addPostFrameCallback((_) {
+        if (!_scrollController.hasClients) return;
+
+        _scrollController.animateTo(
+          _scrollController.position.maxScrollExtent,
+          duration: const Duration(milliseconds: 200),
+          curve: Curves.easeOut,
+        );
+      });
+    }
+  }
+
+  @override
+  void dispose() {
+    _scrollController.dispose();
+    super.dispose();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -32,8 +69,11 @@ class RestaurantInfoListWidget extends StatelessWidget {
     return NotificationListener<ScrollEndNotification>(
       onNotification: (notification) {
         // depth == 0 keeps the horizontal tag scroller in FilterTagsWidget from
-        // firing a page fetch when it reaches its own edge.
-        if (notification.depth == 0 && notification.metrics.extentAfter == 0) {
+        // firing a page fetch when it reaches its own edge. The _isLoadingMore
+        // guard stops the reveal animation from re-triggering the same fetch.
+        if (notification.depth == 0 &&
+            notification.metrics.extentAfter == 0 &&
+            !_isLoadingMore) {
           int? price = _configs.price;
           int? openAt = _configs.openAtInSec;
           String? sortBy = _configs.sortBy;
