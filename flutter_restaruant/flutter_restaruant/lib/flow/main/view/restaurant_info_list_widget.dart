@@ -31,7 +31,9 @@ class RestaurantInfoListWidget extends StatelessWidget {
 
     return NotificationListener<ScrollEndNotification>(
       onNotification: (notification) {
-        if (_scrollController.position.extentAfter == 0) {
+        // depth == 0 keeps the horizontal tag scroller in FilterTagsWidget from
+        // firing a page fetch when it reaches its own edge.
+        if (notification.depth == 0 && notification.metrics.extentAfter == 0) {
           int? price = _configs.price;
           int? openAt = _configs.openAtInSec;
           String? sortBy = _configs.sortBy;
