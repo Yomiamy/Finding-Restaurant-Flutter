@@ -61,11 +61,11 @@ class MainRepo implements MainRepository {
         offset: _offset,
       );
 
-      Map<String, dynamic> favorsMap = await _favorDataSource.fetchFavorsMap();
+      Set<String> favorIds = await _favorDataSource.fetchFavorIds();
 
       List<RestaurantEntity> fetchedEntities = (searchDto.businesses ?? []).map(
         (dto) {
-          bool isFavor = favorsMap.containsKey(dto.id);
+          bool isFavor = favorIds.contains(dto.id);
           return RestaurantEntity.fromDto(dto).copyWith(favor: isFavor);
         },
       ).toList();
