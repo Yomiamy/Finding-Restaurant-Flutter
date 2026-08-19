@@ -153,8 +153,8 @@ lib/
    * **現況**：邏輯已遷至 `lib/data_layer/repositories/main_repo.dart`，改為 `offset: _offset`（`:56`）搭配成功後 `_offset += _maxItemsCountInList`（`:70`），偏移量語意正確。
    * 原始缺陷：舊 `main_repository.dart:52` 傳入 `offset: ++this._offset`，將筆數偏移量誤當頁碼，導致分頁幾乎完全重複。
 
-4. **🔴 仍未修復 — Firestore 最愛店家單一 Document Map 覆寫 (Database Architecture Defect)**
-   * **現況（2026-07-30 覆核）**：邏輯雖已抽出至 `lib/data_layer/datasources/`（`FavorDataSource`），但資料結構未動 —— 仍是單一 Document `favors/{uid}` 搭配 `set(favorsMap, SetOptions(merge: false))` 全量覆寫。1MB 上限與併發寫入覆蓋的風險完全未解除。此項對應 F-2.1 Subcollection 重構（P1）。
+4. **✅ 已修復 — Firestore 最愛店家單一 Document Map 覆寫 (Database Architecture Defect)**
+   * **現況（2026-08-19 覆核）**：已重構為 Subcollection 結構（`favors/{uid}/items/{restaurant_id}`）。不再依賴全量下載與上傳，1MB 上限與併發寫入覆蓋風險已解除，並包含無痛向後相容遷移機制。
 
 5. **🔴 仍未修復 — 硬編碼人工假延遲 (Hardcoded Fake Delays)**
    * **現況（2026-08-05 複測，仍未修）**：三處延遲全數保留 —— `main_bloc.dart:56` 過濾 2 秒、`fcm_manager.dart:51`（行號更正，原記 `:53`）推播導航 8 秒、`splash_page.dart:22` 啟動頁 3 秒。啟動頁延遲屬品牌曝光的合理設計，但過濾與推播導航的延遲純屬無謂等待，應移除。

@@ -123,9 +123,10 @@ Future.wait([
       │                     │                      │─ 7. businessesSearch ─►│ Yelp
       │                     │                      │◄── YelpSearchDto ─────│
       │                     │                      │                       │
-      │                     │                      │─ 8. fetchFavorsMap() ─►│ Firestore
-      │                     │                      │◄── Map<id, bool> ─────│
-      │                     │                      │                       │
+      │                     │                      │─ 8. fetchFavorEntities() ─►│ Firestore
+      │                     │                      │    .copyWith(favor)│       │ (favors/{UID}/items)
+      │                     │                      │                    │       │
+      │◄─────── Entities ───│◄────── Entities ─────│◄───────────────────│       │
       │                     │                      ├─ 9. 合併兩源           │
       │                     │                      │   dto → Entity.fromDto│
       │                     │                      │       .copyWith(favor)│
@@ -144,7 +145,7 @@ Future.wait([
 
 ```dart
 List<RestaurantEntity> fetchedEntities = (searchDto.businesses ?? []).map((dto) {
-  bool isFavor = favorsMap.containsKey(dto.id);
+  bool isFavor = favorIds.contains(dto.id);
   return RestaurantEntity.fromDto(dto).copyWith(favor: isFavor);
 }).toList();
 ```
