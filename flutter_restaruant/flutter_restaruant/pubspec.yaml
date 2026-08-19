@@ -5,7 +5,7 @@ description: Yelp restaurant searching in Flutter
 # pub.dev using `pub publish`. This is preferred for private packages.
 publish_to: 'none' # Remove this line if you wish to publish to pub.dev
 
-version: 1.4.0+30
+version: 1.5.0+31
 
 environment:
   sdk: '>=3.10.1 <4.0.0'
@@ -102,6 +102,8 @@ dev_dependencies:
   fake_cloud_firestore: ^4.2.0
 
 flutter:
+  config:
+    enable-swift-package-manager: false
   generate: false
   uses-material-design: true
 
