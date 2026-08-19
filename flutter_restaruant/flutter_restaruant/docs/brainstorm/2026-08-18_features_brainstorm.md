@@ -67,18 +67,20 @@
 | 側選單順序調整 | 設定已移至末位 |
 | 訪客模式 Guest Mode | 規劃外新增，PR #56 |
 | **Firestore Subcollection 口袋名單** | ✅ **已於 2026-08-19 完成 (PR #70)**，消除 1MB 限制與併發覆寫 |
+| **Android Kotlin 版本升級 (2.2.20)** | ✅ **已於 2026-08-19 完成**，消除 Flutter 3.44.1 的 Kotlin 版本過舊警告 |
 
-**🔴 仍未解決與新納入阻擋項（5 項，全數為 P0 最高優先）**
+**🔴 仍未解決與新納入阻擋項（6 項，全數為 P0 最高優先）**
 
 | 項目 | 現況 | 風險 / 影響 |
 | :--- | :--- | :--- |
 | **Flutter SDK 版本遷移 (≥ 3.44.1)** | 目前位於 `3.41.9` / Dart `3.11.5` | 缺少最新效能優化、第三方套件相容性限制，需升級至最新 stable |
 | **iOS UIScene Lifecycle 支援遷移** | 目前 Xcode 配置尚未遷移至 UIScene lifecycle | **蘋果/Flutter 官方強制性警告**：未來 iOS 版本即將強制要求 UIScene lifecycle，未遷移將導致 App 無法在未來 iOS 版本正常啟動 |
 | **iOS Swift Package Manager (SPM) 遷移** | 目前透過 `pubspec.yaml` 暫時關閉 SPM 回退 CocoaPods | **官方強制性遷移**：CocoaPods 即將唯讀且 Firebase 停止 CocoaPods 發布，Flutter 未來將移除關閉 SPM 選項，需等待/升級套件相容後完成全面遷移 |
+| **Android Built-in Kotlin 遷移** | 已升級 Kotlin 2.2.20 消除過舊警告，但仍使用顯式 KGP | **官方棄用警告**：Flutter 未來將強制推行 Built-in Kotlin 並移除 KGP 支援，需在未來升級中徹底移除顯式 KGP 依賴 |
 | **硬編碼 API Key** | 僅改名為 `camelCase`，明碼仍在 `constants.dart:30,40` | 金鑰已入 git 歷史，須**撤銷並輪替**，非搬移可解 |
 | **硬編碼假延遲** | 過濾 2s、推播導航 8s、啟動頁 3s 全數保留 | 無謂等待傷體感（啟動頁 3s 屬合理設計，可保留） |
 
-> **判斷**：架構地基已完成最關鍵的資料層重構（Subcollection）。但 **iOS UIScene Lifecycle 遷移**、**iOS SPM 遷移** 與 **Flutter SDK 升級** 關係到未來的平台相容性與可建置性，已與安全性（API Key）一同提升至 **P0 絕對最高優先序**。
+> **判斷**：架構地基已完成最關鍵的資料層重構（Subcollection）。但 **iOS UIScene Lifecycle 遷移**、**iOS SPM 遷移**、**Android Built-in Kotlin 遷移** 與 **Flutter SDK 升級** 關係到未來的平台相容性與可建置性，已與安全性（API Key）一同提升至 **P0 絕對最高優先序**。
 
 ---
 
@@ -431,7 +433,7 @@ lib/
 
 ### 2.8 基礎設施與平台生命週期遷移 (Platform & Infrastructure Migration) (P0，最高優先)
 
-為確保 App 在最新行動作業系統上的相容性、建置效能與長期可維護性，以下兩項底層升級列為 **P0 阻擋級地基任務**：
+為確保 App 在最新行動作業系統上的相容性、建置效能與長期可維護性，以下幾項底層升級列為 **P0 阻擋級地基任務**：
 
 #### F-0.2 Flutter SDK 升級遷移至 3.44.1+ (Flutter SDK Version Migration)
 * **背景與痛點**:
@@ -462,6 +464,16 @@ lib/
   * 待依賴之社群與官方套件全面支援 SPM（或升級至相容之最新 Plugin 版本）後，解除 SPM 關閉旗標。
   * 遷移 iOS 原生依賴至 Swift Package Manager（`FlutterGeneratedPluginSwiftPackage`）。
   * 移除 `ios/Podfile`、`Podfile.lock` 與 `Pods/` 目錄，徹底消除 CocoaPods 技術債務，提升 iOS 建置效能。
+
+#### F-0.5 Android Built-in Kotlin 遷移 (移除顯式 KGP 依賴)
+* **背景與痛點**:
+  * 專案原先的 Kotlin 版本過舊 (2.2.0)，目前雖已暫時升級至 2.2.20 以消除 Flutter 3.44.1 的警告，但專案仍在使用顯式的 Kotlin Gradle Plugin (`org.jetbrains.kotlin.android`) 依賴。
+  * Flutter 3.27+ 已棄用顯式的 KGP 依賴，轉而強制推行 "Built-in Kotlin" (由 Flutter 工具鏈內部統一管理 Kotlin 版本)。
+  * 若持續保留顯式的 KGP 宣告，在未來的 Flutter SDK 更新中將面臨 Android 建置失敗或工具鏈衝突的風險。
+* **改造要點**:
+  * 依據 Flutter 官方遷移指南，徹底移除 `android/settings.gradle` 或 `android/build.gradle` 檔案內的 `org.jetbrains.kotlin.android` 依賴。
+  * 移除 `android/gradle.properties` 中的 `android.builtInKotlin=false` 旗標（若存在），將 Kotlin 的版本控制權完整交還給 Flutter。
+  * 確保清理後重新執行 Android 建置（`flutter build apk`）順利通過且無 Gradle/Kotlin 衝突。
 
 ---
 
@@ -495,6 +507,7 @@ lib/
 | ✅ **Firestore Subcollection 口袋名單** | 資料架構 | 10 | 2.5 | 100% | 1.0 | **25.0** | 22.5 | - | **已完成**（2026-08-19, PR #70） |
 | 🔴 **iOS UIScene Lifecycle 支援遷移 (強制性相容)** | 平台遷移 | 10 | 3.0 | 100% | 1.0 | **30.0** | 27.0 | - | **P0（阻擋級平台風險）** |
 | 🔴 **iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰** | 平台遷移 | 10 | 2.5 | 90% | 1.5 | **15.0** | 19.12 | - | **P0（官方強制遷移）** |
+| 🔴 **Android Built-in Kotlin 遷移 (移除顯式 KGP)** | 平台遷移 | 10 | 2.5 | 100% | 0.5 | **50.0** | 23.75 | - | **P0（官方棄用警告）** |
 | 🔴 **Flutter SDK 版本遷移 (≥ 3.44.1)** | 基礎設施 | 10 | 2.5 | 100% | 1.0 | **25.0** | 22.5 | - | **P0（基礎設施升級）** |
 | 🔴 **移除無謂假延遲 (過濾 2s / 推播 8s)** | 既有修復 | 9 | 1.5 | 100% | 0.5 | **27.0** | 14.25 | - | **P0** |
 | 🔴 **`MapWidget` 實作 `didUpdateWidget` 連動 Marker** | 既有修復 | 8 | 2.0 | 100% | 0.5 | **32.0** | 19.0 | - | **P0** |
@@ -522,7 +535,7 @@ lib/
 +-----------------------------------------------------------------------------------+
 |                           STRATEGIC PRODUCT ROADMAP                               |
 +-----------------------------------------------------------------------------------+
-| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 11/17 ✅        |
+| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 11/18 ✅        |
 |   • [x] P-1 整合 flutter_inspector_kit ✅ 2026-08-05（量測地基就位）             |
 |   • [x] P0 修復 `build()` 側邊效應反模式                                          |
 |   • [x] P0 修復 Yelp API 分頁邏輯 Bug                                              |
@@ -536,6 +549,7 @@ lib/
 |   • [x] P1 Firestore Subcollection 最愛名單重構 ✅ 2026-08-19 (PR #70)            |
 |   • [ ] P0 🔴 iOS UIScene Lifecycle 支援遷移 (防止未來 iOS 版本啟動崩潰)          |
 |   • [ ] P0 🔴 iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰               |
+|   • [ ] P0 🔴 Android Built-in Kotlin 遷移 (移除顯式 KGP)                             |
 |   • [ ] P0 🔴 Flutter SDK 版本遷移至 3.44.1+                                       |
 |   • [ ] P0 移除硬編碼 API Key ⚠️ 未動；金鑰已入 git 歷史，須撤銷並輪替            |
 |   • [ ] P0 移除無謂假延遲 (過濾 2s / 推播導航 8s)                                 |
