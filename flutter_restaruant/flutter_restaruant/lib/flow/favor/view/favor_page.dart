@@ -27,7 +27,7 @@ class _FavorPageState extends State<FavorPage> {
     super.initState();
 
     _favorBloc = BlocProvider.of<FavorBloc>(context);
-    _favorBloc.add(const FetchFavorInfoEvent(false));
+    _favorBloc.add(const FetchFavorInfoEvent());
   }
 
   @override
@@ -84,7 +84,7 @@ class _FavorPageState extends State<FavorPage> {
                       arguments: arguments,
                     );
 
-                    _favorBloc.add(const FetchFavorInfoEvent(true));
+                    _favorBloc.add(const FetchFavorInfoEvent());
                   },
                 );
               },
