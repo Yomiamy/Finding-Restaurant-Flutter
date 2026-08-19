@@ -54,7 +54,7 @@
 | [`lib/data_layer/repositories/favor_repo.dart`](../../lib/data_layer/repositories/favor_repo.dart) | `FavorRepo` | `FavorRepository` 實作，委派 `FavorDataSource` 存取 Firestore。 |
 | [`lib/data_layer/repositories/sign_in_repo.dart`](../../lib/data_layer/repositories/sign_in_repo.dart) | `SignInRepo` | `SignInRepository` 實作，串接各登入 Manager 並轉出 `UserEntity`。 |
 | [`lib/data_layer/repositories/settings_repo.dart`](../../lib/data_layer/repositories/settings_repo.dart) | `SettingsRepo` | `SettingsRepository` 實作（`const` 建構式，無狀態）。 |
-| [`lib/data_layer/datasources/favor_data_source.dart`](../../lib/data_layer/datasources/favor_data_source.dart) | `FavorDataSource` | **最愛清單在 Firestore 的單一存取點**，以登入者 `uid` 為 doc id。內含空字串 uid 的 guard，避免 Firestore 拋 `ArgumentError`。 |
+| [`lib/data_layer/datasources/favor_data_source.dart`](../../lib/data_layer/datasources/favor_data_source.dart) | `FavorDataSource` | **最愛清單在 Firestore 的單一存取點**，每個最愛項目以 subcollection `favors/{uid}/items/{restaurant_id}` 結構儲存。內含空字串 uid 的 guard，避免 Firestore 拋 `ArgumentError`。 |
 | [`lib/data_layer/dto/yelp_search_dto.dart`](../../lib/data_layer/dto/yelp_search_dto.dart) | `YelpSearchDto` | Yelp 搜尋結果的線上格式鏡射（`@JsonSerializable`）。 |
 | [`lib/data_layer/dto/yelp_restaurant_summary_dto.dart`](../../lib/data_layer/dto/yelp_restaurant_summary_dto.dart) | `YelpRestaurantSummaryDto` | 餐廳摘要 Dto，對應 `RestaurantEntity`。 |
 | [`lib/data_layer/dto/yelp_restaurant_detail_dto.dart`](../../lib/data_layer/dto/yelp_restaurant_detail_dto.dart) | `YelpRestaurantDetailDto` | 餐廳詳情 Dto。 |

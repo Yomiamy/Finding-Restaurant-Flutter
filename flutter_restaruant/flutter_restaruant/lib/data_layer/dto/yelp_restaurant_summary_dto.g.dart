@@ -45,7 +45,7 @@ Map<String, dynamic> _$YelpRestaurantSummaryDtoToJson(
   'price': instance.price,
   'phone': instance.phone,
   'distance': instance.distance,
-  'categories': instance.categories,
-  'location': instance.location,
-  'coordinates': instance.coordinates,
+  'categories': instance.categories?.map((e) => e.toJson()).toList(),
+  'location': instance.location?.toJson(),
+  'coordinates': instance.coordinates?.toJson(),
 };

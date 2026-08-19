@@ -83,7 +83,7 @@ YelpRestaurantSummaryDto get toDto => ...
 - **`*Repo` implements `*Repository`**：`MainRepo`、`RestaurantDetailRepo`、`FavorRepo`、`SignInRepo`、`SettingsRepo`。依賴方向朝內——`data_layer` import `domain`，反之絕無。
 - **Dto 與 Entity 分離**：`lib/data_layer/dto/` 下的 `Yelp*Dto` 以 `@JsonSerializable` 標註，由 `json_serializable` 產生 `*.g.dart`。Dto 是 API 線上格式的鏡射（欄位名對齊 Yelp JSON），Entity 才是 App 內部使用的模型。
 - **轉換點明確**：`RestaurantEntity.fromDto(dto)` 一律在 `data_layer` 內呼叫（`main_repo.dart:63`、`restaurant_detail_repo.dart:22,29`、`sign_in_repo.dart:43`、`favor_data_source.dart:52`）。**Dto 永不外洩到 Presentation 層。**
-- **`FavorDataSource`**：最愛清單在 Firestore 的**單一存取點**，以 `uid` 為 doc id。內含空字串 uid 的 guard——少了它 Firestore 會拋 `ArgumentError`。
+- **`FavorDataSource`**：最愛清單在 Firestore 的**單一存取點**，每個最愛項目以 subcollection `favors/{uid}/items/{restaurant_id}` 結構儲存。內含空字串 uid 的 guard——少了它 Firestore 會拋 `ArgumentError`。
 
 ### 3. 表現層 (Presentation Layer)
 

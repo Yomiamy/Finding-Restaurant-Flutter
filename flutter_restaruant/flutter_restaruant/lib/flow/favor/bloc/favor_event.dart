@@ -9,9 +9,7 @@ abstract class FavorEvent extends Equatable {
 }
 
 class FetchFavorInfoEvent extends FavorEvent {
-  final bool isRefreshLocalOnly;
-
-  const FetchFavorInfoEvent(this.isRefreshLocalOnly);
+  const FetchFavorInfoEvent();
 
   @override
   List<Object> get props => [];

@@ -16,8 +16,8 @@ class FavorBloc extends Bloc<FavorEvent, FavorState> {
       try {
         emit(const InProgress());
 
-        final List<RestaurantEntity> favorInfos = await _repository
-            .fetchFavorInfos(event.isRefreshLocalOnly);
+        final List<RestaurantEntity> favorInfos =
+            await _repository.fetchFavorInfos();
 
         emit(Success(favorInfos: favorInfos));
       } on Exception catch (_) {

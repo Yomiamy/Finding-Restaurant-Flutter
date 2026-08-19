@@ -27,7 +27,7 @@ class _FavorPageState extends State<FavorPage> {
     super.initState();
 
     _favorBloc = BlocProvider.of<FavorBloc>(context);
-    _favorBloc.add(const FetchFavorInfoEvent(false));
+    _favorBloc.add(const FetchFavorInfoEvent());
   }
 
   @override
@@ -79,12 +79,17 @@ class _FavorPageState extends State<FavorPage> {
                       favorInfo,
                       null,
                     );
-                    await Navigator.of(context).pushNamed(
-                      RestaurantDetailPage.routeName,
-                      arguments: arguments,
-                    );
+                    final needRefresh =
+                        await Navigator.of(context).pushNamed(
+                              RestaurantDetailPage.routeName,
+                              arguments: arguments,
+                            )
+                            as bool?;
 
-                    _favorBloc.add(const FetchFavorInfoEvent(true));
+                    // 若手勢滑動返回，needRefresh 為 null。為防畫面不一致，遇到 null 也視同需要更新。
+                    if (needRefresh ?? true) {
+                      _favorBloc.add(const FetchFavorInfoEvent());
+                    }
                   },
                 );
               },

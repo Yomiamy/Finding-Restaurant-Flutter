@@ -13,14 +13,8 @@ class FavorRepo implements FavorRepository {
     : _dataSource = favorDataSource ?? FavorDataSource();
 
   @override
-  Future<List<RestaurantEntity>> fetchFavorInfos(
-    bool isRefreshLocalOnly,
-  ) async {
-    if (isRefreshLocalOnly) {
-      _favorInfos = _favorInfos.where((element) => element.favor).toList();
-    } else {
-      _favorInfos = await _dataSource.fetchFavorEntities();
-    }
+  Future<List<RestaurantEntity>> fetchFavorInfos() async {
+    _favorInfos = await _dataSource.fetchFavorEntities();
 
     return _favorInfos;
   }
