@@ -99,6 +99,7 @@ dev_dependencies:
 
   flutter_test:
     sdk: flutter
+  fake_cloud_firestore: ^4.2.0
 
 flutter:
   generate: false

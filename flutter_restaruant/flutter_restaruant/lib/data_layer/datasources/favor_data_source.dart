@@ -29,7 +29,12 @@ class FavorDataSource {
   /// Firestore [WriteBatch] 的單批寫入上限。
   static const int _batchLimit = 500;
 
-  /// Resolved per call: this data source is a lazy singleton, so caching the
+  final FirebaseFirestore? _firestoreOverride;
+
+  FavorDataSource({FirebaseFirestore? firestore})
+      : _firestoreOverride = firestore;
+
+  FirebaseFirestore get _firestore => _firestoreOverride ?? FirebaseFirestore.instance;
   /// uid would keep pointing at the previous user after a sign-out/sign-in.
   String get _uid => SignInManager().accountDto?.uid ?? '';
 
@@ -45,7 +50,7 @@ class FavorDataSource {
   Future<void>? _migration;
 
   DocumentReference get _doc =>
-      FirebaseFirestore.instance.collection(favorCollectionName).doc(_uid);
+      _firestore.collection(favorCollectionName).doc(_uid);
 
   CollectionReference get _items => _doc.collection(itemsSubcollectionName);
 
@@ -160,17 +165,23 @@ class FavorDataSource {
   /// 也是遷移失敗時的真相來源。確認使用者全數升級後再另案清理。
   Future<void> _migrateLegacyDocIfNeeded() {
     // 換帳號就重跑：快取只對同一個 uid 有效。
-    if (_migratingUid != _uid) {
-      _migratingUid = _uid;
-      _migration = _runLegacyMigration();
+    final currentUid = _uid;
+    if (_migratingUid != currentUid) {
+      _migratingUid = currentUid;
+      _migration = _runLegacyMigration(currentUid);
     }
 
     return _migration!;
   }
 
-  Future<void> _runLegacyMigration() async {
+  Future<void> _runLegacyMigration(String uid) async {
+    DocumentReference legacyDoc =
+        _firestore.collection(favorCollectionName).doc(uid);
+    CollectionReference subCollection =
+        legacyDoc.collection(itemsSubcollectionName);
+
     try {
-      DocumentSnapshot snapshot = await _doc.get();
+      DocumentSnapshot snapshot = await legacyDoc.get();
       Map<String, dynamic>? legacy = snapshot.data() as Map<String, dynamic>?;
 
       if (legacy == null || legacy.containsKey(migratedAtField)) {
@@ -182,7 +193,7 @@ class FavorDataSource {
           .toList();
 
       for (int i = 0; i < entries.length; i += _batchLimit) {
-        WriteBatch batch = FirebaseFirestore.instance.batch();
+        WriteBatch batch = _firestore.batch();
         for (MapEntry<String, dynamic> entry in entries.skip(i).take(
           _batchLimit,
         )) {
@@ -193,14 +204,14 @@ class FavorDataSource {
             continue;
           }
 
-          batch.set(_items.doc(entry.key), decoded);
+          batch.set(subCollection.doc(entry.key), decoded);
         }
         await batch.commit();
       }
 
       // 全部成功才打標記。entries 為空（曾收藏後全部取消）時迴圈不執行，
       // 直接落到這裡打標記，否則每次讀取都會重跑一遍這個流程。
-      await _doc.set({
+      await legacyDoc.set({
         migratedAtField: FieldValue.serverTimestamp(),
       }, SetOptions(merge: true));
     } on Exception catch (e, st) {
