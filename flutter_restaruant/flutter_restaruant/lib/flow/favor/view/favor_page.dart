@@ -79,12 +79,16 @@ class _FavorPageState extends State<FavorPage> {
                       favorInfo,
                       null,
                     );
-                    await Navigator.of(context).pushNamed(
-                      RestaurantDetailPage.routeName,
-                      arguments: arguments,
-                    );
+                    final needRefresh = await Navigator.of(context)
+                        .pushNamed<bool>(
+                          RestaurantDetailPage.routeName,
+                          arguments: arguments,
+                        );
 
-                    _favorBloc.add(const FetchFavorInfoEvent());
+                    // 若手勢滑動返回，needRefresh 為 null。為防畫面不一致，遇到 null 也視同需要更新。
+                    if (needRefresh ?? true) {
+                      _favorBloc.add(const FetchFavorInfoEvent());
+                    }
                   },
                 );
               },

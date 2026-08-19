@@ -23,6 +23,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
   late RestaurantEntity _summaryInfo;
   late RestaurantDetailBloc _bloc;
   bool _isInit = false;
+  bool _initialFavorState = false;
 
   @override
   void didChangeDependencies() {
@@ -32,6 +33,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
           ModalRoute.of(context)!.settings.arguments
               as Tuple2<RestaurantEntity, dynamic>;
       _summaryInfo = args.item1;
+      _initialFavorState = _summaryInfo.favor;
       _bloc.add(FetchDetailInfo(id: _summaryInfo.id!));
       _isInit = true;
     }
@@ -55,7 +57,10 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
       appBar: AppBar(
         leading: IconButton(
           padding: const EdgeInsets.all(ThemeSize.zero),
-          onPressed: () => Navigator.of(context).pop(),
+          onPressed: () {
+            final needRefresh = _summaryInfo.favor != _initialFavorState;
+            Navigator.of(context).pop(needRefresh);
+          },
           icon: const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
         ),
         title: BlocBuilder<RestaurantDetailBloc, RestaurantDetailState>(
