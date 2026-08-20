@@ -19,15 +19,14 @@
 
 ## 關鍵設計決策
 
-### D-1：相機平移統一由 `onPageChanged` 負責（消除特殊情況）
+### D-1：相機平移統一由 `_focusCameraOn()` 處理，依狀態分派觸發來源
 
-規格 AC-5 的循環觸發風險，最笨也最清楚的解法是**不在 Marker `onTap` 內呼叫 `animateCamera`**。
+為避免循環觸發風險，我們將相機平移路徑分為兩種情況，以確保不重複觸發且不需引入抑制旗標（如 `_isProgrammaticScroll`）：
 
-理由：`onTap` 已呼叫 `_pageController.animateToPage(index)`，該動畫**必然**觸發 `onPageChanged(index)`，而 `onPageChanged` 內已有 `animateCamera`。因此相機平移是「免費」得到的——只要不重複呼叫，就沒有兩路相機指令打架的問題，也不需要任何 `_isProgrammaticScroll` 之類的抑制旗標。
+1. **點擊未選中的 Marker**：`onTap` 僅呼叫 `_pageController.animateToPage(index)`，該動畫必然觸發 `onPageChanged(index)`，在 `onPageChanged` 中呼叫 `_focusCameraOn()` 進行相機平移。
+2. **點擊已選中的 Marker**：由於 `animateToPage` 若目標為當前頁將不會觸發 `onPageChanged`，而手動拖曳地圖可能已使相機偏離該餐廳。因此在 `onTap` 時若 `index == _selectedIndex`，會直接呼叫 `_focusCameraOn()`。
 
-一個特殊情況（Marker tap 要不要另外移相機）被資料流本身消滅，而非用旗標補丁。
-
-> 邊界：`animateToPage` 到**當前頁**時不觸發 `onPageChanged`（`page_view.dart` 的 `if (currentPage != _lastReportedPage)` 守衛），所以點擊已選中的 Marker 走不到上述相機路徑。原先假設「此時相機本就已在該餐廳」是錯的——手動拖曳地圖只更新 `_centerPos`，不動 `_selectedIndex`，相機因此可能早已離開該餐廳。故 `onTap` 需在 `index == _selectedIndex` 時補一次相機平移，與 `onPageChanged` 共用 `_focusCameraOn()`。這是本設計唯一保留的條件分支：它換來「絕不重複下相機指令」，比一律呼叫再靠 `animateCamera` 自行覆蓋更明確。
+這項設計在確保「不重複下相機指令」的同時，也補足了點擊已選中 Marker 未能移回相機的特殊情況，使邏輯明確清晰。
 
 ### D-2：`DraggableScrollableSheet` 的手勢分工
 
