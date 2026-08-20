@@ -165,14 +165,15 @@ class _MapPageState extends State<MapWidget> {
             alignment: Alignment.bottomCenter,
             child: LayoutBuilder(
               builder: (context, constraints) {
-                final bottomPadding = MediaQuery.of(context).padding.bottom;
-                final requiredHeight = ThemeSize.size130 + bottomPadding + ThemeSize.space16;
-                final collapsedFraction = (requiredHeight / constraints.maxHeight).clamp(0.0, 1.0);
+                final double bottomPadding = MediaQuery.of(context).padding.bottom;
+                final double requiredHeight = ThemeSize.size130 + bottomPadding + ThemeSize.space16;
+                final double collapsedFraction = (requiredHeight / constraints.maxHeight).clamp(0.0, 1.0).toDouble();
+                final double effectiveMaxChildSize = _sheetExpandedSize > collapsedFraction ? _sheetExpandedSize : collapsedFraction;
 
                 return DraggableScrollableSheet(
                   initialChildSize: collapsedFraction,
                   minChildSize: collapsedFraction,
-                  maxChildSize: _sheetExpandedSize,
+                  maxChildSize: effectiveMaxChildSize,
                   // min 與 max 本身即是吸附點，snapSizes 只用於追加中間段，故留空。
                   snap: true,
                   // 預設 true 會讓 sheet 撐滿整個 Stack，把地圖的觸控事件吃掉。
