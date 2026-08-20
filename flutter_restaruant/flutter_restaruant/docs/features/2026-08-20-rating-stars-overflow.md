@@ -4,6 +4,7 @@
 - **類型**：Bug fix（既有缺陷）
 - **來源**：`docs/brainstorm/2026-08-18_features_brainstorm.md` — P0「修復地圖底部列表 UI 溢出 (RenderFlex overflow)」
 - **RICE**：30.0 ／ **Effort**：0.5
+- **狀態**：已實作並合併（Issue #72 / PR #73）
 
 ## What & Why
 

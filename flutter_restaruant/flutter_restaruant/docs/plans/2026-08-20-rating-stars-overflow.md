@@ -2,6 +2,7 @@
 
 - **規格**：`docs/features/2026-08-20-rating-stars-overflow.md`
 - **日期**：2026-08-20
+- **狀態**：已實作並合併（Issue #72 / PR #73）
 
 ## 資料結構
 

@@ -83,7 +83,7 @@
 | **Android Built-in Kotlin 遷移** | 已升級 Kotlin 2.2.20 消除過舊警告，但仍使用顯式 KGP | **官方棄用警告**：Flutter 未來將強制推行 Built-in Kotlin 並移除 KGP 支援，需在未來升級中徹底移除顯式 KGP 依賴 |
 | **硬編碼 API Key** | 僅改名為 `camelCase`，明碼仍在 `constants.dart:30,40` | 金鑰已入 git 歷史，須**撤銷並輪替**，非搬移可解 |
 | **修復地圖模式定位按鈕遮擋問題** | 地圖右下角 FAB 會被列表卡片遮擋 | 嚴重影響地圖操作體驗（按鈕完全無法點擊） |
-| **修復地圖底部列表 UI 溢出 (RenderFlex overflow)** | Android 地圖底部 `rating_stars.dart` 發生溢出 | 畫面出現黃黑條紋錯誤，影響 UI 視覺與可用性 |
+| ✅ **修復地圖底部列表 UI 溢出 (RenderFlex overflow)** | ~~Android 地圖底部發生溢出~~ | **已於 PR #73 修復**（實際位置為 `restaurant_item_cell.dart`，非 `rating_stars.dart`） |
 
 > **判斷**：架構地基已完成最關鍵的資料層重構（Subcollection）。但 **iOS UIScene Lifecycle 遷移**、**iOS SPM 遷移**、**Android Built-in Kotlin 遷移** 與 **Flutter SDK 升級** 關係到未來的平台相容性與可建置性，已與安全性（API Key）一同提升至 **P0 絕對最高優先序**。
 
@@ -408,9 +408,11 @@ lib/
    * **痛點**: 首頁切換到地圖模式時，右下角的「定位當前位置」按鈕會被底部的橫向店家列表卡片遮住，導致使用者無法點擊。
    * **改造要點**: 調整地圖元件的 `padding` (特別是 `bottom` padding) 或直接更改 FAB 的佈局位置，使其在橫向列表出現時自動上移，確保核心互動按鈕不被遮擋。
 
-9. **修復地圖底部列表 UI 溢出問題 (RenderFlex Overflow Bug)**
-   * **痛點**: 在 Android 裝置上，地圖模式底部的橫向店家列表出現了右側溢出 14 pixels 的錯誤 (`A RenderFlex overflowed by 14 pixels on the right`)，問題發生在 `rating_stars.dart` 內的 `Row` 元件，導致畫面上出現黃黑警告條紋。
-   * **改造要點**: 檢查 `rating_stars.dart` 的 `Row` 配置，加入 `Flexible`、`Expanded`，或使用 `Wrap` 取代 `Row` 來允許自動換行或縮放，確保星星評分元件能夠自適應卡片寬度，避免溢出錯誤。
+9. **修復地圖底部列表 UI 溢出問題 (RenderFlex Overflow Bug)** — ✅ 已於 2026-08-20 完成（Issue #72 / PR #73）
+   * **痛點**: 在 Android 裝置上，地圖模式底部的橫向店家列表出現了右側溢出 14 pixels 的錯誤 (`A RenderFlex overflowed by 14 pixels on the right`)，導致畫面上出現黃黑警告條紋。
+   * **實際根因與原先推測不同**: 溢出點不在 `rating_stars.dart`，而在 `restaurant_item_cell.dart` 的評分列 `Row`。`RatingStars` 被包在 `Expanded` 內參與 flex 分配，但它是 5 個固定 16px 的 Icon、寬度本就不可壓縮；在地圖 carousel 的窄卡片（`viewportFraction: 0.85`）下，分配到的寬度小於實際需求即溢出。
+   * **實際解法與原先提案不同**: 未採用 `Wrap`（會讓星等換行，破壞單列版面）。改為把 `RatingStars` 移出 flex（不再包 `Expanded`），剩餘空間全部交給評論數與價格兩段文字，並為其加上 `overflow: TextOverflow.ellipsis` 與 `textAlign: TextAlign.right`——不可壓縮的元素不參與分配，可截斷的才參與。
+   * **回歸測試**: `restaurant_item_cell_test.dart` 新增 298px 窄卡片測試，驗證無 layout exception 且 5 顆星維持完整寬度。
 
 ### 2.6 對照組架構與風格對齊重構 (Architecture Alignment) — ✅ 已於 2026-07-27～07-29 完成
 
@@ -525,7 +527,7 @@ lib/
 | ✅ **移除無謂假延遲 (過濾 2s / 推播 8s)** | 既有修復 | 9 | 1.5 | 100% | 0.5 | **27.0** | 14.25 | - | **已完成** |
 | ✅ **`MapWidget` 實作 `didUpdateWidget` 連動 Marker** | 既有修復 | 8 | 2.0 | 100% | 0.5 | **32.0** | 19.0 | - | **已完成** |
 | 🔴 **修復地圖模式定位按鈕遮擋問題** | 既有修復 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | - | **P0** |
-| 🔴 **修復地圖底部列表 UI 溢出 (RenderFlex overflow)** | 既有修復 | 10 | 1.5 | 100% | 0.5 | **30.0** | 14.25 | - | **P0** |
+| ✅ **修復地圖底部列表 UI 溢出 (RenderFlex overflow)** | 既有修復 | 10 | 1.5 | 100% | 0.5 | **30.0** | 14.25 | - | **已完成**（PR #73） |
 | **地圖與 BottomSheet 雙向連動 Carousel** | 空間 UX | 9 | 3.0 | 90% | 1.5 | **16.2** | 22.95 | 6 | **P1** |
 | ✅ **調整側選單功能項目順序** | UX 優化 | 10 | 1.0 | 100% | 0.5 | **20.0** | 10.0 | - | **已完成** |
 | ✅ **列表底部載入更多動畫** | UX 優化 | 9 | 1.0 | 100% | 0.5 | **18.0** | 10.0 | - | **已完成** |
@@ -570,7 +572,7 @@ lib/
 |   • [x] P0 移除無謂假延遲 (過濾 2s / 推播導航 8s) ✅ 實查已清除                   |
 |   • [x] P0 `MapWidget` 實作 `didUpdateWidget` 使 Marker 連動列表 ✅ 實查已實作    |
 |   • [ ] P0 修復地圖模式定位按鈕遮擋問題 (Map Locate Button Obscured Bug)          |
-|   • [ ] P0 修復地圖底部列表 UI 溢出 (Android RenderFlex overflow in rating_stars) |
+|   • [x] P0 修復地圖底部列表 UI 溢出 (Android RenderFlex overflow) ✅ PR #73        |
 +-----------------------------------------------------------------------------------+
                                          │
                                          ▼
