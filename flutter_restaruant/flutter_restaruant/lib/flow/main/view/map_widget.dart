@@ -20,9 +20,7 @@ class MapWidget extends StatefulWidget {
 }
 
 class _MapPageState extends State<MapWidget> {
-  /// Sheet 收合／展開的高度佔比。收合時只露出一張卡片，展開時仍保留超過
-  /// 半個畫面給地圖，避免使用者失去空間脈絡。
-  static const double _sheetExpandedSize = 0.45;
+  /// Sheet 的高度佔比。目前僅包含水平 Carousel，無展開內容。
 
   CameraPosition? _centerPos;
   Marker? _centerLocMarker;
@@ -168,12 +166,11 @@ class _MapPageState extends State<MapWidget> {
                 final double bottomPadding = MediaQuery.of(context).padding.bottom;
                 final double requiredHeight = ThemeSize.size130 + bottomPadding + ThemeSize.space16;
                 final double collapsedFraction = (requiredHeight / constraints.maxHeight).clamp(0.0, 1.0).toDouble();
-                final double effectiveMaxChildSize = _sheetExpandedSize > collapsedFraction ? _sheetExpandedSize : collapsedFraction;
 
                 return DraggableScrollableSheet(
                   initialChildSize: collapsedFraction,
                   minChildSize: collapsedFraction,
-                  maxChildSize: effectiveMaxChildSize,
+                  maxChildSize: collapsedFraction,
                   // min 與 max 本身即是吸附點，snapSizes 只用於追加中間段，故留空。
                   snap: true,
                   // 預設 true 會讓 sheet 撐滿整個 Stack，把地圖的觸控事件吃掉。
