@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/component/cell/main_page/restaurant_item_cell.dart';
+import 'package:flutter_restaruant/component/rating_stars.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
@@ -43,7 +44,10 @@ void main() {
           body: SizedBox(
             width: 200,
             child: Row(
-              children: <Widget>[errorWidget, const Expanded(child: SizedBox())],
+              children: <Widget>[
+                errorWidget,
+                const Expanded(child: SizedBox()),
+              ],
             ),
           ),
         ),
@@ -56,5 +60,37 @@ void main() {
     final imageSize = tester.getSize(find.byType(Image).last);
     expect(imageSize.width, ThemeSize.size110);
   });
-}
 
+  // 地圖底部 PageView 的卡片寬度約 298px（360dp 螢幕 × viewportFraction 0.85
+  // 再扣左右 padding）。扣掉圖片 110 + padding 15 + 間距 10 後只剩約 163px，
+  // 舊版把這段用三個等權 Expanded 三等分 → 星星只分到約 54px，但它需要
+  // 5 × 16 = 80px，於是 RenderFlex overflow。
+  testWidgets('窄卡片下評分列不得溢出，且星星須完整顯示', (tester) async {
+    await tester.pumpWidget(
+      const MaterialApp(
+        localizationsDelegates: [S.delegate],
+        home: Scaffold(
+          body: SizedBox(
+            width: 298,
+            child: RestaurantItemCell(
+              summaryInfo: RestaurantEntity(
+                name: 'The Lounge Restaurant With A Long Name',
+                distance: 583.37,
+                rating: 4.5,
+                reviewCount: 1234,
+                price: r'$$$$',
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+
+    // overflow 在 widget test 中會以 exception 形式浮現。
+    expect(tester.takeException(), isNull);
+
+    // 星星未被壓縮：5 顆 × 16px。
+    final starsSize = tester.getSize(find.byType(RatingStars));
+    expect(starsSize.width, 5 * ThemeSize.size16);
+  });
+}

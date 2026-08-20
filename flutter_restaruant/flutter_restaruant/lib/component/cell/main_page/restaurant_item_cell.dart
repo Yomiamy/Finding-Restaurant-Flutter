@@ -69,30 +69,31 @@ class RestaurantItemCell extends StatelessWidget {
                 ),
                 Row(
                   children: <Widget>[
+                    // RatingStars 是 5 個固定 16px Icon，寬度不可壓縮，
+                    // 因此不參與 flex 分配；剩餘空間全交給可 ellipsis 的文字。
+                    // 包成 Expanded 會在窄卡片（地圖 viewportFraction 0.85）下溢出。
+                    RatingStars(rating: _summaryInfo.rating ?? 0.0),
+                    const SizedBox(width: ThemeSize.space5),
                     Expanded(
-                      child: RatingStars(rating: _summaryInfo.rating ?? 0.0),
-                    ),
-                    Expanded(
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          '${_summaryInfo.reviewCount ?? 0}${S.current.review_count_suffix}',
-                          style: const TextStyle(
-                            fontSize: ThemeFontSize.fontSize14,
-                            color: Colors.grey,
-                          ),
+                      child: Text(
+                        '${_summaryInfo.reviewCount ?? 0}${S.current.review_count_suffix}',
+                        textAlign: TextAlign.right,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: ThemeFontSize.fontSize14,
+                          color: Colors.grey,
                         ),
                       ),
                     ),
+                    const SizedBox(width: ThemeSize.space5),
                     Expanded(
-                      child: Align(
-                        alignment: Alignment.centerRight,
-                        child: Text(
-                          _summaryInfo.price ?? '',
-                          style: const TextStyle(
-                            fontSize: ThemeFontSize.fontSize14,
-                            color: Colors.grey,
-                          ),
+                      child: Text(
+                        _summaryInfo.price ?? '',
+                        textAlign: TextAlign.right,
+                        overflow: TextOverflow.ellipsis,
+                        style: const TextStyle(
+                          fontSize: ThemeFontSize.fontSize14,
+                          color: Colors.grey,
                         ),
                       ),
                     ),
