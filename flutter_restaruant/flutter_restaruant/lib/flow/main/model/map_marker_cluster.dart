@@ -6,20 +6,14 @@ class MapMarkerCluster extends Clusterable {
 
   MapMarkerCluster({
     this.restaurant,
-    required double latitude,
-    required double longitude,
-    bool isCluster = false,
-    int? clusterId,
-    int pointsSize = 0,
+    required super.latitude,
+    required super.longitude,
+    super.isCluster = false,
+    super.clusterId,
+    super.pointsSize = 0,
     String? markerId,
-    int? childMarkerId,
+    super.childMarkerId,
   }) : super(
-          latitude: latitude,
-          longitude: longitude,
-          isCluster: isCluster,
-          clusterId: clusterId,
-          pointsSize: pointsSize,
-          markerId: markerId ?? restaurant?.id ?? clusterId.toString(),
-          childMarkerId: childMarkerId,
+          markerId: markerId ?? restaurant?.id ?? clusterId?.toString(),
         );
 }

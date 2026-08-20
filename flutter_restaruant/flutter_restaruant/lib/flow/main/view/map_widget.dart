@@ -113,11 +113,11 @@ class _MapPageState extends State<MapWidget> {
     final Set<Marker> newMarkers = {};
 
     for (var cluster in clusters) {
-      if (cluster.isCluster) {
-        BitmapDescriptor? icon = _clusterMarkerCache[cluster.pointsSize];
+      if (cluster.isCluster == true) {
+        BitmapDescriptor? icon = _clusterMarkerCache[cluster.pointsSize ?? 0];
         if (icon == null) {
-          icon = await MarkerGenerator.getClusterMarker(cluster.pointsSize);
-          _clusterMarkerCache[cluster.pointsSize] = icon;
+          icon = await MarkerGenerator.getClusterMarker((cluster.pointsSize ?? 0));
+          _clusterMarkerCache[cluster.pointsSize ?? 0] = icon;
         }
 
         newMarkers.add(
