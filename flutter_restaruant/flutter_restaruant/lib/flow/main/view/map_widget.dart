@@ -124,7 +124,7 @@ class _MapPageState extends State<MapWidget> {
           Marker(
             markerId: MarkerId('cluster_${cluster.clusterId}'),
             position: LatLng(cluster.latitude!, cluster.longitude!),
-            icon: icon,
+            icon: icon, consumeTapEvents: true,
             onTap: () {
               if (_mapController != null) {
                 _mapController!.animateCamera(
