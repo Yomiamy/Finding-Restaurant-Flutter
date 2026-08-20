@@ -27,7 +27,7 @@
 
 一個特殊情況（Marker tap 要不要另外移相機）被資料流本身消滅，而非用旗標補丁。
 
-> 邊界：`animateToPage` 到**當前頁**時不觸發 `onPageChanged`（點擊已選中的 Marker）。此時相機本就已在該餐廳，不需平移，行為正確，不需額外處理。
+> 邊界：`animateToPage` 到**當前頁**時不觸發 `onPageChanged`（`page_view.dart` 的 `if (currentPage != _lastReportedPage)` 守衛），所以點擊已選中的 Marker 走不到上述相機路徑。原先假設「此時相機本就已在該餐廳」是錯的——手動拖曳地圖只更新 `_centerPos`，不動 `_selectedIndex`，相機因此可能早已離開該餐廳。故 `onTap` 需在 `index == _selectedIndex` 時補一次相機平移，與 `onPageChanged` 共用 `_focusCameraOn()`。這是本設計唯一保留的條件分支：它換來「絕不重複下相機指令」，比一律呼叫再靠 `animateCamera` 自行覆蓋更明確。
 
 ### D-2：`DraggableScrollableSheet` 的手勢分工
 

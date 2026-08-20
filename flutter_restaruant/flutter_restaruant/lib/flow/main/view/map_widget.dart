@@ -68,6 +68,17 @@ class _MapPageState extends State<MapWidget> {
     }).toList();
   }
 
+  void _focusCameraOn(RestaurantEntity restaurant) {
+    _mapController?.animateCamera(
+      CameraUpdate.newLatLng(
+        LatLng(
+          restaurant.coordinates!.latitude!,
+          restaurant.coordinates!.longitude!,
+        ),
+      ),
+    );
+  }
+
   void _updateMarkers() {
     Iterable<Marker> ite = _validRestaurants.asMap().entries.map((entry) {
       final index = entry.key;
@@ -86,6 +97,14 @@ class _MapPageState extends State<MapWidget> {
               : BitmapDescriptor.hueRed,
         ),
         onTap: () {
+          // 點的是已選中的 Marker 時，animateToPage 停在同一頁，PageView 只在
+          // 頁碼改變時才發 onPageChanged，相機平移那條路就不會被走到。使用者
+          // 若剛手動拖過地圖，相機已離開這間餐廳（拖曳只更新 _centerPos，不動
+          // _selectedIndex），少了這一行就回不去。
+          if (index == _selectedIndex) {
+            _focusCameraOn(_validRestaurants[index]);
+          }
+
           _pageController.animateToPage(
             index,
             duration: const Duration(milliseconds: 300),
@@ -176,15 +195,7 @@ class _MapPageState extends State<MapWidget> {
                             _selectedIndex = index;
                             _updateMarkers();
                           });
-                          final restaurant = _validRestaurants[index];
-                          _mapController?.animateCamera(
-                            CameraUpdate.newLatLng(
-                              LatLng(
-                                restaurant.coordinates!.latitude!,
-                                restaurant.coordinates!.longitude!,
-                              ),
-                            ),
-                          );
+                          _focusCameraOn(_validRestaurants[index]);
                         },
                         itemBuilder: (context, index) {
                           return Padding(

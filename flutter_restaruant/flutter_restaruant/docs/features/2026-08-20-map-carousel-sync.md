@@ -2,7 +2,7 @@
 
 - 日期：2026-08-20
 - 來源：`docs/brainstorm/2026-08-18_features_brainstorm.md` F-1.2
-- 狀態：待實作
+- 狀態：已實作（PR #75）
 
 ## 背景：現況實查
 
@@ -35,7 +35,7 @@ brainstorm 文件第 46 行「無 PageController」的敘述與程式碼實況�
 - **AC-2（可拖曳 Sheet）**：底部卡片容器改由 `DraggableScrollableSheet` 承載，可用手勢在收合／展開兩個 snap 尺寸間拖曳，放開後吸附至最近 snap 點。收合尺寸維持現有卡片可見高度，展開尺寸不遮蔽整個地圖。
 - **AC-3（繪製隔離）**：carousel 區塊以 `RepaintBoundary` 包覆，使其重繪不觸發 Native Map View 重繪。
 - **AC-4（零回歸）**：既有行為全數保留——横滑卡片仍平移地圖、點卡片仍進入詳情頁、`didUpdateWidget` 仍在列表變更時重建 Marker 並重設 `_selectedIndex`。
-- **AC-5（無循環觸發）**：Marker tap 觸發的 `animateToPage` 會回呼 `onPageChanged`，該回呼內的 `animateCamera` 不得與 Marker tap 的相機平移互相打架或造成無限往返。
+- **AC-5（相機平移不重複、不遺漏）**：點擊**未選中**的 Marker 時，相機平移只由 `animateToPage` 連鎖觸發的 `onPageChanged` 發出一次，不得有第二路指令。點擊**已選中**的 Marker 時 `onPageChanged` 不會觸發（`PageView` 僅在頁碼改變時回呼），須由 `onTap` 補一次平移——使用者手動拖曳地圖只改 `_centerPos` 而不改 `_selectedIndex`，相機可能已離開該餐廳。
 
 ## 範圍邊界（Out of Scope）
 
