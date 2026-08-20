@@ -58,13 +58,15 @@ release 版仍會把完整 request/response body 寫進 stdout。這與 Inspecto
 
 **修法**：`isLogEnabled` 預設改為 `kDebugMode`，並將註冊順序移到 auth 之後。
 
-#### 3. `main()` 的 `Future.wait` 無錯誤處理 → 啟動失敗即永久白屏
+#### ~~3. `main()` 的 `Future.wait` 無錯誤處理 → 啟動失敗即永久白屏~~ ✅ 已修復
 
 `main.dart:31-43` 沒有 `catchError` 也沒有 `try/catch`。`Firebase.initializeApp()` 或 `Constants.init()` 一旦拋例外，`.then()` 不執行，**`runApp()` 永遠不會被呼叫**，使用者看到永久白屏且無任何錯誤提示。
 
 四項之中只有 `SignInManager.loadPrefs()` 自行包了 `try/catch`——**作者已意識到此風險，但只修了一處**。
 
 同時，`main()` 宣告為 `async` 卻全程不用 `await`，靠 `.then()` 串接，第 38 行掛 `// ignore: unawaited_futures` 壓警告。這違反專案 style guide §7.5「禁止 `.then()`」。改成 `await Future.wait([...])` 後接兩行即等價，且能自然套用 `try/catch`——**一次修掉風險與規範違反**。
+
+> **2026-08-21 實查更新**：此缺陷已修復。`lib/main.dart` 的啟動鏈（第 33-40 行區塊）已改用 `await Future.wait([...])` 並被 `try/catch (e, st)` 完整包覆，解決了永久白屏風險與 `.then()` 規範違反。
 
 #### 4. 硬編碼的 Yelp Bearer Token
 
@@ -142,7 +144,7 @@ release 版仍會把完整 request/response body 寫進 stdout。這與 Inspecto
 | 優先 | 項目 | 理由 | 預估成本 |
 | :---: | :--- | :--- | :---: |
 | **P0** | 缺陷 2：`LogInterceptor` release 生效 | 資訊外洩，改 1 行預設值即可 | 極低 |
-| **P0** | 缺陷 3：`Future.wait` 無錯誤處理 | 啟動白屏無從診斷，順帶修掉 `.then()` 規範違反 | 低 |
+| ✅ **已修復** | ~~缺陷 3：`Future.wait` 無錯誤處理~~ | 已於 `lib/main.dart` 加入 `try/catch` 完整包覆 | 低 |
 | **P1** | 缺陷 4：硬編碼 Token | 金鑰外洩；但需先有 broker 端，成本高 | 高 |
 | **P2** | 缺陷 1：Entity 反向依賴 | 架構完整性；11 檔 + mapper 新建，但無行為變更 | 中 |
 | **P3** | 缺陷 5、6、7 | 複雜度清理，無外部行為改變 | 低 |
