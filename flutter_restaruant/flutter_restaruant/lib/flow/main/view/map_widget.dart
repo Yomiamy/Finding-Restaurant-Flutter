@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/foundation.dart';
+import 'package:fluster/fluster.dart';
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -8,6 +9,8 @@ import '../../../component/cell/main_page/restaurant_item_cell.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../restaurant/view/view_barrel.dart';
 import 'main_page.dart';
+import '../model/map_marker_cluster.dart';
+import '../../../features/utils/marker_generator.dart';
 
 class MapWidget extends StatefulWidget {
   final List<RestaurantEntity> _summaryInfos;
@@ -28,12 +31,17 @@ class _MapPageState extends State<MapWidget> {
   List<RestaurantEntity> _validRestaurants = [];
   int _selectedIndex = 0;
 
+  Fluster<MapMarkerCluster>? _fluster;
+  double _currentZoom = 13.0; // Default zoom
+  final Map<int, BitmapDescriptor> _clusterMarkerCache = {};
+
   @override
   void initState() {
     super.initState();
     _pageController = PageController(viewportFraction: 0.85);
     _updateValidRestaurants();
-    _updateMarkers();
+    _initFluster();
+    _updateClusters();
   }
 
   @override
@@ -43,7 +51,8 @@ class _MapPageState extends State<MapWidget> {
       setState(() {
         _updateValidRestaurants();
         _selectedIndex = 0;
-        _updateMarkers();
+        _initFluster();
+        _updateClusters();
       });
     }
   }
@@ -62,42 +71,114 @@ class _MapPageState extends State<MapWidget> {
     }).toList();
   }
 
-  void _updateMarkers() {
-    Iterable<Marker> ite = _validRestaurants.asMap().entries.map((entry) {
-      final index = entry.key;
-      final summaryInfo = entry.value;
+  void _initFluster() {
+    final List<MapMarkerCluster> mapMarkers = [];
+    for (int i = 0; i < _validRestaurants.length; i++) {
+      final info = _validRestaurants[i];
+      mapMarkers.add(MapMarkerCluster(
+        restaurant: info,
+        latitude: info.coordinates!.latitude!,
+        longitude: info.coordinates!.longitude!,
+      ));
+    }
 
-      return Marker(
-        markerId: MarkerId(summaryInfo.id!),
-        position: LatLng(
-          summaryInfo.coordinates!.latitude!,
-          summaryInfo.coordinates!.longitude!,
-        ),
-        infoWindow: InfoWindow(title: summaryInfo.name),
-        icon: BitmapDescriptor.defaultMarkerWithHue(
-          _selectedIndex == index
-              ? BitmapDescriptor.hueBlue
-              : BitmapDescriptor.hueRed,
-        ),
-        onTap: () {
-          _pageController.animateToPage(
-            index,
-            duration: const Duration(milliseconds: 300),
-            curve: Curves.easeInOut,
-          );
-          setState(() {
-            _selectedIndex = index;
-            _updateMarkers();
-          });
-        },
-      );
-    });
+    _fluster = Fluster<MapMarkerCluster>(
+      minZoom: 0,
+      maxZoom: 21,
+      radius: 150,
+      extent: 2048,
+      nodeSize: 64,
+      points: mapMarkers,
+      createCluster: (BaseCluster? cluster, double? lng, double? lat) {
+        return MapMarkerCluster(
+          latitude: lat!,
+          longitude: lng!,
+          isCluster: true,
+          clusterId: cluster?.id,
+          pointsSize: cluster?.pointsSize ?? 0,
+          childMarkerId: cluster?.childMarkerId,
+        );
+      },
+    );
+  }
 
-    _markers = {};
-    _markers.addAll(ite);
+  Future<void> _updateClusters() async {
+    if (_fluster == null) return;
+
+    final List<MapMarkerCluster> clusters = _fluster!.clusters(
+      [-180, -85, 180, 85],
+      _currentZoom.toInt(),
+    );
+
+    final Set<Marker> newMarkers = {};
+
+    for (var cluster in clusters) {
+      if (cluster.isCluster) {
+        BitmapDescriptor? icon = _clusterMarkerCache[cluster.pointsSize];
+        if (icon == null) {
+          icon = await MarkerGenerator.getClusterMarker(cluster.pointsSize);
+          _clusterMarkerCache[cluster.pointsSize] = icon;
+        }
+
+        newMarkers.add(
+          Marker(
+            markerId: MarkerId('cluster_${cluster.clusterId}'),
+            position: LatLng(cluster.latitude!, cluster.longitude!),
+            icon: icon,
+            onTap: () {
+              if (_mapController != null) {
+                _mapController!.animateCamera(
+                  CameraUpdate.newLatLngZoom(
+                    LatLng(cluster.latitude!, cluster.longitude!),
+                    _currentZoom + 2,
+                  ),
+                );
+              }
+            },
+          ),
+        );
+      } else {
+        final info = cluster.restaurant!;
+        final index = _validRestaurants.indexOf(info);
+        newMarkers.add(
+          Marker(
+            markerId: MarkerId(info.id!),
+            position: LatLng(
+              info.coordinates!.latitude!,
+              info.coordinates!.longitude!,
+            ),
+            infoWindow: InfoWindow(title: info.name),
+            icon: BitmapDescriptor.defaultMarkerWithHue(
+              _selectedIndex == index
+                  ? BitmapDescriptor.hueBlue
+                  : BitmapDescriptor.hueRed,
+            ),
+            onTap: () {
+              if (index != -1) {
+                _pageController.animateToPage(
+                  index,
+                  duration: const Duration(milliseconds: 300),
+                  curve: Curves.easeInOut,
+                );
+                setState(() {
+                  _selectedIndex = index;
+                  _updateClusters();
+                });
+              }
+            },
+          ),
+        );
+      }
+    }
 
     if (_centerLocMarker != null) {
-      _markers.add(_centerLocMarker!);
+      newMarkers.add(_centerLocMarker!);
+    }
+
+    if (mounted) {
+      setState(() {
+        _markers = newMarkers;
+      });
     }
   }
 
@@ -108,6 +189,7 @@ class _MapPageState extends State<MapWidget> {
         GoogleMap(
           initialCameraPosition: const CameraPosition(
             target: UIConstants.mapDefaultLocation,
+            zoom: 13.0,
           ),
           onMapCreated: (controller) {
             _mapController = controller;
@@ -116,6 +198,7 @@ class _MapPageState extends State<MapWidget> {
           myLocationEnabled: true,
           onCameraMove: (position) {
             _centerPos = position;
+            _currentZoom = position.zoom;
           },
           onCameraIdle: () {
             setState(() {
@@ -124,7 +207,7 @@ class _MapPageState extends State<MapWidget> {
               }
 
               _centerLocMarker = Marker(
-                position: _centerPos!.target,
+                position: _centerPos?.target ?? UIConstants.mapDefaultLocation,
                 markerId: const MarkerId(UIConstants.mapCenterLocMarkId),
                 infoWindow: InfoWindow(title: S.current.map_my_loc_title),
                 icon: BitmapDescriptor.defaultMarkerWithHue(
@@ -134,6 +217,7 @@ class _MapPageState extends State<MapWidget> {
 
               _markers.add(_centerLocMarker!);
             });
+            _updateClusters();
           },
         ),
         if (_validRestaurants.isNotEmpty)
@@ -148,7 +232,7 @@ class _MapPageState extends State<MapWidget> {
               onPageChanged: (index) {
                 setState(() {
                   _selectedIndex = index;
-                  _updateMarkers();
+                  _updateClusters();
                 });
                 final restaurant = _validRestaurants[index];
                 _mapController?.animateCamera(
@@ -170,7 +254,6 @@ class _MapPageState extends State<MapWidget> {
                         summaryInfo,
                         null,
                       );
-                      // Avoid duplicate push, use pushNamedAndRemoveUntil instead of push
                       // ignore: unawaited_futures
                       Navigator.of(context).pushNamedAndRemoveUntil(
                         RestaurantDetailPage.routeName,
