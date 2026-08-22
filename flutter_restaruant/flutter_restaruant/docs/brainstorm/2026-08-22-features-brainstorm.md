@@ -1074,3 +1074,20 @@ lib/features/foundation/style/
 *S1 交付覆核：2026-08-03（分支 `refactor/202607/57-design-system-foundation`, commit `9c2ec3f`）—— 實測 `flutter analyze` 零警告、`flutter test` 54 tests 全綠*
 *實查校正：2026-08-05（分支 `main`, commit `f643502`）—— 見文首「實查校正紀錄」，4 項更正、6 項複測吻合、新增 P-1 項目；`flutter analyze` 維持 `No issues found!`*
 *檔名日期前綴同步更新為 `2026-08-16`（原 `2026-08-05`，以 `git mv` 改名保留檔案歷史）。內文各處的舊日期屬史實紀錄，不隨檔名更動。*
+
+# 廢棄/暫緩功能紀錄：F-1.3 Fluster Dynamic Marker Clustering
+
+**日期**：2026-08-22
+**相關 Issue / PR**：#76, #77
+
+## 決策
+使用者覺得目前使用 Dart 層運算（`Fluster`）來做地圖標記聚合（Marker Clustering）的體驗不好，因此決定先不做此功能。
+
+## 後續動作
+- 已關閉 GitHub Issue #76 
+- 已關閉 GitHub PR #77
+- 已移除相關的 Git Worktree 隔離工作區
+
+未來若要重啟此功能，建議重新評估以下方案：
+1. 等待官方 `google_maps_flutter` 內建更成熟的原生聚合 (ClusterManager) 方案。
+2. 評估其他原生封裝的第三方套件，將運算壓力交給底層 C++/Java/Objective-C 處理，以改善操作體驗。
