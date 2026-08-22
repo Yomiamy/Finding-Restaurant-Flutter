@@ -53,7 +53,7 @@
 
 初版報告產出於 2026-07-26，歷經多次迭代覆核。本次依 2026-08-19 實際落地的變更（PR #70, v1.5.0+31）覆核全文。**覆核方式為直接檢視當前程式碼，而非採信 commit 訊息**。
 
-**✅ 已落地（14 項）**
+**✅ 已落地（15 項）**
 
 | 項目 | 驗證依據 |
 | :--- | :--- |
@@ -72,6 +72,7 @@
 | **MapWidget 實作 didUpdateWidget** | ✅ 實查 `map_widget.dart` 已實作 |
 | **列表載入骨架屏 (Shimmer)** | ✅ 實查 `skeleton.dart` 已實作並廣泛使用 |
 | **列表底部載入更多動畫** | ✅ 實查 `restaurant_info_list_widget.dart` 已實作 |
+| **RatingStars 評分星等元件 (取代 11 張 PNG)** | ✅ 實查 `rating_stars.dart` 已實作並接線，PNG 與 `RatingHelper` 已移除 (PR #73 驗證) |
 
 **🔴 仍未解決與新納入阻擋項（7 項，全數為 P0 最高優先）**
 
@@ -580,7 +581,8 @@ lib/
 | Phase 1.5: 空間與視覺體驗升級 (Spatial UX & Polish)                               |
 |   • ❌ P1 地圖與 BottomSheet Carousel 雙向平滑連動 (含點擊至詳情頁) - 缺乏實質效益已放棄 |
 |   • [x] P1 列表底部載入更多動畫 (Load-More Indicator) ✅ 實查已於列表實作             |
-|   • [ ] P1 fluster 動態圖標聚類 (Clustering)                                      |
+|   • [x] RatingStars 評分星等元件 (取代 11 張 PNG) ✅ 已實作並接線                     |
+|   • ❌ P1 fluster 動態圖標聚類 (Clustering) - 使用者體驗不佳已暫緩/放棄 (Issue #76)    |
 |   • [ ] P1 情境化探索標籤 (#一人食 #深夜食堂 #約會不踩雷)                             |
 |   • [ ] P1 骨架屏 (Shimmer Loading) 與離線降級快取 (✅ 骨架屏已實作 / ❌ 離線未做)    |
 +-----------------------------------------------------------------------------------+
@@ -877,25 +879,13 @@ lib/features/foundation/style/
 * 距離格式化：`< 1000m` → `xxx m`；`>= 1000m` → `x.x km`
 * 分類分隔改用 `·`（現為空格串接）
 
-### 6.5.2 `RatingHelper` → `RatingStars` widget
+### 6.5.2 `RatingHelper` → `RatingStars` widget — ✅ 已於 2026-08-20 完成 (PR #73 驗證)
 
-**現況**：11 張 `Star_rating_X_of_5.png` 存於 static Map，**App 啟動即全數載入記憶體**，且僅支援 0.5 級距（4.3 分被歸為 4.0）。
+> **實查確認**：`lib/component/rating_stars.dart` 已建立（使用 `Icons.star` / `star_half` / `star_border`），11 張 `Star_rating_X_of_5.png` 與 `RatingHelper` 已全數移除，並已在 `restaurant_item_cell.dart`、`restaurant_comment_cell.dart`、`restaurant_info_cell.dart` 完整接線使用。
 
-**改造**：
-* 新增 `class RatingStars extends StatelessWidget`
-* 使用 `Icons.star` / `star_half` / `star_border`
-* 顏色走 `Theme.of(context).colorScheme.primary`
-* **移除 11 個 PNG 資產**，同步清理 `pubspec.yaml`
-* 程式碼從約 40 行 Map 縮減至約 10 行
+### 6.5.3 `LoadingWidget` → 骨架屏 — ✅ Skeleton 已實作
 
-### 6.5.3 `LoadingWidget` → 骨架屏
-
-**現況**：裸 `CircularProgressIndicator` + **硬編碼英文 `'Loading...'`**（未走 i18n）。
-
-**改造**：
-* `LoadingWidget` 保留供小範圍使用，文案改走 i18n
-* 新增 `RestaurantListSkeleton`：模擬 5 個卡片輪廓，用於首次載入
-* 動效實作：**先嘗試 `AnimatedOpacity` 自繪；超過 40 行才引入 `shimmer` 套件**
+> **實查確認**：`lib/component/skeleton.dart` 與 `restaurant_item_skeleton.dart`（搭配 `shimmer: ^3.0.0`）已建立並在餐廳列表廣泛使用；`LoadingWidget` 仍保留供部分小範圍使用。
 
 ### 6.5.4 `EmptyDataWidget`
 
@@ -979,7 +969,7 @@ lib/features/foundation/style/
 | 階段 | 內容 | 依賴 | 使用者可感知度 | 狀態 |
 | :--- | :--- | :--- | :---: | :---: |
 | **S1 地基** | `lib/features/foundation/style/` 建立、`PlatformApp` 掛 `material:`／`cupertino:`／`builder:`、token 定義 | 無 | 低（僅 FilterChip 藍→橘） | ✅ **已完成 (2026-08-03)** |
-| **S2 共用元件** | ItemCell、RatingStars、Skeleton、EmptyDataWidget | S1 | **高**（列表與最愛同時改觀） | ⬜ 待辦 |
+| **S2 共用元件** | ItemCell、RatingStars(✅)、Skeleton(✅)、EmptyDataWidget | S1 | **高**（列表與最愛同時改觀） | 🟡 **部分完成**（`RatingStars` 與 `Skeleton` 已完成，剩餘 `ItemCell`、`EmptyDataWidget` 與 Token 覆寫） |
 | **S3 頁面改造** | 詳情頁、登入頁、列表頁 | S2 | **高** | ⬜ 待辦 |
 | **S4 收尾** | 篩選頁、Splash、移除假延遲、清理舊常數 | S3 | 中 | ⬜ 待辦 |
 
@@ -989,7 +979,7 @@ lib/features/foundation/style/
 | :--- | :--- | :---: |
 | T-1 | `sign_in_page.dart:183` 硬編碼藍 `Color.fromARGB(255, 5, 97, 245)`，品牌識別錯誤。S1 依 §4.3 定案不修（改它會污染「除 FilterChip 外外觀不變」的地基驗證，且單改主按鈕會做出「橘按鈕配灰入口」的半成品） | **S3** |
 | T-2 | 33 處裸 `Colors.xxx`、13 個檔案（2026-08-03 複測數字未變） | S2 / S3 / S4 |
-| T-3 | 10 個 `@Deprecated` 字級常數、29 處使用、14 個檔案待遷移 | S4，之後獨立 PR 移除 |
+| T-3 | 10 個 `@Deprecated` 字級常數、29 處使用、14 個檔案待遷移 | ✅ **已於 S1 (PR #66) 移除並由 ThemeFontSize 替換** |
 | T-6 | 奶油白 `surface` (`#FFFBF7`) 覆寫，D-4 的 3 個 `copyWith` 額度完整保留 | **S2** |
 | **T-9（新增）** | **`colorScheme.primary` = `#8F4B38` ≠ 品牌色 `#D84A20`**，與 **19 處**硬編 `ThemeColor.appPrimary`（**8 檔**）並存有色差。須決定是否 `copyWith` 鎖回品牌色。⚠️ 2026-08-05 複測更正：原記 16 處／7 檔 | **S2** |
 
@@ -1017,7 +1007,7 @@ lib/features/foundation/style/
 
 | # | 事項 | 判準 | 狀態 |
 | :--- | :--- | :--- | :--- |
-| 1 | 骨架屏自繪 vs `shimmer` 套件 | 先自繪；超過 40 行改用套件 | S2 待決（專案目前無此依賴） |
+| 1 | 骨架屏自繪 vs `shimmer` 套件 | 先自繪；超過 40 行改用套件 | ✅ **已於 S2 引入 `shimmer` 套件並完成 `Skeleton`** |
 | 2 | 舊 `UIConstants` 字級常數何時刪 | S4 標 `@Deprecated`；全數遷移後另開獨立 PR 移除 | ✅ **已於 S1 移除**（10 個常數全數移除並替換為 ThemeFontSize，PR #66 完成） |
 | 3 | `Colors.grey` 全域掃除 | 各階段順手改；S4 做最後一次 grep 確認歸零 | S1 刻意不掃（維持 AC-7 乾淨驗證），33 處原封不動 |
 | **4（新增）** | `colorScheme.primary` 是否 `copyWith` 鎖回 `#D84A20` | 見 T-9。與 T-6 的 `surface` 覆寫一併決定，共用 D-4 的 3 個額度 | **S2 待決** |
@@ -1058,13 +1048,13 @@ lib/features/foundation/style/
 |                                                                                   |
 |  ── 6.x UI 視覺重塑（本章，前置地基）──                                           |
 |   • [x] S1 Design System 地基 (ThemeData / ColorScheme / token) ✅ 2026-08-03     |
-|   • [ ] S2 共用元件重塑 (ItemCell / RatingStars / Skeleton / Empty)               |
+|   • [ ] S2 共用元件重塑 (ItemCell / RatingStars✅ / Skeleton✅ / Empty)           |
 |   • [ ] S3 頁面改造 (詳情頁 / 登入頁 / 列表頁)                                    |
 |   • [ ] S4 收尾 (篩選頁 / Splash / 移除假延遲 / 清理舊常數)                       |
 |                                                                                   |
 |  ── 原 Phase 1.5 剩餘項（依賴 S1 完成）──                                         |
 |   • ❌ P1 地圖與 BottomSheet Carousel 雙向平滑連動 (含點擊至詳情頁) - 缺乏實質效益已放棄 |
-|   • [ ] P1 fluster 動態圖標聚類 (Clustering)                                      |
+|   • ❌ P1 fluster 動態圖標聚類 (Clustering) - 使用者體驗不佳已暫緩/放棄 (Issue #76) |
 |   • [ ] P1 情境化探索標籤 (#一人食 #深夜食堂 #約會不踩雷)                             |
 +-----------------------------------------------------------------------------------+
 ```

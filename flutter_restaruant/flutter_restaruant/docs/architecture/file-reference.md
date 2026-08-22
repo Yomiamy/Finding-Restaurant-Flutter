@@ -111,6 +111,9 @@
 | [`lib/component/platform_widget.dart`](../../lib/component/platform_widget.dart) | `PlatformWidget<I, A>` | **iOS/Android 外觀分歧的抽象基底**。泛型約束兩平台的回傳型別，子類別必須同時實作 `createIosWidget` 與 `createAndroidWidget`，漏寫則編譯失敗。 |
 | [`lib/component/loading_widget.dart`](../../lib/component/loading_widget.dart) | `LoadingWidget` | 統一的載入中指示器。 |
 | [`lib/component/empty_data_widget.dart`](../../lib/component/empty_data_widget.dart) | `EmptyDataWidget` | 統一的空資料狀態呈現。 |
+| [`lib/component/rating_stars.dart`](../../lib/component/rating_stars.dart) | `RatingStars` | 星等評分繪製元件（以 Flutter 內建 Icon 取代舊版 11 張 PNG）。 |
+| [`lib/component/skeleton.dart`](../../lib/component/skeleton.dart) | `Skeleton` | Shimmer 骨架屏基底元件。 |
+| [`lib/component/cell/main_page/restaurant_item_skeleton.dart`](../../lib/component/cell/main_page/restaurant_item_skeleton.dart) | `RestaurantItemSkeleton` | 餐廳列表卡片骨架屏。 |
 | [`lib/component/cell/main_page/restaurant_item_cell.dart`](../../lib/component/cell/main_page/restaurant_item_cell.dart) | `RestaurantItemCell` | 餐廳列表卡片（列表與最愛頁共用）。 |
 | [`lib/component/cell/restaurant_detail/restaurant_head_cell.dart`](../../lib/component/cell/restaurant_detail/restaurant_head_cell.dart) | `RestaurantHeadCell` | 詳情頁頁首（名稱、評分、價位）。 |
 | [`lib/component/cell/restaurant_detail/restaurant_info_cell.dart`](../../lib/component/cell/restaurant_detail/restaurant_info_cell.dart) | `RestaurantInfoCell` | 詳情頁基本資訊列。 |
@@ -150,7 +153,6 @@
 | [`lib/features/foundation/constants/constants.dart`](../../lib/features/foundation/constants/constants.dart) | `Constants` | 全域常數（API base URL、`authToken` 等）。 |
 | [`lib/features/foundation/constants/ui_constants.dart`](../../lib/features/foundation/constants/ui_constants.dart) | `UIConstants` | UI 專用常數。 |
 | [`lib/features/foundation/extension/future_extension.dart`](../../lib/features/foundation/extension/future_extension.dart) | `FutureExtension` | `Future` 的擴充方法。 |
-| [`lib/features/utils/rating_helper.dart`](../../lib/features/utils/rating_helper.dart) | `RatingHelper` | 評分數值 → 星等圖示的映射工具。 |
 | [`lib/features/utils/tuple.dart`](../../lib/features/utils/tuple.dart) | `Tuple2` … `Tuple7` | 泛型多值容器。<br>⚠️ **Dart 3 已內建 Records**，新程式碼應優先使用 `(a, b)` 語法，本檔屬既有程式碼的相容保留。 |
 | [`lib/features/utils/view_utils.dart`](../../lib/features/utils/view_utils.dart) | `ViewUtils` | 通用 UI 輔助（對話框、提示等）。 |
 | [`lib/features/utils/utils.dart`](../../lib/features/utils/utils.dart) | `Utils` | 泛用工具函式集。 |
