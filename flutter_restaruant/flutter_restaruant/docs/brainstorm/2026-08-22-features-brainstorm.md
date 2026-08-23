@@ -486,10 +486,13 @@ lib/
   * 專案原先的 Kotlin 版本過舊 (2.2.0)，目前雖已暫時升級至 2.2.20 以消除 Flutter 3.44.1 的警告，但專案仍在使用顯式的 Kotlin Gradle Plugin (`org.jetbrains.kotlin.android`) 依賴。
   * Flutter 3.27+ 已棄用顯式的 KGP 依賴，轉而強制推行 "Built-in Kotlin" (由 Flutter 工具鏈內部統一管理 Kotlin 版本)。
   * 若持續保留顯式的 KGP 宣告，在未來的 Flutter SDK 更新中將面臨 Android 建置失敗或工具鏈衝突的風險。
-* **改造要點**:
-  * 依據 Flutter 官方遷移指南，徹底移除 `android/settings.gradle` 或 `android/build.gradle` 檔案內的 `org.jetbrains.kotlin.android` 依賴。
-  * 移除 `android/gradle.properties` 中的 `android.builtInKotlin=false` 旗標（若存在），將 Kotlin 的版本控制權完整交還給 Flutter。
-  * 確保清理後重新執行 Android 建置（`flutter build apk`）順利通過且無 Gradle/Kotlin 衝突。
+* **🔴 遷移阻礙與決策 (Blocked by Ecosystem - 2026-08-23)**:
+  * 經實地評估，專案中有 11 個第三方套件（如 `fluttertoast`, `sign_in_with_apple` 等）最新版本尚未相容 Built-in Kotlin，強制移除 KGP 會導致編譯直接崩潰。
+  * 基於「Never break userspace」原則，**決策為維持現狀 (`android.builtInKotlin=false`) 暫緩遷移**。
+  * **詳細調研報告請見：[2026-08-23 AGP 9 遷移調研報告](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/docs/features/2026-08-23-agp9-built-in-kotlin-migration-analysis.md)**
+* **後續行動要點**:
+  * 定期追蹤相依套件版本，待阻礙套件完成相容更新後再重啟遷移。
+  * 屆時依據 Flutter 官方指南，徹底移除 `android/settings.gradle` 或 `android/app/build.gradle` 內的 `org.jetbrains.kotlin.android` 與 `kotlin-android` 宣告，並設回 `android.builtInKotlin=true`。
 
 ---
 
