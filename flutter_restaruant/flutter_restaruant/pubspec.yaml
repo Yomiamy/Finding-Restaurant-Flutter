@@ -104,7 +104,6 @@ dev_dependencies:
 
 flutter:
   config:
-    enable-swift-package-manager: false
   generate: false
   uses-material-design: true
 
