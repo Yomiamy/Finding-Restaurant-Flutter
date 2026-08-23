@@ -102,8 +102,9 @@
 
 **關鍵變更說明**：
 
-1. **新增 `FlutterImplicitEngineDelegate` protocol conformance**
-2. **`GeneratedPluginRegistrant.register(with:)` 搬至 `didInitializeImplicitFlutterEngine`**——從 `self` 改為 `engineBridge.pluginRegistry`
+1. **新增 `FlutterImplicitEngineDelegate` 並遷移 Plugin 註冊位置（核心架構變更）**：
+   - **為什麼要換地方？** 在 UIScene 架構下，App 的程序啟動（`didFinishLaunchingWithOptions`）與畫面及 Flutter Engine 的建立被 Apple 強制解耦。若維持舊寫法在 `didFinishLaunching` 中呼叫 `register(with: self)`，此時底層 Engine 根本尚未建立。對空殼註冊會導致套件的 `MethodChannel` 無法正確綁定，後續 Dart 呼叫 Native 時將引發 `MissingPluginException`。
+   - **這個 Protocol 的作用**：實作 `FlutterImplicitEngineDelegate` 是為了獲得 `didInitializeImplicitFlutterEngine` 回呼。當 Flutter 框架在底層真正把 Engine 與 `BinaryMessenger` 初始化完成的那一刻，才會觸發此方法。此時將套件註冊至 `engineBridge.pluginRegistry`，才能確保通訊橋樑精準接上實體的 Flutter Engine。
 3. **`GMSServices.provideAPIKey()` 留在 `didFinishLaunchingWithOptions`**——這是 process-level 初始化，不依賴 UI lifecycle，留原處正確
 4. **保留 `UNUserNotificationCenter` delegate 的設定與實作**——推播設定屬於 App 啟動級別的服務，與 Scene 無關。**嚴禁移除**，否則會破壞前景推播與 `flutter_local_notifications` 依賴的行為。
 
