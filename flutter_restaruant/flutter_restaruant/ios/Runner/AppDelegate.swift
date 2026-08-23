@@ -3,23 +3,24 @@ import Flutter
 import GoogleMaps
 
 @main
-@objc class AppDelegate: FlutterAppDelegate {
+@objc class AppDelegate: FlutterAppDelegate, FlutterImplicitEngineDelegate {
   override func application(
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
-    UNUserNotificationCenter.current().delegate = self
-      
-    GeneratedPluginRegistrant.register(with: self)
+    if #available(iOS 10.0, *) {
+      UNUserNotificationCenter.current().delegate = self
+    }
     GMSServices.provideAPIKey("AIzaSyAfe5kOHB_-GPPNovB8iCDimCBnTsW6OYQ")
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
   }
 
-    
   @available(iOS 10.0, *)
-  func userNotificationCenter(center: UNUserNotificationCenter, willPresentNotification notification: UNNotification, withCompletionHandler completionHandler: (UNNotificationPresentationOptions) -> Void)
-  {
-      //Handle the notification
+  override func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
       completionHandler([.alert, .sound, .badge])
+  }
+
+  func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
+    GeneratedPluginRegistrant.register(with: engineBridge.pluginRegistry)
   }
 }

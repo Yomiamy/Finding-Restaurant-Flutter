@@ -9,6 +9,7 @@ version: 1.5.0+31
 
 environment:
   sdk: '>=3.10.1 <4.0.0'
+  flutter: '>=3.41.0'
 
 dependencies:
   # UI 元件與介面元件 (UI Components & Layouts)
@@ -71,7 +72,7 @@ dependencies:
   crypto: ^3.0.3 # 加密與雜湊演算法 (MD5, SHA-256 等)
 
   # 開發除錯工具 (Developer Tooling — debug only)
-  flutter_inspector_kit: ^2.2.0 # App 內除錯儀表板 (網路/導航/日誌)，全數以 kDebugMode 圍住
+  flutter_inspector_kit: ^2.3.0 # App 內除錯儀表板 (網路/導航/日誌)，全數以 kDebugMode 圍住
 
   # Standard Flutter SDK and core packages
   flutter:
