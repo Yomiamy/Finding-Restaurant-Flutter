@@ -31,10 +31,12 @@
         <key>UIWindowSceneSessionRoleApplication</key>
         <array>
             <dict>
+                <key>UISceneClassName</key>
+                <string>UIWindowScene</string>
                 <key>UISceneConfigurationName</key>
                 <string>Default Configuration</string>
                 <key>UISceneDelegateClassName</key>
-                <string>$(PRODUCT_MODULE_NAME).FlutterSceneDelegate</string>
+                <string>FlutterSceneDelegate</string>
                 <key>UISceneStoryboardFile</key>
                 <string>Main</string>
             </dict>
@@ -45,7 +47,8 @@
 
 **要點**：
 - `UIApplicationSupportsMultipleScenes` 設為 `false`（不支援 iPad 多視窗，與現有行為一致）
-- `UISceneDelegateClassName` 使用 Flutter 內建的 `FlutterSceneDelegate`（Flutter 3.41+ 提供）
+- `UISceneClassName` 設定為 `UIWindowScene`
+- `UISceneDelegateClassName` 直接使用 Flutter 內建的 `FlutterSceneDelegate`（⚠️ 切勿加上 `$(PRODUCT_MODULE_NAME).` 前綴，否則系統會去 Runner module 找不到該類別）
 - `UISceneStoryboardFile` 指向既有 `Main`（保留現有 storyboard 入口）
 - 保留 `UIMainStoryboardFile` key（向後兼容 iOS 15 以下場景，雖然 Podfile 已設 15.0）
 
@@ -79,8 +82,16 @@
     _ application: UIApplication,
     didFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]?
   ) -> Bool {
+    if #available(iOS 10.0, *) {
+      UNUserNotificationCenter.current().delegate = self
+    }
     GMSServices.provideAPIKey("AIzaSyAfe5kOHB_-GPPNovB8iCDimCBnTsW6OYQ")
     return super.application(application, didFinishLaunchingWithOptions: launchOptions)
+  }
+
+  @available(iOS 10.0, *)
+  override func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+      completionHandler([.alert, .sound, .badge])
   }
 
   func didInitializeImplicitFlutterEngine(_ engineBridge: FlutterImplicitEngineBridge) {
@@ -94,10 +105,9 @@
 1. **新增 `FlutterImplicitEngineDelegate` protocol conformance**
 2. **`GeneratedPluginRegistrant.register(with:)` 搬至 `didInitializeImplicitFlutterEngine`**——從 `self` 改為 `engineBridge.pluginRegistry`
 3. **`GMSServices.provideAPIKey()` 留在 `didFinishLaunchingWithOptions`**——這是 process-level 初始化，不依賴 UI lifecycle，留原處正確
-4. **移除 `UNUserNotificationCenter.current().delegate = self`**——`FlutterAppDelegate` 的 `super.application(...)` 內部已自動設定 notification delegate；遷移後 Flutter framework 在 scene lifecycle 中處理。顯式設定在 `didFinishLaunchingWithOptions` 階段可能與 scene lifecycle 的 delegate 衝突
-5. **移除 `userNotificationCenter(center:willPresentNotification:withCompletionHandler:)` 方法**——使用已棄用的 method signature（缺少 `_` 外部參數標籤），且 `firebase_messaging` plugin 內部已自行處理前景通知展示
+4. **保留 `UNUserNotificationCenter` delegate 的設定與實作**——推播設定屬於 App 啟動級別的服務，與 Scene 無關。**嚴禁移除**，否則會破壞前景推播與 `flutter_local_notifications` 依賴的行為。
 
-**複雜度**：需整合協調（涉及 plugin 註冊時序、notification delegate 所有權）
+**複雜度**：需整合協調（涉及 plugin 註冊時序）
 
 ### T3：驗證構建與功能（機械性）
 
@@ -125,5 +135,5 @@ T1 與 T2 **可並行**（寫入路徑不重疊），T3 依賴兩者都完成。
 | 風險 | 機率 | 緩解 |
 |------|------|------|
 | `FlutterImplicitEngineDelegate` 不存在（Flutter SDK 版本不夠新） | 低（SDK ≥3.10.1 對應 Flutter 3.41+） | T3 構建時立即發現，降級為手動 Scene manifest + 保留原 plugin 註冊方式 |
-| FCM 前景通知失效 | 中 | 移除手動 `UNUserNotificationCenter.delegate = self` 後由 framework 接管；若失效則還原該行 |
+| FCM 前景通知失效 | 極低 | `UNUserNotificationCenter.delegate = self` 已正確保留，理論上不受影響 |
 | Google Maps 初始化失敗 | 極低 | `GMSServices.provideAPIKey` 留在 `didFinishLaunchingWithOptions`，與 UIScene 無關 |

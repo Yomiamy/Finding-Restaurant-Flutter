@@ -31,7 +31,7 @@ Apple 在 WWDC25 宣布：**iOS 26 之後的版本**，使用最新 SDK 構建�
 
 | 套件 | 與 AppDelegate 的交互 | 遷移影響 |
 |------|----------------------|---------|
-| `firebase_messaging` | 需要 `UNUserNotificationCenter.delegate`、`didRegisterForRemoteNotifications` | **中風險**：delegate 設定需移至正確的 lifecycle 階段 |
+| `firebase_messaging` | 需要 `UNUserNotificationCenter.delegate`、`didRegisterForRemoteNotifications` | **中風險**：delegate 設定屬 process-level 初始化，與 UI lifecycle 無關，應保留於 `didFinishLaunchingWithOptions` 以免破壞推播功能 |
 | `google_maps_flutter` | 需要 `GMSServices.provideAPIKey()` | **低風險**：API key 設定與 UI lifecycle 無關，可留在 `didFinishLaunchingWithOptions` |
 | `flutter_local_notifications` | 使用 `UNUserNotificationCenter` | 透過 plugin 自動處理，與 AppDelegate 改動相關 |
 | `google_mobile_ads` | 需要 AdMob App ID（Info.plist `GADApplicationIdentifier`）| **無影響**：純 plist 設定 |
