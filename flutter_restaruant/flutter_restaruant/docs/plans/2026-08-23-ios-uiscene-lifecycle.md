@@ -135,6 +135,6 @@ T1 與 T2 **可並行**（寫入路徑不重疊），T3 依賴兩者都完成。
 
 | 風險 | 機率 | 緩解 |
 |------|------|------|
-| `FlutterImplicitEngineDelegate` 不存在（Flutter SDK 版本不夠新） | 低（SDK ≥3.10.1 對應 Flutter 3.41+） | T3 構建時立即發現，降級為手動 Scene manifest + 保留原 plugin 註冊方式 |
+| `FlutterImplicitEngineDelegate` 不存在（Flutter SDK 版本過舊） | 低 | 已於 `pubspec.yaml` 宣告明確的 `flutter: '>=3.41.0'` 約束（與 Dart SDK `3.10.1` 區分），確保貢獻者若使用舊版 Flutter 會在 `pub get` 時立即被擋下。 |
 | FCM 前景通知失效 | 極低 | `UNUserNotificationCenter.delegate = self` 已正確保留，理論上不受影響 |
 | Google Maps 初始化失敗 | 極低 | `GMSServices.provideAPIKey` 留在 `didFinishLaunchingWithOptions`，與 UIScene 無關 |

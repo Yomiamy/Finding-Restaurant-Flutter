@@ -9,6 +9,7 @@ version: 1.5.0+31
 
 environment:
   sdk: '>=3.10.1 <4.0.0'
+  flutter: '>=3.41.0'
 
 dependencies:
   # UI 元件與介面元件 (UI Components & Layouts)
