@@ -471,7 +471,7 @@ lib/
   * 確保原有之推播（FCM / APNs）、Deep Link（Universal Links）、生物辨識認證與第三方登入在 UIScene 生命週期下無縫運作。
   * 驗證 iOS 模擬器與實機冷啟動、背景喚醒、多工切換與情境恢復。
 
-#### F-0.4 iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (iOS SPM Migration)
+#### F-0.4 iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (iOS SPM Migration) — ✅ 已於 2026-08-24 完成 (混合模式)
 * **背景與痛點**:
   * **CocoaPods 維護終止**：CocoaPods 官方已正式進入維護模式（預計 2026 年底註冊表唯讀），Firebase 官方亦已宣布 iOS SDK 的 CocoaPods 支援自 2026 年 10 月起停止發布新版。
   * **Flutter 強制轉向 SPM**：Flutter 官方明確警告未來版本將強制全面轉向 SPM，並移除 `enable-swift-package-manager: false` 的退出選項（*“Disabling Swift Package Manager will not be allowed in a future version of Flutter.”*）。
@@ -525,7 +525,7 @@ lib/
 | ✅ **訪客模式 (Guest Mode)** | 轉化優化 | 10 | 2.0 | 100% | 1.0 | **20.0** | 18.0 | - | **已完成** |
 | ✅ **Firestore Subcollection 口袋名單** | 資料架構 | 10 | 2.5 | 100% | 1.0 | **25.0** | 22.5 | - | **已完成**（2026-08-19, PR #70） |
 | ✅ **iOS UIScene Lifecycle 支援遷移 (強制性相容)** | 平台遷移 | 10 | 3.0 | 100% | 1.0 | **30.0** | 27.0 | - | **已完成**（2026-08-23） |
-| 🔴 **iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰** | 平台遷移 | 10 | 2.5 | 90% | 1.5 | **15.0** | 19.12 | - | **P0（官方強制遷移）** |
+| ✅ **iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (混合模式)** | 平台遷移 | 10 | 2.5 | 90% | 1.5 | **15.0** | 19.12 | - | **已完成**（2026-08-24，以混合模式完工） |
 | 🔴 **Android Built-in Kotlin 遷移 (移除顯式 KGP)** | 平台遷移 | 10 | 2.5 | 100% | 0.5 | **50.0** | 23.75 | - | **P0（官方棄用警告）** |
 | 🔴 **Flutter SDK 版本遷移 (≥ 3.44.1)** | 基礎設施 | 10 | 2.5 | 100% | 1.0 | **25.0** | 22.5 | - | **P0（基礎設施升級）** |
 | ✅ **移除無謂假延遲 (過濾 2s / 推播 8s)** | 既有修復 | 9 | 1.5 | 100% | 0.5 | **27.0** | 14.25 | - | **已完成** |
@@ -569,7 +569,7 @@ lib/
 |   • [x] ── 訪客模式 Guest Mode (規劃外新增，PR #56)                               |
 |   • [x] P1 Firestore Subcollection 最愛名單重構 ✅ 2026-08-19 (PR #70)            |
 |   • [x] P0 ✅ iOS UIScene Lifecycle 支援遷移 ✅ 2026-08-23                               |
-|   • [ ] P0 🔴 iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰               |
+|   • [x] P0 ✅ iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (混合模式)               |
 |   • [ ] P0 🔴 Android Built-in Kotlin 遷移 (移除顯式 KGP)                             |
 |   • [ ] P0 🔴 Flutter SDK 版本遷移至 3.44.1+                                       |
 |   • [ ] P0 移除硬編碼 API Key ⚠️ 未動；金鑰已入 git 歷史，須撤銷並輪替            |
