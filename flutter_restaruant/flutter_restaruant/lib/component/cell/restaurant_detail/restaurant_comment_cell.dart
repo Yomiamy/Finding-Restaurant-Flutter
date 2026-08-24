@@ -9,38 +9,16 @@ class RestaurantCommentCell extends StatelessWidget {
   static const int _imageW = 100;
   static const int _imageH = 100;
 
-  final List<Widget> _commentWidgets = <Widget>[];
+  final List<ReviewDetailEntity> reviewInfos;
   final ChromeSafariBrowser _browser = ChromeSafariBrowser();
 
   RestaurantCommentCell({
     super.key = const Key('RestaurantCommentCell'),
-    required List<ReviewDetailEntity> reviewInfos,
-  }) {
-    _initBusinessTimeWidgets(reviewInfos);
-  }
+    required this.reviewInfos,
+  });
 
-  void _initBusinessTimeWidgets(List<ReviewDetailEntity> reviewInfos) {
-    for (var reviewInfo in reviewInfos) {
-      String headImgUrl = reviewInfo.user?.imageUrl ?? '';
-      String name = reviewInfo.user?.name ?? '';
-      Widget rateAsset = RatingStars(
-        rating: (reviewInfo.rating ?? 0).toDouble(),
-      );
-      String comment = reviewInfo.text ?? '';
-      String commentUrl = reviewInfo.url ?? '';
-
-      Widget commentWidget = createComment(
-        headImgUrl: headImgUrl,
-        name: name,
-        rateAsset: rateAsset,
-        comment: comment,
-        commentUrl: commentUrl,
-      );
-      _commentWidgets.add(commentWidget);
-    }
-  }
-
-  Widget createComment({
+  Widget _createComment(
+    BuildContext context, {
     required String headImgUrl,
     required String name,
     required Widget rateAsset,
@@ -84,14 +62,18 @@ class RestaurantCommentCell extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: ThemeFontSize.fontSize16,
+                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
                     ),
                     overflow: TextOverflow.ellipsis,
                   ),
                   SizedBox(height: ThemeSize.size20, child: rateAsset),
-                  Text(comment, maxLines: 2, overflow: TextOverflow.ellipsis),
+                  Text(
+                    comment, 
+                    maxLines: 2, 
+                    overflow: TextOverflow.ellipsis,
+                    style: Theme.of(context).textTheme.bodyMedium,
+                  ),
                 ],
               ),
             ),
@@ -102,15 +84,36 @@ class RestaurantCommentCell extends StatelessWidget {
   );
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(
-      left: ThemeSize.space5,
-      right: ThemeSize.space5,
-      top: ThemeSize.space10,
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: _commentWidgets,
-    ),
-  );
+  Widget build(BuildContext context) {
+    List<Widget> commentWidgets = reviewInfos.map((reviewInfo) {
+      String headImgUrl = reviewInfo.user?.imageUrl ?? '';
+      String name = reviewInfo.user?.name ?? '';
+      Widget rateAsset = RatingStars(
+        rating: (reviewInfo.rating ?? 0).toDouble(),
+      );
+      String comment = reviewInfo.text ?? '';
+      String commentUrl = reviewInfo.url ?? '';
+
+      return _createComment(
+        context,
+        headImgUrl: headImgUrl,
+        name: name,
+        rateAsset: rateAsset,
+        comment: comment,
+        commentUrl: commentUrl,
+      );
+    }).toList();
+
+    return Padding(
+      padding: const EdgeInsets.only(
+        left: ThemeSize.space5,
+        right: ThemeSize.space5,
+        top: ThemeSize.space10,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: commentWidgets,
+      ),
+    );
+  }
 }

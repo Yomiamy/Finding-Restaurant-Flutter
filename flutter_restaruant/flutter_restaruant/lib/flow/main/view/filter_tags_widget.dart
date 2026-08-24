@@ -57,12 +57,12 @@ class FilterTagsWidget extends StatelessWidget {
                 child: FilterChip(
                   label: Text(
                     title,
-                    style: const TextStyle(fontSize: ThemeFontSize.fontSize18),
+                    style: Theme.of(context).textTheme.titleMedium,
                   ),
                   selected: true,
                   selectedColor: Theme.of(context).colorScheme.primary,
-                  checkmarkColor: Colors.white,
-                  labelStyle: const TextStyle(color: Colors.white),
+                  checkmarkColor: Theme.of(context).colorScheme.onPrimary,
+                  labelStyle: TextStyle(color: Theme.of(context).colorScheme.onPrimary),
                   onSelected: (_) {
                     context
                         .findAncestorStateOfType<MainPageState>()

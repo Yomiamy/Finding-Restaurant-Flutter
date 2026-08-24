@@ -75,14 +75,14 @@ class RestaurantInfoCell extends StatelessWidget {
                 children: <Widget>[
                   Text(
                     _detailInfo.location?.displayAddressStr ?? '',
-                    style: const TextStyle(fontWeight: FontWeight.w700),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                     overflow: TextOverflow.ellipsis,
                   ),
                   Row(
                     children: <Widget>[
                       Text(
                         S.current.store_phone,
-                        style: const TextStyle(fontWeight: FontWeight.w700),
+                        style: Theme.of(context).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(width: ThemeSize.space10),
                       GestureDetector(
@@ -94,7 +94,7 @@ class RestaurantInfoCell extends StatelessWidget {
                         },
                         child: Text(
                           _detailInfo.phone ?? '',
-                          style: const TextStyle(color: Colors.blue),
+                          style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.primary),
                         ),
                       ),
                     ],
@@ -102,20 +102,19 @@ class RestaurantInfoCell extends StatelessWidget {
                   Text(
                     category,
                     overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.grey),
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(color: Theme.of(context).colorScheme.outline),
                   ),
                   RatingStars(rating: (_detailInfo.rating ?? 0).toDouble()),
                   Text(
                     '${_detailInfo.reviewCount ?? 0}${S.current.review_count_suffix}',
-                    style: const TextStyle(
-                      fontSize: ThemeFontSize.fontSize14,
-                      color: Colors.grey,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: Theme.of(context).colorScheme.outline,
                     ),
                   ),
                   DecoratedBox(
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.all(
+                    decoration: BoxDecoration(
+                      color: Theme.of(context).colorScheme.error,
+                      borderRadius: const BorderRadius.all(
                         Radius.circular(ThemeSize.radiusTag),
                       ),
                     ),
@@ -123,9 +122,8 @@ class RestaurantInfoCell extends StatelessWidget {
                       padding: const EdgeInsets.all(ThemeSize.space3),
                       child: Text(
                         openStatus,
-                        style: const TextStyle(
-                          fontSize: ThemeFontSize.fontSize12,
-                          color: Colors.white,
+                        style: Theme.of(context).textTheme.labelSmall?.copyWith(
+                          color: Theme.of(context).colorScheme.onPrimary,
                         ),
                       ),
                     ),

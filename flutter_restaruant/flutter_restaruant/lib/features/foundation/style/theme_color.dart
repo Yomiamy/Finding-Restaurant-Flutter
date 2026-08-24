@@ -14,4 +14,16 @@ abstract final class ThemeColor {
 
   /// AppBar 上的前景色（返回鍵、標題）。
   static const Color backBtn = Color(0xFFFFFFFF);
+  
+  /// 次要文字、邊框、分隔線色（取代原先的 Colors.grey）。
+  static const Color outline = Colors.grey;
+  
+  /// 錯誤、警示、標籤色（取代原先的 Colors.red）。
+  static const Color error = Colors.red;
+  
+  /// 品牌主色上的文字色（取代原先的 Colors.white）。
+  static const Color onPrimary = Colors.white;
+  
+  /// 頁面與卡片背景色。
+  static const Color surface = Color(0xFFFFFBF7); // 奶油白
 }

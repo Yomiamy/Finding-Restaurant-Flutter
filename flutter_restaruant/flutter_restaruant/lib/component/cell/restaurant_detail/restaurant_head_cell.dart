@@ -61,7 +61,7 @@ class RestaurantHeadCell extends StatelessWidget {
                 right: ThemeSize.space10,
               ),
               child: CircleAvatar(
-                backgroundColor: Colors.white,
+                backgroundColor: Theme.of(context).colorScheme.onPrimary,
                 child: Image.asset(
                   _summaryInfo.favor
                       ? 'images/ic_favor_fill.png'

@@ -43,9 +43,8 @@ class _SignInPageState extends State<SignInPage> {
       appBar: AppBar(
         title: Text(
           S.current.signin_page_title,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: ThemeFontSize.fontSize22,
+          style: Theme.of(context).textTheme.titleLarge?.copyWith(
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
         ),
         // 本頁有兩種進入方式：從 Splash 取代進來（無返回鍵），或訪客從
@@ -146,7 +145,7 @@ class _SignInPageState extends State<SignInPage> {
     child: Row(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
-        const Icon(Icons.mail, color: Colors.grey),
+        Icon(Icons.mail, color: Theme.of(context).colorScheme.outline),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(left: ThemeSize.space10),
@@ -182,7 +181,7 @@ class _SignInPageState extends State<SignInPage> {
     child: Row(
       mainAxisSize: MainAxisSize.max,
       children: <Widget>[
-        const Icon(Icons.lock, color: Colors.grey),
+        Icon(Icons.lock, color: Theme.of(context).colorScheme.outline),
         Expanded(
           child: Padding(
             padding: const EdgeInsets.only(left: ThemeSize.space10),
@@ -215,13 +214,12 @@ class _SignInPageState extends State<SignInPage> {
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
         PlatformElevatedButton(
-          color: const Color.fromARGB(255, 5, 97, 245),
+          color: Theme.of(context).colorScheme.primary,
           child: Text(
             S.current.signin_btn_title,
-            style: const TextStyle(
-              fontSize: ThemeFontSize.fontSize18,
+            style: Theme.of(context).textTheme.titleMedium?.copyWith(
               fontWeight: FontWeight.bold,
-              color: Colors.white,
+              color: Theme.of(context).colorScheme.onPrimary,
             ),
           ),
           onPressed: () {
@@ -238,9 +236,8 @@ class _SignInPageState extends State<SignInPage> {
             PlatformTextButton(
               child: Text(
                 S.current.signup_title,
-                style: const TextStyle(
-                  fontSize: ThemeFontSize.fontSize14,
-                  color: Colors.grey,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.outline,
                 ),
               ),
               onPressed: () {
@@ -256,9 +253,8 @@ class _SignInPageState extends State<SignInPage> {
             PlatformTextButton(
               child: Text(
                 S.current.continue_as_guest,
-                style: const TextStyle(
-                  fontSize: ThemeFontSize.fontSize14,
-                  color: Colors.grey,
+                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                  color: Theme.of(context).colorScheme.outline,
                 ),
               ),
               onPressed: () async {

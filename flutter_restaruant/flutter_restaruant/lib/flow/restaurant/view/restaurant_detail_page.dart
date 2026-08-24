@@ -69,9 +69,8 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
             if (state is Success) {
               return Text(
                 state.detailInfo.name ?? '',
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontSize: ThemeFontSize.fontSize22,
+                style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               );
             } else {
@@ -79,7 +78,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
             }
           },
         ),
-        backgroundColor: ThemeColor.appPrimary,
+        backgroundColor: Theme.of(context).colorScheme.primary,
       ),
       body: Padding(
         padding: const EdgeInsets.only(bottom: ThemeSize.space10),

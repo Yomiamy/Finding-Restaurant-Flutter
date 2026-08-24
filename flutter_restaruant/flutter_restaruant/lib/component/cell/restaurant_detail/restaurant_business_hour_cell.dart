@@ -90,12 +90,11 @@ class RestaurantBusinessHourCell extends StatelessWidget {
         SizedBox(
           width: MediaQuery.of(context).size.width,
           child: DecoratedBox(
-            decoration: const BoxDecoration(color: Colors.grey),
+            decoration: BoxDecoration(color: Theme.of(context).colorScheme.outline),
             child: Center(
               child: Text(
                 S.current.business_hour,
-                style: const TextStyle(
-                  fontSize: ThemeFontSize.fontSize18,
+                style: Theme.of(context).textTheme.titleMedium?.copyWith(
                   fontWeight: FontWeight.bold,
                 ),
               ),
