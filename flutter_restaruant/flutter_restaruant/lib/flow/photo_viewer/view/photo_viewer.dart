@@ -37,9 +37,8 @@ class _PhotoViewerState extends State<PhotoViewer> {
         ),
         title: Text(
           S.current.photo_viewer_title,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: ThemeFontSize.fontSize22,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
         ),
         backgroundColor: ThemeColor.appPrimary,

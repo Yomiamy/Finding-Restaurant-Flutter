@@ -49,9 +49,8 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         title: PlatformText(
           S.current.settings_title,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: ThemeFontSize.fontSize22,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
         ),
         backgroundColor: ThemeColor.appPrimary,
@@ -131,10 +130,9 @@ class _SettingsPageState extends State<SettingsPage> {
               color: ThemeColor.appPrimary,
               child: Text(
                 S.current.signin_or_signup_title,
-                style: const TextStyle(
-                  fontSize: ThemeFontSize.fontSize18,
+                style: TextStyle(
                   fontWeight: FontWeight.bold,
-                  color: Colors.white,
+                  color: Theme.of(context).colorScheme.onPrimary,
                 ),
               ),
               onPressed: () =>
@@ -147,13 +145,12 @@ class _SettingsPageState extends State<SettingsPage> {
               SizedBox(
                 height: 50,
                 child: PlatformElevatedButton(
-                  color: Colors.red,
+                  color: Theme.of(context).colorScheme.error,
                   child: Text(
                     S.current.logout_section_title,
-                    style: const TextStyle(
-                      fontSize: ThemeFontSize.fontSize18,
+                    style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Colors.white,
+                      color: Theme.of(context).colorScheme.onPrimary,
                     ),
                   ),
                   onPressed: () {
@@ -173,10 +170,9 @@ class _SettingsPageState extends State<SettingsPage> {
                 },
                 child: Text(
                   S.current.delete_account_title,
-                  style: const TextStyle(
-                    fontSize: ThemeFontSize.fontSize16,
+                  style: TextStyle(
                     fontWeight: FontWeight.bold,
-                    color: Colors.red,
+                    color: Theme.of(context).colorScheme.error,
                   ),
                 ),
               ),

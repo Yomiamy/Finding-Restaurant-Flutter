@@ -49,7 +49,7 @@ class _BannerADState extends State<BannerAD> {
     }
 
     return Container(
-      color: Colors.grey,
+      color: Theme.of(context).colorScheme.outline,
       width: loadedSize.width.toDouble(),
       height: loadedSize.height.toDouble(),
       child: AdWidget(ad: loadedBanner),

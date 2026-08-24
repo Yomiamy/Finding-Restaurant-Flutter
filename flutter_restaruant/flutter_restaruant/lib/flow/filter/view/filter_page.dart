@@ -66,18 +66,16 @@ class _FilterPageState extends State<FilterPage> {
             },
             child: Text(
               S.current.apply,
-              style: const TextStyle(
-                color: Colors.white,
-                fontSize: ThemeFontSize.fontSize18,
+              style: TextStyle(
+                color: Theme.of(context).colorScheme.onPrimary,
               ),
             ),
           ),
         ],
         title: Text(
           S.current.filter_rules,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: ThemeFontSize.fontSize22,
+          style: TextStyle(
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
         ),
         backgroundColor: ThemeColor.appPrimary,
@@ -92,9 +90,8 @@ class _FilterPageState extends State<FilterPage> {
             ),
             child: Text(
               S.current.filter_price,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: ThemeFontSize.fontSize22,
               ),
             ),
           ),
@@ -115,9 +112,8 @@ class _FilterPageState extends State<FilterPage> {
             ),
             child: Text(
               S.current.filter_business_hour,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: ThemeFontSize.fontSize22,
               ),
             ),
           ),
@@ -142,9 +138,8 @@ class _FilterPageState extends State<FilterPage> {
             ),
             child: Text(
               S.current.filter_sorting_rule,
-              style: const TextStyle(
+              style: TextStyle(
                 fontWeight: FontWeight.bold,
-                fontSize: ThemeFontSize.fontSize22,
               ),
             ),
           ),

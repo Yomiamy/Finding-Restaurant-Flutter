@@ -43,11 +43,10 @@ class _FavorPageState extends State<FavorPage> {
             color: ThemeColor.backBtn,
           ),
         ),
-        title: const Text(
+        title: Text(
           UIConstants.favorTitle,
           style: TextStyle(
-            color: Colors.white,
-            fontSize: ThemeFontSize.fontSize24,
+            color: Theme.of(context).colorScheme.onPrimary,
           ),
         ),
         backgroundColor: ThemeColor.appPrimary,
