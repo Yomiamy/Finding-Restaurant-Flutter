@@ -150,7 +150,7 @@ class _SettingsPageState extends State<SettingsPage> {
                     S.current.logout_section_title,
                     style: TextStyle(
                       fontWeight: FontWeight.bold,
-                      color: Theme.of(context).colorScheme.onPrimary,
+                      color: Theme.of(context).colorScheme.onError,
                     ),
                   ),
                   onPressed: () {

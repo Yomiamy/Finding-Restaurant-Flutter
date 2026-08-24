@@ -21,6 +21,9 @@ abstract final class ThemeColor {
   /// 錯誤、警示、標籤色（取代原先的 Colors.red）。
   static const Color error = Colors.red;
   
+  /// 錯誤背景上的文字色。
+  static const Color onError = Colors.white;
+
   /// 品牌主色上的文字色（取代原先的 Colors.white）。
   static const Color onPrimary = Colors.white;
   

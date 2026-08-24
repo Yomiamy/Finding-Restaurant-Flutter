@@ -123,7 +123,7 @@ class RestaurantInfoCell extends StatelessWidget {
                       child: Text(
                         openStatus,
                         style: Theme.of(context).textTheme.labelSmall?.copyWith(
-                          color: Theme.of(context).colorScheme.onPrimary,
+                          color: Theme.of(context).colorScheme.onError,
                         ),
                       ),
                     ),

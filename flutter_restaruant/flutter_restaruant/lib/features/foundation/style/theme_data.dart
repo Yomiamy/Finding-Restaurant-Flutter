@@ -17,6 +17,7 @@ abstract final class AppThemeData {
       primary: ThemeColor.appPrimary, // 強制覆寫避免 M3 fromSeed 變濁
       outline: ThemeColor.outline,
       error: ThemeColor.error,
+      onError: ThemeColor.onError,
       onPrimary: ThemeColor.onPrimary,
       surface: ThemeColor.surface, // 奶油白
     ),
