@@ -79,7 +79,7 @@
 
 | 項目 | 現況 | 風險 / 影響 |
 | :--- | :--- | :--- |
-| **Flutter SDK 版本遷移 (≥ 3.44.1)** | 目前位於 `3.41.9` / Dart `3.11.5` | 缺少最新效能優化、第三方套件相容性限制，需升級至最新 stable |
+| ✅ **Flutter SDK 版本遷移 (≥ 3.44.1)** | ✅ **已於 2026-08-26 完成** | 已更新 pubspec.yaml 及 CI 工作流程至 3.44.1 |
 | **iOS Swift Package Manager (SPM) 遷移** | 目前透過 `pubspec.yaml` 暫時關閉 SPM 回退 CocoaPods | **官方強制性遷移**：CocoaPods 即將唯讀且 Firebase 停止 CocoaPods 發布，Flutter 未來將移除關閉 SPM 選項，需等待/升級套件相容後完成全面遷移 |
 | **Android Built-in Kotlin 遷移** | 已升級 Kotlin 2.2.20 消除過舊警告，但仍使用顯式 KGP | **官方棄用警告**：Flutter 未來將強制推行 Built-in Kotlin 並移除 KGP 支援，需在未來升級中徹底移除顯式 KGP 依賴 |
 | **硬編碼 API Key** | 僅改名為 `camelCase`，明碼仍在 `constants.dart:30,40` | 金鑰已入 git 歷史，須**撤銷並輪替**，非搬移可解 |
@@ -527,7 +527,7 @@ lib/
 | ✅ **iOS UIScene Lifecycle 支援遷移 (強制性相容)** | 平台遷移 | 10 | 3.0 | 100% | 1.0 | **30.0** | 27.0 | - | **已完成**（2026-08-23） |
 | ✅ **iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (混合模式)** | 平台遷移 | 10 | 2.5 | 90% | 1.5 | **15.0** | 19.12 | - | **已完成**（2026-08-24，以混合模式完工） |
 | 🔴 **Android Built-in Kotlin 遷移 (移除顯式 KGP)** | 平台遷移 | 10 | 2.5 | 100% | 0.5 | **50.0** | 23.75 | - | **P0（官方棄用警告）** |
-| 🔴 **Flutter SDK 版本遷移 (≥ 3.44.1)** | 基礎設施 | 10 | 2.5 | 100% | 1.0 | **25.0** | 22.5 | - | **P0（基礎設施升級）** |
+| ✅ **Flutter SDK 版本遷移 (≥ 3.44.1)** | 基礎設施 | 10 | 2.5 | 100% | 1.0 | **25.0** | 22.5 | - | **P0（基礎設施升級）** |
 | ✅ **移除無謂假延遲 (過濾 2s / 推播 8s)** | 既有修復 | 9 | 1.5 | 100% | 0.5 | **27.0** | 14.25 | - | **已完成** |
 | ✅ **`MapWidget` 實作 `didUpdateWidget` 連動 Marker** | 既有修復 | 8 | 2.0 | 100% | 0.5 | **32.0** | 19.0 | - | **已完成** |
 | 🔴 **修復地圖模式定位按鈕遮擋問題** | 既有修復 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | - | **P0** |
@@ -571,7 +571,7 @@ lib/
 |   • [x] P0 ✅ iOS UIScene Lifecycle 支援遷移 ✅ 2026-08-23                               |
 |   • [x] P0 ✅ iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (混合模式)               |
 |   • [ ] P0 🔴 Android Built-in Kotlin 遷移 (移除顯式 KGP)                             |
-|   • [ ] P0 🔴 Flutter SDK 版本遷移至 3.44.1+                                       |
+|   • [x] P0 ✅ Flutter SDK 版本遷移至 3.44.1+                                       |
 |   • [ ] P0 移除硬編碼 API Key ⚠️ 未動；金鑰已入 git 歷史，須撤銷並輪替            |
 |   • [x] P0 移除無謂假延遲 (過濾 2s / 推播導航 8s) ✅ 實查已清除                   |
 |   • [x] P0 `MapWidget` 實作 `didUpdateWidget` 使 Marker 連動列表 ✅ 實查已實作    |
