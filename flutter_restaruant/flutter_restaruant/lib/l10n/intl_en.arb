@@ -62,5 +62,6 @@
   "signin_or_signup_title": "SignIn / SignUp",
   "empty_data_title": "No Data Available",
   "empty_data_subtitle": "Try adjusting your keywords or filters",
-  "empty_data_retry": "Retry"
+  "empty_data_retry": "Retry",
+  "comments": "Reviews"
 }

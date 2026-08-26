@@ -62,5 +62,6 @@
   "signin_or_signup_title": "登入 / 註冊",
   "empty_data_title": "目前無任何資料",
   "empty_data_subtitle": "試著調整關鍵字或過濾條件",
-  "empty_data_retry": "重新嘗試"
+  "empty_data_retry": "重新嘗試",
+  "comments": "評論"
 }

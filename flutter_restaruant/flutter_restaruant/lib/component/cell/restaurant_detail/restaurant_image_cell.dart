@@ -13,36 +13,56 @@ class RestaurantImageCell extends StatelessWidget {
     : _photos = photos;
 
   @override
-  Widget build(BuildContext context) => Container(
-    padding: const EdgeInsets.only(top: ThemeSize.space10),
-    height: MediaQuery.of(context).size.width / 3,
-    child: ListView.builder(
-      scrollDirection: Axis.horizontal,
-      itemCount: _photos.length,
-      itemBuilder: (context, index) => Padding(
-        padding: const EdgeInsets.symmetric(horizontal: ThemeSize.space5),
-        child: GestureDetector(
-          onTap: () {
-            String photoUrl = _photos[index];
-            Tuple2 arguments = Tuple2<String, dynamic>(photoUrl, null);
+  Widget build(BuildContext context) {
+    if (_photos.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
-            Navigator.of(
-              context,
-            ).pushNamed(PhotoViewer.routeName, arguments: arguments);
-          },
-          child: FadeInImage.assetNetwork(
-            placeholder: UIConstants.noImage,
-            image: _photos[index],
-            imageCacheHeight: RestaurantImageCell._imageH,
-            imageCacheWidth: MediaQuery.of(context).size.width.toInt(),
-            placeholderCacheHeight: RestaurantImageCell._imageH,
-            placeholderCacheWidth: MediaQuery.of(context).size.width.toInt(),
-            fit: BoxFit.fill,
-            width: MediaQuery.of(context).size.width / 3,
-            height: MediaQuery.of(context).size.width / 3,
+    final double itemSize = MediaQuery.of(context).size.width / 3.2;
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: ThemeSize.space12,
+        vertical: ThemeSize.space8,
+      ),
+      child: SizedBox(
+        height: itemSize,
+        child: ListView.builder(
+          scrollDirection: Axis.horizontal,
+          itemCount: _photos.length,
+          itemBuilder: (context, index) => Padding(
+            padding: const EdgeInsets.only(right: ThemeSize.space8),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(ThemeSize.radius8),
+              child: GestureDetector(
+                onTap: () {
+                  final String photoUrl = _photos[index];
+                  final arguments = Tuple2<String, dynamic>(photoUrl, null);
+
+                  Navigator.of(
+                    context,
+                  ).pushNamed(PhotoViewer.routeName, arguments: arguments);
+                },
+                child: FadeInImage.assetNetwork(
+                  placeholder: UIConstants.noImage,
+                  imageErrorBuilder: (context, error, trace) =>
+                      Image.asset(UIConstants.noImage, fit: BoxFit.cover),
+                  image: _photos[index],
+                  imageCacheHeight: RestaurantImageCell._imageH,
+                  imageCacheWidth: MediaQuery.of(context).size.width.toInt(),
+                  placeholderCacheHeight: RestaurantImageCell._imageH,
+                  placeholderCacheWidth: MediaQuery.of(
+                    context,
+                  ).size.width.toInt(),
+                  fit: BoxFit.cover,
+                  width: itemSize,
+                  height: itemSize,
+                ),
+              ),
+            ),
           ),
         ),
       ),
-    ),
-  );
+    );
+  }
 }

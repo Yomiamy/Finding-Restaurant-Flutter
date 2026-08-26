@@ -25,6 +25,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "apply": MessageLookupByLibrary.simpleMessage("Apply"),
     "business_hour": MessageLookupByLibrary.simpleMessage("Business Hour"),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+    "comments": MessageLookupByLibrary.simpleMessage("Reviews"),
     "confirm": MessageLookupByLibrary.simpleMessage("Ok"),
     "continue_as_guest": MessageLookupByLibrary.simpleMessage(
       "Continue As Guest",

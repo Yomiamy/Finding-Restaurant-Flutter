@@ -14,60 +14,8 @@ import 'package:flutter/widgets.dart';
 class $ImagesGen {
   const $ImagesGen();
 
-  /// File path: images/Star_rating_0.5_of_5.png
-  AssetGenImage get starRating05Of5 =>
-      const AssetGenImage('images/Star_rating_0.5_of_5.png');
-
-  /// File path: images/Star_rating_0_of_5.png
-  AssetGenImage get starRating0Of5 =>
-      const AssetGenImage('images/Star_rating_0_of_5.png');
-
-  /// File path: images/Star_rating_1.5_of_5.png
-  AssetGenImage get starRating15Of5 =>
-      const AssetGenImage('images/Star_rating_1.5_of_5.png');
-
-  /// File path: images/Star_rating_1_of_5.png
-  AssetGenImage get starRating1Of5 =>
-      const AssetGenImage('images/Star_rating_1_of_5.png');
-
-  /// File path: images/Star_rating_2.5_of_5.png
-  AssetGenImage get starRating25Of5 =>
-      const AssetGenImage('images/Star_rating_2.5_of_5.png');
-
-  /// File path: images/Star_rating_2_of_5.png
-  AssetGenImage get starRating2Of5 =>
-      const AssetGenImage('images/Star_rating_2_of_5.png');
-
-  /// File path: images/Star_rating_3.5_of_5.png
-  AssetGenImage get starRating35Of5 =>
-      const AssetGenImage('images/Star_rating_3.5_of_5.png');
-
-  /// File path: images/Star_rating_3_of_5.png
-  AssetGenImage get starRating3Of5 =>
-      const AssetGenImage('images/Star_rating_3_of_5.png');
-
-  /// File path: images/Star_rating_4.5_of_5.png
-  AssetGenImage get starRating45Of5 =>
-      const AssetGenImage('images/Star_rating_4.5_of_5.png');
-
-  /// File path: images/Star_rating_4_of_5.png
-  AssetGenImage get starRating4Of5 =>
-      const AssetGenImage('images/Star_rating_4_of_5.png');
-
-  /// File path: images/Star_rating_5_of_5.png
-  AssetGenImage get starRating5Of5 =>
-      const AssetGenImage('images/Star_rating_5_of_5.png');
-
   /// File path: images/empty.png
   AssetGenImage get empty => const AssetGenImage('images/empty.png');
-
-  /// File path: images/ic_favor_empty.png
-  AssetGenImage get icFavorEmpty =>
-      const AssetGenImage('images/ic_favor_empty.png');
-
-  /// File path: images/ic_favor_fill.png
-  AssetGenImage get icFavorFill =>
-      const AssetGenImage('images/ic_favor_fill.png');
 
   /// File path: images/icon_setting_icon.gif
   AssetGenImage get iconSettingIcon =>
@@ -83,20 +31,7 @@ class $ImagesGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [
-    starRating05Of5,
-    starRating0Of5,
-    starRating15Of5,
-    starRating1Of5,
-    starRating25Of5,
-    starRating2Of5,
-    starRating35Of5,
-    starRating3Of5,
-    starRating45Of5,
-    starRating4Of5,
-    starRating5Of5,
     empty,
-    icFavorEmpty,
-    icFavorFill,
     iconSettingIcon,
     iconSigninupIcon,
     launchImage,
