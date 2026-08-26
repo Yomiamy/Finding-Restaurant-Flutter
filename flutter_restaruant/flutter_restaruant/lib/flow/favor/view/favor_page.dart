@@ -1,14 +1,12 @@
-import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import '../../../component/component_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
 import '../bloc/bloc_barrel.dart';
 import '../../restaurant/view/view_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
-import '../../../features/foundation/constants/constants_barrel.dart';
+import '../../../generated/l10n.dart';
 
 class FavorPage extends StatefulWidget {
   static const routeName = '/FavorPage';
@@ -34,20 +32,16 @@ class _FavorPageState extends State<FavorPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        leading: PlatformIconButton(
-          padding: const EdgeInsets.all(ThemeSize.zero),
+        leading: IconButton(
+          padding: EdgeInsets.zero,
           onPressed: () => Navigator.of(context).pop(),
-          materialIcon: const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
-          cupertinoIcon: const Icon(
-            CupertinoIcons.back,
-            color: ThemeColor.backBtn,
-          ),
+          icon: const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
         ),
-        title: const Text(
-          UIConstants.favorTitle,
-          style: TextStyle(
+        title: Text(
+          S.current.favorite_stores,
+          style: const TextStyle(
             color: Colors.white,
-            fontSize: ThemeFontSize.fontSize24,
+            fontSize: ThemeFontSize.fontSize22,
           ),
         ),
         backgroundColor: ThemeColor.appPrimary,

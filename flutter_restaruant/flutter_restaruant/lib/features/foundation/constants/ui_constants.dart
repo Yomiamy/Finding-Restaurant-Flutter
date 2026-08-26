@@ -9,11 +9,16 @@ class UIConstants {
 
   /// [UI]
   static const appTitle = '尋找餐廳';
+
+  @Deprecated('Use S.current instead')
   static const loginTitle = '登入';
+
+  @Deprecated('Use S.current.favorite_stores instead')
   static const favorTitle = '我喜好的店家';
 
   static const String noImage = 'images/empty.png';
 
+  @Deprecated('Use SizedBox.shrink() directly instead')
   static const emptyWidget = SizedBox(height: ThemeSize.zero);
 
   static const mapDefaultLocation = LatLng(25.048036, 121.517063);

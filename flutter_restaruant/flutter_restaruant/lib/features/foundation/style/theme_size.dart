@@ -15,6 +15,7 @@ abstract final class ThemeSize {
   static const double space5 = 5;
   static const double space8 = 8;
   static const double space10 = 10;
+  static const double space12 = 12;
   static const double space15 = 15;
   static const double space16 = 16;
   static const double space20 = 20;
@@ -27,6 +28,7 @@ abstract final class ThemeSize {
   // 圓角 (Radius)
   // ────────────────────────────────────────────
   static const double radius8 = 8;
+  static const double radius12 = 12;
   static const double radiusTag = 15;
 
   // ────────────────────────────────────────────

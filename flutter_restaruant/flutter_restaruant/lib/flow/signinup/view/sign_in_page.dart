@@ -8,7 +8,6 @@ import '../bloc/bloc_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../../../manager/manager_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
-import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../../main/view/view_barrel.dart';
@@ -124,7 +123,7 @@ class _SignInPageState extends State<SignInPage> {
       ),
       (state is InProgress)
           ? const Center(child: LoadingWidget(text: ''))
-          : UIConstants.emptyWidget,
+          : const SizedBox.shrink(),
     ],
   );
 
@@ -291,7 +290,7 @@ class _SignInPageState extends State<SignInPage> {
               text: S.current.signinup_with_apple,
               onPressed: () => _signInBloc.add(AppleSignInEvent()),
             )
-          : UIConstants.emptyWidget,
+          : const SizedBox.shrink(),
     ],
   );
 }
