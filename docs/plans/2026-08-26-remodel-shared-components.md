@@ -1,7 +1,7 @@
 # S2 — 共用元件重塑 (RestaurantItemCell & EmptyDataWidget) 實作計畫
 
 > **文件狀態**：STAGE 0b 實作計畫 (How)  
-> **依據規格**：[`docs/features/2026-08-26-remodel-shared-components.md`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/docs/features/2026-08-26-remodel-shared-components.md)  
+> **依據規格**：[`docs/features/2026-08-26-remodel-shared-components.md`](../features/2026-08-26-remodel-shared-components.md)  
 > **撰寫日期**：2026-08-26  
 
 ---
