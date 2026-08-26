@@ -533,6 +533,31 @@ class S {
       args: [],
     );
   }
+
+  /// `No Data Available`
+  String get empty_data_title {
+    return Intl.message(
+      'No Data Available',
+      name: 'empty_data_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Try adjusting your keywords or filters`
+  String get empty_data_subtitle {
+    return Intl.message(
+      'Try adjusting your keywords or filters',
+      name: 'empty_data_subtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Retry`
+  String get empty_data_retry {
+    return Intl.message('Retry', name: 'empty_data_retry', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

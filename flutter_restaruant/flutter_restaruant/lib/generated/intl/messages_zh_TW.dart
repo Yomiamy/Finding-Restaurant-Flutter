@@ -44,6 +44,9 @@ class MessageLookup extends MessageLookupByLibrary {
     "email_signup_success_hint_title": MessageLookupByLibrary.simpleMessage(
       "Email帳號建立成功",
     ),
+    "empty_data_retry": MessageLookupByLibrary.simpleMessage("重新嘗試"),
+    "empty_data_subtitle": MessageLookupByLibrary.simpleMessage("試著調整關鍵字或過濾條件"),
+    "empty_data_title": MessageLookupByLibrary.simpleMessage("目前無任何資料"),
     "error": MessageLookupByLibrary.simpleMessage("錯誤"),
     "error_and_retry": MessageLookupByLibrary.simpleMessage("發生錯誤請再試一次"),
     "favorite_store_add": MessageLookupByLibrary.simpleMessage("新增最愛店家"),
