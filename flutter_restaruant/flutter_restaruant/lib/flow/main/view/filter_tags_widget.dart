@@ -6,7 +6,6 @@ import '../bloc/bloc_barrel.dart';
 import '../../../model/model_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 
-
 import 'main_page.dart';
 
 class FilterTagsWidget extends StatelessWidget {
