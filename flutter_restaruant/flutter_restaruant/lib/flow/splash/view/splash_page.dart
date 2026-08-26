@@ -21,7 +21,6 @@ class _SplashPageState extends State<SplashPage> {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
       // Waiting building is finish and run.
-      await Future.delayed(const Duration(seconds: 3));
       if (!mounted) return;
 
       // 訪客已在前次啟動選擇跳過登入，直接進主畫面。
