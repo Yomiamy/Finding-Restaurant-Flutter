@@ -176,7 +176,10 @@ void main() {
 
       // 巢狀結構必須是 Map/List 而非 DTO 物件。
       expect(payload['categories'], isA<List<dynamic>>());
-      expect((payload['categories'] as List).first, isA<Map<String, dynamic>>());
+      expect(
+        (payload['categories'] as List).first,
+        isA<Map<String, dynamic>>(),
+      );
       expect(payload['location'], isA<Map<String, dynamic>>());
       expect(payload['coordinates'], isA<Map<String, dynamic>>());
 

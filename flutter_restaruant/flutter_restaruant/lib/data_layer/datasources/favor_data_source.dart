@@ -32,9 +32,11 @@ class FavorDataSource {
   final FirebaseFirestore? _firestoreOverride;
 
   FavorDataSource({FirebaseFirestore? firestore})
-      : _firestoreOverride = firestore;
+    : _firestoreOverride = firestore;
 
-  FirebaseFirestore get _firestore => _firestoreOverride ?? FirebaseFirestore.instance;
+  FirebaseFirestore get _firestore =>
+      _firestoreOverride ?? FirebaseFirestore.instance;
+
   /// uid would keep pointing at the previous user after a sign-out/sign-in.
   String get _uid => SignInManager().accountDto?.uid ?? '';
 
@@ -175,10 +177,12 @@ class FavorDataSource {
   }
 
   Future<void> _runLegacyMigration(String uid) async {
-    DocumentReference legacyDoc =
-        _firestore.collection(favorCollectionName).doc(uid);
-    CollectionReference subCollection =
-        legacyDoc.collection(itemsSubcollectionName);
+    DocumentReference legacyDoc = _firestore
+        .collection(favorCollectionName)
+        .doc(uid);
+    CollectionReference subCollection = legacyDoc.collection(
+      itemsSubcollectionName,
+    );
 
     try {
       DocumentSnapshot snapshot = await legacyDoc.get();
@@ -194,9 +198,8 @@ class FavorDataSource {
 
       for (int i = 0; i < entries.length; i += _batchLimit) {
         WriteBatch batch = _firestore.batch();
-        for (MapEntry<String, dynamic> entry in entries.skip(i).take(
-          _batchLimit,
-        )) {
+        for (MapEntry<String, dynamic> entry
+            in entries.skip(i).take(_batchLimit)) {
           Map<String, dynamic>? decoded = _decodeLegacyEntry(entry);
 
           // 單筆壞資料不該擋住其餘幾百筆——跳過並記錄即可。

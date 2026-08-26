@@ -27,7 +27,9 @@ void main() {
     testWidgets('runAfterFrame 在該幀後執行 action', (tester) async {
       var called = false;
       await tester.pumpWidget(
-        _HostWidget(onState: (state) => state.runAfterFrame(() => called = true)),
+        _HostWidget(
+          onState: (state) => state.runAfterFrame(() => called = true),
+        ),
       );
 
       expect(called, isTrue);

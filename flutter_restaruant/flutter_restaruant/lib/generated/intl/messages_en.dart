@@ -50,6 +50,13 @@ class MessageLookup extends MessageLookupByLibrary {
     "email_signup_success_hint_title": MessageLookupByLibrary.simpleMessage(
       "Email signup successfully",
     ),
+    "empty_data_retry": MessageLookupByLibrary.simpleMessage("Retry"),
+    "empty_data_subtitle": MessageLookupByLibrary.simpleMessage(
+      "Try adjusting your keywords or filters",
+    ),
+    "empty_data_title": MessageLookupByLibrary.simpleMessage(
+      "No Data Available",
+    ),
     "error": MessageLookupByLibrary.simpleMessage("Error"),
     "error_and_retry": MessageLookupByLibrary.simpleMessage(
       "Please retry again.",

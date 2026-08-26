@@ -18,6 +18,4 @@ class UIConstants {
 
   static const mapDefaultLocation = LatLng(25.048036, 121.517063);
   static const mapCenterLocMarkId = 'MAP_CENTER_LOC_MARK_ID';
-
-
 }

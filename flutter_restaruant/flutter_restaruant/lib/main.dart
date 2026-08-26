@@ -57,7 +57,6 @@ class FindingRestaruantApp extends StatelessWidget {
     navigatorObservers: kDebugMode && inspector != null
         ? [inspector!.navigatorObserver]
         : const [],
-    locale: const Locale('zh', 'TW'),
     localizationsDelegates: const [
       S.delegate,
       GlobalWidgetsLocalizations.delegate,

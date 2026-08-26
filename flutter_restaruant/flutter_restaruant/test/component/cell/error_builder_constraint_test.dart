@@ -37,11 +37,7 @@ void main() {
             width: 200,
             child: Row(
               children: <Widget>[
-                SizedBox(
-                  width: 100,
-                  height: 100,
-                  child: _BigImageStub(),
-                ),
+                SizedBox(width: 100, height: 100, child: _BigImageStub()),
                 Expanded(child: SizedBox()),
               ],
             ),

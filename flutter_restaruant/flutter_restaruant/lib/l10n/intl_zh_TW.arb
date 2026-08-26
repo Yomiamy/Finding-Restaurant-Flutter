@@ -59,5 +59,8 @@
   "signinup_with_apple": "使用Apple繼續",
   "signinup_with_apple_hint_msg": "Apple登入成功",
   "continue_as_guest": "訪客模式",
-  "signin_or_signup_title": "登入 / 註冊"
+  "signin_or_signup_title": "登入 / 註冊",
+  "empty_data_title": "目前無任何資料",
+  "empty_data_subtitle": "試著調整關鍵字或過濾條件",
+  "empty_data_retry": "重新嘗試"
 }

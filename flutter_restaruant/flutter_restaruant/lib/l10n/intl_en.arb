@@ -59,5 +59,8 @@
   "signinup_with_apple": "Continue with Apple",
   "signinup_with_apple_hint_msg": "Apple SignIn",
   "continue_as_guest": "Continue As Guest",
-  "signin_or_signup_title": "SignIn / SignUp"
+  "signin_or_signup_title": "SignIn / SignUp",
+  "empty_data_title": "No Data Available",
+  "empty_data_subtitle": "Try adjusting your keywords or filters",
+  "empty_data_retry": "Retry"
 }
