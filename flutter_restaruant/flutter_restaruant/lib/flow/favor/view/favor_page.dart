@@ -95,7 +95,7 @@ class _FavorPageState extends State<FavorPage> {
               },
             );
           } else {
-            return const EmptyDataWidget();
+            return EmptyDataWidget.withDefaults();
           }
         },
       ),

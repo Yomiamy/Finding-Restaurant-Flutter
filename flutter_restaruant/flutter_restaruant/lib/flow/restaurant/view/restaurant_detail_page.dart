@@ -124,7 +124,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                 ],
               );
             } else {
-              return const EmptyDataWidget();
+              return EmptyDataWidget.withDefaults();
             }
           },
         ),

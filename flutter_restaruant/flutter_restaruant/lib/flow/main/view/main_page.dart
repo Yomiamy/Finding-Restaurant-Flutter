@@ -13,7 +13,6 @@ import '../../../generated/l10n.dart';
 import '../../../model/model_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 
-
 import '../bloc/bloc_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 
@@ -127,7 +126,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         }
 
         if (_summaryInfos.isEmpty) {
-          return const EmptyDataWidget();
+          return EmptyDataWidget.withDefaults();
         }
 
         // display restaurant list
