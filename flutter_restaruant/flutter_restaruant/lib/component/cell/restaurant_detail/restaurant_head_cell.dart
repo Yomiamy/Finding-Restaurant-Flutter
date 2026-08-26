@@ -8,7 +8,7 @@ import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/foundation/constants/constants_barrel.dart';
 
 class RestaurantHeadCell extends StatelessWidget {
-  static const int headImageH = 200;
+  static const int headImageH = 220;
 
   final String _imageUrl;
   final RestaurantEntity _summaryInfo;
@@ -27,48 +27,50 @@ class RestaurantHeadCell extends StatelessWidget {
       children: <Widget>[
         FadeInImage.assetNetwork(
           placeholder: UIConstants.noImage,
-          // FadeInImage 的 width/height 不會傳給 errorBuilder 回傳的 widget，
-          // 未約束時會以原圖尺寸撐開外層 Stack，把收藏按鈕推出畫面。
           imageErrorBuilder: (context, error, trace) => Image.asset(
             UIConstants.noImage,
             width: MediaQuery.of(context).size.width,
             height: RestaurantHeadCell.headImageH.toDouble(),
-            fit: BoxFit.fill,
+            fit: BoxFit.cover,
           ),
           image: _imageUrl,
           imageCacheHeight: RestaurantHeadCell.headImageH,
           imageCacheWidth: MediaQuery.of(context).size.width.toInt(),
           placeholderCacheHeight: RestaurantHeadCell.headImageH,
           placeholderCacheWidth: MediaQuery.of(context).size.width.toInt(),
-          fit: BoxFit.fill,
+          fit: BoxFit.cover,
           width: MediaQuery.of(context).size.width,
           height: RestaurantHeadCell.headImageH.toDouble(),
         ),
-        GestureDetector(
-          onTap: () {
-            if (SignInManager().isGuest) {
-              // ignore: unawaited_futures
-              Navigator.of(context).pushNamed(SignInPage.routeName);
-              return;
-            }
-            bloc.add(ToggleFavor(summaryInfo: _summaryInfo));
-          },
-          child: Align(
-            alignment: Alignment.topRight,
-            child: Padding(
-              padding: const EdgeInsets.only(
-                top: ThemeSize.space10,
-                right: ThemeSize.space10,
-              ),
-              child: CircleAvatar(
-                backgroundColor: Colors.white,
-                child: Image.asset(
-                  _summaryInfo.favor
-                      ? 'images/ic_favor_fill.png'
-                      : 'images/ic_favor_empty.png',
-                  width: ThemeSize.size20,
-                  height: ThemeSize.size20,
-                  fit: BoxFit.fill,
+        Align(
+          alignment: Alignment.topRight,
+          child: Padding(
+            padding: const EdgeInsets.only(
+              top: ThemeSize.space12,
+              right: ThemeSize.space12,
+            ),
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                borderRadius: BorderRadius.circular(ThemeSize.space20),
+                onTap: () {
+                  if (SignInManager().isGuest) {
+                    // ignore: unawaited_futures
+                    Navigator.of(context).pushNamed(SignInPage.routeName);
+                    return;
+                  }
+                  bloc.add(ToggleFavor(summaryInfo: _summaryInfo));
+                },
+                child: CircleAvatar(
+                  backgroundColor: Colors.white.withValues(alpha: 0.9),
+                  radius: ThemeSize.space20,
+                  child: Icon(
+                    _summaryInfo.favor ? Icons.favorite : Icons.favorite_border,
+                    color: _summaryInfo.favor
+                        ? Colors.red
+                        : Theme.of(context).colorScheme.onSurfaceVariant,
+                    size: ThemeSize.size24,
+                  ),
                 ),
               ),
             ),

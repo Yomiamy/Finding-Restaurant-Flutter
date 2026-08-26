@@ -558,6 +558,11 @@ class S {
   String get empty_data_retry {
     return Intl.message('Retry', name: 'empty_data_retry', desc: '', args: []);
   }
+
+  /// `Reviews`
+  String get comments {
+    return Intl.message('Reviews', name: 'comments', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
