@@ -1,6 +1,5 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import '../../../model/model_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 
@@ -40,21 +39,96 @@ class _FilterPageState extends State<FilterPage> {
 
   @override
   Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+
     return Scaffold(
       appBar: AppBar(
-        leading: PlatformIconButton(
-          padding: const EdgeInsets.all(ThemeSize.zero),
+        leading: IconButton(
+          padding: EdgeInsets.zero,
           onPressed: () => Navigator.of(context).pop(),
-          materialIcon: const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
-          cupertinoIcon: const Icon(
-            CupertinoIcons.back,
-            color: ThemeColor.backBtn,
+          icon: const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
+        ),
+        title: Text(
+          S.current.filter_rules,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: ThemeFontSize.fontSize22,
           ),
         ),
-        actions: [
-          PlatformElevatedButton(
-            color: ThemeColor.appPrimary,
-            padding: const EdgeInsets.all(ThemeSize.zero),
+        backgroundColor: ThemeColor.appPrimary,
+      ),
+      body: ListView(
+        padding: const EdgeInsets.symmetric(
+          horizontal: ThemeSize.space16,
+          vertical: ThemeSize.space12,
+        ),
+        children: <Widget>[
+          _buildSectionCard(
+            context: context,
+            icon: Icons.attach_money,
+            title: S.current.filter_price,
+            child: _createSegmentWidget(
+              initValue: _priceIndex,
+              segmentItems: const ['\$', '\$\$', '\$\$\$', '\$\$\$\$'],
+              valueChange: (i) {
+                _priceIndex = i;
+              },
+            ),
+          ),
+          const SizedBox(height: ThemeSize.space16),
+          _buildSectionCard(
+            context: context,
+            icon: Icons.access_time,
+            title: S.current.filter_business_hour,
+            child: Container(
+              height: 180,
+              decoration: BoxDecoration(
+                borderRadius: BorderRadius.circular(ThemeSize.radius8),
+              ),
+              child: CupertinoDatePicker(
+                initialDateTime: _openAtDateTime,
+                use24hFormat: true,
+                mode: CupertinoDatePickerMode.dateAndTime,
+                onDateTimeChanged: (dateTime) {
+                  _openAtDateTime = dateTime;
+                },
+              ),
+            ),
+          ),
+          const SizedBox(height: ThemeSize.space16),
+          _buildSectionCard(
+            context: context,
+            icon: Icons.sort,
+            title: S.current.filter_sorting_rule,
+            child: _createSegmentWidget(
+              initValue: _sortByIndex,
+              segmentItems: [
+                S.current.filter_sorting_rule_best_match,
+                S.current.filter_sorting_rule_distance,
+                S.current.filter_sorting_rating,
+                S.current.filter_sorting_review_count,
+              ],
+              valueChange: (i) {
+                _sortByIndex = i;
+              },
+            ),
+          ),
+        ],
+      ),
+      bottomNavigationBar: SafeArea(
+        child: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: ThemeSize.space16,
+            vertical: ThemeSize.space12,
+          ),
+          child: FilledButton(
+            style: FilledButton.styleFrom(
+              minimumSize: const Size.fromHeight(48),
+              backgroundColor: theme.colorScheme.primary,
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(ThemeSize.radius12),
+              ),
+            ),
             onPressed: () {
               FilterConfigs configs = FilterConfigs.fromUI(
                 priceIndex: _priceIndex,
@@ -67,100 +141,55 @@ class _FilterPageState extends State<FilterPage> {
             child: Text(
               S.current.apply,
               style: const TextStyle(
-                color: Colors.white,
                 fontSize: ThemeFontSize.fontSize18,
+                fontWeight: FontWeight.bold,
               ),
             ),
-          ),
-        ],
-        title: Text(
-          S.current.filter_rules,
-          style: const TextStyle(
-            color: Colors.white,
-            fontSize: ThemeFontSize.fontSize22,
           ),
         ),
-        backgroundColor: ThemeColor.appPrimary,
       ),
-      body: ListView(
-        children: <Widget>[
-          // Price level
-          Padding(
-            padding: const EdgeInsets.only(
-              left: ThemeSize.space20,
-              top: ThemeSize.space15,
-            ),
-            child: Text(
-              S.current.filter_price,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: ThemeFontSize.fontSize22,
-              ),
-            ),
-          ),
-          _createSegmentWidget(
-            initValue: _priceIndex,
-            segmentItems: ['\$', '\$\$', '\$\$\$', '\$\$\$\$'],
-            valueChange: (i) {
-              _priceIndex = i;
-            },
-          ),
+    );
+  }
 
-          // Business hour
-          Padding(
-            padding: const EdgeInsets.only(
-              left: ThemeSize.space20,
-              top: ThemeSize.space15,
-              right: ThemeSize.space20,
-            ),
-            child: Text(
-              S.current.filter_business_hour,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: ThemeFontSize.fontSize22,
-              ),
-            ),
-          ),
-          SizedBox(
-            width: MediaQuery.of(context).size.width.toInt() - 20,
-            height: 200,
-            child: CupertinoDatePicker(
-              initialDateTime: _openAtDateTime,
-              use24hFormat: true,
-              mode: CupertinoDatePickerMode.dateAndTime,
-              onDateTimeChanged: (dateTime) {
-                _openAtDateTime = dateTime;
-              },
-            ),
-          ),
+  Widget _buildSectionCard({
+    required BuildContext context,
+    required IconData icon,
+    required String title,
+    required Widget child,
+  }) {
+    final theme = Theme.of(context);
 
-          // Sorting rule
-          Padding(
-            padding: const EdgeInsets.only(
-              left: ThemeSize.space20,
-              top: ThemeSize.space15,
+    return Card(
+      elevation: 0,
+      color: theme.colorScheme.surfaceContainerHighest.withValues(alpha: 0.5),
+      shape: RoundedRectangleBorder(
+        borderRadius: BorderRadius.circular(ThemeSize.radius12),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.all(ThemeSize.space16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                Icon(
+                  icon,
+                  size: ThemeSize.size20,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: ThemeSize.space8),
+                Text(
+                  title,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
             ),
-            child: Text(
-              S.current.filter_sorting_rule,
-              style: const TextStyle(
-                fontWeight: FontWeight.bold,
-                fontSize: ThemeFontSize.fontSize22,
-              ),
-            ),
-          ),
-          _createSegmentWidget(
-            initValue: _sortByIndex,
-            segmentItems: [
-              S.current.filter_sorting_rule_best_match,
-              S.current.filter_sorting_rule_distance,
-              S.current.filter_sorting_rating,
-              S.current.filter_sorting_review_count,
-            ],
-            valueChange: (i) {
-              _sortByIndex = i;
-            },
-          ),
-        ],
+            const SizedBox(height: ThemeSize.space12),
+            child,
+          ],
+        ),
       ),
     );
   }
@@ -170,28 +199,36 @@ class _FilterPageState extends State<FilterPage> {
     required List<String> segmentItems,
     required ValueChanged<int> valueChange,
   }) {
-    Map<int, Widget> children = <int, Widget>{};
-
+    final children = <int, Widget>{};
     for (int i = 0; i < segmentItems.length; i++) {
-      children[i] = Text(segmentItems[i]);
+      children[i] = Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: ThemeSize.space8,
+          vertical: ThemeSize.space4,
+        ),
+        child: Text(segmentItems[i]),
+      );
     }
+
     return StatefulBuilder(
-      builder: (context, setState) => Padding(
-        padding: const EdgeInsets.only(
-          left: ThemeSize.space5,
-          top: ThemeSize.space15,
-        ),
-        child: CupertinoSegmentedControl<int>(
-          groupValue: initValue,
-          children: children,
-          onValueChanged: (i) {
-            setState(() {
-              initValue = i;
-              valueChange(i);
-            });
-          },
-        ),
-      ),
+      builder: (context, setState) {
+        final theme = Theme.of(context);
+        return SizedBox(
+          width: double.infinity,
+          child: CupertinoSegmentedControl<int>(
+            selectedColor: theme.colorScheme.primary,
+            borderColor: theme.colorScheme.primary,
+            groupValue: initValue,
+            children: children,
+            onValueChanged: (i) {
+              setState(() {
+                initValue = i;
+                valueChange(i);
+              });
+            },
+          ),
+        );
+      },
     );
   }
 }
