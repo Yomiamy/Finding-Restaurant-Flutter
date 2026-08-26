@@ -35,7 +35,9 @@ abstract final class ThemeSize {
   // 一般尺寸 (Size)
   // ────────────────────────────────────────────
   static const double size16 = 16;
+  static const double size18 = 18;
   static const double size20 = 20;
+  static const double size24 = 24;
   static const double size100 = 100;
   static const double size110 = 110;
   static const double size120 = 120;

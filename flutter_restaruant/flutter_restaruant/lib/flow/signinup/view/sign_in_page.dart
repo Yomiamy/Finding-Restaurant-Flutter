@@ -2,7 +2,6 @@ import 'dart:io';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import '../../../component/component_barrel.dart';
 import '../bloc/bloc_barrel.dart';
 import '../../../generated/l10n.dart';
@@ -89,36 +88,34 @@ class _SignInPageState extends State<SignInPage> {
 
   Widget _buildView(SignInState state) => Stack(
     children: <Widget>[
-      ConstrainedBox(
-        constraints: const BoxConstraints.expand(),
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: Image.asset(
-                'images/icon_signinup_icon.gif',
-                fit: BoxFit.cover,
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    left: ThemeSize.space30,
-                    right: ThemeSize.space30,
-                  ),
-                  child: Column(
-                    children: <Widget>[
-                      showInput(state),
-                      showSignInUpBtns(),
-                      show3rdSignInUpBtns(),
-                    ],
-                  ),
+      SafeArea(
+        child: SingleChildScrollView(
+          child: Column(
+            children: <Widget>[
+              SizedBox(
+                height: 180,
+                width: double.infinity,
+                child: Image.asset(
+                  'images/icon_signinup_icon.gif',
+                  fit: BoxFit.cover,
                 ),
               ),
-            ),
-          ],
+              Padding(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: ThemeSize.space30,
+                  vertical: ThemeSize.space20,
+                ),
+                child: Column(
+                  children: <Widget>[
+                    showInput(state),
+                    showSignInUpBtns(),
+                    const SizedBox(height: ThemeSize.space15),
+                    show3rdSignInUpBtns(),
+                  ],
+                ),
+              ),
+            ],
+          ),
         ),
       ),
       (state is InProgress)
@@ -131,90 +128,64 @@ class _SignInPageState extends State<SignInPage> {
     key: _formKey,
     child: Column(
       mainAxisSize: MainAxisSize.min,
-      children: <Widget>[showEmailInput(), showPasswordInput()],
-    ),
-  );
-
-  Widget showEmailInput() => Padding(
-    padding: const EdgeInsets.fromLTRB(
-      ThemeSize.space30,
-      ThemeSize.zero,
-      ThemeSize.space30,
-      ThemeSize.zero,
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.max,
       children: <Widget>[
-        const Icon(Icons.mail, color: Colors.grey),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(left: ThemeSize.space10),
-            child: PlatformTextFormField(
-              maxLines: 1,
-              autofocus: false,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: (value) => (value == null || value.isEmpty)
-                  ? S.current.email_invalid_hint_msg
-                  : null,
-              onSaved: (value) => _email = value!,
-              hintText: S.current.email_invalid_hint_title,
-              cupertino: (_, __) => CupertinoTextFormFieldData(
-                // Assign a default cupertino decoration
-                decoration: const PlatformTextField()
-                    .createCupertinoWidget(context)
-                    .decoration,
-              ),
-            ),
-          ),
-        ),
+        showEmailInput(),
+        const SizedBox(height: ThemeSize.space15),
+        showPasswordInput(),
       ],
     ),
   );
 
-  Widget showPasswordInput() => Padding(
-    padding: const EdgeInsets.fromLTRB(
-      ThemeSize.space30,
-      ThemeSize.space15,
-      ThemeSize.space30,
-      ThemeSize.zero,
+  Widget showEmailInput() => TextFormField(
+    maxLines: 1,
+    autofocus: false,
+    autovalidateMode: AutovalidateMode.onUserInteraction,
+    decoration: InputDecoration(
+      filled: true,
+      prefixIcon: const Icon(Icons.email_outlined),
+      hintText: S.current.email_invalid_hint_title,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(ThemeSize.radius12),
+      ),
     ),
-    child: Row(
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        const Icon(Icons.lock, color: Colors.grey),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(left: ThemeSize.space10),
-            child: PlatformTextFormField(
-              maxLines: 1,
-              obscureText: true,
-              autofocus: false,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: (value) => (value == null || value.isEmpty)
-                  ? S.current.passwd_invalid_hint_msg
-                  : null,
-              onSaved: (value) => _passwd = value!,
-              hintText: S.current.passwd_invalid_hint_title,
-              cupertino: (_, __) => CupertinoTextFormFieldData(
-                // Assign a default cupertino decoration
-                decoration: const PlatformTextField()
-                    .createCupertinoWidget(context)
-                    .decoration,
-              ),
-            ),
-          ),
-        ),
-      ],
+    validator: (value) => (value == null || value.isEmpty)
+        ? S.current.email_invalid_hint_msg
+        : null,
+    onSaved: (value) => _email = value ?? '',
+  );
+
+  Widget showPasswordInput() => TextFormField(
+    maxLines: 1,
+    obscureText: true,
+    autofocus: false,
+    autovalidateMode: AutovalidateMode.onUserInteraction,
+    decoration: InputDecoration(
+      filled: true,
+      prefixIcon: const Icon(Icons.lock_outline),
+      hintText: S.current.passwd_invalid_hint_title,
+      border: OutlineInputBorder(
+        borderRadius: BorderRadius.circular(ThemeSize.radius12),
+      ),
     ),
+    validator: (value) => (value == null || value.isEmpty)
+        ? S.current.passwd_invalid_hint_msg
+        : null,
+    onSaved: (value) => _passwd = value ?? '',
   );
 
   Widget showSignInUpBtns() => Padding(
-    padding: const EdgeInsets.only(top: ThemeSize.space15),
+    padding: const EdgeInsets.only(top: ThemeSize.space20),
     child: Column(
       mainAxisSize: MainAxisSize.min,
       children: <Widget>[
-        PlatformElevatedButton(
-          color: const Color.fromARGB(255, 5, 97, 245),
+        FilledButton(
+          style: FilledButton.styleFrom(
+            backgroundColor: Theme.of(context).colorScheme.primary,
+            minimumSize: const Size.fromHeight(48),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(ThemeSize.radius12),
+            ),
+          ),
           child: Text(
             S.current.signin_btn_title,
             style: const TextStyle(
@@ -231,15 +202,17 @@ class _SignInPageState extends State<SignInPage> {
             }
           },
         ),
+        const SizedBox(height: ThemeSize.space10),
         Row(
-          mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: <Widget>[
-            PlatformTextButton(
+            TextButton(
               child: Text(
                 S.current.signup_title,
-                style: const TextStyle(
+                style: TextStyle(
                   fontSize: ThemeFontSize.fontSize14,
-                  color: Colors.grey,
+                  color: Theme.of(context).colorScheme.primary,
+                  fontWeight: FontWeight.w600,
                 ),
               ),
               onPressed: () {
@@ -252,12 +225,15 @@ class _SignInPageState extends State<SignInPage> {
                 }
               },
             ),
-            PlatformTextButton(
-              child: Text(
+            OutlinedButton.icon(
+              icon: const Icon(Icons.person_outline, size: ThemeSize.size18),
+              label: Text(
                 S.current.continue_as_guest,
-                style: const TextStyle(
-                  fontSize: ThemeFontSize.fontSize14,
-                  color: Colors.grey,
+                style: const TextStyle(fontSize: ThemeFontSize.fontSize14),
+              ),
+              style: OutlinedButton.styleFrom(
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(ThemeSize.radius12),
                 ),
               ),
               onPressed: () async {
@@ -278,19 +254,25 @@ class _SignInPageState extends State<SignInPage> {
     children: <Widget>[
       SignInButton(
         Buttons.google,
-        elevation: 3.0,
+        elevation: 1.0,
         text: S.current.signinup_with_google,
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(ThemeSize.radius12),
+        ),
         onPressed: () => _signInBloc.add(GoogleSignInEvent()),
       ),
-      const SizedBox(height: ThemeSize.space10),
-      (Platform.isIOS)
-          ? SignInButton(
-              Buttons.apple,
-              elevation: 3.0,
-              text: S.current.signinup_with_apple,
-              onPressed: () => _signInBloc.add(AppleSignInEvent()),
-            )
-          : const SizedBox.shrink(),
+      if (Platform.isIOS) ...[
+        const SizedBox(height: ThemeSize.space10),
+        SignInButton(
+          Buttons.apple,
+          elevation: 1.0,
+          text: S.current.signinup_with_apple,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(ThemeSize.radius12),
+          ),
+          onPressed: () => _signInBloc.add(AppleSignInEvent()),
+        ),
+      ],
     ],
   );
 }

@@ -25,6 +25,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "apply": MessageLookupByLibrary.simpleMessage("套用"),
     "business_hour": MessageLookupByLibrary.simpleMessage("營業時間"),
     "cancel": MessageLookupByLibrary.simpleMessage("取消"),
+    "comments": MessageLookupByLibrary.simpleMessage("評論"),
     "confirm": MessageLookupByLibrary.simpleMessage("確定"),
     "continue_as_guest": MessageLookupByLibrary.simpleMessage("訪客模式"),
     "delete_account_email_body": MessageLookupByLibrary.simpleMessage(

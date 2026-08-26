@@ -24,107 +24,174 @@ class RestaurantInfoCell extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    String category =
+    final theme = Theme.of(context);
+    final colorScheme = theme.colorScheme;
+    final String category =
         _detailInfo.categories
             ?.map((category) => category.title ?? '')
-            .join(' ') ??
+            .where((title) => title.isNotEmpty)
+            .join(' · ') ??
         '';
-    bool isOpen = (_detailInfo.hours != null && _detailInfo.hours!.isNotEmpty)
+    final bool isOpen =
+        (_detailInfo.hours != null && _detailInfo.hours!.isNotEmpty)
         ? (_detailInfo.hours![0].isOpenNow ?? false)
         : false;
-    String openStatus = isOpen ? 'OPEN' : 'CLOSE';
+    final String openStatus = isOpen ? 'OPEN' : 'CLOSE';
+    final Color openStatusColor = isOpen
+        ? const Color(0xFF2E7D32)
+        : colorScheme.outline;
 
     return Padding(
-      padding: const EdgeInsets.only(
-        left: ThemeSize.space5,
-        right: ThemeSize.space5,
-        top: ThemeSize.space10,
+      padding: const EdgeInsets.symmetric(
+        horizontal: ThemeSize.space12,
+        vertical: ThemeSize.space10,
       ),
       child: Row(
-        mainAxisSize: MainAxisSize.max,
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: <Widget>[
           SizedBox(
-            width: RestaurantInfoCell._mapImageH.toDouble(),
-            height: RestaurantInfoCell._mapImageW.toDouble(),
-            child: GestureDetector(
-              onTap: () {
-                showCupertinoModalPopup(
-                  context: context,
-                  builder: buildNavigationActionSheet,
-                );
-              },
-              child: FadeInImage.assetNetwork(
-                placeholder: UIConstants.noImage,
-                imageErrorBuilder: (context, error, trace) =>
-                    Image.asset(UIConstants.noImage),
-                image: staticMapUrl,
-                imageCacheHeight: RestaurantInfoCell._mapImageH,
-                imageCacheWidth: RestaurantInfoCell._mapImageW,
-                placeholderCacheHeight: RestaurantInfoCell._mapImageH,
-                placeholderCacheWidth: RestaurantInfoCell._mapImageW,
-                fit: BoxFit.fill,
+            width: RestaurantInfoCell._mapImageW.toDouble(),
+            height: RestaurantInfoCell._mapImageH.toDouble(),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(ThemeSize.radius8),
+              child: GestureDetector(
+                onTap: () {
+                  showCupertinoModalPopup(
+                    context: context,
+                    builder: buildNavigationActionSheet,
+                  );
+                },
+                child: Stack(
+                  fit: StackFit.expand,
+                  children: [
+                    FadeInImage.assetNetwork(
+                      placeholder: UIConstants.noImage,
+                      imageErrorBuilder: (context, error, trace) =>
+                          Image.asset(UIConstants.noImage, fit: BoxFit.cover),
+                      image: staticMapUrl,
+                      imageCacheHeight: RestaurantInfoCell._mapImageH,
+                      imageCacheWidth: RestaurantInfoCell._mapImageW,
+                      placeholderCacheHeight: RestaurantInfoCell._mapImageH,
+                      placeholderCacheWidth: RestaurantInfoCell._mapImageW,
+                      fit: BoxFit.cover,
+                    ),
+                    Positioned(
+                      bottom: ThemeSize.space5,
+                      right: ThemeSize.space5,
+                      child: Container(
+                        padding: const EdgeInsets.all(ThemeSize.space4),
+                        decoration: BoxDecoration(
+                          color: Colors.black54,
+                          borderRadius: BorderRadius.circular(
+                            ThemeSize.radius8,
+                          ),
+                        ),
+                        child: const Icon(
+                          Icons.navigation_rounded,
+                          size: ThemeSize.size16,
+                          color: Colors.white,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),
           Expanded(
-            child: Container(
-              padding: const EdgeInsets.only(left: ThemeSize.space10),
+            child: Padding(
+              padding: const EdgeInsets.only(left: ThemeSize.space12),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
                   Text(
                     _detailInfo.location?.displayAddressStr ?? '',
-                    style: const TextStyle(fontWeight: FontWeight.w700),
+                    style: theme.textTheme.titleSmall?.copyWith(
+                      fontWeight: FontWeight.w700,
+                    ),
+                    maxLines: 2,
                     overflow: TextOverflow.ellipsis,
                   ),
-                  Row(
-                    children: <Widget>[
-                      Text(
-                        S.current.store_phone,
-                        style: const TextStyle(fontWeight: FontWeight.w700),
+                  const SizedBox(height: ThemeSize.space4),
+                  if ((_detailInfo.phone ?? '').isNotEmpty)
+                    InkWell(
+                      onTap: () {
+                        final phoneStr = _detailInfo.phone ?? '';
+                        if (phoneStr.isNotEmpty) {
+                          launchUrl(Uri.parse('tel://$phoneStr'));
+                        }
+                      },
+                      borderRadius: BorderRadius.circular(ThemeSize.radius8),
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: ThemeSize.space3,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: <Widget>[
+                            Icon(
+                              Icons.phone_outlined,
+                              size: ThemeSize.size16,
+                              color: colorScheme.primary,
+                            ),
+                            const SizedBox(width: ThemeSize.space5),
+                            Text(
+                              _detailInfo.phone ?? '',
+                              style: TextStyle(
+                                color: colorScheme.primary,
+                                fontWeight: FontWeight.w600,
+                                fontSize: ThemeFontSize.fontSize14,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                      const SizedBox(width: ThemeSize.space10),
-                      GestureDetector(
-                        onTap: () {
-                          String phoneStr = _detailInfo.phone ?? '';
-                          if (phoneStr.isNotEmpty) {
-                            launchUrl(Uri.parse('tel://$phoneStr'));
-                          }
-                        },
-                        child: Text(
-                          _detailInfo.phone ?? '',
-                          style: const TextStyle(color: Colors.blue),
+                    ),
+                  if (category.isNotEmpty) ...[
+                    const SizedBox(height: ThemeSize.space3),
+                    Text(
+                      category,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                      style: TextStyle(
+                        color: colorScheme.onSurfaceVariant,
+                        fontSize: ThemeFontSize.fontSize12,
+                      ),
+                    ),
+                  ],
+                  const SizedBox(height: ThemeSize.space4),
+                  Row(
+                    children: [
+                      RatingStars(rating: (_detailInfo.rating ?? 0).toDouble()),
+                      const SizedBox(width: ThemeSize.space5),
+                      Text(
+                        '${_detailInfo.reviewCount ?? 0}${S.current.review_count_suffix}',
+                        style: TextStyle(
+                          fontSize: ThemeFontSize.fontSize12,
+                          color: colorScheme.onSurfaceVariant,
                         ),
                       ),
                     ],
                   ),
-                  Text(
-                    category,
-                    overflow: TextOverflow.ellipsis,
-                    style: const TextStyle(color: Colors.grey),
-                  ),
-                  RatingStars(rating: (_detailInfo.rating ?? 0).toDouble()),
-                  Text(
-                    '${_detailInfo.reviewCount ?? 0}${S.current.review_count_suffix}',
-                    style: const TextStyle(
-                      fontSize: ThemeFontSize.fontSize14,
-                      color: Colors.grey,
-                    ),
-                  ),
+                  const SizedBox(height: ThemeSize.space5),
                   DecoratedBox(
-                    decoration: const BoxDecoration(
-                      color: Colors.red,
-                      borderRadius: BorderRadius.all(
+                    decoration: BoxDecoration(
+                      color: openStatusColor,
+                      borderRadius: const BorderRadius.all(
                         Radius.circular(ThemeSize.radiusTag),
                       ),
                     ),
                     child: Padding(
-                      padding: const EdgeInsets.all(ThemeSize.space3),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: ThemeSize.space8,
+                        vertical: ThemeSize.space3,
+                      ),
                       child: Text(
                         openStatus,
                         style: const TextStyle(
                           fontSize: ThemeFontSize.fontSize12,
+                          fontWeight: FontWeight.bold,
                           color: Colors.white,
                         ),
                       ),

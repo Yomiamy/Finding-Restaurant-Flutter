@@ -113,8 +113,6 @@ flutter:
   - images/icon_setting_icon.gif
 
   - images/launch_image.png
-  - images/ic_favor_empty.png
-  - images/ic_favor_fill.png
 
 flutter_intl:
   enabled: true
