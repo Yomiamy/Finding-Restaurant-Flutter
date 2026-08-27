@@ -65,7 +65,7 @@ class FindingRestaruantApp extends StatelessWidget {
     ],
     supportedLocales: S.delegate.supportedLocales,
     debugShowCheckedModeBanner: false,
-    title: UIConstants.appTitle,
+    onGenerateTitle: (context) => S.of(context).main_page_title,
     routes: routesTable,
     // 不做深色模式（darkTheme 指向同一份 light），系統切深色時 app 外觀
     // 維持不變，避免內容淺色底卻配到深色模式的系統 UI。

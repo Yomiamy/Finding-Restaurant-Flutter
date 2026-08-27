@@ -7,9 +7,6 @@ class UIConstants {
   /// [FCM]
   static const fcmNotificationIcon = '@mipmap/ic_launcher';
 
-  /// [UI]
-  static const appTitle = '尋找餐廳';
-
   @Deprecated('Use S.current instead')
   static const loginTitle = '登入';
 

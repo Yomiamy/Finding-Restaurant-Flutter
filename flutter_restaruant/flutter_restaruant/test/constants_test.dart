@@ -18,7 +18,6 @@ void main() {
     });
 
     test('UIConstants camelCase naming and immutability', () {
-      expect(UIConstants.appTitle, equals('尋找餐廳'));
       expect(UIConstants.noImage, equals('images/empty.png'));
       expect(ThemeSize.size100, equals(100.0));
       expect(ThemeSize.size20, equals(20.0));
