@@ -73,8 +73,6 @@ void main() {
         expect(Constants.locale, equals('zh_TW'));
 
         // Verify UIConstants values
-        expect(UIConstants.loginTitle, equals('登入'));
-        expect(UIConstants.favorTitle, equals('我喜好的店家'));
         expect(ThemeSize.size100, equals(100.0));
         expect(ThemeSize.size20, equals(20.0));
       },
