@@ -57,17 +57,16 @@ class _FilterPageState extends State<FilterPage> {
         ),
         backgroundColor: ThemeColor.appPrimary,
       ),
-      body: ListView(
+      body: Column(
         padding: const EdgeInsets.symmetric(
           horizontal: ThemeSize.space16,
           vertical: ThemeSize.space12,
         ),
         children: <Widget>[
-          _buildSectionCard(
-            context: context,
+          _SectionCard(
             icon: Icons.attach_money,
             title: S.current.filter_price,
-            child: _createSegmentWidget(
+            child: _SegmentControl(
               initValue: _priceIndex,
               segmentItems: const ['\$', '\$\$', '\$\$\$', '\$\$\$\$'],
               valueChange: (i) {
@@ -76,8 +75,7 @@ class _FilterPageState extends State<FilterPage> {
             ),
           ),
           const SizedBox(height: ThemeSize.space16),
-          _buildSectionCard(
-            context: context,
+          _SectionCard(
             icon: Icons.access_time,
             title: S.current.filter_business_hour,
             child: Container(
@@ -96,11 +94,10 @@ class _FilterPageState extends State<FilterPage> {
             ),
           ),
           const SizedBox(height: ThemeSize.space16),
-          _buildSectionCard(
-            context: context,
+          _SectionCard(
             icon: Icons.sort,
             title: S.current.filter_sorting_rule,
-            child: _createSegmentWidget(
+            child: _SegmentControl(
               initValue: _sortByIndex,
               segmentItems: [
                 S.current.filter_sorting_rule_best_match,
@@ -150,13 +147,21 @@ class _FilterPageState extends State<FilterPage> {
       ),
     );
   }
+}
 
-  Widget _buildSectionCard({
-    required BuildContext context,
-    required IconData icon,
-    required String title,
-    required Widget child,
-  }) {
+class _SectionCard extends StatelessWidget {
+  const _SectionCard({
+    required this.icon,
+    required this.title,
+    required this.child,
+  });
+
+  final IconData icon;
+  final String title;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return Card(
@@ -193,42 +198,52 @@ class _FilterPageState extends State<FilterPage> {
       ),
     );
   }
+}
 
-  Widget _createSegmentWidget({
-    required int initValue,
-    required List<String> segmentItems,
-    required ValueChanged<int> valueChange,
-  }) {
-    final children = <int, Widget>{};
-    for (int i = 0; i < segmentItems.length; i++) {
-      children[i] = Padding(
-        padding: const EdgeInsets.symmetric(
-          horizontal: ThemeSize.space8,
-          vertical: ThemeSize.space4,
-        ),
-        child: Text(segmentItems[i]),
-      );
-    }
+class _SegmentControl extends StatefulWidget {
+  const _SegmentControl({
+    required this.initValue,
+    required this.segmentItems,
+    required this.valueChange,
+  });
 
-    return StatefulBuilder(
-      builder: (context, setState) {
-        final theme = Theme.of(context);
-        return SizedBox(
-          width: double.infinity,
-          child: CupertinoSegmentedControl<int>(
-            selectedColor: theme.colorScheme.primary,
-            borderColor: theme.colorScheme.primary,
-            groupValue: initValue,
-            children: children,
-            onValueChanged: (i) {
-              setState(() {
-                initValue = i;
-                valueChange(i);
-              });
-            },
+  final int initValue;
+  final List<String> segmentItems;
+  final ValueChanged<int> valueChange;
+
+  @override
+  State<_SegmentControl> createState() => _SegmentControlState();
+}
+
+class _SegmentControlState extends State<_SegmentControl> {
+  late int _selectedIndex = widget.initValue;
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
+    final children = <int, Widget>{
+      for (int i = 0; i < widget.segmentItems.length; i++)
+        i: Padding(
+          padding: const EdgeInsets.symmetric(
+            horizontal: ThemeSize.space8,
+            vertical: ThemeSize.space4,
           ),
-        );
-      },
+          child: Text(widget.segmentItems[i]),
+        ),
+    };
+
+    return SizedBox(
+      width: double.infinity,
+      child: CupertinoSegmentedControl<int>(
+        selectedColor: theme.colorScheme.primary,
+        borderColor: theme.colorScheme.primary,
+        groupValue: _selectedIndex,
+        children: children,
+        onValueChanged: (i) {
+          setState(() => _selectedIndex = i);
+          widget.valueChange(i);
+        },
+      ),
     );
   }
 }
