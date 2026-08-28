@@ -38,10 +38,12 @@ abstract final class ThemeSize {
   static const double size18 = 18;
   static const double size20 = 20;
   static const double size24 = 24;
+  static const double size48 = 48;
   static const double size100 = 100;
   static const double size110 = 110;
   static const double size120 = 120;
   static const double size200 = 200;
+  static const double size320 = 320;
 
   // ────────────────────────────────────────────
   // 控制項高度 (Control Height)
