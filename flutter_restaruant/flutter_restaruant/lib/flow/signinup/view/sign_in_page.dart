@@ -70,7 +70,57 @@ class _SignInPageState extends State<SignInPage> {
             Fluttertoast.showToast(msg: state.errorMsg);
           }
         },
-        builder: (context, state) => _buildView(state),
+        builder: (context, state) => Stack(
+          children: <Widget>[
+            SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    const SignInHeaderWidget(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: ThemeSize.space30,
+                        vertical: ThemeSize.space20,
+                      ),
+                      child: Column(
+                        children: <Widget>[
+                          SignInFormWidget(
+                            formKey: _formKey,
+                            onEmailSaved: (value) => _email = value,
+                            onPasswordSaved: (value) => _passwd = value,
+                          ),
+                          SignInActionsWidget(
+                            onSignIn: () => _submit(
+                              () => _signInBloc.add(
+                                MailSignInEvent(mail: _email, passwd: _passwd),
+                              ),
+                            ),
+                            onSignUp: () => _submit(
+                              () => _signInBloc.add(
+                                MailSignUpEvent(mail: _email, passwd: _passwd),
+                              ),
+                            ),
+                            onContinueAsGuest: _continueAsGuest,
+                          ),
+                          const SizedBox(height: ThemeSize.space15),
+                          ThirdPartySignInWidget(
+                            onGoogleSignIn: () =>
+                                _signInBloc.add(GoogleSignInEvent()),
+                            onAppleSignIn: () =>
+                                _signInBloc.add(AppleSignInEvent()),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            (state is InProgress)
+                ? const Center(child: LoadingWidget(text: ''))
+                : const SizedBox.shrink(),
+          ],
+        ),
       ),
     );
   }
@@ -101,55 +151,4 @@ class _SignInPageState extends State<SignInPage> {
     // ignore: unawaited_futures
     _goToMainPage(context);
   }
-
-  Widget _buildView(SignInState state) => Stack(
-    children: <Widget>[
-      SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: <Widget>[
-              const SignInHeaderWidget(),
-              Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: ThemeSize.space30,
-                  vertical: ThemeSize.space20,
-                ),
-                child: Column(
-                  children: <Widget>[
-                    SignInFormWidget(
-                      formKey: _formKey,
-                      onEmailSaved: (value) => _email = value,
-                      onPasswordSaved: (value) => _passwd = value,
-                    ),
-                    SignInActionsWidget(
-                      onSignIn: () => _submit(
-                        () => _signInBloc.add(
-                          MailSignInEvent(mail: _email, passwd: _passwd),
-                        ),
-                      ),
-                      onSignUp: () => _submit(
-                        () => _signInBloc.add(
-                          MailSignUpEvent(mail: _email, passwd: _passwd),
-                        ),
-                      ),
-                      onContinueAsGuest: _continueAsGuest,
-                    ),
-                    const SizedBox(height: ThemeSize.space15),
-                    ThirdPartySignInWidget(
-                      onGoogleSignIn: () =>
-                          _signInBloc.add(GoogleSignInEvent()),
-                      onAppleSignIn: () => _signInBloc.add(AppleSignInEvent()),
-                    ),
-                  ],
-                ),
-              ),
-            ],
-          ),
-        ),
-      ),
-      (state is InProgress)
-          ? const Center(child: LoadingWidget(text: ''))
-          : const SizedBox.shrink(),
-    ],
-  );
 }
