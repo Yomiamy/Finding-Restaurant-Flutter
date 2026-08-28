@@ -39,11 +39,11 @@ class _APIClz implements APIClz {
     _data.removeWhere((k, v) => v == null);
     final _options = _setStreamType<String>(
       Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded',
-          )
+        method: 'POST',
+        headers: _headers,
+        extra: _extra,
+        contentType: 'application/x-www-form-urlencoded',
+      )
           .compose(
             _dio.options,
             '/oauth2/token',

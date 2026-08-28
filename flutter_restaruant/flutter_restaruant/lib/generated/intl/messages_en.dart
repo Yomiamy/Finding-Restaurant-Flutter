@@ -143,7 +143,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Google SignIn",
     ),
     "signup_title": MessageLookupByLibrary.simpleMessage("SignUp"),
-    "store_phone": MessageLookupByLibrary.simpleMessage("Phone:"),
     "street_view": MessageLookupByLibrary.simpleMessage("Street View"),
     "version_tile_title": MessageLookupByLibrary.simpleMessage("Version"),
   };

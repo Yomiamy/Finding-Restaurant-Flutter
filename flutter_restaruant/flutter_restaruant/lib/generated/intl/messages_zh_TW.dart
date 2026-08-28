@@ -99,7 +99,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Google登入成功",
     ),
     "signup_title": MessageLookupByLibrary.simpleMessage("註冊新帳號"),
-    "store_phone": MessageLookupByLibrary.simpleMessage("電話:"),
     "street_view": MessageLookupByLibrary.simpleMessage("街景視圖"),
     "version_tile_title": MessageLookupByLibrary.simpleMessage("版本"),
   };

@@ -254,11 +254,6 @@ class S {
     );
   }
 
-  /// `Phone:`
-  String get store_phone {
-    return Intl.message('Phone:', name: 'store_phone', desc: '', args: []);
-  }
-
   /// ` reviews`
   String get review_count_suffix {
     return Intl.message(
