@@ -110,7 +110,7 @@ flutter:
   assets:
   - images/empty.png
   - images/img_signin_header.jpg
-  - images/icon_setting_icon.gif
+  - images/icon_setting_icon.jpg
 
   - images/launch_image.png
 

@@ -17,9 +17,9 @@ class $ImagesGen {
   /// File path: images/empty.png
   AssetGenImage get empty => const AssetGenImage('images/empty.png');
 
-  /// File path: images/icon_setting_icon.gif
+  /// File path: images/icon_setting_icon.jpg
   AssetGenImage get iconSettingIcon =>
-      const AssetGenImage('images/icon_setting_icon.gif');
+      const AssetGenImage('images/icon_setting_icon.jpg');
 
   /// File path: images/img_signin_header.jpg
   AssetGenImage get imgSigninHeader =>
