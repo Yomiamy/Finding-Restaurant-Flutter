@@ -41,12 +41,15 @@ abstract final class ThemeSize {
   static const double size100 = 100;
   static const double size110 = 110;
   static const double size120 = 120;
+  static const double size200 = 200;
 
   // ────────────────────────────────────────────
   // 控制項高度 (Control Height)
   // ────────────────────────────────────────────
   static const double datePickerHeight = 180;
   static const double primaryButtonHeight = 48;
+  // 設計稿（Stitch handoff）標註 Information 列 Tile H=52.0dp。
+  static const double settingsTileHeight = 52;
   // 設計稿（Stitch handoff）標註頁首圖高度 200~240dp，取中值。
   static const double signInHeaderHeight = 220;
 
