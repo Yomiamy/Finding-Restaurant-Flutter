@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../component/component_barrel.dart';
@@ -7,10 +5,13 @@ import '../bloc/bloc_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../../../manager/manager_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
-import 'package:sign_in_button/sign_in_button.dart';
 import 'package:fluttertoast/fluttertoast.dart';
 import '../../main/view/view_barrel.dart';
 import '../../splash/view/view_barrel.dart';
+import 'sign_in_actions_widget.dart';
+import 'sign_in_form_widget.dart';
+import 'sign_in_header_widget.dart';
+import 'third_party_sign_in_widget.dart';
 
 class SignInPage extends StatefulWidget {
   static const routeName = '/SignInPage';
@@ -86,13 +87,28 @@ class _SignInPageState extends State<SignInPage> {
         ModalRoute.withName(SplashPage.routeName),
       );
 
+  /// 驗證表單並存值，通過才執行 [onValid]。
+  void _submit(VoidCallback onValid) {
+    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      onValid();
+    }
+  }
+
+  Future<void> _continueAsGuest() async {
+    await SignInManager().markAsGuest();
+    if (!mounted) return;
+    // ignore: unawaited_futures
+    _goToMainPage(context);
+  }
+
   Widget _buildView(SignInState state) => Stack(
     children: <Widget>[
       SafeArea(
         child: SingleChildScrollView(
           child: Column(
             children: <Widget>[
-              const _SignInHeader(),
+              const SignInHeaderWidget(),
               Padding(
                 padding: const EdgeInsets.symmetric(
                   horizontal: ThemeSize.space30,
@@ -100,10 +116,30 @@ class _SignInPageState extends State<SignInPage> {
                 ),
                 child: Column(
                   children: <Widget>[
-                    showInput(state),
-                    showSignInUpBtns(),
+                    SignInFormWidget(
+                      formKey: _formKey,
+                      onEmailSaved: (value) => _email = value,
+                      onPasswordSaved: (value) => _passwd = value,
+                    ),
+                    SignInActionsWidget(
+                      onSignIn: () => _submit(
+                        () => _signInBloc.add(
+                          MailSignInEvent(mail: _email, passwd: _passwd),
+                        ),
+                      ),
+                      onSignUp: () => _submit(
+                        () => _signInBloc.add(
+                          MailSignUpEvent(mail: _email, passwd: _passwd),
+                        ),
+                      ),
+                      onContinueAsGuest: _continueAsGuest,
+                    ),
                     const SizedBox(height: ThemeSize.space15),
-                    show3rdSignInUpBtns(),
+                    ThirdPartySignInWidget(
+                      onGoogleSignIn: () =>
+                          _signInBloc.add(GoogleSignInEvent()),
+                      onAppleSignIn: () => _signInBloc.add(AppleSignInEvent()),
+                    ),
                   ],
                 ),
               ),
@@ -115,219 +151,5 @@ class _SignInPageState extends State<SignInPage> {
           ? const Center(child: LoadingWidget(text: ''))
           : const SizedBox.shrink(),
     ],
-  );
-
-  Widget showInput(SignInState state) => Form(
-    key: _formKey,
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        showEmailInput(),
-        const SizedBox(height: ThemeSize.space15),
-        showPasswordInput(),
-      ],
-    ),
-  );
-
-  Widget showEmailInput() => TextFormField(
-    maxLines: 1,
-    autofocus: false,
-    autovalidateMode: AutovalidateMode.onUserInteraction,
-    decoration: InputDecoration(
-      filled: true,
-      prefixIcon: const Icon(Icons.email_outlined),
-      hintText: S.current.email_invalid_hint_title,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(ThemeSize.radius12),
-      ),
-    ),
-    validator: (value) => (value == null || value.isEmpty)
-        ? S.current.email_invalid_hint_msg
-        : null,
-    onSaved: (value) => _email = value ?? '',
-  );
-
-  Widget showPasswordInput() => TextFormField(
-    maxLines: 1,
-    obscureText: true,
-    autofocus: false,
-    autovalidateMode: AutovalidateMode.onUserInteraction,
-    decoration: InputDecoration(
-      filled: true,
-      prefixIcon: const Icon(Icons.lock_outline),
-      hintText: S.current.passwd_invalid_hint_title,
-      border: OutlineInputBorder(
-        borderRadius: BorderRadius.circular(ThemeSize.radius12),
-      ),
-    ),
-    validator: (value) => (value == null || value.isEmpty)
-        ? S.current.passwd_invalid_hint_msg
-        : null,
-    onSaved: (value) => _passwd = value ?? '',
-  );
-
-  Widget showSignInUpBtns() => Padding(
-    padding: const EdgeInsets.only(top: ThemeSize.space20),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        FilledButton(
-          style: FilledButton.styleFrom(
-            backgroundColor: Theme.of(context).colorScheme.primary,
-            minimumSize: const Size.fromHeight(ThemeSize.primaryButtonHeight),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(ThemeSize.radius12),
-            ),
-          ),
-          child: Text(
-            S.current.signin_btn_title,
-            style: const TextStyle(
-              fontSize: ThemeFontSize.fontSize18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          onPressed: () {
-            if (_formKey.currentState != null &&
-                _formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-              _signInBloc.add(MailSignInEvent(mail: _email, passwd: _passwd));
-            }
-          },
-        ),
-        const SizedBox(height: ThemeSize.space10),
-        // 窄螢幕（約 < 480dp）時兩顆按鈕的固有寬度會超出單行，
-        // OverflowBar 會自動改為垂直排列，避免 RenderFlex overflow。
-        OverflowBar(
-          alignment: MainAxisAlignment.spaceBetween,
-          overflowAlignment: OverflowBarAlignment.center,
-          overflowSpacing: ThemeSize.space5,
-          children: <Widget>[
-            TextButton(
-              child: Text(
-                S.current.signup_title,
-                style: TextStyle(
-                  fontSize: ThemeFontSize.fontSize14,
-                  color: Theme.of(context).colorScheme.primary,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
-              onPressed: () {
-                if (_formKey.currentState != null &&
-                    _formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  _signInBloc.add(
-                    MailSignUpEvent(mail: _email, passwd: _passwd),
-                  );
-                }
-              },
-            ),
-            OutlinedButton.icon(
-              icon: const Icon(Icons.person_outline, size: ThemeSize.size18),
-              label: Text(
-                S.current.continue_as_guest,
-                style: const TextStyle(fontSize: ThemeFontSize.fontSize14),
-              ),
-              style: OutlinedButton.styleFrom(
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(ThemeSize.radius12),
-                ),
-              ),
-              onPressed: () async {
-                await SignInManager().markAsGuest();
-                if (!mounted) return;
-                // ignore: unawaited_futures
-                _goToMainPage(context);
-              },
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
-
-  Widget show3rdSignInUpBtns() => Column(
-    mainAxisSize: MainAxisSize.min,
-    children: <Widget>[
-      SignInButton(
-        Buttons.google,
-        elevation: 1.0,
-        text: S.current.signinup_with_google,
-        shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(ThemeSize.radius12),
-        ),
-        onPressed: () => _signInBloc.add(GoogleSignInEvent()),
-      ),
-      if (Platform.isIOS) ...[
-        const SizedBox(height: ThemeSize.space10),
-        SignInButton(
-          Buttons.apple,
-          elevation: 1.0,
-          text: S.current.signinup_with_apple,
-          shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.circular(ThemeSize.radius12),
-          ),
-          onPressed: () => _signInBloc.add(AppleSignInEvent()),
-        ),
-      ],
-    ],
-  );
-}
-
-/// 登入頁頁首品牌區塊。
-///
-/// 對應 Stitch handoff spec「Sign In」的 Image Section：底圖鋪滿、由下往上
-/// 的黑色漸層，標題與副標貼齊左下。漸層是為了讓白字在任何底圖上都可讀，
-/// 不是純裝飾——換底圖時不要拿掉。
-class _SignInHeader extends StatelessWidget {
-  const _SignInHeader();
-
-  @override
-  Widget build(BuildContext context) => SizedBox(
-    height: ThemeSize.signInHeaderHeight,
-    width: double.infinity,
-    child: Stack(
-      fit: StackFit.expand,
-      children: <Widget>[
-        Image.asset('images/img_signin_header.jpg', fit: BoxFit.cover),
-        const DecoratedBox(
-          decoration: BoxDecoration(
-            gradient: LinearGradient(
-              begin: Alignment.bottomCenter,
-              end: Alignment.topCenter,
-              colors: <Color>[Colors.black54, Colors.transparent],
-            ),
-          ),
-        ),
-        Align(
-          alignment: Alignment.bottomLeft,
-          child: Padding(
-            padding: const EdgeInsets.all(ThemeSize.space20),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: <Widget>[
-                Text(
-                  S.current.main_page_title,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: ThemeFontSize.fontSize28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                const SizedBox(height: ThemeSize.space5),
-                Text(
-                  S.current.signin_header_subtitle,
-                  style: const TextStyle(
-                    color: Colors.white,
-                    fontSize: ThemeFontSize.fontSize16,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ),
-      ],
-    ),
   );
 }
