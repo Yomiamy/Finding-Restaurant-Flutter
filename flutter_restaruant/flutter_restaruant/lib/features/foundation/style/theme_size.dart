@@ -47,7 +47,8 @@ abstract final class ThemeSize {
   // ────────────────────────────────────────────
   static const double datePickerHeight = 180;
   static const double primaryButtonHeight = 48;
-  static const double signInHeaderHeight = 180;
+  // 設計稿（Stitch handoff）標註頁首圖高度 200~240dp，取中值。
+  static const double signInHeaderHeight = 220;
 
   // ────────────────────────────────────────────
   // 骨架圖預設尺寸 (Skeleton)

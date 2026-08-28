@@ -68,5 +68,6 @@
   "empty_data_retry": "Retry",
   "comments": "Reviews",
   "business_status_open": "OPEN",
-  "business_status_closed": "CLOSED"
+  "business_status_closed": "CLOSED",
+  "signin_header_subtitle": "Your premium dining concierge."
 }

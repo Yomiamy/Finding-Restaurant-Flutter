@@ -613,6 +613,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Your premium dining concierge.`
+  String get signin_header_subtitle {
+    return Intl.message(
+      'Your premium dining concierge.',
+      name: 'signin_header_subtitle',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

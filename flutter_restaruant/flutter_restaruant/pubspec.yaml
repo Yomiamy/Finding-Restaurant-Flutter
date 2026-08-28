@@ -109,7 +109,7 @@ flutter:
 
   assets:
   - images/empty.png
-  - images/icon_signinup_icon.gif
+  - images/img_signin_header.jpg
   - images/icon_setting_icon.gif
 
   - images/launch_image.png

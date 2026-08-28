@@ -21,9 +21,9 @@ class $ImagesGen {
   AssetGenImage get iconSettingIcon =>
       const AssetGenImage('images/icon_setting_icon.gif');
 
-  /// File path: images/icon_signinup_icon.gif
-  AssetGenImage get iconSigninupIcon =>
-      const AssetGenImage('images/icon_signinup_icon.gif');
+  /// File path: images/img_signin_header.jpg
+  AssetGenImage get imgSigninHeader =>
+      const AssetGenImage('images/img_signin_header.jpg');
 
   /// File path: images/launch_image.png
   AssetGenImage get launchImage =>
@@ -33,7 +33,7 @@ class $ImagesGen {
   List<AssetGenImage> get values => [
     empty,
     iconSettingIcon,
-    iconSigninupIcon,
+    imgSigninHeader,
     launchImage,
   ];
 }

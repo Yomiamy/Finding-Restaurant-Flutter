@@ -85,6 +85,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "route_navigation": MessageLookupByLibrary.simpleMessage("導航"),
     "settings_title": MessageLookupByLibrary.simpleMessage("設定"),
     "signin_btn_title": MessageLookupByLibrary.simpleMessage("登入"),
+    "signin_header_subtitle": MessageLookupByLibrary.simpleMessage("您的頂級餐飲嚮導"),
     "signin_or_signup_title": MessageLookupByLibrary.simpleMessage("登入 / 註冊"),
     "signin_page_title": MessageLookupByLibrary.simpleMessage("登入/註冊"),
     "signin_success_msg": MessageLookupByLibrary.simpleMessage("登入成功"),

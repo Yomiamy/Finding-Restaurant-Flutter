@@ -119,6 +119,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "settings_title": MessageLookupByLibrary.simpleMessage("Settings"),
     "signin_btn_title": MessageLookupByLibrary.simpleMessage("SignIn"),
+    "signin_header_subtitle": MessageLookupByLibrary.simpleMessage(
+      "Your premium dining concierge.",
+    ),
     "signin_or_signup_title": MessageLookupByLibrary.simpleMessage(
       "SignIn / SignUp",
     ),
