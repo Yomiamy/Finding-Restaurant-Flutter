@@ -72,6 +72,10 @@ class MessageLookup extends MessageLookupByLibrary {
       "Business Hour",
     ),
     "filter_price": MessageLookupByLibrary.simpleMessage("Price Rule"),
+    "filter_price_level1": MessageLookupByLibrary.simpleMessage("\$"),
+    "filter_price_level2": MessageLookupByLibrary.simpleMessage("\$\$"),
+    "filter_price_level3": MessageLookupByLibrary.simpleMessage("\$\$\$"),
+    "filter_price_level4": MessageLookupByLibrary.simpleMessage("\$\$\$\$"),
     "filter_rules": MessageLookupByLibrary.simpleMessage("Filter Rules"),
     "filter_sorting_rating": MessageLookupByLibrary.simpleMessage("Rating"),
     "filter_sorting_review_count": MessageLookupByLibrary.simpleMessage(
