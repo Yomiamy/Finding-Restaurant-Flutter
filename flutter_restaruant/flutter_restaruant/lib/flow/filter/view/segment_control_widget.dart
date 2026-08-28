@@ -45,7 +45,7 @@ class _SegmentControlWidgetState extends State<SegmentControlWidget> {
     final theme = Theme.of(context);
 
     return SizedBox(
-      width: double.infinity,
+      width: MediaQuery.of(context).size.width,
       child: CupertinoSegmentedControl<int>(
         selectedColor: theme.colorScheme.primary,
         borderColor: theme.colorScheme.primary,
