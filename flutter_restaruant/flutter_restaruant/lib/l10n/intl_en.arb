@@ -40,6 +40,7 @@
   "settings_title": "Settings",
   "information_section_title": "Information",
   "version_tile_title": "Version",
+  "account_section_title": "Account",
   "logout_section_title": "Logout",
   "delete_account_title": "Delete Account",
   "delete_account_email_subject": "Request for Account Deletion and Data Removal",

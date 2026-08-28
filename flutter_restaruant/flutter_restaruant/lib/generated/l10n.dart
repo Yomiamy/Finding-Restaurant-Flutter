@@ -354,6 +354,16 @@ class S {
     );
   }
 
+  /// `Account`
+  String get account_section_title {
+    return Intl.message(
+      'Account',
+      name: 'account_section_title',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Logout`
   String get logout_section_title {
     return Intl.message(
