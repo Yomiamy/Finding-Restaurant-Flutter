@@ -81,7 +81,7 @@ class _FilterPageState extends State<FilterPage> {
             icon: Icons.access_time,
             title: S.current.filter_business_hour,
             child: Container(
-              height: 180,
+              height: ThemeSize.datePickerHeight,
               decoration: BoxDecoration(
                 borderRadius: BorderRadius.circular(ThemeSize.radius8),
               ),
@@ -123,7 +123,7 @@ class _FilterPageState extends State<FilterPage> {
           ),
           child: FilledButton(
             style: FilledButton.styleFrom(
-              minimumSize: const Size.fromHeight(48),
+              minimumSize: const Size.fromHeight(ThemeSize.primaryButtonHeight),
               backgroundColor: theme.colorScheme.primary,
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(ThemeSize.radius12),

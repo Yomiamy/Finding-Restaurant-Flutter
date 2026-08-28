@@ -41,6 +41,12 @@ abstract final class ThemeSize {
   static const double size120 = 120;
 
   // ────────────────────────────────────────────
+  // 控制項高度 (Control Height)
+  // ────────────────────────────────────────────
+  static const double datePickerHeight = 180;
+  static const double primaryButtonHeight = 48;
+
+  // ────────────────────────────────────────────
   // 骨架圖預設尺寸 (Skeleton)
   // ────────────────────────────────────────────
   static const double skeletonTextHeightLg = 16;
