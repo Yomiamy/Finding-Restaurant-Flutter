@@ -66,5 +66,7 @@
   "empty_data_title": "No Data Available",
   "empty_data_subtitle": "Try adjusting your keywords or filters",
   "empty_data_retry": "Retry",
-  "comments": "Reviews"
+  "comments": "Reviews",
+  "business_status_open": "OPEN",
+  "business_status_closed": "CLOSED"
 }

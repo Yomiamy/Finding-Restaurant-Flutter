@@ -593,6 +593,26 @@ class S {
   String get comments {
     return Intl.message('Reviews', name: 'comments', desc: '', args: []);
   }
+
+  /// `OPEN`
+  String get business_status_open {
+    return Intl.message(
+      'OPEN',
+      name: 'business_status_open',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `CLOSED`
+  String get business_status_closed {
+    return Intl.message(
+      'CLOSED',
+      name: 'business_status_closed',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

@@ -36,7 +36,9 @@ class RestaurantInfoCell extends StatelessWidget {
         (_detailInfo.hours != null && _detailInfo.hours!.isNotEmpty)
         ? (_detailInfo.hours![0].isOpenNow ?? false)
         : false;
-    final String openStatus = isOpen ? 'OPEN' : 'CLOSE';
+    final String openStatus = isOpen
+        ? S.current.business_status_open
+        : S.current.business_status_closed;
     final Color openStatusColor = isOpen
         ? const Color(0xFF2E7D32)
         : colorScheme.outline;

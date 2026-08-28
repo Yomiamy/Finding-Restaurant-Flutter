@@ -31,14 +31,14 @@ void main() {
         ),
       );
 
-      expect(find.text('OPEN'), findsOneWidget);
+      expect(find.text(S.current.business_status_open), findsOneWidget);
       expect(find.text('+886212345678'), findsOneWidget);
       expect(find.text('咖啡廳'), findsOneWidget);
 
       final decoratedBox = tester.widget<DecoratedBox>(
         find
             .ancestor(
-              of: find.text('OPEN'),
+              of: find.text(S.current.business_status_open),
               matching: find.byType(DecoratedBox),
             )
             .first,
@@ -47,7 +47,7 @@ void main() {
       expect(decoration.color, const Color(0xFF2E7D32));
     });
 
-    testWidgets('已打烊時標籤顯示 CLOSE', (tester) async {
+    testWidgets('已打烊時標籤顯示 CLOSED', (tester) async {
       const detail = RestaurantDetailEntity(
         name: 'Closed Restaurant',
         rating: 3.0,
@@ -65,7 +65,7 @@ void main() {
         ),
       );
 
-      expect(find.text('CLOSE'), findsOneWidget);
+      expect(find.text(S.current.business_status_closed), findsOneWidget);
     });
   });
 }
