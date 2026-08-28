@@ -56,7 +56,7 @@ class _SplashPageState extends State<SplashPage> {
     return Scaffold(
       body: Image.asset(
         'images/launch_image.png',
-        fit: BoxFit.cover,
+        fit: BoxFit.fill,
         height: MediaQuery.of(context).size.height,
         width: MediaQuery.of(context).size.width,
       ),
