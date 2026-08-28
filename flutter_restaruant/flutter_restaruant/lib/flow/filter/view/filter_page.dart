@@ -68,59 +68,69 @@ class _FilterPageState extends State<FilterPage> {
           ),
           child: Column(
             children: [
-              SectionCardWidget(
-                icon: Icons.attach_money,
-                title: S.current.filter_price,
-                child: SegmentControlWidget(
-                  initValue: _priceIndex,
-                  segmentItems: [
-                    S.current.filter_price_level1,
-                    S.current.filter_price_level2,
-                    S.current.filter_price_level3,
-                    S.current.filter_price_level4,
-                  ],
-                  valueChange: (i) {
-                    _priceIndex = i;
-                  },
+              Expanded(
+                child: SingleChildScrollView(
+                  child: Column(
+                    children: [
+                      SectionCardWidget(
+                        icon: Icons.attach_money,
+                        title: S.current.filter_price,
+                        child: SegmentControlWidget(
+                          initValue: _priceIndex,
+                          segmentItems: [
+                            S.current.filter_price_level1,
+                            S.current.filter_price_level2,
+                            S.current.filter_price_level3,
+                            S.current.filter_price_level4,
+                          ],
+                          valueChange: (i) {
+                            _priceIndex = i;
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: ThemeSize.space16),
+                      SectionCardWidget(
+                        icon: Icons.access_time,
+                        title: S.current.filter_business_hour,
+                        child: Container(
+                          height: ThemeSize.datePickerHeight,
+                          decoration: BoxDecoration(
+                            borderRadius: BorderRadius.circular(
+                              ThemeSize.radius8,
+                            ),
+                          ),
+                          child: CupertinoDatePicker(
+                            initialDateTime: _openAtDateTime,
+                            use24hFormat: true,
+                            mode: CupertinoDatePickerMode.dateAndTime,
+                            onDateTimeChanged: (dateTime) {
+                              _openAtDateTime = dateTime;
+                            },
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: ThemeSize.space16),
+                      SectionCardWidget(
+                        icon: Icons.sort,
+                        title: S.current.filter_sorting_rule,
+                        child: SegmentControlWidget(
+                          initValue: _sortByIndex,
+                          segmentItems: [
+                            S.current.filter_sorting_rule_best_match,
+                            S.current.filter_sorting_rule_distance,
+                            S.current.filter_sorting_rating,
+                            S.current.filter_sorting_review_count,
+                          ],
+                          valueChange: (i) {
+                            _sortByIndex = i;
+                          },
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
               ),
               const SizedBox(height: ThemeSize.space16),
-              SectionCardWidget(
-                icon: Icons.access_time,
-                title: S.current.filter_business_hour,
-                child: Container(
-                  height: ThemeSize.datePickerHeight,
-                  decoration: BoxDecoration(
-                    borderRadius: BorderRadius.circular(ThemeSize.radius8),
-                  ),
-                  child: CupertinoDatePicker(
-                    initialDateTime: _openAtDateTime,
-                    use24hFormat: true,
-                    mode: CupertinoDatePickerMode.dateAndTime,
-                    onDateTimeChanged: (dateTime) {
-                      _openAtDateTime = dateTime;
-                    },
-                  ),
-                ),
-              ),
-              const SizedBox(height: ThemeSize.space16),
-              SectionCardWidget(
-                icon: Icons.sort,
-                title: S.current.filter_sorting_rule,
-                child: SegmentControlWidget(
-                  initValue: _sortByIndex,
-                  segmentItems: [
-                    S.current.filter_sorting_rule_best_match,
-                    S.current.filter_sorting_rule_distance,
-                    S.current.filter_sorting_rating,
-                    S.current.filter_sorting_review_count,
-                  ],
-                  valueChange: (i) {
-                    _sortByIndex = i;
-                  },
-                ),
-              ),
-              const Spacer(),
               FilledButton(
                 style: FilledButton.styleFrom(
                   minimumSize: const Size.fromHeight(
