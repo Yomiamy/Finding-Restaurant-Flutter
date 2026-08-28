@@ -27,6 +27,8 @@ class RestaurantHeadCell extends StatelessWidget {
       children: <Widget>[
         FadeInImage.assetNetwork(
           placeholder: UIConstants.noImage,
+          // FadeInImage 的 width/height 不會傳給 errorBuilder 回傳的 widget，
+          // 未約束時會以原圖尺寸撐開外層 Stack，把收藏按鈕推出畫面。
           imageErrorBuilder: (context, error, trace) => Image.asset(
             UIConstants.noImage,
             width: MediaQuery.of(context).size.width,

@@ -93,7 +93,7 @@ class _SignInPageState extends State<SignInPage> {
           child: Column(
             children: <Widget>[
               SizedBox(
-                height: 180,
+                height: ThemeSize.signInHeaderHeight,
                 width: double.infinity,
                 child: Image.asset(
                   'images/icon_signinup_icon.gif',
@@ -181,7 +181,7 @@ class _SignInPageState extends State<SignInPage> {
         FilledButton(
           style: FilledButton.styleFrom(
             backgroundColor: Theme.of(context).colorScheme.primary,
-            minimumSize: const Size.fromHeight(48),
+            minimumSize: const Size.fromHeight(ThemeSize.primaryButtonHeight),
             shape: RoundedRectangleBorder(
               borderRadius: BorderRadius.circular(ThemeSize.radius12),
             ),

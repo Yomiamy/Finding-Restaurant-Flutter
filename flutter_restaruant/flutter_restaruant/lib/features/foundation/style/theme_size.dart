@@ -47,6 +47,7 @@ abstract final class ThemeSize {
   // ────────────────────────────────────────────
   static const double datePickerHeight = 180;
   static const double primaryButtonHeight = 48;
+  static const double signInHeaderHeight = 180;
 
   // ────────────────────────────────────────────
   // 骨架圖預設尺寸 (Skeleton)
