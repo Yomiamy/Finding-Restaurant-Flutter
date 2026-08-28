@@ -99,6 +99,41 @@ class S {
     return Intl.message('Price Rule', name: 'filter_price', desc: '', args: []);
   }
 
+  /// `$`
+  String get filter_price_level1 {
+    return Intl.message('\$', name: 'filter_price_level1', desc: '', args: []);
+  }
+
+  /// `$$`
+  String get filter_price_level2 {
+    return Intl.message(
+      '\$\$',
+      name: 'filter_price_level2',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `$$$`
+  String get filter_price_level3 {
+    return Intl.message(
+      '\$\$\$',
+      name: 'filter_price_level3',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `$$$$`
+  String get filter_price_level4 {
+    return Intl.message(
+      '\$\$\$\$',
+      name: 'filter_price_level4',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `Business Hour`
   String get filter_business_hour {
     return Intl.message(

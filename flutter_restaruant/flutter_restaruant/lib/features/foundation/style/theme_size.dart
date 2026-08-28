@@ -15,6 +15,7 @@ abstract final class ThemeSize {
   static const double space5 = 5;
   static const double space8 = 8;
   static const double space10 = 10;
+  static const double space12 = 12;
   static const double space15 = 15;
   static const double space16 = 16;
   static const double space20 = 20;
@@ -27,6 +28,7 @@ abstract final class ThemeSize {
   // 圓角 (Radius)
   // ────────────────────────────────────────────
   static const double radius8 = 8;
+  static const double radius12 = 12;
   static const double radiusTag = 15;
 
   // ────────────────────────────────────────────
@@ -37,6 +39,12 @@ abstract final class ThemeSize {
   static const double size100 = 100;
   static const double size110 = 110;
   static const double size120 = 120;
+
+  // ────────────────────────────────────────────
+  // 控制項高度 (Control Height)
+  // ────────────────────────────────────────────
+  static const double datePickerHeight = 180;
+  static const double primaryButtonHeight = 48;
 
   // ────────────────────────────────────────────
   // 骨架圖預設尺寸 (Skeleton)

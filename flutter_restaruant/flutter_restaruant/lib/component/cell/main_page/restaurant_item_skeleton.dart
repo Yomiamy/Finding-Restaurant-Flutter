@@ -7,10 +7,10 @@ class RestaurantItemSkeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const SizedBox(
+    return SizedBox(
       height: ThemeSize.size120,
       child: Padding(
-        padding: EdgeInsets.only(
+        padding: const EdgeInsets.only(
           left: ThemeSize.space10,
           right: ThemeSize.space5,
           top: ThemeSize.space10,
@@ -18,26 +18,26 @@ class RestaurantItemSkeleton extends StatelessWidget {
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            Skeleton(width: ThemeSize.size110, height: ThemeSize.size110),
-            SizedBox(width: ThemeSize.space10),
+            const Skeleton(width: ThemeSize.size110, height: ThemeSize.size110),
+            const SizedBox(width: ThemeSize.space10),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                 children: [
                   Skeleton(
-                    width: double.infinity,
+                    width: MediaQuery.of(context).size.width,
                     height: ThemeSize.skeletonTextHeightLg,
                   ),
-                  Skeleton(
+                  const Skeleton(
                     width: ThemeSize.skeletonTextWidthLg,
                     height: ThemeSize.skeletonTextHeightMd,
                   ),
                   Skeleton(
-                    width: double.infinity,
+                    width: MediaQuery.of(context).size.width,
                     height: ThemeSize.skeletonTextHeightMd,
                   ),
-                  Skeleton(
+                  const Skeleton(
                     width: ThemeSize.skeletonTextWidthMd,
                     height: ThemeSize.skeletonTextHeightMd,
                   ),
