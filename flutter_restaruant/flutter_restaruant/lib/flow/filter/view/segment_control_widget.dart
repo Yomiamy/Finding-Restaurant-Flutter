@@ -21,12 +21,14 @@ class SegmentControlWidget extends StatefulWidget {
 }
 
 class _SegmentControlWidgetState extends State<SegmentControlWidget> {
-  late int _selectedIndex = widget.initValue;
+  late int _selectedIndex;
+  late Map<int, Widget> _children;
 
   @override
-  Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-    final children = <int, Widget>{
+  void initState() {
+    super.initState();
+    _selectedIndex = widget.initValue;
+    _children = <int, Widget>{
       for (int i = 0; i < widget.segmentItems.length; i++)
         i: Padding(
           padding: const EdgeInsets.symmetric(
@@ -36,6 +38,11 @@ class _SegmentControlWidgetState extends State<SegmentControlWidget> {
           child: Text(widget.segmentItems[i]),
         ),
     };
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final theme = Theme.of(context);
 
     return SizedBox(
       width: double.infinity,
@@ -43,7 +50,7 @@ class _SegmentControlWidgetState extends State<SegmentControlWidget> {
         selectedColor: theme.colorScheme.primary,
         borderColor: theme.colorScheme.primary,
         groupValue: _selectedIndex,
-        children: children,
+        children: _children,
         onValueChanged: (i) {
           setState(() => _selectedIndex = i);
           widget.valueChange(i);
