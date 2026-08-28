@@ -14,7 +14,7 @@ class SignInHeaderWidget extends StatelessWidget {
   @override
   Widget build(BuildContext context) => SizedBox(
     height: ThemeSize.signInHeaderHeight,
-    width: double.infinity,
+    width: MediaQuery.sizeOf(context).width,
     child: Stack(
       fit: StackFit.expand,
       children: <Widget>[
