@@ -6,10 +6,11 @@ import '../bloc/bloc_barrel.dart';
 import '../../signinup/view/view_barrel.dart';
 import '../../splash/view/view_barrel.dart';
 import '../../../manager/manager_barrel.dart';
-import '../../../features/foundation/constants/constants_barrel.dart';
-import 'package:settings_ui/settings_ui.dart';
 import '../../../generated/l10n.dart';
 import '../../../features/foundation/style/style_barrel.dart';
+import 'settings_account_section_widget.dart';
+import 'settings_header_widget.dart';
+import 'settings_info_section_widget.dart';
 
 class SettingsPage extends StatefulWidget {
   static const routeName = '/SettingsPage';
@@ -33,8 +34,7 @@ class _SettingsPageState extends State<SettingsPage> {
 
   @override
   Widget build(BuildContext context) {
-    bool isSupportBiometricAuth =
-        BiometricSignInManager().isSupportBiometricAuth;
+    final bool isGuest = SignInManager().isGuest;
 
     return Scaffold(
       appBar: AppBar(
@@ -56,7 +56,7 @@ class _SettingsPageState extends State<SettingsPage> {
         ),
         backgroundColor: ThemeColor.appPrimary,
       ),
-      body: BlocConsumer<SettingsBloc, SettingsState>(
+      body: BlocListener<SettingsBloc, SettingsState>(
         listener: (context, state) {
           if (state is LogoutSuccess) {
             Navigator.of(context).pushNamedAndRemoveUntil(
@@ -68,129 +68,37 @@ class _SettingsPageState extends State<SettingsPage> {
             _settingsBloc.add(const LogoutEvent());
           }
         },
-        builder: (context, state) {
-          bool bioAuthSettingSwitchValue = false;
-
-          if (state is ToggleBioAuthSettingState) {
-            bioAuthSettingSwitchValue = state.settingValue;
-          } else if (state is InitBioAuthSettingState) {
-            bioAuthSettingSwitchValue = state.settingValue;
-          }
-
-          return SettingsList(
-            sections: [
-              createHeadSection(),
-              createInfoSettingsSection(
-                bioAuthSettingSwitchValue,
-                isSupportBiometricAuth,
-              ),
-              createLogoutSection(),
-            ],
-          );
-        },
-      ),
-    );
-  }
-
-  AbstractSettingsSection createHeadSection() => CustomSettingsSection(
-    child: Image.asset(
-      'images/icon_setting_icon.gif',
-      height: 230.0,
-      width: 230.0,
-    ),
-  );
-
-  AbstractSettingsSection createInfoSettingsSection(
-    bool bioAuthSettingSwitchValue,
-    bool isSupportBiometricAuth,
-  ) => SettingsSection(
-    title: PlatformText(S.current.information_section_title),
-    tiles: <SettingsTile>[
-      SettingsTile(
-        leading: const Icon(Icons.info),
-        title: PlatformText(S.current.version_tile_title),
-        value: PlatformText(Constants.version),
-      ),
-      // TODO:判斷生物辨識
-      // SettingsTile.switchTile(
-      //     leading: Icon(Icons.fingerprint),
-      //     title: PlatformText('生物辨識'),
-      //     initialValue: bioAuthSettingSwitchValue,
-      //     onToggle: (value) {
-      //       this._settingsBloc.add(ToggleBioAuthSettingEvent());
-      //     })
-    ],
-  );
-
-  AbstractSettingsSection createLogoutSection() {
-    // 訪客沒有帳號可登出或刪除，改提供轉為正式帳號的入口。
-    final Widget child = SignInManager().isGuest
-        ? SizedBox(
-            height: 50,
-            child: PlatformElevatedButton(
-              color: ThemeColor.appPrimary,
-              child: Text(
-                S.current.signin_or_signup_title,
-                style: const TextStyle(
-                  fontSize: ThemeFontSize.fontSize18,
-                  fontWeight: FontWeight.bold,
-                  color: Colors.white,
-                ),
-              ),
-              onPressed: () =>
-                  Navigator.of(context).pushNamed(SignInPage.routeName),
+        child: SafeArea(
+          child: SingleChildScrollView(
+            padding: const EdgeInsets.symmetric(
+              horizontal: ThemeSize.space16,
+              vertical: ThemeSize.space25,
             ),
-          )
-        : Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              SizedBox(
-                height: 50,
-                child: PlatformElevatedButton(
-                  color: Colors.red,
-                  child: Text(
-                    S.current.logout_section_title,
-                    style: const TextStyle(
-                      fontSize: ThemeFontSize.fontSize18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.white,
-                    ),
-                  ),
-                  onPressed: () {
-                    _settingsBloc.add(const LogoutEvent());
-                  },
-                ),
-              ),
-              const SizedBox(height: ThemeSize.space20),
-              GestureDetector(
-                onTap: () {
-                  _settingsBloc.add(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: <Widget>[
+                const Center(child: SettingsHeaderWidget()),
+                const SizedBox(height: ThemeSize.space30),
+                const SettingsInfoSectionWidget(),
+                const SizedBox(height: ThemeSize.space30),
+                SettingsAccountSectionWidget(
+                  onSignIn: isGuest
+                      ? () => Navigator.of(
+                          context,
+                        ).pushNamed(SignInPage.routeName)
+                      : null,
+                  onLogout: () => _settingsBloc.add(const LogoutEvent()),
+                  onDeleteAccount: () => _settingsBloc.add(
                     AccountRemovalEvent(
                       subject: S.current.delete_account_email_subject,
                       bodyPrefix: S.current.delete_account_email_body,
                     ),
-                  );
-                },
-                child: Text(
-                  S.current.delete_account_title,
-                  style: const TextStyle(
-                    fontSize: ThemeFontSize.fontSize16,
-                    fontWeight: FontWeight.bold,
-                    color: Colors.red,
                   ),
                 ),
-              ),
-            ],
-          );
-
-    return CustomSettingsSection(
-      child: Padding(
-        padding: const EdgeInsets.only(
-          left: ThemeSize.space25,
-          top: ThemeSize.space50,
-          right: ThemeSize.space25,
+              ],
+            ),
+          ),
         ),
-        child: child,
       ),
     );
   }
