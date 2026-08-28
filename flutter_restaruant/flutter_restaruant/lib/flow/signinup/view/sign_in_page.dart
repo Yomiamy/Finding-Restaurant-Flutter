@@ -203,8 +203,12 @@ class _SignInPageState extends State<SignInPage> {
           },
         ),
         const SizedBox(height: ThemeSize.space10),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        // 窄螢幕（約 < 480dp）時兩顆按鈕的固有寬度會超出單行，
+        // OverflowBar 會自動改為垂直排列，避免 RenderFlex overflow。
+        OverflowBar(
+          alignment: MainAxisAlignment.spaceBetween,
+          overflowAlignment: OverflowBarAlignment.center,
+          overflowSpacing: ThemeSize.space5,
           children: <Widget>[
             TextButton(
               child: Text(

@@ -85,5 +85,35 @@ void main() {
       expect(find.text('Please input email'), findsOneWidget);
       expect(find.text('Please input password'), findsOneWidget);
     });
+
+    testWidgets('窄螢幕（320 / 400 寬）次要按鈕不發生 RenderFlex overflow', (tester) async {
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      for (final width in <double>[320, 400]) {
+        tester.view.physicalSize = Size(width, 800);
+        tester.view.devicePixelRatio = 1.0;
+
+        await tester.pumpWidget(
+          MaterialApp(
+            theme: AppThemeData.materialLight,
+            localizationsDelegates: const [S.delegate],
+            home: BlocProvider<SignInBloc>.value(
+              value: bloc,
+              child: const SignInPage(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(
+          tester.takeException(),
+          isNull,
+          reason: '寬度 $width 時不應發生 overflow',
+        );
+        expect(find.text('SignUp'), findsOneWidget);
+        expect(find.text('Continue As Guest'), findsOneWidget);
+      }
+    });
   });
 }
