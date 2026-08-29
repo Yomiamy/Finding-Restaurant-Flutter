@@ -1,8 +1,10 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
+
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../domain/repositories/repositories_barrel.dart';
-import 'package:meta/meta.dart';
-import 'package:equatable/equatable.dart';
+
 part 'favor_event.dart';
 part 'favor_state.dart';
 

@@ -14,68 +14,20 @@ import 'package:flutter/widgets.dart';
 class $ImagesGen {
   const $ImagesGen();
 
-  /// File path: images/Star_rating_0.5_of_5.png
-  AssetGenImage get starRating05Of5 =>
-      const AssetGenImage('images/Star_rating_0.5_of_5.png');
-
-  /// File path: images/Star_rating_0_of_5.png
-  AssetGenImage get starRating0Of5 =>
-      const AssetGenImage('images/Star_rating_0_of_5.png');
-
-  /// File path: images/Star_rating_1.5_of_5.png
-  AssetGenImage get starRating15Of5 =>
-      const AssetGenImage('images/Star_rating_1.5_of_5.png');
-
-  /// File path: images/Star_rating_1_of_5.png
-  AssetGenImage get starRating1Of5 =>
-      const AssetGenImage('images/Star_rating_1_of_5.png');
-
-  /// File path: images/Star_rating_2.5_of_5.png
-  AssetGenImage get starRating25Of5 =>
-      const AssetGenImage('images/Star_rating_2.5_of_5.png');
-
-  /// File path: images/Star_rating_2_of_5.png
-  AssetGenImage get starRating2Of5 =>
-      const AssetGenImage('images/Star_rating_2_of_5.png');
-
-  /// File path: images/Star_rating_3.5_of_5.png
-  AssetGenImage get starRating35Of5 =>
-      const AssetGenImage('images/Star_rating_3.5_of_5.png');
-
-  /// File path: images/Star_rating_3_of_5.png
-  AssetGenImage get starRating3Of5 =>
-      const AssetGenImage('images/Star_rating_3_of_5.png');
-
-  /// File path: images/Star_rating_4.5_of_5.png
-  AssetGenImage get starRating45Of5 =>
-      const AssetGenImage('images/Star_rating_4.5_of_5.png');
-
-  /// File path: images/Star_rating_4_of_5.png
-  AssetGenImage get starRating4Of5 =>
-      const AssetGenImage('images/Star_rating_4_of_5.png');
-
-  /// File path: images/Star_rating_5_of_5.png
-  AssetGenImage get starRating5Of5 =>
-      const AssetGenImage('images/Star_rating_5_of_5.png');
-
   /// File path: images/empty.png
   AssetGenImage get empty => const AssetGenImage('images/empty.png');
 
-  /// File path: images/ic_favor_empty.png
-  AssetGenImage get icFavorEmpty =>
-      const AssetGenImage('images/ic_favor_empty.png');
-
-  /// File path: images/ic_favor_fill.png
-  AssetGenImage get icFavorFill =>
-      const AssetGenImage('images/ic_favor_fill.png');
-
-  /// File path: images/icon_setting_icon.gif
+  /// File path: images/icon_setting_icon.jpg
   AssetGenImage get iconSettingIcon =>
-      const AssetGenImage('images/icon_setting_icon.gif');
+      const AssetGenImage('images/icon_setting_icon.jpg');
 
-  /// File path: images/icon_signinup_icon.gif
-  AssetGenImage get iconSigninupIcon =>
-      const AssetGenImage('images/icon_signinup_icon.gif');
+  /// File path: images/img_signin_header.jpg
+  AssetGenImage get imgSigninHeader =>
+      const AssetGenImage('images/img_signin_header.jpg');
+
+  /// File path: images/img_splash_hero.jpg
+  AssetGenImage get imgSplashHero =>
+      const AssetGenImage('images/img_splash_hero.jpg');
 
   /// File path: images/launch_image.png
   AssetGenImage get launchImage =>
@@ -83,22 +35,10 @@ class $ImagesGen {
 
   /// List of all assets
   List<AssetGenImage> get values => [
-    starRating05Of5,
-    starRating0Of5,
-    starRating15Of5,
-    starRating1Of5,
-    starRating25Of5,
-    starRating2Of5,
-    starRating35Of5,
-    starRating3Of5,
-    starRating45Of5,
-    starRating4Of5,
-    starRating5Of5,
     empty,
-    icFavorEmpty,
-    icFavorFill,
     iconSettingIcon,
-    iconSigninupIcon,
+    imgSigninHeader,
+    imgSplashHero,
     launchImage,
   ];
 }

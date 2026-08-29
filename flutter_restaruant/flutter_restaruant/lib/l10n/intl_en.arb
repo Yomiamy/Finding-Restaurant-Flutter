@@ -28,7 +28,6 @@
   "list_mode": "List Mode",
 
   "photo_viewer_title": "Photo Viewer",
-  "store_phone": "Phone:",
   "review_count_suffix": " reviews",
   "navigation_choice": "Navigation Choice",
   "route_navigation": "Route Navigation",
@@ -41,6 +40,7 @@
   "settings_title": "Settings",
   "information_section_title": "Information",
   "version_tile_title": "Version",
+  "account_section_title": "Account",
   "logout_section_title": "Logout",
   "delete_account_title": "Delete Account",
   "delete_account_email_subject": "Request for Account Deletion and Data Removal",
@@ -66,5 +66,9 @@
   "signin_or_signup_title": "SignIn / SignUp",
   "empty_data_title": "No Data Available",
   "empty_data_subtitle": "Try adjusting your keywords or filters",
-  "empty_data_retry": "Retry"
+  "empty_data_retry": "Retry",
+  "comments": "Reviews",
+  "business_status_open": "OPEN",
+  "business_status_closed": "CLOSED",
+  "signin_header_subtitle": "Your premium dining concierge."
 }

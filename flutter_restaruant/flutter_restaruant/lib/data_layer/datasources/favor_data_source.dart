@@ -3,10 +3,10 @@ import 'dart:convert';
 
 import 'package:cloud_firestore/cloud_firestore.dart';
 
-import '../dto/dto_barrel.dart';
 import '../../api/api_barrel.dart';
 import '../../domain/entities/entities_barrel.dart';
 import '../../manager/manager_barrel.dart';
+import '../dto/dto_barrel.dart';
 
 /// 最愛餐廳在 Firestore 的單一存取點。
 ///

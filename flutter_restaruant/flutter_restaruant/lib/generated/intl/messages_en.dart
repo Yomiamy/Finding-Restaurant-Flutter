@@ -22,9 +22,13 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "account_section_title": MessageLookupByLibrary.simpleMessage("Account"),
     "apply": MessageLookupByLibrary.simpleMessage("Apply"),
     "business_hour": MessageLookupByLibrary.simpleMessage("Business Hour"),
+    "business_status_closed": MessageLookupByLibrary.simpleMessage("CLOSED"),
+    "business_status_open": MessageLookupByLibrary.simpleMessage("OPEN"),
     "cancel": MessageLookupByLibrary.simpleMessage("Cancel"),
+    "comments": MessageLookupByLibrary.simpleMessage("Reviews"),
     "confirm": MessageLookupByLibrary.simpleMessage("Ok"),
     "continue_as_guest": MessageLookupByLibrary.simpleMessage(
       "Continue As Guest",
@@ -116,6 +120,9 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "settings_title": MessageLookupByLibrary.simpleMessage("Settings"),
     "signin_btn_title": MessageLookupByLibrary.simpleMessage("SignIn"),
+    "signin_header_subtitle": MessageLookupByLibrary.simpleMessage(
+      "Your premium dining concierge.",
+    ),
     "signin_or_signup_title": MessageLookupByLibrary.simpleMessage(
       "SignIn / SignUp",
     ),
@@ -142,7 +149,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Google SignIn",
     ),
     "signup_title": MessageLookupByLibrary.simpleMessage("SignUp"),
-    "store_phone": MessageLookupByLibrary.simpleMessage("Phone:"),
     "street_view": MessageLookupByLibrary.simpleMessage("Street View"),
     "version_tile_title": MessageLookupByLibrary.simpleMessage("Version"),
   };

@@ -1,14 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 import '../../../component/component_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
-import '../../../manager/manager_barrel.dart';
-import '../../../features/utils/utils_barrel.dart';
-
-import 'package:fluttertoast/fluttertoast.dart';
-import '../bloc/bloc_barrel.dart';
-import '../../../generated/l10n.dart';
 import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
+import '../../../generated/l10n.dart';
+import '../../../manager/manager_barrel.dart';
+import '../bloc/bloc_barrel.dart';
 
 class RestaurantDetailPage extends StatefulWidget {
   static const routeName = '/RestaurantDetailPage';
@@ -102,7 +102,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
           },
           builder: (context, state) {
             if (state is InProgress || state is ToggleFavorSuccess) {
-              return const Center(child: LoadingWidget());
+              return const RestaurantDetailSkeleton();
             } else if (state is Success) {
               return ListView(
                 children: [

@@ -1,116 +1,150 @@
 import 'package:flutter/material.dart';
-import '../../../domain/entities/entities_barrel.dart';
-import '../../../features/foundation/style/style_barrel.dart';
-import '../../../features/foundation/constants/constants_barrel.dart';
 import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+
+import '../../../domain/entities/entities_barrel.dart';
+import '../../../features/foundation/constants/constants_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
+import '../../../generated/l10n.dart';
 import '../../rating_stars.dart';
 
 class RestaurantCommentCell extends StatelessWidget {
-  static const int _imageW = 100;
-  static const int _imageH = 100;
+  static const int _imageSize = 64;
 
-  final List<Widget> _commentWidgets = <Widget>[];
+  final List<ReviewDetailEntity> _reviewInfos;
   final ChromeSafariBrowser _browser = ChromeSafariBrowser();
 
   RestaurantCommentCell({
     super.key = const Key('RestaurantCommentCell'),
     required List<ReviewDetailEntity> reviewInfos,
-  }) {
-    _initBusinessTimeWidgets(reviewInfos);
-  }
-
-  void _initBusinessTimeWidgets(List<ReviewDetailEntity> reviewInfos) {
-    for (var reviewInfo in reviewInfos) {
-      String headImgUrl = reviewInfo.user?.imageUrl ?? '';
-      String name = reviewInfo.user?.name ?? '';
-      Widget rateAsset = RatingStars(
-        rating: (reviewInfo.rating ?? 0).toDouble(),
-      );
-      String comment = reviewInfo.text ?? '';
-      String commentUrl = reviewInfo.url ?? '';
-
-      Widget commentWidget = createComment(
-        headImgUrl: headImgUrl,
-        name: name,
-        rateAsset: rateAsset,
-        comment: comment,
-        commentUrl: commentUrl,
-      );
-      _commentWidgets.add(commentWidget);
-    }
-  }
-
-  Widget createComment({
-    required String headImgUrl,
-    required String name,
-    required Widget rateAsset,
-    required String comment,
-    required String commentUrl,
-  }) => GestureDetector(
-    onTap: () {
-      debugPrint('Comment Url = $commentUrl');
-      _browser.open(
-        url: WebUri(commentUrl),
-        settings: ChromeSafariBrowserSettings(barCollapsingEnabled: true),
-      );
-    },
-    child: Padding(
-      padding: const EdgeInsets.only(bottom: ThemeSize.space10),
-      child: Row(
-        mainAxisSize: MainAxisSize.max,
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: <Widget>[
-          SizedBox(
-            width: RestaurantCommentCell._imageH.toDouble(),
-            height: RestaurantCommentCell._imageW.toDouble(),
-            child: FadeInImage.assetNetwork(
-              placeholder: UIConstants.noImage,
-              imageErrorBuilder: (context, error, trace) =>
-                  Image.asset(UIConstants.noImage),
-              image: headImgUrl,
-              imageCacheHeight: RestaurantCommentCell._imageH,
-              imageCacheWidth: RestaurantCommentCell._imageW,
-              placeholderCacheHeight: RestaurantCommentCell._imageH,
-              placeholderCacheWidth: RestaurantCommentCell._imageW,
-              fit: BoxFit.fill,
-            ),
-          ),
-          Expanded(
-            child: Container(
-              padding: const EdgeInsets.only(left: ThemeSize.space10),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                mainAxisSize: MainAxisSize.min,
-                children: <Widget>[
-                  Text(
-                    name,
-                    style: const TextStyle(
-                      fontWeight: FontWeight.w700,
-                      fontSize: ThemeFontSize.fontSize16,
-                    ),
-                    overflow: TextOverflow.ellipsis,
-                  ),
-                  SizedBox(height: ThemeSize.size20, child: rateAsset),
-                  Text(comment, maxLines: 2, overflow: TextOverflow.ellipsis),
-                ],
-              ),
-            ),
-          ),
-        ],
-      ),
-    ),
-  );
+  }) : _reviewInfos = reviewInfos;
 
   @override
-  Widget build(BuildContext context) => Padding(
-    padding: const EdgeInsets.only(
-      left: ThemeSize.space5,
-      right: ThemeSize.space5,
-      top: ThemeSize.space10,
-    ),
-    child: Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: _commentWidgets,
-    ),
-  );
+  Widget build(BuildContext context) {
+    if (_reviewInfos.isEmpty) {
+      return const SizedBox.shrink();
+    }
+
+    final theme = Theme.of(context);
+
+    return Padding(
+      padding: const EdgeInsets.symmetric(
+        horizontal: ThemeSize.space12,
+        vertical: ThemeSize.space8,
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Padding(
+            padding: const EdgeInsets.symmetric(vertical: ThemeSize.space8),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.rate_review_outlined,
+                  size: ThemeSize.size18,
+                  color: theme.colorScheme.primary,
+                ),
+                const SizedBox(width: ThemeSize.space8),
+                Text(
+                  S.current.comments,
+                  style: theme.textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ],
+            ),
+          ),
+          ..._reviewInfos.map((review) => _buildCommentItem(context, review)),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildCommentItem(BuildContext context, ReviewDetailEntity review) {
+    final theme = Theme.of(context);
+    final headImgUrl = review.user?.imageUrl ?? '';
+    final name = review.user?.name ?? '';
+    final comment = review.text ?? '';
+    final commentUrl = review.url ?? '';
+    final double rating = (review.rating ?? 0).toDouble();
+
+    return Padding(
+      padding: const EdgeInsets.only(bottom: ThemeSize.space12),
+      child: Material(
+        color: theme.colorScheme.surface,
+        borderRadius: BorderRadius.circular(ThemeSize.radius12),
+        child: InkWell(
+          borderRadius: BorderRadius.circular(ThemeSize.radius12),
+          onTap: () {
+            if (commentUrl.isNotEmpty) {
+              _browser.open(
+                url: WebUri(commentUrl),
+                settings: ChromeSafariBrowserSettings(
+                  barCollapsingEnabled: true,
+                ),
+              );
+            }
+          },
+          child: Container(
+            padding: const EdgeInsets.all(ThemeSize.space12),
+            decoration: BoxDecoration(
+              border: Border.all(
+                color: theme.colorScheme.outlineVariant.withValues(alpha: 0.5),
+              ),
+              borderRadius: BorderRadius.circular(ThemeSize.radius12),
+            ),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: <Widget>[
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(ThemeSize.radius8),
+                  child: SizedBox(
+                    width: _imageSize.toDouble(),
+                    height: _imageSize.toDouble(),
+                    child: FadeInImage.assetNetwork(
+                      placeholder: UIConstants.noImage,
+                      imageErrorBuilder: (context, error, trace) =>
+                          Image.asset(UIConstants.noImage, fit: BoxFit.cover),
+                      image: headImgUrl,
+                      imageCacheHeight: _imageSize,
+                      imageCacheWidth: _imageSize,
+                      placeholderCacheHeight: _imageSize,
+                      placeholderCacheWidth: _imageSize,
+                      fit: BoxFit.cover,
+                    ),
+                  ),
+                ),
+                const SizedBox(width: ThemeSize.space12),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    mainAxisSize: MainAxisSize.min,
+                    children: <Widget>[
+                      Text(
+                        name,
+                        style: theme.textTheme.titleSmall?.copyWith(
+                          fontWeight: FontWeight.bold,
+                        ),
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: ThemeSize.space4),
+                      RatingStars(rating: rating),
+                      const SizedBox(height: ThemeSize.space4),
+                      Text(
+                        comment,
+                        maxLines: 3,
+                        overflow: TextOverflow.ellipsis,
+                        style: theme.textTheme.bodyMedium?.copyWith(
+                          color: theme.colorScheme.onSurfaceVariant,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
 }

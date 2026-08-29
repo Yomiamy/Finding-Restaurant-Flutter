@@ -22,9 +22,13 @@ class MessageLookup extends MessageLookupByLibrary {
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "account_section_title": MessageLookupByLibrary.simpleMessage("帳戶"),
     "apply": MessageLookupByLibrary.simpleMessage("套用"),
     "business_hour": MessageLookupByLibrary.simpleMessage("營業時間"),
+    "business_status_closed": MessageLookupByLibrary.simpleMessage("已打烊"),
+    "business_status_open": MessageLookupByLibrary.simpleMessage("營業中"),
     "cancel": MessageLookupByLibrary.simpleMessage("取消"),
+    "comments": MessageLookupByLibrary.simpleMessage("評論"),
     "confirm": MessageLookupByLibrary.simpleMessage("確定"),
     "continue_as_guest": MessageLookupByLibrary.simpleMessage("訪客模式"),
     "delete_account_email_body": MessageLookupByLibrary.simpleMessage(
@@ -82,6 +86,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "route_navigation": MessageLookupByLibrary.simpleMessage("導航"),
     "settings_title": MessageLookupByLibrary.simpleMessage("設定"),
     "signin_btn_title": MessageLookupByLibrary.simpleMessage("登入"),
+    "signin_header_subtitle": MessageLookupByLibrary.simpleMessage("您的頂級餐飲嚮導"),
     "signin_or_signup_title": MessageLookupByLibrary.simpleMessage("登入 / 註冊"),
     "signin_page_title": MessageLookupByLibrary.simpleMessage("登入/註冊"),
     "signin_success_msg": MessageLookupByLibrary.simpleMessage("登入成功"),
@@ -98,7 +103,6 @@ class MessageLookup extends MessageLookupByLibrary {
       "Google登入成功",
     ),
     "signup_title": MessageLookupByLibrary.simpleMessage("註冊新帳號"),
-    "store_phone": MessageLookupByLibrary.simpleMessage("電話:"),
     "street_view": MessageLookupByLibrary.simpleMessage("街景視圖"),
     "version_tile_title": MessageLookupByLibrary.simpleMessage("版本"),
   };

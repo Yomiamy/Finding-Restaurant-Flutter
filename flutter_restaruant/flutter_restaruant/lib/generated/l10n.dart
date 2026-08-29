@@ -254,11 +254,6 @@ class S {
     );
   }
 
-  /// `Phone:`
-  String get store_phone {
-    return Intl.message('Phone:', name: 'store_phone', desc: '', args: []);
-  }
-
   /// ` reviews`
   String get review_count_suffix {
     return Intl.message(
@@ -354,6 +349,16 @@ class S {
     return Intl.message(
       'Version',
       name: 'version_tile_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Account`
+  String get account_section_title {
+    return Intl.message(
+      'Account',
+      name: 'account_section_title',
       desc: '',
       args: [],
     );
@@ -592,6 +597,41 @@ class S {
   /// `Retry`
   String get empty_data_retry {
     return Intl.message('Retry', name: 'empty_data_retry', desc: '', args: []);
+  }
+
+  /// `Reviews`
+  String get comments {
+    return Intl.message('Reviews', name: 'comments', desc: '', args: []);
+  }
+
+  /// `OPEN`
+  String get business_status_open {
+    return Intl.message(
+      'OPEN',
+      name: 'business_status_open',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `CLOSED`
+  String get business_status_closed {
+    return Intl.message(
+      'CLOSED',
+      name: 'business_status_closed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Your premium dining concierge.`
+  String get signin_header_subtitle {
+    return Intl.message(
+      'Your premium dining concierge.',
+      name: 'signin_header_subtitle',
+      desc: '',
+      args: [],
+    );
   }
 }
 

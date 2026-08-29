@@ -1,11 +1,12 @@
-import 'package:flutter/foundation.dart';
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:flutter/foundation.dart';
+import 'package:geolocator/geolocator.dart';
+
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../domain/repositories/repositories_barrel.dart';
-import '../../../manager/manager_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
-import 'package:geolocator/geolocator.dart';
-import 'package:equatable/equatable.dart';
+import '../../../manager/manager_barrel.dart';
 
 part 'main_event.dart';
 part 'main_state.dart';

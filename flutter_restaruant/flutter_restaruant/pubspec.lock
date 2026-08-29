@@ -1604,14 +1604,6 @@ packages:
       url: "https://pub.dev"
     source: hosted
     version: "2.2.0"
-  settings_ui:
-    dependency: "direct main"
-    description:
-      name: settings_ui
-      sha256: "7437c9c867f331ff6c90e951f2333441eab5cf5e654c3a7f3e4aad0c01db51ef"
-      url: "https://pub.dev"
-    source: hosted
-    version: "3.0.1"
   share_plus:
     dependency: transitive
     description:

@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../../model/model_barrel.dart';
-import '../../../features/utils/utils_barrel.dart';
 
-import '../../../generated/l10n.dart';
 import '../../../features/foundation/style/style_barrel.dart';
-
+import '../../../features/utils/utils_barrel.dart';
+import '../../../generated/l10n.dart';
+import '../../../model/model_barrel.dart';
 import 'section_card_widget.dart';
 import 'segment_control_widget.dart';
 
@@ -93,7 +92,7 @@ class _FilterPageState extends State<FilterPage> {
                         icon: Icons.access_time,
                         title: S.current.filter_business_hour,
                         child: Container(
-                          height: ThemeSize.datePickerHeight,
+                          height: ThemeSize.size180,
                           decoration: BoxDecoration(
                             borderRadius: BorderRadius.circular(
                               ThemeSize.radius8,
@@ -134,7 +133,7 @@ class _FilterPageState extends State<FilterPage> {
               FilledButton(
                 style: FilledButton.styleFrom(
                   minimumSize: const Size.fromHeight(
-                    ThemeSize.primaryButtonHeight,
+                    ThemeSize.size48,
                   ),
                   backgroundColor: theme.colorScheme.primary,
                   shape: RoundedRectangleBorder(

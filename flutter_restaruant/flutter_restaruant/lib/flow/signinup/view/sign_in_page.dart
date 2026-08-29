@@ -1,17 +1,18 @@
-import 'dart:io';
-
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 import '../../../component/component_barrel.dart';
-import '../bloc/bloc_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../../../manager/manager_barrel.dart';
-import '../../../features/foundation/style/style_barrel.dart';
-import 'package:sign_in_button/sign_in_button.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../../main/view/view_barrel.dart';
 import '../../splash/view/view_barrel.dart';
+import '../bloc/bloc_barrel.dart';
+import 'sign_in_actions_widget.dart';
+import 'sign_in_form_widget.dart';
+import 'sign_in_header_widget.dart';
+import 'third_party_sign_in_widget.dart';
 
 class SignInPage extends StatefulWidget {
   static const routeName = '/SignInPage';
@@ -70,7 +71,57 @@ class _SignInPageState extends State<SignInPage> {
             Fluttertoast.showToast(msg: state.errorMsg);
           }
         },
-        builder: (context, state) => _buildView(state),
+        builder: (context, state) => Stack(
+          children: <Widget>[
+            SafeArea(
+              child: SingleChildScrollView(
+                child: Column(
+                  children: <Widget>[
+                    const SignInHeaderWidget(),
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: ThemeSize.space30,
+                        vertical: ThemeSize.space20,
+                      ),
+                      child: Column(
+                        children: <Widget>[
+                          SignInFormWidget(
+                            formKey: _formKey,
+                            onEmailSaved: (value) => _email = value,
+                            onPasswordSaved: (value) => _passwd = value,
+                          ),
+                          SignInActionsWidget(
+                            onSignIn: () => _submit(
+                              () => _signInBloc.add(
+                                MailSignInEvent(mail: _email, passwd: _passwd),
+                              ),
+                            ),
+                            onSignUp: () => _submit(
+                              () => _signInBloc.add(
+                                MailSignUpEvent(mail: _email, passwd: _passwd),
+                              ),
+                            ),
+                            onContinueAsGuest: _continueAsGuest,
+                          ),
+                          const SizedBox(height: ThemeSize.space15),
+                          ThirdPartySignInWidget(
+                            onGoogleSignIn: () =>
+                                _signInBloc.add(GoogleSignInEvent()),
+                            onAppleSignIn: () =>
+                                _signInBloc.add(AppleSignInEvent()),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+            (state is InProgress)
+                ? const Center(child: LoadingWidget(text: ''))
+                : const SizedBox.shrink(),
+          ],
+        ),
       ),
     );
   }
@@ -87,210 +138,18 @@ class _SignInPageState extends State<SignInPage> {
         ModalRoute.withName(SplashPage.routeName),
       );
 
-  Widget _buildView(SignInState state) => Stack(
-    children: <Widget>[
-      ConstrainedBox(
-        constraints: const BoxConstraints.expand(),
-        child: Column(
-          children: <Widget>[
-            Expanded(
-              flex: 1,
-              child: Image.asset(
-                'images/icon_signinup_icon.gif',
-                fit: BoxFit.cover,
-              ),
-            ),
-            Expanded(
-              flex: 1,
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.only(
-                    left: ThemeSize.space30,
-                    right: ThemeSize.space30,
-                  ),
-                  child: Column(
-                    children: <Widget>[
-                      showInput(state),
-                      showSignInUpBtns(),
-                      show3rdSignInUpBtns(),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-      (state is InProgress)
-          ? const Center(child: LoadingWidget(text: ''))
-          : const SizedBox.shrink(),
-    ],
-  );
+  /// 驗證表單並存值，通過才執行 [onValid]。
+  void _submit(VoidCallback onValid) {
+    if (_formKey.currentState != null && _formKey.currentState!.validate()) {
+      _formKey.currentState!.save();
+      onValid();
+    }
+  }
 
-  Widget showInput(SignInState state) => Form(
-    key: _formKey,
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[showEmailInput(), showPasswordInput()],
-    ),
-  );
-
-  Widget showEmailInput() => Padding(
-    padding: const EdgeInsets.fromLTRB(
-      ThemeSize.space30,
-      ThemeSize.zero,
-      ThemeSize.space30,
-      ThemeSize.zero,
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        const Icon(Icons.mail, color: Colors.grey),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(left: ThemeSize.space10),
-            child: PlatformTextFormField(
-              maxLines: 1,
-              autofocus: false,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: (value) => (value == null || value.isEmpty)
-                  ? S.current.email_invalid_hint_msg
-                  : null,
-              onSaved: (value) => _email = value!,
-              hintText: S.current.email_invalid_hint_title,
-              cupertino: (_, __) => CupertinoTextFormFieldData(
-                // Assign a default cupertino decoration
-                decoration: const PlatformTextField()
-                    .createCupertinoWidget(context)
-                    .decoration,
-              ),
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
-
-  Widget showPasswordInput() => Padding(
-    padding: const EdgeInsets.fromLTRB(
-      ThemeSize.space30,
-      ThemeSize.space15,
-      ThemeSize.space30,
-      ThemeSize.zero,
-    ),
-    child: Row(
-      mainAxisSize: MainAxisSize.max,
-      children: <Widget>[
-        const Icon(Icons.lock, color: Colors.grey),
-        Expanded(
-          child: Padding(
-            padding: const EdgeInsets.only(left: ThemeSize.space10),
-            child: PlatformTextFormField(
-              maxLines: 1,
-              obscureText: true,
-              autofocus: false,
-              autovalidateMode: AutovalidateMode.onUserInteraction,
-              validator: (value) => (value == null || value.isEmpty)
-                  ? S.current.passwd_invalid_hint_msg
-                  : null,
-              onSaved: (value) => _passwd = value!,
-              hintText: S.current.passwd_invalid_hint_title,
-              cupertino: (_, __) => CupertinoTextFormFieldData(
-                // Assign a default cupertino decoration
-                decoration: const PlatformTextField()
-                    .createCupertinoWidget(context)
-                    .decoration,
-              ),
-            ),
-          ),
-        ),
-      ],
-    ),
-  );
-
-  Widget showSignInUpBtns() => Padding(
-    padding: const EdgeInsets.only(top: ThemeSize.space15),
-    child: Column(
-      mainAxisSize: MainAxisSize.min,
-      children: <Widget>[
-        PlatformElevatedButton(
-          color: const Color.fromARGB(255, 5, 97, 245),
-          child: Text(
-            S.current.signin_btn_title,
-            style: const TextStyle(
-              fontSize: ThemeFontSize.fontSize18,
-              fontWeight: FontWeight.bold,
-              color: Colors.white,
-            ),
-          ),
-          onPressed: () {
-            if (_formKey.currentState != null &&
-                _formKey.currentState!.validate()) {
-              _formKey.currentState!.save();
-              _signInBloc.add(MailSignInEvent(mail: _email, passwd: _passwd));
-            }
-          },
-        ),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            PlatformTextButton(
-              child: Text(
-                S.current.signup_title,
-                style: const TextStyle(
-                  fontSize: ThemeFontSize.fontSize14,
-                  color: Colors.grey,
-                ),
-              ),
-              onPressed: () {
-                if (_formKey.currentState != null &&
-                    _formKey.currentState!.validate()) {
-                  _formKey.currentState!.save();
-                  _signInBloc.add(
-                    MailSignUpEvent(mail: _email, passwd: _passwd),
-                  );
-                }
-              },
-            ),
-            PlatformTextButton(
-              child: Text(
-                S.current.continue_as_guest,
-                style: const TextStyle(
-                  fontSize: ThemeFontSize.fontSize14,
-                  color: Colors.grey,
-                ),
-              ),
-              onPressed: () async {
-                await SignInManager().markAsGuest();
-                if (!mounted) return;
-                // ignore: unawaited_futures
-                _goToMainPage(context);
-              },
-            ),
-          ],
-        ),
-      ],
-    ),
-  );
-
-  Widget show3rdSignInUpBtns() => Column(
-    mainAxisSize: MainAxisSize.min,
-    children: <Widget>[
-      SignInButton(
-        Buttons.google,
-        elevation: 3.0,
-        text: S.current.signinup_with_google,
-        onPressed: () => _signInBloc.add(GoogleSignInEvent()),
-      ),
-      const SizedBox(height: ThemeSize.space10),
-      (Platform.isIOS)
-          ? SignInButton(
-              Buttons.apple,
-              elevation: 3.0,
-              text: S.current.signinup_with_apple,
-              onPressed: () => _signInBloc.add(AppleSignInEvent()),
-            )
-          : const SizedBox.shrink(),
-    ],
-  );
+  Future<void> _continueAsGuest() async {
+    await SignInManager().markAsGuest();
+    if (!mounted) return;
+    // ignore: unawaited_futures
+    _goToMainPage(context);
+  }
 }

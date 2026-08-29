@@ -1,12 +1,12 @@
 import 'package:bloc/bloc.dart';
+import 'package:equatable/equatable.dart';
+import 'package:meta/meta.dart';
+
 import '../../../api/api_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../domain/repositories/repositories_barrel.dart';
-import 'package:meta/meta.dart';
-import 'package:equatable/equatable.dart';
 
 part 'restaurant_detail_event.dart';
-
 part 'restaurant_detail_state.dart';
 
 class RestaurantDetailBloc

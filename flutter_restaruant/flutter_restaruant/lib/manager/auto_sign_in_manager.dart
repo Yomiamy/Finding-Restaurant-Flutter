@@ -1,9 +1,10 @@
 import 'dart:convert';
-import '../data_layer/dto/dto_barrel.dart';
 
+import 'package:shared_preferences/shared_preferences.dart';
+
+import '../data_layer/dto/dto_barrel.dart';
 import '../features/foundation/constants/constants_barrel.dart';
 import '../features/utils/utils_barrel.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AutoSignInManager {
   static final AutoSignInManager _singleton = AutoSignInManager._internal();

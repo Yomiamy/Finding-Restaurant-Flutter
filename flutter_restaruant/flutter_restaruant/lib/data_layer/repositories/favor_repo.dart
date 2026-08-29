@@ -1,8 +1,8 @@
 import 'dart:async';
 
-import '../datasources/datasources_barrel.dart';
 import '../../domain/entities/entities_barrel.dart';
 import '../../domain/repositories/repositories_barrel.dart';
+import '../datasources/datasources_barrel.dart';
 
 class FavorRepo implements FavorRepository {
   final FavorDataSource _dataSource;
