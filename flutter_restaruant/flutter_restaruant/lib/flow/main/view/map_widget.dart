@@ -2,7 +2,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../../component/cell/main_page/restaurant_item_cell.dart';
+import '../../../component/cell/main_page/main_page_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../features/foundation/constants/constants_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';

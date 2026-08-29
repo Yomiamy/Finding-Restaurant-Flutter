@@ -5,7 +5,7 @@ import '../../../component/ad/ad_barrel.dart';
 import '../../../component/cell/main_page/main_page_barrel.dart';
 import '../../../di/di_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
-import '../../../features/foundation/extension/widget_extension.dart';
+import '../../../features/foundation/extension/extension_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../model/model_barrel.dart';
