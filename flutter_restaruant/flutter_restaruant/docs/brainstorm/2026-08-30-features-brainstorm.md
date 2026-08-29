@@ -793,6 +793,8 @@ lib/
 > **登入頁提升為必做的原因**：初判為「可延後」，實際檢視 `sign_in_page.dart:180` 後修正 —— 主要登入按鈕為 `Color.fromARGB(255, 5, 97, 245)`（硬編碼藍），與 App 主色橘紅無關。這是新使用者的第一印象，且訪客模式入口（PR #56 新功能）目前是灰色小字，功能價值被 UI 埋沒。
 >
 > **📍 2026-08-03 更新**：該按鈕現位於 `sign_in_page.dart:183`（S1 的 token 遷移使行號位移），**顏色未改，仍是硬編碼藍**。S1 依規格 §4.3 定案不動它 —— 它不是 theme 缺失造成的（是明寫顏色，掛 theme 對它零影響），改它會讓 S1「除 FilterChip 外外觀不變」的驗收失去意義。列為債務 T-1，**S3 連同灰色訪客入口（T-5）整頁處理**。該檔的 `ThemeColor` / `ThemeSize` token 遷移則已於 S1 完成。
+>
+> **📍 2026-08-30 結案**：S3（PR #94）已重建登入頁，該硬編碼藍隨 `sign_in_page.dart` 拆分為 `sign_in_header_widget` / `sign_in_form_widget` / `sign_in_actions_widget` / `third_party_sign_in_widget` 一併消除。實查 grep `fromARGB(255, 5, 97, 245)` 全 `lib/` 無命中，T-1 結案。
 
 ---
 
@@ -990,15 +992,15 @@ lib/features/foundation/style/
 | :--- | :--- | :--- | :---: | :---: |
 | **S1 地基** | `lib/features/foundation/style/` 建立、`PlatformApp` 掛 `material:`／`cupertino:`／`builder:`、token 定義 | 無 | 低（僅 FilterChip 藍→橘） | ✅ **已完成 (2026-08-03)** |
 | **S2 共用元件** | ItemCell、RatingStars(✅)、Skeleton(✅)、EmptyDataWidget | S1 | **高**（列表與最愛同時改觀） | 🟡 **部分完成**（`RatingStars` 與 `Skeleton` 已完成，剩餘 `ItemCell`、`EmptyDataWidget` 與 Token 覆寫） |
-| **S3 頁面改造** | 詳情頁、登入頁、列表頁 | S2 | **高** | ⬜ 待辦 |
+| **S3 頁面改造** | 詳情頁、登入頁、列表頁（實際另含設定頁、Splash 頁） | S2 | **高** | ✅ **已完成 (2026-08-29, PR #94)** |
 | **S4 收尾** | 篩選頁、Splash、移除假延遲、清理舊常數 | S3 | 中 | ⬜ 待辦 |
 
 ### S1 移交 S2 的債務清單
 
 | # | 債務 | 承接 |
 | :--- | :--- | :---: |
-| T-1 | `sign_in_page.dart:183` 硬編碼藍 `Color.fromARGB(255, 5, 97, 245)`，品牌識別錯誤。S1 依 §4.3 定案不修（改它會污染「除 FilterChip 外外觀不變」的地基驗證，且單改主按鈕會做出「橘按鈕配灰入口」的半成品） | **S3** |
-| T-2 | 33 處裸 `Colors.xxx`、13 個檔案（2026-08-03 複測數字未變） | S2 / S3 / S4 |
+| T-1 | ~~`sign_in_page.dart:183` 硬編碼藍 `Color.fromARGB(255, 5, 97, 245)`，品牌識別錯誤~~ | ✅ **已於 S3 (PR #94) 消除**（2026-08-30 實查：全 `lib/` grep `fromARGB(255, 5, 97, 245)` 已無命中） |
+| T-2 | 裸 `Colors.xxx` **25 處／16 檔**（2026-08-30 實查；原 33 處／13 檔）。⚠️ 處數降 8 但檔數增 3 —— S3 將 `sign_in_page` / `settings_page` / `splash_page` 拆為多個 widget 檔，既有用法被分散，非新增債務 | S4 |
 | T-3 | 10 個 `@Deprecated` 字級常數、29 處使用、14 個檔案待遷移 | ✅ **已於 S1 (PR #66) 移除並由 ThemeFontSize 替換** |
 | T-6 | 奶油白 `surface` (`#FFFBF7`) 覆寫，D-4 的 3 個 `copyWith` 額度完整保留 | **S2** |
 | **T-9（新增）** | **`colorScheme.primary` = `#8F4B38` ≠ 品牌色 `#D84A20`**，與 **19 處**硬編 `ThemeColor.appPrimary`（**8 檔**）並存有色差。須決定是否 `copyWith` 鎖回品牌色。⚠️ 2026-08-05 複測更正：原記 16 處／7 檔 | **S2** |
@@ -1069,7 +1071,7 @@ lib/features/foundation/style/
 |  ── 6.x UI 視覺重塑（本章，前置地基）──                                           |
 |   • [x] S1 Design System 地基 (ThemeData / ColorScheme / token) ✅ 2026-08-03     |
 |   • [ ] S2 共用元件重塑 (ItemCell / RatingStars✅ / Skeleton✅ / Empty)           |
-|   • [ ] S3 頁面改造 (詳情頁 / 登入頁 / 列表頁)                                    |
+|   • [x] S3 頁面改造 (詳情頁 / 登入頁 / 列表頁 / 設定 / Splash) ✅ 2026-08-29     |
 |   • [ ] S4 收尾 (篩選頁 / Splash / 移除假延遲 / 清理舊常數)                       |
 |                                                                                   |
 |  ── 原 Phase 1.5 剩餘項（依賴 S1 完成）──                                         |
