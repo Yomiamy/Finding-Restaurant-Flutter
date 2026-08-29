@@ -30,7 +30,7 @@ class SignInActionsWidget extends StatelessWidget {
           FilledButton(
             style: FilledButton.styleFrom(
               backgroundColor: colorScheme.primary,
-              minimumSize: const Size.fromHeight(ThemeSize.primaryButtonHeight),
+              minimumSize: const Size.fromHeight(ThemeSize.size48),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(ThemeSize.radius12),
               ),

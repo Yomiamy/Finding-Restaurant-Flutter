@@ -27,19 +27,19 @@ class RestaurantItemSkeleton extends StatelessWidget {
                 children: [
                   Skeleton(
                     width: MediaQuery.of(context).size.width,
-                    height: ThemeSize.skeletonTextHeightLg,
+                    height: ThemeSize.size16,
                   ),
                   const Skeleton(
-                    width: ThemeSize.skeletonTextWidthLg,
-                    height: ThemeSize.skeletonTextHeightMd,
+                    width: ThemeSize.size120,
+                    height: ThemeSize.size14,
                   ),
                   Skeleton(
                     width: MediaQuery.of(context).size.width,
-                    height: ThemeSize.skeletonTextHeightMd,
+                    height: ThemeSize.size14,
                   ),
                   const Skeleton(
-                    width: ThemeSize.skeletonTextWidthMd,
-                    height: ThemeSize.skeletonTextHeightMd,
+                    width: ThemeSize.size80,
+                    height: ThemeSize.size14,
                   ),
                 ],
               ),

@@ -13,7 +13,8 @@ class SignInHeaderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => SizedBox(
-    height: ThemeSize.signInHeaderHeight,
+    // 設計稿（Stitch handoff）標註頁首圖高度 200~240dp，取中值。
+    height: ThemeSize.size220,
     width: MediaQuery.sizeOf(context).width,
     child: Stack(
       fit: StackFit.expand,

@@ -34,32 +34,21 @@ abstract final class ThemeSize {
   // ────────────────────────────────────────────
   // 一般尺寸 (Size)
   // ────────────────────────────────────────────
+  static const double size14 = 14;
   static const double size16 = 16;
   static const double size18 = 18;
   static const double size20 = 20;
   static const double size24 = 24;
   static const double size48 = 48;
+  static const double size52 = 52;
+  static const double size64 = 64;
+  static const double size80 = 80;
   static const double size100 = 100;
   static const double size110 = 110;
   static const double size120 = 120;
+  static const double size140 = 140;
+  static const double size180 = 180;
   static const double size200 = 200;
+  static const double size220 = 220;
   static const double size320 = 320;
-
-  // ────────────────────────────────────────────
-  // 控制項高度 (Control Height)
-  // ────────────────────────────────────────────
-  static const double datePickerHeight = 180;
-  static const double primaryButtonHeight = 48;
-  // 設計稿（Stitch handoff）標註 Information 列 Tile H=52.0dp。
-  static const double settingsTileHeight = 52;
-  // 設計稿（Stitch handoff）標註頁首圖高度 200~240dp，取中值。
-  static const double signInHeaderHeight = 220;
-
-  // ────────────────────────────────────────────
-  // 骨架圖預設尺寸 (Skeleton)
-  // ────────────────────────────────────────────
-  static const double skeletonTextHeightLg = 16;
-  static const double skeletonTextHeightMd = 14;
-  static const double skeletonTextWidthLg = 120;
-  static const double skeletonTextWidthMd = 80;
 }

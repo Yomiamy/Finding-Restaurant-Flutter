@@ -98,7 +98,7 @@ class _FilledAction extends StatelessWidget {
     final ButtonStyle style = FilledButton.styleFrom(
       backgroundColor: ThemeColor.appPrimary,
       foregroundColor: Colors.white,
-      minimumSize: const Size.fromHeight(ThemeSize.primaryButtonHeight),
+      minimumSize: const Size.fromHeight(ThemeSize.size48),
       textStyle: const TextStyle(
         fontSize: ThemeFontSize.fontSize18,
         fontWeight: FontWeight.bold,

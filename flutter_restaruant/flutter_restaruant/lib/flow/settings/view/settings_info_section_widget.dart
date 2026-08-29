@@ -42,7 +42,8 @@ class SettingsInfoSectionWidget extends StatelessWidget {
             border: Border.all(color: theme.colorScheme.outlineVariant),
           ),
           child: SizedBox(
-            height: ThemeSize.settingsTileHeight,
+            // 設計稿（Stitch handoff）標註 Information 列 Tile H=52.0dp。
+            height: ThemeSize.size52,
             child: Padding(
               padding: const EdgeInsets.symmetric(
                 horizontal: ThemeSize.space16,
