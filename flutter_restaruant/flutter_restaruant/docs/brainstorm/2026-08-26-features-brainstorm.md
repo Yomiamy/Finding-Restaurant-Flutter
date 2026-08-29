@@ -1086,3 +1086,260 @@ lib/features/foundation/style/
 未來若要重啟此功能，建議重新評估以下方案：
 1. 等待官方 `google_maps_flutter` 內建更成熟的原生聚合 (ClusterManager) 方案。
 2. 評估其他原生封裝的第三方套件，將運算壓力交給底層 C++/Java/Objective-C 處理，以改善操作體驗。
+
+---
+
+# 7. Google AI Studio (Gemini API) 與 GenUI (A2UI) 全方位導入架構與功能規劃
+
+> **本章新增於 2026-08-29**，針對專案既有之餐廳探索 (`flow/main`)、詳情展示 (`flow/restaurant`)、篩選過濾 (`flow/filter`) 與最愛清單 (`flow/favor`)，導入 **Google AI Studio (Gemini API) (Gemini 2.5 Flash)** 與 **Generative UI (GenUI / A2UI - Agent-to-UI)** 動態介面技術。
+
+---
+
+## 7.1 核心理念與 Linus 模式架構審查 (Linus Philosophy & Mindset)
+
+### 🐧 Linus 式五層分析
+
+1. **第 1 層：資料結構優先 (Data-First over Code)**
+   - **核心資料**：`A2UIComponentSpec`（宣告式元件描述子）、`AiMessageEntity`（包含純文字與 GenUI 結構）、`MenuAnalysisEntity`（菜單多模態分析模型）。
+   - **資料流向**：
+     $$\text{User Prompt / Image} \xrightarrow{\text{BLoC Event}} \text{AiRepository} \xrightarrow{\text{Google AI Studio (Gemini API)}} \text{Structured JSON Stream} \xrightarrow{\text{A2UI Parser}} \text{Widget Tree (M3)} \xrightarrow{\text{User Action}} \text{App BLoC}$$
+   - 拒絕在 UI 層寫一堆臨時的正則表達式 (Regex) 解析字串，嚴格透過 Gemini **Structured Output (JSON Schema)** 與 Dart **Sealed Classes** 達成編譯期型別安全。
+
+2. **第 2 層：消除邊界情況 (Eliminating Edge Cases)**
+   - **模型幻覺/非法 JSON**：定義 `A2UIParser` 搭配 `sealed class A2UIComponent`。任何未知或損毀的 JSON 結構一律安全回退為 `FallbackMarkdownCard`，絕不觸發執行期崩潰 (Never crash userspace)。
+   - **多模態大圖問題**：上傳前本地自動等比例壓縮至長邊 $\le 1500\text{px}$、品質 $85\%$，杜絕 HTTP 413 Payload Too Large。
+   - **網路中斷與 API Quota 耗盡**：提供本機重試機制與優雅降級提示，既有手動搜尋與地圖瀏覽完全不受影響。
+
+3. **第 3 層：痴迷於簡潔 (Simplicity & YAGNI)**
+   - 不引入重量級自製 JS/腳本解譯引擎，直接使用 Dart 原生 Widget 註冊表 (`A2UIWidgetRegistry`) 將宣告式 JSON 映射至既有 Material 3 元件（如 `RestaurantItemCell`、`Card`、`FilterChip`）。
+   - 函式短小精悍，單一職責。
+
+4. **第 4 層：絕不破壞用戶空間 (Backward Compatibility & Isolation)**
+   - AI 與 GenUI 全數封裝於獨立模組（`lib/features/ai_assistant/`），以依賴注入 (GetIt) 掛載。
+   - 即使 Google AI Studio (Gemini API) 離線或被停用，App 核心餐廳瀏覽、搜尋、最愛與地圖功能 $100\%$ 正常運作。
+
+5. **第 5 層：實用主義 (Pragmatism)**
+   - 解決真實痛點：
+     - 解決「4 人聚餐選擇困難」$\rightarrow$ **對話生成對比決策卡 (Comparison Matrix)**。
+     - 解決「看不懂外文菜單與過敏原隱患」$\rightarrow$ **拍照多模態拆解 (Dish Lens)**。
+     - 解決「長篇評論看不完」$\rightarrow$ **AI 摘要 + 0-100% 個人味蕾相性度**。
+
+---
+
+## 7.2 系統架構與資料流 (System Architecture & Data Flow)
+
+```mermaid
+flowchart TB
+    subgraph UI_Presentation ["Presentation Layer (Flutter)"]
+        UserView["既有畫面 / AI 對話視窗<br/>(MainPage / RestaurantDetailPage)"]
+        Bloc["AiAssistantBloc / MenuVisionBloc"]
+        A2UIRegistry["A2UI Component Registry<br/>(Material 3 Native Widgets)"]
+    end
+
+    subgraph Domain_Layer ["Domain Layer"]
+        AiUseCase["AiSearchUseCase / AnalyzeMenuUseCase"]
+        Entities["A2UIComponent / RestaurantEntity / MenuEntity"]
+        RepoInterface["AiRepository (Abstract)"]
+    end
+
+    subgraph Data_Layer ["Data Layer"]
+        AiRepoImpl["AiRepositoryImpl"]
+        FirebaseAILogic["Google AI SDK<br/>(google_generative_ai)"]
+        YelpClient["Yelp Fusion API Client"]
+        LocalCache["SQLite / Cache Storage"]
+    end
+
+    subgraph Cloud_Infrastructure ["Cloud & Security"]
+        GeminiCloud["Google AI Studio (Gemini Developer API) - Free Tier"]
+        AppCheck["Firebase App Check / Remote Config (Protect & Distribute Key)"]
+    end
+
+    UserView -->|發動 Prompt / 拍照 Event| Bloc
+    Bloc -->|調用 UseCase| AiUseCase
+    AiUseCase -->|介面契約| RepoInterface
+    RepoInterface -.->|實作| AiRepoImpl
+    AiRepoImpl -->|發動串流 / 多模態請求| FirebaseAILogic
+    FirebaseAILogic -->|App Check 認證 & 動態 Model| GeminiCloud
+    GeminiCloud -->|Structured JSON / Function Calling| FirebaseAILogic
+    FirebaseAILogic -->|若觸發 Tool Use 查店| YelpClient
+    FirebaseAILogic -->|串流 Typed Data| AiRepoImpl
+    AiRepoImpl -->|DTO to Entity| Bloc
+    Bloc -->|Emit A2UIRenderState| A2UIRegistry
+    A2UIRegistry -->|動態組合 Widget Tree| UserView
+    UserView -->|點擊 GenUI 卡片按鈕| Bloc
+```
+
+---
+
+## 7.3 GenUI (A2UI) 宣告式元件協定規格 (A2UI Component Protocol Specification)
+
+所有從 Google AI Studio (Gemini API) 回傳的動態介面，皆遵循統一的 `A2UIProtocol` JSON Schema：
+
+### 1. 根結構 (Root Schema)
+```json
+{
+  "type": "a2ui_response",
+  "version": "1.0",
+  "text": "為您找到 3 家符合『4人、中山站、預算 600、居酒屋』的推薦餐廳：",
+  "components": [
+    {
+      "component_type": "comparison_matrix",
+      "data": {
+        "title": "推薦居酒屋決策對比",
+        "items": [
+          {
+            "restaurant_id": "yabu-taipei",
+            "name": "野武士居酒屋",
+            "rating": 4.6,
+            "avg_price": 550,
+            "highlights": ["串燒極香", "梅酒種類多"],
+            "distance": "350m",
+            "available_slots": ["18:30", "19:00"]
+          }
+        ]
+      }
+    },
+    {
+      "component_type": "action_chip_group",
+      "data": {
+        "chips": [
+          {"label": "📍 在地圖上查看全部", "action": "show_on_map", "payload": {"ids": ["yabu-taipei"]}},
+          {"label": "🎲 幫我隨機抽一家", "action": "open_decision_wheel", "payload": {}}
+        ]
+      }
+    }
+  ]
+}
+```
+
+### 2. Dart Sealed Class 型別體系 (Type-safe Domain Hierarchy)
+```dart
+sealed class A2UIComponent {
+  const A2UIComponent();
+  factory A2UIComponent.fromJson(Map<String, dynamic> json) => switch (json['component_type']) {
+    'comparison_matrix' => ComparisonMatrixComponent.fromJson(json['data']),
+    'dish_catalog' => DishCatalogComponent.fromJson(json['data']),
+    'itinerary_timeline' => ItineraryTimelineComponent.fromJson(json['data']),
+    'review_summary' => ReviewSummaryComponent.fromJson(json['data']),
+    'action_chip_group' => ActionChipGroupComponent.fromJson(json['data']),
+    _ => FallbackMarkdownComponent(text: json['text'] ?? ''),
+  };
+}
+
+class ComparisonMatrixComponent extends A2UIComponent {
+  final String title;
+  final List<RestaurantComparisonItem> items;
+  const ComparisonMatrixComponent({required this.title, required this.items});
+}
+```
+
+---
+
+## 7.4 四大核心業務情境與 GenUI 落地流程 (Four Core Scenarios)
+
+### 情境 1：AI 智能覓食助理與 GenUI 決策畫布 (Conversational Foodie Canvas)
+
+* **痛點**：多人聚餐或情境特殊時，傳統單維度篩選（價格/距離）無法處理複雜自然語言（「4 人、不吃牛、想喝酒聊天、好停車」）。
+* **進入點**：
+  - 首頁搜尋欄右側 **✨ AI 魔法棒**。
+  - 點擊後由底部滑出 `DraggableScrollableSheet` 對話畫布。
+* **互動流程**：
+  1. **自然語言輸入**：語音或文字輸入情境需求。
+  2. **AI Tool Calling**：Gemini 透過 Function Calling 呼叫 Yelp API 搜尋符合條件的候選店家。
+  3. **GenUI 動態生成**：
+     - **對比卡片 (Comparison Card Carousel)**：橫向滑動比較均消、星等、安靜度、招牌菜。
+     - **地圖連動 (Map Sync)**：點擊「在地圖高亮」，主頁地圖相機自動 Zoom In 至候選餐廳邊界。
+     - **命運轉盤 (Decision Roulette)**：若使用者仍猶豫，一鍵將候選名單帶入 3D 轉盤隨機挑選。
+
+```
+┌────────────────────────────────────────────────────────┐
+│  🤖 AI 覓食助手                                     ✕  │
+├────────────────────────────────────────────────────────┤
+│  「已為您挑選 3 間中山站適合 4 人聊天的居酒屋：」      │
+│                                                        │
+│  ┌──────────────────┐  ┌──────────────────┐            │
+│  │ 🍢 野武士居酒屋  │  │ 🍶 狸御殿居酒屋  │  ▶ 橫向    │
+│  │ ★ 4.6 · $550/人  │  │ ★ 4.4 · $620/人  │    滑動    │
+│  │ 理由: 串燒大推   │  │ 理由: 包廂安靜   │            │
+│  │ [一鍵訂位 19:00] │  │ [一鍵訂位 18:30] │            │
+│  └──────────────────┘  └──────────────────┘            │
+│                                                        │
+│  [📍 在地圖上看這 3 家]   [🎲 選擇困難？轉盤抽籤]       │
+└────────────────────────────────────────────────────────┘
+```
+
+---
+
+### 情境 2：多模態拍菜單 AI 助手 (Multimodal Menu & Dish Lens)
+
+* **痛點**：到異國餐廳或特色小吃店，紙本菜單字體密密麻麻、無圖片、食材不明，過敏體質或外食族難以抉擇。
+* **進入點**：
+  - 餐廳詳情頁頂部「📸 **拍菜單 AI 拆解**」浮動按鈕。
+* **互動流程**：
+  1. 使用者拍照或選取紙本菜單圖片。
+  2. 圖片經本地壓縮後送入 Google AI Studio (Gemini API) (Gemini 2.5 Flash Multimodal)。
+  3. **GenUI 動態生成【互動式菜單看板 (Interactive Dish Catalog)】**：
+     - **分頁標籤**：自動歸類為「前菜」、「主食」、「湯品」、「甜點/飲品」。
+     - **過敏原與食材警示 Badge**：自動標註「⚠️ 含花生/堅果」、「🌱 純素」、「🌶️ 中辣」。
+     - **招牌必點指數**：AI 結合 Yelp 網友評論標註「🔥 89% 顧客推薦」。
+     - **虛擬點餐試算**：點擊加入點餐單，即時計算總金額與分攤人均。
+
+---
+
+### 情境 3：評論智慧總結與 0-100% 個人味蕾相性度 (Review Synthesis & Flavor Match)
+
+* **痛點**：每家餐廳動輒幾百則評論，正負評夾雜，難以迅速掌握真實避雷點。
+* **進入點**：餐廳詳情頁「顧客評價」區塊頂部。
+* **互動流程**：
+  1. 進入詳情頁時，AI 後台異步串流生成評論摘要。
+  2. **GenUI 動態生成【AI 評價情報卡 (Review Intelligence Widget)】**：
+     - **🟢 值得一試 (Pros)**：條列 3 項核心優勢（如「炙燒鮭魚必點」、「出餐迅速」）。
+     - **🔴 注意事項 (Cons / Watchouts)**：條列避雷提醒（如「尖峰需排隊 30 分鐘」、「冷氣較弱」）。
+     - **🎯 0-100% 個人相性度**：比對使用者個人設定之口味偏好（如「愛吃辣、重口味、不吃香菜」），標註「🔥 94% 相性度：因為這家以川味麻辣見長」。
+
+---
+
+### 情境 4：一日美食巡禮與行程生成 (AI Food Crawl & Itinerary Builder)
+
+* **痛點**：最愛名單存了幾十家店，週末想安排約會或半日遊，卻不知道如何串接交通與營業時間。
+* **進入點**：最愛清單頁 (`flow/favor`) 頂部「✨ **AI 規劃美食巡禮**」按鈕。
+* **互動流程**：
+  1. 使用者於最愛清單勾選 2~4 間想去的店家。
+  2. 點擊「生成巡禮行程」，Google AI Studio (Gemini API) 根據地理座標、營業時間與 Yelp 人潮時段排定時間軸。
+  3. **GenUI 動態生成【時間軸行程卡片 (Itinerary Timeline Widget)】**：
+     - `14:00` 甜點午茶 $\rightarrow$ `步行 8 分鐘 (550m)` $\rightarrow$ `16:30` 手沖咖啡館 $\rightarrow$ `搭捷運 2 站` $\rightarrow$ `18:30` 晚餐炭火燒肉。
+     - 整合「一鍵匯入行事曆」與「在 Google Maps 開啟整條路線」。
+
+---
+
+## 7.5 安全性、效能防護與成本治理 (Security, Quota & Resilience)
+
+1. **Firebase App Check 嚴格保護**
+   - 透過 App Check (iOS DeviceCheck / App Attest; Android Play Integrity) 鎖定 API 請求來源，杜絕未經授權的惡意客戶端盜刷 Gemini 配額。
+2. **Firebase Remote Config 動態模型控制**
+   - 模型名稱（如 `gemini-2.5-flash`）、Temperature、System Instructions 與 Prompt 模板全數由 Remote Config 遠端控制，無需發布新版本即可調整。
+3. **優雅降級 (Graceful Fallback Policy)**
+   - 當遇 HTTP 429 (Rate Limit)、網路離線或 JSON 語法破損時：
+     - 降級為本地快取之推薦結果或標準搜尋列表。
+     - UI 提供一鍵「重新整理 (Retry)」按鈕與友善說明，保證無白屏、無 unhandled exception。
+4. **敏感資訊與個資保護 (Data Privacy)**
+   - 嚴格過濾發送給 LLM 的請求內容，不傳送使用者的 Email、電話或精確帳號 ID，僅傳遞匿名化的偏好標籤與地理座標。
+
+---
+
+## 7.6 交付里程碑與 KPI 驗收指標 (Milestones & Verification KPIs)
+
+| 階段 | 里程碑目標 | 核心產出 | 預估 Effort |
+| :--- | :--- | :--- | :---: |
+| **M1** | Google AI Studio 基礎設施與 A2UI Protocol 核心 | 引入 `google_generative_ai`，完成 GetIt 註冊、API Key 遠端派發與 Remote Config 接線 | 1.0 |
+| **M2** | A2UI 動態元件解析引擎 | 實作 `A2UIParser`、`A2UIWidgetRegistry` 與 5 款基礎 M3 動態卡片元件 | 1.5 |
+| **M3** | 拍菜單多模態視覺助手 (Dish Lens) | 完成相機拍照、圖片壓縮、食材/過敏原解析與互動點餐看板 UI | 2.0 |
+| **M4** | AI 智能覓食助理與 GenUI 畫布 | 完成對話式 BottomSheet、Yelp Function Calling、對比卡片與命運轉盤 | 2.0 |
+| **M5** | 評論智慧摘要與美食巡禮行程 | 完成評價情報卡、0-100% 味蕾相性雷達與最愛行程產生器 | 1.5 |
+
+### 驗收 KPI
+
+- **首字響應時間 (TTFT - Time To First Token)**：串流對話模式下 $\le 800\text{ ms}$。
+- **A2UI 解析穩定度**：結構化 JSON 解析錯誤率 $< 0.1\%$，且異常時 $100\%$ 安全降級。
+- **程式碼品質**：`flutter analyze` 維持零警告 (`No issues found!`)；單元測試覆蓋率 $\ge 85\%$。
+
