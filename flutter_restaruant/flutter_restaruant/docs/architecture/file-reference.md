@@ -85,6 +85,7 @@
 | 檔案路徑 | 關鍵類別 | 單一職責 (Single Responsibility) |
 | :--- | :--- | :--- |
 | [`lib/flow/splash/view/splash_page.dart`](../../lib/flow/splash/view/splash_page.dart) | `SplashPage` | 啟動頁。延遲後依 `SignInManager().isGuest` 導向主畫面或登入頁；並在 debug 下掛載 Inspector 常駐 FAB。 |
+| [`lib/flow/splash/view/splash_hero_widget.dart`](../../lib/flow/splash/view/splash_hero_widget.dart) | `SplashHeroWidget` | 啟動頁主視覺區塊。 |
 | [`lib/flow/main/bloc/main_bloc.dart`](../../lib/flow/main/bloc/main_bloc.dart) | `MainBloc` | 主畫面業務邏輯：搜尋、載入更多、關鍵字過濾、最愛切換、推播設定。 |
 | [`lib/flow/main/bloc/main_event.dart`](../../lib/flow/main/bloc/main_event.dart) | `MainEvent`<br>`FetchSearchInfo`<br>`FilterListByKeyword`<br>`ToggleFavor`<br>`Reset`<br>`NotificationSetup` | 主畫面事件定義（`Equatable`）。 |
 | [`lib/flow/main/bloc/main_state.dart`](../../lib/flow/main/bloc/main_state.dart) | `MainState`<br>`MainInitial` / `InProgress` / `Success` / `Failure` / `LoadMoreSuccess` / `ResetSuccess` / `ToggleFavorSuccess` | 主畫面狀態。以**具名子類別**表達互斥狀態，而非布林旗標組合。 |
@@ -97,9 +98,16 @@
 | [`lib/flow/favor/bloc/favor_bloc.dart`](../../lib/flow/favor/bloc/favor_bloc.dart) | `FavorBloc` | 最愛清單業務邏輯。 |
 | [`lib/flow/favor/view/favor_page.dart`](../../lib/flow/favor/view/favor_page.dart) | `FavorPage` | 最愛清單頁。 |
 | [`lib/flow/signinup/bloc/sign_in_bloc.dart`](../../lib/flow/signinup/bloc/sign_in_bloc.dart) | `SignInBloc` | 登入流程業務邏輯（多種登入方式分派）。 |
-| [`lib/flow/signinup/view/sign_in_page.dart`](../../lib/flow/signinup/view/sign_in_page.dart) | `SignInPage` | 登入頁。 |
+| [`lib/flow/signinup/view/sign_in_page.dart`](../../lib/flow/signinup/view/sign_in_page.dart) | `SignInPage` | 登入頁；組合下列四個區塊 widget。 |
+| [`lib/flow/signinup/view/sign_in_header_widget.dart`](../../lib/flow/signinup/view/sign_in_header_widget.dart) | `SignInHeaderWidget` | 登入頁頁首視覺（依 MediaQuery 寬度定高）。 |
+| [`lib/flow/signinup/view/sign_in_form_widget.dart`](../../lib/flow/signinup/view/sign_in_form_widget.dart) | `SignInFormWidget` | 帳號／密碼輸入表單。 |
+| [`lib/flow/signinup/view/sign_in_actions_widget.dart`](../../lib/flow/signinup/view/sign_in_actions_widget.dart) | `SignInActionsWidget` | 登入／註冊主要動作按鈕與訪客入口。 |
+| [`lib/flow/signinup/view/third_party_sign_in_widget.dart`](../../lib/flow/signinup/view/third_party_sign_in_widget.dart) | `ThirdPartySignInWidget` | 第三方登入（Google／Apple／Facebook）按鈕列。 |
 | [`lib/flow/settings/bloc/settings_bloc.dart`](../../lib/flow/settings/bloc/settings_bloc.dart) | `SettingsBloc` | 設定頁業務邏輯。 |
-| [`lib/flow/settings/view/settings_page.dart`](../../lib/flow/settings/view/settings_page.dart) | `SettingsPage` | 設定頁。 |
+| [`lib/flow/settings/view/settings_page.dart`](../../lib/flow/settings/view/settings_page.dart) | `SettingsPage` | 設定頁；組合下列三個區塊 widget。 |
+| [`lib/flow/settings/view/settings_header_widget.dart`](../../lib/flow/settings/view/settings_header_widget.dart) | `SettingsHeaderWidget` | 設定頁頁首。 |
+| [`lib/flow/settings/view/settings_account_section_widget.dart`](../../lib/flow/settings/view/settings_account_section_widget.dart) | `SettingsAccountSectionWidget` | 帳號區塊（登入狀態與登出）。 |
+| [`lib/flow/settings/view/settings_info_section_widget.dart`](../../lib/flow/settings/view/settings_info_section_widget.dart) | `SettingsInfoSectionWidget` | 資訊區塊（版本、條款等）。 |
 | [`lib/flow/filter/view/filter_page.dart`](../../lib/flow/filter/view/filter_page.dart) | `FilterPage` | 搜尋條件篩選頁（無 Bloc，以本地狀態管理）。 |
 | [`lib/flow/photo_viewer/view/photo_viewer.dart`](../../lib/flow/photo_viewer/view/photo_viewer.dart) | `PhotoViewer` | 全螢幕照片瀏覽（無 Bloc）。 |
 | [`lib/flow/splash/bloc/splash_bloc.dart`](../../lib/flow/splash/bloc/splash_bloc.dart) | `SplashBloc` | 啟動頁業務邏輯。 |
@@ -114,6 +122,7 @@
 | [`lib/component/rating_stars.dart`](../../lib/component/rating_stars.dart) | `RatingStars` | 星等評分繪製元件（以 Flutter 內建 Icon 取代舊版 11 張 PNG）。 |
 | [`lib/component/skeleton.dart`](../../lib/component/skeleton.dart) | `Skeleton` | Shimmer 骨架屏基底元件。 |
 | [`lib/component/cell/main_page/restaurant_item_skeleton.dart`](../../lib/component/cell/main_page/restaurant_item_skeleton.dart) | `RestaurantItemSkeleton` | 餐廳列表卡片骨架屏。 |
+| [`lib/component/cell/restaurant_detail/restaurant_detail_skeleton.dart`](../../lib/component/cell/restaurant_detail/restaurant_detail_skeleton.dart) | `RestaurantDetailSkeleton` | 餐廳詳情頁骨架屏；尺寸刻意對齊真實 cell，避免載入完成時版面跳動。 |
 | [`lib/component/cell/main_page/restaurant_item_cell.dart`](../../lib/component/cell/main_page/restaurant_item_cell.dart) | `RestaurantItemCell` | 餐廳列表卡片（列表與最愛頁共用）。 |
 | [`lib/component/cell/restaurant_detail/restaurant_head_cell.dart`](../../lib/component/cell/restaurant_detail/restaurant_head_cell.dart) | `RestaurantHeadCell` | 詳情頁頁首（名稱、評分、價位）。 |
 | [`lib/component/cell/restaurant_detail/restaurant_info_cell.dart`](../../lib/component/cell/restaurant_detail/restaurant_info_cell.dart) | `RestaurantInfoCell` | 詳情頁基本資訊列。 |
