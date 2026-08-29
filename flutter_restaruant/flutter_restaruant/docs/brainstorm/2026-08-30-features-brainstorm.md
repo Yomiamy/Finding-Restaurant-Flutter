@@ -53,7 +53,7 @@
 
 初版報告產出於 2026-07-26，歷經多次迭代覆核。本次依 2026-08-19 實際落地的變更（PR #70, v1.5.0+31）覆核全文。**覆核方式為直接檢視當前程式碼，而非採信 commit 訊息**。
 
-**✅ 已落地（15 項）**
+**✅ 已落地（16 項）**
 
 | 項目 | 驗證依據 |
 | :--- | :--- |
@@ -73,18 +73,19 @@
 | **列表載入骨架屏 (Shimmer)** | ✅ 實查 `skeleton.dart` 已實作並廣泛使用 |
 | **列表底部載入更多動畫** | ✅ 實查 `restaurant_info_list_widget.dart` 已實作 |
 | **RatingStars 評分星等元件 (取代 11 張 PNG)** | ✅ 實查 `rating_stars.dart` 已實作並接線，PNG 與 `RatingHelper` 已移除 (PR #73 驗證) |
+| **iOS UIScene Lifecycle 支援遷移** | ✅ **已於 2026-08-23 完成**，正確掛載 `FlutterSceneDelegate` 並保留原生推播委派 |
 
-**🔴 仍未解決與新納入阻擋項（7 項，全數為 P0 最高優先）**
+**🔴 仍未解決與新納入阻擋項（6 項，全數為 P0 最高優先）**
 
 | 項目 | 現況 | 風險 / 影響 |
 | :--- | :--- | :--- |
-| **Flutter SDK 版本遷移 (≥ 3.44.1)** | 目前位於 `3.41.9` / Dart `3.11.5` | 缺少最新效能優化、第三方套件相容性限制，需升級至最新 stable |
-| **iOS UIScene Lifecycle 支援遷移** | 目前 Xcode 配置尚未遷移至 UIScene lifecycle | **蘋果/Flutter 官方強制性警告**：未來 iOS 版本即將強制要求 UIScene lifecycle，未遷移將導致 App 無法在未來 iOS 版本正常啟動 |
+| **自動化 CI/CD 發布流水線 (GitHub Actions)** | 新納入最高優先項目，依 Tag 自動發布 | 缺乏自動化發布導致人工打包易出錯且耗時 |
+| ✅ **Flutter SDK 版本遷移 (≥ 3.44.1)** | ✅ **已於 2026-08-26 完成** | 已更新 pubspec.yaml 及 CI 工作流程至 3.44.1 |
 | **iOS Swift Package Manager (SPM) 遷移** | 目前透過 `pubspec.yaml` 暫時關閉 SPM 回退 CocoaPods | **官方強制性遷移**：CocoaPods 即將唯讀且 Firebase 停止 CocoaPods 發布，Flutter 未來將移除關閉 SPM 選項，需等待/升級套件相容後完成全面遷移 |
 | **Android Built-in Kotlin 遷移** | 已升級 Kotlin 2.2.20 消除過舊警告，但仍使用顯式 KGP | **官方棄用警告**：Flutter 未來將強制推行 Built-in Kotlin 並移除 KGP 支援，需在未來升級中徹底移除顯式 KGP 依賴 |
 | **硬編碼 API Key** | 僅改名為 `camelCase`，明碼仍在 `constants.dart:30,40` | 金鑰已入 git 歷史，須**撤銷並輪替**，非搬移可解 |
 | **修復地圖模式定位按鈕遮擋問題** | 地圖右下角 FAB 會被列表卡片遮擋 | 嚴重影響地圖操作體驗（按鈕完全無法點擊） |
-| **修復地圖底部列表 UI 溢出 (RenderFlex overflow)** | Android 地圖底部 `rating_stars.dart` 發生溢出 | 畫面出現黃黑條紋錯誤，影響 UI 視覺與可用性 |
+| ✅ **修復地圖底部列表 UI 溢出 (RenderFlex overflow)** | ~~Android 地圖底部發生溢出~~ | **已於 PR #73 修復**（實際位置為 `restaurant_item_cell.dart`，非 `rating_stars.dart`） |
 
 > **判斷**：架構地基已完成最關鍵的資料層重構（Subcollection）。但 **iOS UIScene Lifecycle 遷移**、**iOS SPM 遷移**、**Android Built-in Kotlin 遷移** 與 **Flutter SDK 升級** 關係到未來的平台相容性與可建置性，已與安全性（API Key）一同提升至 **P0 絕對最高優先序**。
 
@@ -409,9 +410,11 @@ lib/
    * **痛點**: 首頁切換到地圖模式時，右下角的「定位當前位置」按鈕會被底部的橫向店家列表卡片遮住，導致使用者無法點擊。
    * **改造要點**: 調整地圖元件的 `padding` (特別是 `bottom` padding) 或直接更改 FAB 的佈局位置，使其在橫向列表出現時自動上移，確保核心互動按鈕不被遮擋。
 
-9. **修復地圖底部列表 UI 溢出問題 (RenderFlex Overflow Bug)**
-   * **痛點**: 在 Android 裝置上，地圖模式底部的橫向店家列表出現了右側溢出 14 pixels 的錯誤 (`A RenderFlex overflowed by 14 pixels on the right`)，問題發生在 `rating_stars.dart` 內的 `Row` 元件，導致畫面上出現黃黑警告條紋。
-   * **改造要點**: 檢查 `rating_stars.dart` 的 `Row` 配置，加入 `Flexible`、`Expanded`，或使用 `Wrap` 取代 `Row` 來允許自動換行或縮放，確保星星評分元件能夠自適應卡片寬度，避免溢出錯誤。
+9. **修復地圖底部列表 UI 溢出問題 (RenderFlex Overflow Bug)** — ✅ 已於 2026-08-20 完成（Issue #72 / PR #73）
+   * **痛點**: 在 Android 裝置上，地圖模式底部的橫向店家列表出現了右側溢出 14 pixels 的錯誤 (`A RenderFlex overflowed by 14 pixels on the right`)，導致畫面上出現黃黑警告條紋。
+   * **實際根因與原先推測不同**: 溢出點不在 `rating_stars.dart`，而在 `restaurant_item_cell.dart` 的評分列 `Row`。`RatingStars` 被包在 `Expanded` 內參與 flex 分配，但它是 5 個固定 16px 的 Icon、寬度本就不可壓縮；在地圖 carousel 的窄卡片（`viewportFraction: 0.85`）下，分配到的寬度小於實際需求即溢出。
+   * **實際解法與原先提案不同**: 未採用 `Wrap`（會讓星等換行，破壞單列版面）。改為把 `RatingStars` 移出 flex（不再包 `Expanded`），剩餘空間全部交給評論數與價格兩段文字，並為其加上 `overflow: TextOverflow.ellipsis` 與 `textAlign: TextAlign.right`——不可壓縮的元素不參與分配，可截斷的才參與。
+   * **回歸測試**: `restaurant_item_cell_test.dart` 新增 298px 窄卡片測試，驗證無 layout exception 且 5 顆星維持完整寬度。
 
 ### 2.6 對照組架構與風格對齊重構 (Architecture Alignment) — ✅ 已於 2026-07-27～07-29 完成
 
@@ -449,6 +452,19 @@ lib/
 
 為確保 App 在最新行動作業系統上的相容性、建置效能與長期可維護性，以下幾項底層升級列為 **P0 阻擋級地基任務**：
 
+#### F-0.1A 自動化 CI/CD 發布流水線 (Automated CI/CD Pipeline) (絕對最高優先)
+* **背景與痛點**:
+  * 目前專案缺乏自動化發布機制，人工打包既耗時又容易發生環境變數切換遺漏的錯誤。
+* **改造要點**:
+  * 參照外部專案之 `release.yml` 流程，為本專案建立專屬的 GitHub Actions CI/CD 工作流。
+  * **觸發機制**：依賴 Git Tag 觸發。
+  * **開發版 (dev) 發布路線**：
+    * **觸發條件**: `dev-ios-{version}`, `dev-android-{version}`
+    * **打包與分發**: 打包完成後，上傳至 **Firebase App Distribution** 供內部測試。
+  * **正式版 (prd) 發布路線**：
+    * **觸發條件**: `prd-ios-{version}`, `prd-android-{version}`
+    * **打包與分發**: 打包完成後，上傳至 **Apple Store Connect (TestFlight)** 與 **Google Play Console (Internal Testing)**。
+
 #### F-0.2 Flutter SDK 升級遷移至 3.44.1+ (Flutter SDK Version Migration)
 * **背景與痛點**:
   * 目前專案運行於 Flutter `3.41.9` / Dart `3.11.5`，未能充分享受新版 Flutter 的 Dart 3.x 效能優化、WebAssembly/Impeller 渲染改進及安全性修補。
@@ -458,7 +474,7 @@ lib/
   * 解決套件版本衝突與 deprecated API（如 `flutter_platform_widgets` 與 Swift Package Manager 相關配置）。
   * 執行全量單元測試、Widget 測試與靜態程式碼分析（確保 `flutter analyze` 零警告）。
 
-#### F-0.3 iOS UIScene Lifecycle 支援遷移 (iOS UIScene Lifecycle Migration)
+#### F-0.3 iOS UIScene Lifecycle 支援遷移 (iOS UIScene Lifecycle Migration) — ✅ 已於 2026-08-23 完成
 * **背景與痛點**:
   * Flutter 工具鏈明確發出強制性警告：
     > *“To ensure your app continues to launch on upcoming iOS versions, UIScene lifecycle support will soon be required. Please see https://flutter.dev/to/uiscene-migration for the migration guide.”*
@@ -469,7 +485,7 @@ lib/
   * 確保原有之推播（FCM / APNs）、Deep Link（Universal Links）、生物辨識認證與第三方登入在 UIScene 生命週期下無縫運作。
   * 驗證 iOS 模擬器與實機冷啟動、背景喚醒、多工切換與情境恢復。
 
-#### F-0.4 iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (iOS SPM Migration)
+#### F-0.4 iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (iOS SPM Migration) — ✅ 已於 2026-08-24 完成 (混合模式)
 * **背景與痛點**:
   * **CocoaPods 維護終止**：CocoaPods 官方已正式進入維護模式（預計 2026 年底註冊表唯讀），Firebase 官方亦已宣布 iOS SDK 的 CocoaPods 支援自 2026 年 10 月起停止發布新版。
   * **Flutter 強制轉向 SPM**：Flutter 官方明確警告未來版本將強制全面轉向 SPM，並移除 `enable-swift-package-manager: false` 的退出選項（*“Disabling Swift Package Manager will not be allowed in a future version of Flutter.”*）。
@@ -522,10 +538,10 @@ lib/
 | ✅ **對照組風格: 程式碼風格與 Lint 嚴格化** | 程式碼重構 | 10 | 1.0 | 100% | 1.0 | **10.0** | 9.0 | - | **已完成** |
 | ✅ **訪客模式 (Guest Mode)** | 轉化優化 | 10 | 2.0 | 100% | 1.0 | **20.0** | 18.0 | - | **已完成** |
 | ✅ **Firestore Subcollection 口袋名單** | 資料架構 | 10 | 2.5 | 100% | 1.0 | **25.0** | 22.5 | - | **已完成**（2026-08-19, PR #70） |
-| 🔴 **iOS UIScene Lifecycle 支援遷移 (強制性相容)** | 平台遷移 | 10 | 3.0 | 100% | 1.0 | **30.0** | 27.0 | - | **P0（阻擋級平台風險）** |
-| 🔴 **iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰** | 平台遷移 | 10 | 2.5 | 90% | 1.5 | **15.0** | 19.12 | - | **P0（官方強制遷移）** |
+| ✅ **iOS UIScene Lifecycle 支援遷移 (強制性相容)** | 平台遷移 | 10 | 3.0 | 100% | 1.0 | **30.0** | 27.0 | - | **已完成**（2026-08-23） |
+| ✅ **iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (混合模式)** | 平台遷移 | 10 | 2.5 | 90% | 1.5 | **15.0** | 19.12 | - | **已完成**（2026-08-24，以混合模式完工） |
 | 🔴 **Android Built-in Kotlin 遷移 (移除顯式 KGP)** | 平台遷移 | 10 | 2.5 | 100% | 0.5 | **50.0** | 23.75 | - | **P0（官方棄用警告）** |
-| 🔴 **Flutter SDK 版本遷移 (≥ 3.44.1)** | 基礎設施 | 10 | 2.5 | 100% | 1.0 | **25.0** | 22.5 | - | **P0（基礎設施升級）** |
+| ✅ **Flutter SDK 版本遷移 (≥ 3.44.1)** | 基礎設施 | 10 | 2.5 | 100% | 1.0 | **25.0** | 22.5 | - | **P0（基礎設施升級）** |
 | ✅ **移除無謂假延遲 (過濾 2s / 推播 8s)** | 既有修復 | 9 | 1.5 | 100% | 0.5 | **27.0** | 14.25 | - | **已完成** |
 | ✅ **`MapWidget` 實作 `didUpdateWidget` 連動 Marker** | 既有修復 | 8 | 2.0 | 100% | 0.5 | **32.0** | 19.0 | - | **已完成** |
 | 🔴 **修復地圖模式定位按鈕遮擋問題** | 既有修復 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | - | **P0** |
@@ -566,15 +582,15 @@ lib/
 |   • [x] P1 調整側選單功能項目順序 (Drawer Menu Reordering)                        |
 |   • [x] ── 訪客模式 Guest Mode (規劃外新增，PR #56)                               |
 |   • [x] P1 Firestore Subcollection 最愛名單重構 ✅ 2026-08-19 (PR #70)            |
-|   • [ ] P0 🔴 iOS UIScene Lifecycle 支援遷移 (防止未來 iOS 版本啟動崩潰)          |
-|   • [ ] P0 🔴 iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰               |
+|   • [x] P0 ✅ iOS UIScene Lifecycle 支援遷移 ✅ 2026-08-23                               |
+|   • [x] P0 ✅ iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (混合模式)               |
 |   • [ ] P0 🔴 Android Built-in Kotlin 遷移 (移除顯式 KGP)                             |
-|   • [ ] P0 🔴 Flutter SDK 版本遷移至 3.44.1+                                       |
+|   • [x] P0 ✅ Flutter SDK 版本遷移至 3.44.1+                                       |
 |   • [ ] P0 移除硬編碼 API Key ⚠️ 未動；金鑰已入 git 歷史，須撤銷並輪替            |
 |   • [x] P0 移除無謂假延遲 (過濾 2s / 推播導航 8s) ✅ 實查已清除                   |
 |   • [x] P0 `MapWidget` 實作 `didUpdateWidget` 使 Marker 連動列表 ✅ 實查已實作    |
 |   • [ ] P0 修復地圖模式定位按鈕遮擋問題 (Map Locate Button Obscured Bug)          |
-|   • [ ] P0 修復地圖底部列表 UI 溢出 (Android RenderFlex overflow in rating_stars) |
+|   • [x] P0 修復地圖底部列表 UI 溢出 (Android RenderFlex overflow) ✅ PR #73        |
 +-----------------------------------------------------------------------------------+
                                          │
                                          ▼
