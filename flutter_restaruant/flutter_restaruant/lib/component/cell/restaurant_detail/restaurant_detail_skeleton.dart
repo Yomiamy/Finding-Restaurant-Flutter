@@ -44,10 +44,7 @@ class RestaurantDetailSkeleton extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: <Widget>[
-                    Skeleton(
-                      width: screenWidth,
-                      height: ThemeSize.size16,
-                    ),
+                    Skeleton(width: screenWidth, height: ThemeSize.size16),
                     const SizedBox(height: ThemeSize.space8),
                     const Skeleton(
                       width: ThemeSize.size120,
@@ -133,20 +130,14 @@ class _CommentSkeleton extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: <Widget>[
-            const Skeleton(
-              width: ThemeSize.size120,
-              height: ThemeSize.size14,
-            ),
+            const Skeleton(width: ThemeSize.size120, height: ThemeSize.size14),
             const SizedBox(height: ThemeSize.space8),
             Skeleton(
               width: MediaQuery.sizeOf(context).width,
               height: ThemeSize.size14,
             ),
             const SizedBox(height: ThemeSize.space8),
-            const Skeleton(
-              width: ThemeSize.size80,
-              height: ThemeSize.size14,
-            ),
+            const Skeleton(width: ThemeSize.size80, height: ThemeSize.size14),
           ],
         ),
       ),
