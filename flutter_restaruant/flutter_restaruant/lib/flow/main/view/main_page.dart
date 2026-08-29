@@ -1,20 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+
 import '../../../component/component_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
-import '../../favor/view/view_barrel.dart';
-import '../../filter/view/view_barrel.dart';
-import 'map_widget.dart';
-import 'restaurant_info_list_widget.dart';
-import '../../restaurant/view/view_barrel.dart';
-import '../../settings/view/view_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../../../model/model_barrel.dart';
-import '../../../features/utils/utils_barrel.dart';
-
+import '../../favor/view/view_barrel.dart';
+import '../../filter/view/view_barrel.dart';
+import '../../restaurant/view/view_barrel.dart';
+import '../../settings/view/view_barrel.dart';
 import '../bloc/bloc_barrel.dart';
-import '../../../features/foundation/style/style_barrel.dart';
+import 'map_widget.dart';
+import 'restaurant_info_list_widget.dart';
 
 class MainPage extends StatefulWidget {
   static const routeName = '/MainPage';

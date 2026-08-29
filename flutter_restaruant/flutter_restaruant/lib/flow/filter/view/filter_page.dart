@@ -1,11 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import '../../../model/model_barrel.dart';
-import '../../../features/utils/utils_barrel.dart';
 
-import '../../../generated/l10n.dart';
 import '../../../features/foundation/style/style_barrel.dart';
-
+import '../../../features/utils/utils_barrel.dart';
+import '../../../generated/l10n.dart';
+import '../../../model/model_barrel.dart';
 import 'section_card_widget.dart';
 import 'segment_control_widget.dart';
 

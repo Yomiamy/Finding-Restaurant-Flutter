@@ -2,12 +2,13 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
-import '../bloc/bloc_barrel.dart';
+
+import '../../../features/foundation/style/style_barrel.dart';
+import '../../../generated/l10n.dart';
+import '../../../manager/manager_barrel.dart';
 import '../../signinup/view/view_barrel.dart';
 import '../../splash/view/view_barrel.dart';
-import '../../../manager/manager_barrel.dart';
-import '../../../generated/l10n.dart';
-import '../../../features/foundation/style/style_barrel.dart';
+import '../bloc/bloc_barrel.dart';
 import 'settings_account_section_widget.dart';
 import 'settings_header_widget.dart';
 import 'settings_info_section_widget.dart';

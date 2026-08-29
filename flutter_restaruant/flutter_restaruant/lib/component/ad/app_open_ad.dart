@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
-import 'app_open_ad_state.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+import 'app_open_ad_state.dart';
 
 class AppOpenAD {
   final AppOpenADState adState;

@@ -1,13 +1,15 @@
 import 'dart:async';
 import 'dart:convert';
+
 import 'package:cloud_firestore/cloud_firestore.dart';
-import '../../domain/repositories/repositories_barrel.dart';
-import '../../manager/manager_barrel.dart';
+import 'package:shared_preferences/shared_preferences.dart';
+
 import '../../domain/entities/entities_barrel.dart';
-import '../dto/dto_barrel.dart';
+import '../../domain/repositories/repositories_barrel.dart';
 import '../../features/foundation/constants/constants_barrel.dart';
 import '../../features/utils/utils_barrel.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import '../../manager/manager_barrel.dart';
+import '../dto/dto_barrel.dart';
 
 class SignInRepo implements SignInRepository {
   static const String userCollectionName = 'users';

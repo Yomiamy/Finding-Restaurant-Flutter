@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:fluttertoast/fluttertoast.dart';
+
 import '../../../component/component_barrel.dart';
-import '../bloc/bloc_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../../../manager/manager_barrel.dart';
-import '../../../features/foundation/style/style_barrel.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 import '../../main/view/view_barrel.dart';
 import '../../splash/view/view_barrel.dart';
+import '../bloc/bloc_barrel.dart';
 import 'sign_in_actions_widget.dart';
 import 'sign_in_form_widget.dart';
 import 'sign_in_header_widget.dart';

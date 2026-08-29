@@ -1,8 +1,9 @@
 import 'package:flutter/material.dart';
-import '../../../flow/photo_viewer/view/view_barrel.dart';
+
+import '../../../features/foundation/constants/constants_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
-import '../../../features/foundation/constants/constants_barrel.dart';
+import '../../../flow/photo_viewer/view/view_barrel.dart';
 
 class RestaurantImageCell extends StatelessWidget {
   static const int _imageH = 200;

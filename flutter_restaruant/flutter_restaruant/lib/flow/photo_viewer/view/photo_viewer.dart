@@ -1,9 +1,10 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+
+import '../../../features/foundation/constants/constants_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
-import '../../../features/foundation/constants/constants_barrel.dart';
 import '../../../generated/l10n.dart';
 
 class PhotoViewer extends StatefulWidget {
