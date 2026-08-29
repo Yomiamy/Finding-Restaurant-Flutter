@@ -102,7 +102,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
           },
           builder: (context, state) {
             if (state is InProgress || state is ToggleFavorSuccess) {
-              return const Center(child: LoadingWidget());
+              return const RestaurantDetailSkeleton();
             } else if (state is Success) {
               return ListView(
                 children: [
