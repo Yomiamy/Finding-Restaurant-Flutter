@@ -141,7 +141,9 @@
 >
 > **⚠️ 2026-08-07 補記（問題已於 2026-08-14 修復，本段保留為設計啟示）**：上述「已徹底解決」的結論**僅在腳本被呼叫的前提下成立**。Gap 2.6 揭露了守衛架構的結構性盲點——獨立入口（STAGE 5/6）可全程不碰 `wf-state.sh`，使所有內部校驗無從觸發。這不是既有修復的回歸，而是先前分析未涵蓋的層級：**對策必須落在入口攔截（hook），繼續往腳本內部堆校驗無效**。
 >
-> **📌 2026-08-14 結案**：該判斷成立，已依此落地 hook 攔截層（`.claude/hooks/wf-guard-stage-check.sh`），Gap 2.6 已修復。**但此結論的適用範圍不限於 Gap 2.6**——「守衛需要被呼叫才生效」是結構性盲點，同型弱點仍存在於**委派的工作目錄約束**（MCP 無法指定 cwd，只能靠 prompt 寫絕對路徑），詳見 [`docs/architecture/2026-08-08-wf-state-harness-guardrail.md`](../architecture/2026-08-08-wf-state-harness-guardrail.md) §「同構的第二個弱點」。該項尚未有 hook 層對策，目前僅有事後 `git status` 偵測。
+> **📌 2026-08-14 結案**：該判斷成立，已依此落地 hook 攔截層（`.claude/hooks/wf-guard-stage-check.sh`），Gap 2.6 已修復。**但此結論的適用範圍不限於 Gap 2.6**——「守衛需要被呼叫才生效」是結構性盲點，同型弱點仍存在於**委派的工作目錄約束**（MCP 無法指定 cwd，只能靠 prompt 寫絕對路徑），詳見 [`docs/architecture/2026-08-21-wf-state-harness-guardrail.md`](../architecture/2026-08-21-wf-state-harness-guardrail.md) §「同構的第二個弱點」。
+>
+> **📌 2026-08-21 追加結案（issue #134 / PR #135 已合併）**：該同型弱點亦已落地 hook 層對策 `.claude/hooks/wf-guard-delegate-cwd.sh`——`pre` 端（PreToolUse）檢查派發 prompt 是否含目標 worktree 絕對路徑，缺失即 `exit 2` 阻擋；`post` 端（PostToolUse）以 `git status` before/after 差集偵測越界寫入與越界 commit，**只告警不阻斷**並寫入稽核紀錄。與 Gap 2.6 的差別在於：Gap 2.6 可事前阻斷，本項因 MCP 介面無 cwd 參數而**預防在物理上不可得**，確定性偵測即為天花板。
 
 ---
 
@@ -1304,11 +1306,19 @@ Orchestrator 維護一份持續更新的 `progress.md`，記錄：已完成的 M
 > ⚠️ **已知邊界**：Claude 無法自行清空 context，故批次為「自動接續 + 使用者 `/clear` 換場」
 > 而非全自動。真無人值守需走 cron 驅動（每次喚醒即全新 context），未實作。
 
-> **流程教訓**：本文件與 `2026-08-14-features-brainstorm.md` 兩份腦力激盪文件，
-> 累計已出現 **6 次「標為待辦、實際已完成」**（features 側：§D6、§P8；workflow 側：§5.1~§5.4 四項），
+> **流程教訓**：本文件與 `2026-08-23-features-brainstorm.md` 兩份腦力激盪文件，
+> 累計已出現 **7 次「標為待辦、實際已完成」**（features 側：§D6、§P8；
+> workflow 側：§5.1~§5.4 四項，以及 **§3(B) 第 4 項 Guide→Sensor**——
+> 該項於 `a557dfc`（2026-08-19）落地為 `.claude/hooks/wf-guard-delegate-cwd.sh`，
+> 文件卻仍標「四項全部只是提案，未動任何程式碼」，於 **2026-08-23** 實查發現並回寫），
 > 以及 **1 次反向漂移**（features 側 §P7 的教訓段落被誤讀為現存問題，已於 2026-08-06 補時間錨註記）。
-> **兩個方向的根源相同：狀態敘述沒有綁定時間點。** 本次更新即為預防第 7 次——
-> `pause_level` 完成後立刻回寫，不等下次盤點。
+> **兩個方向的根源相同：狀態敘述沒有綁定時間點。**
+>
+> 🔴 **第 7 次是最壞的一種**：前 6 次漂移的是**各節內文**，尚有「落地現況」表可對照；
+> 這次漂移的是 **§3(B) 那張本身就宣告「任一項落地後應立即回寫本表」的動工順序表**——
+> 提醒寫在表裡，卻沒人回來改表。**光靠文件自我提醒防不住漂移，要靠外部實查。**
+> 上一次 `pause_level` 完成後立刻回寫的做法是對的，但那依賴當下記得；
+> 沒記得的那次（Issue #134）就漂了 4 天。
 > 建議每次 release 或每月固定跑一次 `/gen-list-work-item-by-priority` 的實查核對，
 > 別讓狀態欄持續漂移——漂移的待辦清單會讓人去做已經做完的事。
 
@@ -1421,6 +1431,7 @@ Orchestrator 維護一份持續更新的 `progress.md`，記錄：已完成的 M
   >
   `wf-state.sh` 的 `exit 1`、hook 的 `PreToolUse` 攔截，都是**計算式 Sensor**；SKILL.md 的文字規範是 **Guide**。Gap 2.6 的教訓（「守衛需要被呼叫才生效」）本質是：**Guide 可以被忽略，Sensor 不行**。
 - **可學**：委派 cwd 約束目前是 Guide（prompt 裡的道德勸說），該升級成 Sensor（hook 攔截或委派後自動 `git status` 驗證）。這與文件既有結論一致，但 Böckeler 的框架讓「為什麼非做不可」講得更清楚。
+  - **✅ 2026-08-21 已落地**（issue #134 / PR #135）：`wf-guard-delegate-cwd.sh` 同時實作括號內的**兩種**手段——hook 攔截（`pre`，阻擋派發者失誤）與委派後 `git status` 驗證（`post`，偵測子進程失誤）。兩者交集為空故併用。實作過程也修正了 Böckeler 框架的一處套用偏差：`pre` 端驗證的是「那段 Guide 有沒有被寫進 prompt」，本身仍是 **Guide 的自動化檢查**而非真 Sensor；唯有 `post` 端看檔案系統客觀事實的才是真 Sensor。
 
 #### 2.7 Superpowers — Jesse Vincent
 
@@ -1495,13 +1506,16 @@ Orchestrator 維護一份持續更新的 `progress.md`，記錄：已完成的 M
 |:---:|:---|:---:|:---:|:---|
 | 1 | **§3 審查槓桿階層** | 極低 | 中 | 投報率最高，改一段提示文字 |
 | 2 | **§1 context 主動巡航** | 低 | 高 | 唯一的高價值新洞察；與順位 1 同屬 SKILL.md 改動，可同批做 |
-| 3 | **§4 Guide→Sensor** | 中 | 高 | 需寫 hook，但 Gap 2.6 有成功範式 |
+| ~~3~~ | ~~**§4 Guide→Sensor**~~ ✅ **已於 2026-08-19 完成**（`a557dfc` / Issue #134） | 中 | 高 | 需寫 hook，但 Gap 2.6 有成功範式——實際確如預估，抄 Gap 2.6 的 `exit 2` 範式落地 |
 | 4 | **§2 anti-slop** | 低 | 中 | 條件性，設成可選即可 |
 
 > **排序理由**：前兩項都只動 SKILL.md（文字與閾值），可合併為一次改動；第 3 項要寫 hook 與掛載，成本跳一級但價值高；第 4 項價值條件性，排最後。
 >
-> ⚠️ **狀態標註**：以上四項截至 2026-08-16 **全部只是提案，未動任何程式碼**。
-> 依本文件的歷史教訓（累計 6 次「標為待辦、實際已完成」的漂移），任一項落地後**應立即回寫本表**，不要等下次盤點。
+> ⚠️ **狀態標註（2026-08-23 實查更新）**：四項中 **§4 Guide→Sensor 已完成**
+> （`.claude/hooks/wf-guard-delegate-cwd.sh`，390 行，Issue #134，`a557dfc` → `36a5996` → `3411455`），
+> 其餘三項（審查槓桿階層、context 主動巡航、anti-slop）**仍是提案，未動程式碼**。
+> 原記「四項全部只是提案」屬狀態欄漂移——這是本文件累計**第 7 次**「標為待辦、實際已完成」。
+> 任一項落地後**應立即回寫本表**，不要等下次盤點。
 >
 > 🔴 **2026-08-16 第二輪查證後，本順序已被推翻**——見下方修訂表。
 
@@ -1517,7 +1531,7 @@ Orchestrator 維護一份持續更新的 `progress.md`，記錄：已完成的 M
 | **3** | 審查槓桿階層（原順位 1） | 🟢 新可學 | 極低 | 不變 |
 | **4** | context 主動巡航（原順位 2） | 🟢 新可學 | 低 | 不變 |
 | **5** | **改用 `SubagentStart` + 檢查 exit code**（R3/R4） | 🔴 修正實作 | 低 | `exit 1` 掛成 hook 無效；`SubagentStart` 可依 agent type 過濾，比手刻 payload 解析更穩 |
-| **6** | Guide→Sensor：委派 cwd（原順位 3） | 🟢 新可學 | 中 | 不變，但 R5 顯示 worktree 隔離同樣只是約定，範圍應一併擴大 |
+| ~~**6**~~ | ~~Guide→Sensor：委派 cwd（原順位 3）~~ ✅ **已於 2026-08-19 完成** | 🟢 新可學 | 中 | `wf-guard-delegate-cwd.sh`：pre 端檢查派發 prompt 是否含目標 worktree 絕對路徑，缺失/不符即 `exit 2` 阻擋；post 端以 git status 差集偵測目標 worktree 以外的寫入與新增 commit（只告警不阻斷）。⚠️ **R5 的擴大範圍未做**——偵測建立在 git status 上，只涵蓋主 repo 與已知 worktree，寫入非 git 位置仍偵測不到（該檔檔頭已載明屬另案） |
 | **7** | anti-slop（原順位 4） | 🟡 條件性 | 低 | 不變 |
 
 > **為什麼順序變了**：原本四項全是「錦上添花」；第二輪查出的 R7 是**既有防護失效**、R1/R3 是**理由或實作錯誤**。
@@ -1780,3 +1794,133 @@ Spec Kit、Kiro Specs、Agent OS、Vibe Kanban、Claude Squad、Stately Agent (X
 > 如果是 Guide，它大概率會被忽略，那就不值得加。**
 
 ---
+
+## 🟠 第四部分：SKILL.md 拆分後的待辦（2026-08-25 · 由 Issue #142 整併）
+
+> **背景**：`SKILL.md` 從 1017 行拆為 209 行主檔 + 8 份 `references/`（PR #141）。
+> 拆分本體與四類斷裂（交叉指涉／歸屬錯置／語意遺失／速查漏步驟）已完成，
+> 拆分殘留四項（STAGE 5 攔截後果、STAGE 6 同步範圍、batch `--pause-level`、
+> context 區間寫法）亦已修（`8e2063e`）。
+>
+> 以下兩項是查找途中發現的**既有設計缺口**，非拆分造成。
+> 原為 Issue #143／#144，已整併回 Issue #142 統一追蹤。
+> **§W1 已於 2026-08-26 解決（`2929e2b`）；§W2 仍未動。**
+
+### §W1. quick→sequence 升級缺少分支與未 commit 變更的遷移步驟 — ✅ 已解決（2026-08-26，採方案 B）
+
+> `references/execution-modes.md:33` 對升級只寫「將 Root 中未 commit 的變更帶入新工作區」，
+> 沒有定義**怎麼帶**。而 `wf-state.sh upgrade` 只改 state JSON（`mode`→sequence、`stage`→2），
+> **完全不碰 git**——所以 state 會顯示「已升級」，工作區卻可能根本沒建成。
+
+**實測確認的兩個硬阻礙**（2026-08-25 於暫存 repo 重現）：
+
+| 照文件執行 | 結果 |
+|:---|:---|
+| `git worktree add -b <branch> <path>`（沿用 ticket-id-dev-prep 的帶 `-b` 寫法） | `fatal: a branch named '...' already exists` |
+| `git worktree add <path> <branch>`（去掉 `-b`） | `fatal: '...' is already used by worktree at '<原 repo>'` |
+
+**兩種寫法都 fatal**——quick 模式直接在原 repo checkout 該分支，分支既存在又被佔用。
+且 `git worktree add` 不搬未 commit／已 staged／未追蹤的變更，即使建成也會把做到一半的工作留在原地。
+
+**已實測可行的步驟**（關鍵是文件漏掉的第 2 步）：
+
+```bash
+# 1. 未 commit 變更打成 WIP commit（不用 stash——stash 是 repo 層級，跨 worktree 易混淆；
+#    commit 跟著分支走，切過去自然帶到）
+git add -A && git commit -m "WIP: quick 升級前保存"
+
+# 2. 🔴 原 repo 切離該分支——文件漏掉這步，是唯一的失敗點
+git checkout main
+
+# 3. 為既存分支建 worktree（不帶 -b）
+git worktree add .claude/worktrees/<repo>-<slug> <branch>
+
+# 4. state 升級 + 搬移
+wf-state.sh upgrade <state 檔>
+mkdir -p <worktree>/.claude/workflow-state
+wf-state.sh promote <state 檔> --branch <branch> --dest <worktree>/.claude/workflow-state
+
+# 5. cd 進 worktree，接 STAGE 2
+```
+
+實測結果：worktree 內含已 commit 與原未 commit 的內容、untracked 檔也在；
+state 檔 `mode=sequence stage=2`，原 repo 的已由 `promote` 刪除。
+
+**但先問三個鐵律問題再決定要不要補**：
+
+1. **真實問題？** 部分——觸發條件只有「以為是小修正、動手發現不是」。實查 git 歷史與
+   state 目錄，**本 repo 至今無任何升級發生過的痕跡**。
+2. **更簡單的方法？** 有。撞到時 `git stash` 或 WIP commit → 走完整流程從 `origin/main`
+   拉新 worktree → 取回變更，三行指令，比修好 `upgrade` 便宜。
+3. **會破壞什麼？** 補文件不會。但要注意這條路徑**繞過 STAGE 0a/0b**——升級的理由通常是
+   「發現需要設計判斷」，直接接 STAGE 2 等於在沒有 spec/plan 的情況下做一件已知需要計畫的事。
+
+**兩個候選方案**：
+
+- **A. 補齊步驟** — 把上述實測過的五步寫進 `execution-modes.md`，並補失敗回復規則
+  （搬到一半失敗時如何還原）。附帶還要定義 `promote` 對 branch-scoped state 的
+  遷移來源／呼叫順序／目標路徑／來源刪除（目前文件只寫 pending 檔用法，
+  但實作接受任何通過 schema 校驗的檔案）。
+- **B. 移除 `upgrade`** — 文件改為「quick 中途發現超出範圍 → 停下、WIP commit、
+  走完整流程重新開始」，並拿掉 `wf-state.sh upgrade` 指令。
+  理由是 Linus 判準：`upgrade` 是為「不浪費已做的工作」長出的特殊情況，
+  但場景罕見、實作是壞的、繞過成本只有三行指令——**消滅特殊情況比修好它更有價值**。
+
+**⚠️ 附帶發現（比上述更該先做）**：`command-cheatsheet.md` 列了所有指令，卻**沒有任何一列
+說明升級怎麼觸發**。實際設計是「無使用者指令——由 Claude 判斷超標後停下提議，或使用者
+直接口頭要求」，但這件事只藏在 `execution-modes.md:33` 的一句話裡。
+**先讓人知道它怎麼被觸發，才輪得到它怎麼執行。**
+
+**Effort**：A 低（純文件）／B 低（刪指令 + 改文件）｜**價值**：⭐⭐（觸發機率低）
+
+> **✅ 決議（2026-08-26 · commit `2929e2b`）：採方案 B，並一併補上附帶發現。**
+>
+> - `wf-state.sh` 的 `upgrade` 子命令、用法說明、`state-machine.md` 的表格列全數移除
+> - `execution-modes.md` 改為「**超出範圍時收工重來**」：WIP commit 或 stash → 照 STAGE 1 從
+>   `origin/main` 建新 worktree → 在新工作區 cherry-pick／stash pop → 刪掉 quick 的 state 檔。
+>   並就地記下「為什麼不做就地升級」（兩種 worktree 寫法皆 fatal、不搬未 commit 變更、
+>   落在 STAGE 2 等於跳過 0a/0b），避免日後有人重新推導一次
+> - `command-cheatsheet.md` 補上它從來沒有的那一列：**這件事怎麼觸發**——沒有指令，
+>   由 Claude 判斷後停下提議，或使用者直接口頭要求
+>
+> 選 B 不選 A 的理由：A 是把一條沒人走、走了也不該走的路修平；B 是承認這條路不該存在。
+> 繞過成本只有三行指令，而 `upgrade` 是為「不浪費已做的工作」長出的特殊情況——
+> **消滅特殊情況比修好它更有價值**。
+
+### §W2. 委派子進程的檔案系統邊界仍是 Guide 而非 Sensor — ⬜ 待辦
+
+> 這是 §3(B) 第 4 項「Guide→Sensor」（`a557dfc` / Issue #134，2026-08-19 完成）的**殘留缺口**，
+> 即上表順位 6 標注的「**R5 的擴大範圍未做**……該檔檔頭已載明屬另案」——本節就是那個另案。
+
+**現況**：透過 `mcp__gemini-cli__ask-gemini` 委派的子進程具備寫檔、跑 shell、`git commit`
+能力，但限制它只能動指定 worktree 的手段是 **prompt 裡的一段文字**（委派紀律第 1、2 條）
+——那是寫給另一個 LLM 看的道德勸說，沒有強制力。
+
+`wf-guard-delegate-cwd.sh` 已註冊於 `.claude/settings.local.json:250,270`
+（`PreToolUse` / `PostToolUse`，matcher `mcp__gemini-cli__ask-gemini`），但涵蓋有限：
+
+| 端 | 做什麼 | 缺口 |
+|:---|:---|:---|
+| pre | 檢查派發 prompt 是否含目標 worktree 絕對路徑 | 檢查的是**字串**，不是實際能寫到哪 |
+| post | 以 `git status` 差集偵測越界寫入 | 只涵蓋主 repo 與已知 worktree，**寫到非 git 位置完全偵測不到**，且只告警不阻斷 |
+
+用 Böckeler 的框架講：這是 **Guide（前饋，可被忽略）**，但要達成的效果需要
+**Sensor（回饋，確定性、無法繞過）**。
+
+**候選方案**（需先驗證可行性，擇一或組合）：
+
+- 容器隔離（對單人 Flutter package 可能過度工程——brainstorm 已如此評估過 Dagger／Container Use）
+- 專用受限使用者 + 檔案系統權限
+- 受限掛載點
+- pre 端對**正規化後的絕對路徑**做強制校驗，而非字串比對
+- 若上述皆不可行：**限制寫入型委派，只允許唯讀分析**（最保守但確定有效）
+
+**刻意不做**：在 prompt 裡再加一段沒有強制力的文字——那正是本項批評的對象。
+也不改現有三條委派紀律的措辭（作為 Guide 仍有價值，只是不能當作邊界）。
+
+**Effort**：中～高（依方案而定）｜**價值**：⭐⭐⭐（安全強度，不影響日常執行）
+
+> **⚠️ 兩項都不影響正常流程執行**（2026-08-25 實查）：
+> ~~§W1 只在「quick 中途超標」時觸發，本 repo 至今未發生~~（已於 2026-08-26 解決）；
+> §W2 是安全強度不足而非功能故障，委派本身正常運作，hook 也確實掛著。
+> 兩者皆非阻擋項，可依實際需要排程。
