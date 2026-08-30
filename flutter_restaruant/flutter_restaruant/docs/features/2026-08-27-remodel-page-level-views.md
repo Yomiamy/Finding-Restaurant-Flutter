@@ -13,7 +13,7 @@
 本階段（S3）為**頁面級視覺重塑**，全面覆蓋使用者互動最頻繁的三大核心畫面：
 1. **登入頁 (`SignInPage`)**：修正品牌色衝突（移除硬編碼藍）、建立清晰的動作視覺階層、優化輸入框裝飾與小螢幕鍵盤彈出佈局。
 2. **餐廳詳情頁 (`RestaurantDetailPage` & 5 個子 Cells)**：修正頂部頭圖變形與死圖撐爆、以 Material Icon 取代最愛 PNG 圖片、修正營業狀態紅底語意錯誤、電話點擊區域與顏色優化、地圖縮圖圓角化與區塊層級分明。
-3. **餐廳列表頁 (`MainPage` & `RestaurantInfoListWidget`)**：消除頁面級容器（如 AppBar、Drawer）內殘留的 `Colors.white` 硬編碼，統一改用 `colorScheme.onPrimary`。
+3. **餐廳列表頁 (`MainPage`)**：消除頁面級容器（如 AppBar、Drawer）內殘留的 `Colors.white` 硬編碼，統一改用 `colorScheme.onPrimary`。
 
 ---
 
@@ -38,7 +38,7 @@
   - `RestaurantInfoCell`：靜態地圖 `BoxFit.cover` + `ClipRRect(radius8)`；修正營業狀態（`isOpen` 為 true 顯示綠色系，false 顯示 `outline` 灰色/紅色）；電話改用 `colorScheme.primary` 並標示電話 icon；分類分隔改用 ` · `。
   - `RestaurantCommentCell` & `RestaurantBusinessHourCell`：文字樣式與間距對齊 Token，圖片與排版對齊 M3。
 * **餐廳列表頁 (`lib/flow/main/view/`)**：
-  - `MainPage` 與 `RestaurantInfoListWidget`：間距與 padding 全量對齊 `ThemeSize`。
+  - `MainPage`：間距與 padding 全量對齊 `ThemeSize`。
 
 ### ❌ 明確排除 (Out of Scope)
 * 篩選頁重構、Splash 頁、清理未使用的廢棄常數（留在 S4 收尾階段）。
