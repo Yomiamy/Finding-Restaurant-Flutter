@@ -68,18 +68,18 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
     return Scaffold(
       key: _scaffoldKey,
       drawer: _buildDrawer(context),
-      appBar: _buildAppBar(),
+      appBar: _buildAppBar(context),
       body: content,
     );
   }
 
-  AppBar _buildAppBar() {
+  AppBar _buildAppBar(BuildContext context) {
     return AppBar(
       automaticallyImplyLeading: false,
       title: Text(
         S.current.main_page_title,
-        style: const TextStyle(
-          color: Colors.white,
+        style: TextStyle(
+          color: Theme.of(context).colorScheme.onPrimary,
           fontSize: ThemeFontSize.fontSize24,
         ),
       ),
@@ -87,7 +87,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
       leading: IconButton(
         padding: EdgeInsets.zero,
         onPressed: () => _openDrawer(),
-        icon: const Icon(Icons.menu, color: Colors.white),
+        icon: Icon(Icons.menu, color: Theme.of(context).colorScheme.onPrimary),
       ),
     );
   }
@@ -155,8 +155,8 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                 alignment: Alignment.bottomLeft,
                 child: Text(
                   appLocalizations.main_page_title,
-                  style: const TextStyle(
-                    color: Colors.white,
+                  style: TextStyle(
+                    color: Theme.of(context).colorScheme.onPrimary,
                     fontSize: ThemeFontSize.fontSize22,
                     fontWeight: FontWeight.bold,
                   ),

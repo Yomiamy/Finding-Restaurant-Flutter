@@ -69,8 +69,8 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
             if (state is Success) {
               return Text(
                 state.detailInfo.name ?? '',
-                style: const TextStyle(
-                  color: Colors.white,
+                style: TextStyle(
+                  color: Theme.of(context).colorScheme.onPrimary,
                   fontSize: ThemeFontSize.fontSize22,
                 ),
               );
