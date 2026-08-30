@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 import '../../../component/component_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
@@ -257,16 +258,14 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
     ViewUtils.showPromptDialog(
       context: context,
       title: S.current.keyword_search,
-      msgWidget: TextField(
-        decoration: InputDecoration(
-          hintText: S.current.keyword_search_hint,
-        ),
+      msgWidget: PlatformTextField(
+        hintText: S.current.keyword_search_hint,
         onChanged: (keyword) {
           _filterKeyword = keyword;
         },
       ),
       actions: [
-        TextButton(
+        PlatformTextButton(
           onPressed: () {
             _mainBloc.add(
               FilterListByKeyword(
@@ -277,13 +276,13 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
             _filterKeyword = '';
             Navigator.pop(context);
           },
-          child: Text(S.current.confirm),
+          child: PlatformText(S.current.confirm),
         ),
-        TextButton(
+        PlatformTextButton(
           onPressed: () {
             Navigator.pop(context);
           },
-          child: Text(S.current.cancel),
+          child: PlatformText(S.current.cancel),
         ),
       ],
     );
