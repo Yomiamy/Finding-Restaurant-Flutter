@@ -42,10 +42,10 @@ class _SettingsPageState extends State<SettingsPage> {
         leading: PlatformIconButton(
           padding: const EdgeInsets.all(ThemeSize.zero),
           onPressed: () => Navigator.of(context).pop(),
-          materialIcon: const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
+          materialIcon: const Icon(Icons.arrow_back, color: ThemeColor.colorffffff),
           cupertinoIcon: const Icon(
             CupertinoIcons.back,
-            color: ThemeColor.backBtn,
+            color: ThemeColor.colorffffff,
           ),
         ),
         title: PlatformText(

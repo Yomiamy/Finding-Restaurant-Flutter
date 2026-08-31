@@ -78,8 +78,8 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
       automaticallyImplyLeading: false,
       title: Text(
         S.current.main_page_title,
-        style: TextStyle(
-          color: Theme.of(context).colorScheme.onPrimary,
+        style: const TextStyle(
+          color: ThemeColor.colorffffff,
           fontSize: ThemeFontSize.fontSize24,
         ),
       ),
@@ -87,7 +87,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
       leading: IconButton(
         padding: EdgeInsets.zero,
         onPressed: () => _openDrawer(),
-        icon: Icon(Icons.menu, color: Theme.of(context).colorScheme.onPrimary),
+        icon: const Icon(Icons.menu, color: ThemeColor.colorffffff),
       ),
     );
   }
@@ -155,8 +155,8 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
                 alignment: Alignment.bottomLeft,
                 child: Text(
                   appLocalizations.main_page_title,
-                  style: TextStyle(
-                    color: Theme.of(context).colorScheme.onPrimary,
+                  style: const TextStyle(
+                    color: ThemeColor.colorffffff,
                     fontSize: ThemeFontSize.fontSize22,
                     fontWeight: FontWeight.bold,
                   ),
