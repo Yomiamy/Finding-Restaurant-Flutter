@@ -52,7 +52,7 @@ class _SignInPageState extends State<SignInPage> {
         // 詳情頁／設定頁 pushNamed 進來（有返回鍵）。因此不能比照其他頁面
         // 寫死 leading——那會讓 Splash 路徑也長出一顆按不動的返回鍵。
         // 交給 Flutter 依 canPop() 決定是否顯示，這裡只負責上色。
-        iconTheme: const IconThemeData(color: ThemeColor.backBtn),
+        iconTheme: const IconThemeData(color: ThemeColor.colorffffff),
         backgroundColor: ThemeColor.appPrimary,
       ),
       body: BlocConsumer<SignInBloc, SignInState>(

@@ -12,6 +12,6 @@ abstract final class ThemeColor {
   /// 品牌主色，`ColorScheme.fromSeed` 的種子。
   static const Color appPrimary = Color(0xFFD84A20);
 
-  /// AppBar 上的前景色（返回鍵、標題）。
-  static const Color backBtn = Color(0xFFFFFFFF);
+  /// 純白色。
+  static const Color colorffffff = Color(0xFFFFFFFF);
 }

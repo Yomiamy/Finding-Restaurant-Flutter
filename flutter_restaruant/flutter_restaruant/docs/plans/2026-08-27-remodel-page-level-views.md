@@ -49,11 +49,10 @@
   - `lib/component/cell/restaurant_detail/restaurant_comment_cell.dart`
   - `lib/flow/restaurant/view/restaurant_detail_page.dart`
   - `lib/flow/main/view/main_page.dart`
-  - `lib/flow/main/view/restaurant_info_list_widget.dart`
 - **實作內容**：
   - `RestaurantCommentCell`：使用者頭像加入圓角與 `BoxFit.cover`，文字樣式對齊 Token。
   - `RestaurantBusinessHourCell`：今日營業時間以粗體或主題色高亮，間距採用 `ThemeSize`。
-  - `MainPage` & `RestaurantInfoListWidget`：列表外圍與間距全量採用 `ThemeSize` Token。
+  - `MainPage` & `RestaurantDetailPage`：消除 `_buildAppBar` 與 `Drawer` 中 `Colors.white` 硬編碼，統一替換為 `ThemeColor.colorffffff`。
 
 ### 任務 4: 測試與品質驗證 (Tests & Quality Assurance)
 - **目標檔案**：

@@ -36,12 +36,12 @@ class _FavorPageState extends State<FavorPage> {
         leading: IconButton(
           padding: EdgeInsets.zero,
           onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
+          icon: const Icon(Icons.arrow_back, color: ThemeColor.colorffffff),
         ),
         title: Text(
           S.current.favorite_stores,
           style: const TextStyle(
-            color: Colors.white,
+            color: ThemeColor.colorffffff,
             fontSize: ThemeFontSize.fontSize22,
           ),
         ),

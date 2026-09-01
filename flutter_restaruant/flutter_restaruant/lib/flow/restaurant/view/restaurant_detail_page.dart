@@ -61,7 +61,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
             final needRefresh = _summaryInfo.favor != _initialFavorState;
             Navigator.of(context).pop(needRefresh);
           },
-          icon: const Icon(Icons.arrow_back, color: ThemeColor.backBtn),
+          icon: const Icon(Icons.arrow_back, color: ThemeColor.colorffffff),
         ),
         title: BlocBuilder<RestaurantDetailBloc, RestaurantDetailState>(
           bloc: _bloc,
@@ -70,7 +70,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
               return Text(
                 state.detailInfo.name ?? '',
                 style: const TextStyle(
-                  color: Colors.white,
+                  color: ThemeColor.colorffffff,
                   fontSize: ThemeFontSize.fontSize22,
                 ),
               );
