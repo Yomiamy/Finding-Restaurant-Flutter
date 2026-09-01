@@ -53,7 +53,7 @@ class _FilterPageState extends State<FilterPage> {
         title: Text(
           S.current.filter_rules,
           style: const TextStyle(
-            color: Colors.white,
+            color: ThemeColor.colorffffff,
             fontSize: ThemeFontSize.fontSize22,
           ),
         ),

@@ -17,6 +17,7 @@
 - `docs/plans/2026-08-27-remodel-page-level-views.md`
 
 ### ❌ 明確排除 (Out of Scope)
+- `lib/flow/main/view/restaurant_info_list_widget.dart` (已確認無需頁面級變更)
 - 退回或修改 §S3 已經完成的 Cell 元件重塑。
 - platform-adaptive 元件的收斂 (屬於 Issue #96 的範圍)。
 - 深色模式支援。

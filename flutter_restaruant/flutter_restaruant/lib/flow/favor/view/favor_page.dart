@@ -41,7 +41,7 @@ class _FavorPageState extends State<FavorPage> {
         title: Text(
           S.current.favorite_stores,
           style: const TextStyle(
-            color: Colors.white,
+            color: ThemeColor.colorffffff,
             fontSize: ThemeFontSize.fontSize22,
           ),
         ),
