@@ -12,11 +12,11 @@
 - **實作內容**：
   - `main_page.dart`：
     - 將 `_buildAppBar` 方法增加 `BuildContext context` 參數。
-    - 將 `AppBar` title 的 `TextStyle` 顏色從 `Colors.white` 改為 `Theme.of(context).colorScheme.onPrimary`。
-    - 將 `AppBar` leading Icon 的顏色改為 `colorScheme.onPrimary`。
-    - 將 `DrawerHeader` 內文字顏色改為 `colorScheme.onPrimary`。
+    - 將 `AppBar` title 的 `TextStyle` 顏色從 `Colors.white` 改為 `ThemeColor.colorffffff`。
+    - 將 `AppBar` leading Icon 的顏色改為 `ThemeColor.colorffffff`。
+    - 將 `DrawerHeader` 內文字顏色改為 `ThemeColor.colorffffff`。
   - `restaurant_detail_page.dart`：
-    - 將 `AppBar` title 的 `TextStyle` 顏色改為 `Theme.of(context).colorScheme.onPrimary`。
+    - 將 `AppBar` title 的 `TextStyle` 顏色改為 `ThemeColor.colorffffff`。
 
 ### 任務 2: 同步修正 §S3 原始規劃文件
 - **目標檔案**：

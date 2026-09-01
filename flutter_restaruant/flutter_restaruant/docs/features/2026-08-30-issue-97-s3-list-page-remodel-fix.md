@@ -5,7 +5,7 @@
 - **根本原因**：§S3 實作過度聚焦於細部 Cell 元件，忽略了頁面層級的外圍容器，且文件中提及的「間距與 padding 全量對齊 ThemeSize」實際上已經滿足，真正的遺漏是硬編碼的顏色。
 
 ## 2. 目標 (Goals)
-1. 消除 `main_page.dart` 與 `restaurant_detail_page.dart` 中殘留的 `Colors.white` 硬編碼，統一改為 `Theme.of(context).colorScheme.onPrimary`。
+1. 消除 `main_page.dart` 與 `restaurant_detail_page.dart` 中殘留的 `Colors.white` 硬編碼，統一改為 `ThemeColor.colorffffff`。
 2. 確保列表頁與詳情頁的 AppBar、Drawer 等外圍組件與 §S2/§S3 已重塑的元件在視覺上保持一致。
 3. 修正 §S3 原始規劃文件 (`docs/features/2026-08-27-remodel-page-level-views.md` 及對應 plan) 中關於 Task 3 的描述，使其反映真實情況，消除文件與程式碼的背離。
 
