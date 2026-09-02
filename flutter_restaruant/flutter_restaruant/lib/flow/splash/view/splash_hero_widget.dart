@@ -20,7 +20,7 @@ class SplashHeroWidget extends StatelessWidget {
       children: <Widget>[
         ClipOval(
           child: Image.asset(
-            'images/img_splash_hero.jpg',
+            'images/launch_image.png',
             width: ThemeSize.size200,
             height: ThemeSize.size200,
             fit: BoxFit.cover,

@@ -110,9 +110,8 @@ flutter:
   - images/empty.png
   - images/img_signin_header.jpg
   - images/icon_setting_icon.jpg
-
   - images/launch_image.png
-  - images/img_splash_hero.jpg
+
 
 flutter_intl:
   enabled: true
