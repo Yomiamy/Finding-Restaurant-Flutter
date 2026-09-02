@@ -1,17 +1,31 @@
 import 'package:flutter/material.dart';
 
-/// 品牌色票。
+/// 專案色票。
 ///
-/// 原本由 FlutterGen 從 `assets/colors.xml` 生成（`ColorName`），改為手寫
-/// 常數 —— 只有兩個顏色，卻要為它維持 xml 來源、生成檔與 build_runner
-/// 一整套工具鏈，且 xml 還會被打包進 app bundle 卻從不在 runtime 讀取。
-///
-/// 語意化的色彩角色請走 `Theme.of(context).colorScheme`；此處只放
-/// `ColorScheme` 推導不出、必須明寫的品牌原始值。
+/// 一律遵循 `color` + 16 進位小寫色碼命名（如 `colorffffff`），
+/// 編譯期靜態常數，業務元件直接引用，不再透過 ThemeData 查表。
 abstract final class ThemeColor {
-  /// 品牌主色，`ColorScheme.fromSeed` 的種子。
-  static const Color appPrimary = Color(0xFFD84A20);
+  /// 品牌主橘色 (#D84A20)。
+  static const Color colord84a20 = Color(0xFFD84A20);
 
-  /// 純白色。
+  /// 品牌主色相容過渡別名（後續批次全面替換後將刪除）。
+  static const Color appPrimary = colord84a20;
+
+  /// 奶油白主背景色 (#FFFBF7，原 T-6 決策)。
+  static const Color colorfffbf7 = Color(0xFFFFFBF7);
+
+  /// 純白色 (#FFFFFF)。
   static const Color colorffffff = Color(0xFFFFFFFF);
+
+  /// 完全透明色 (#00000000)。
+  static const Color color00000000 = Color(0x00000000);
+
+  /// 灰色 (#9E9E9E)。
+  static const Color color9e9e9e = Color(0xFF9E9E9E);
+
+  /// 紅色 (#F44336)。
+  static const Color colorf44336 = Color(0xFFF44336);
+
+  /// 54% 半透明黑 (#8A000000)。
+  static const Color color8a000000 = Color(0x8A000000);
 }
