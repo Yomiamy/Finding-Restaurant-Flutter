@@ -25,10 +25,6 @@ class $ImagesGen {
   AssetGenImage get imgSigninHeader =>
       const AssetGenImage('images/img_signin_header.jpg');
 
-  /// File path: images/img_splash_hero.jpg
-  AssetGenImage get imgSplashHero =>
-      const AssetGenImage('images/img_splash_hero.jpg');
-
   /// File path: images/launch_image.png
   AssetGenImage get launchImage =>
       const AssetGenImage('images/launch_image.png');
@@ -38,7 +34,6 @@ class $ImagesGen {
     empty,
     iconSettingIcon,
     imgSigninHeader,
-    imgSplashHero,
     launchImage,
   ];
 }
