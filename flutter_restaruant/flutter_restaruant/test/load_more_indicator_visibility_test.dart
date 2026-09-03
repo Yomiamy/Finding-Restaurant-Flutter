@@ -71,17 +71,16 @@ Widget _buildList(
 }) {
   return ListView.builder(
     controller: controller,
-    itemCount: count + 2 + (isLoadingMore ? 1 : 0),
+    itemCount: count + 1 + (isLoadingMore ? 1 : 0),
     itemBuilder: (context, index) {
-      if (index == 0) return const SizedBox(height: 60, child: Text('banner'));
-      if (index == 1) return const SizedBox(height: 60, child: Text('tags'));
-      if (index == count + 2) {
+      if (index == 0) return const SizedBox(height: 60, child: Text('tags'));
+      if (index == count + 1) {
         return const SizedBox(
           height: 60,
           child: Center(child: CircularProgressIndicator()),
         );
       }
-      return SizedBox(height: 60, child: Text('item${index - 2}'));
+      return SizedBox(height: 60, child: Text('item${index - 1}'));
     },
   );
 }

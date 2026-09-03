@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
-import '../../features/foundation/style/style_barrel.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
+
+import '../../features/foundation/style/style_barrel.dart';
 import 'banner_ad_state.dart';
 
+/// 底部常駐橫幅廣告元件 (Anchored Banner AD)。
+///
+/// 預留固定高度佔位容器以消滅版面突跳 (CLS)，並透過頂部邊界線區隔廣告與應用內容。
 class BannerAD extends StatefulWidget {
   final BannerADState adState;
 
@@ -14,46 +18,79 @@ class BannerAD extends StatefulWidget {
 
 class _BannerADState extends State<BannerAD> {
   BannerAd? banner;
-
   AnchoredAdaptiveBannerAdSize? size;
+  bool _isInitialized = false;
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
+    if (!_isInitialized) {
+      _isInitialized = true;
+      _loadBannerAd();
+    }
+  }
 
-    widget.adState.initialization.then((value) async {
-      if (!mounted) return;
-      final adSize = await anchoredAdaptiveBannerAdSize(context);
-      if (!mounted) return;
-      // The SDK returns null when it cannot work out a size (e.g. no screen
-      // metrics yet); without a size there is no ad to build.
-      if (adSize == null || widget.adState.bannerAdUnitId == null) return;
-      setState(() {
-        size = adSize;
-        banner = BannerAd(
-          listener: widget.adState.adListener,
-          adUnitId: widget.adState.bannerAdUnitId!,
-          request: const AdRequest(),
-          size: adSize,
-        )..load();
-      });
+  Future<void> _loadBannerAd() async {
+    await widget.adState.initialization;
+    if (!mounted) return;
+
+    final adSize = await anchoredAdaptiveBannerAdSize(context);
+    if (!mounted) return;
+
+    final adUnitId = widget.adState.bannerAdUnitId;
+    if (adSize == null || adUnitId == null) return;
+
+    final newBanner = BannerAd(
+      listener: widget.adState.adListener,
+      adUnitId: adUnitId,
+      request: const AdRequest(),
+      size: adSize,
+    );
+
+    await newBanner.load();
+    if (!mounted) {
+      await newBanner.dispose();
+      return;
+    }
+
+    setState(() {
+      size = adSize;
+      banner = newBanner;
     });
+  }
+
+  @override
+  void dispose() {
+    banner?.dispose();
+    super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
     final loadedBanner = banner;
     final loadedSize = size;
-    // Both stay null until an ad size resolves and the banner is built.
-    if (loadedBanner == null || loadedSize == null) {
-      return const SizedBox();
-    }
+    final height = loadedSize?.height.toDouble() ?? ThemeSize.space50;
 
     return Container(
-      color: ThemeColor.color9e9e9e,
-      width: loadedSize.width.toDouble(),
-      height: loadedSize.height.toDouble(),
-      child: AdWidget(ad: loadedBanner),
+      width: double.infinity,
+      height: height,
+      decoration: const BoxDecoration(
+        color: ThemeColor.colorfffbf7,
+        border: Border(
+          top: BorderSide(
+            color: ThemeColor.color9e9e9e,
+            width: 0.5,
+          ),
+        ),
+      ),
+      alignment: Alignment.center,
+      child: loadedBanner != null && loadedSize != null
+          ? SizedBox(
+              width: loadedSize.width.toDouble(),
+              height: height,
+              child: AdWidget(ad: loadedBanner),
+            )
+          : const SizedBox.shrink(),
     );
   }
 

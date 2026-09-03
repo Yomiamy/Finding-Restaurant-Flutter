@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../component/ad/ad_barrel.dart';
 import '../../../component/cell/main_page/main_page_barrel.dart';
-import '../../../di/di_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../features/foundation/extension/extension_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
@@ -94,19 +92,17 @@ class _RestaurantInfoListWidgetState extends State<RestaurantInfoListWidget> {
           bottom: ThemeSize.zero,
         ),
         controller: _scrollController,
-        itemCount: _summaryInfos.length + 2 + (_isLoadingMore ? 1 : 0),
+        itemCount: _summaryInfos.length + 1 + (_isLoadingMore ? 1 : 0),
         itemBuilder: (context, index) {
           if (index == 0) {
-            return BannerAD(adState: getIt<BannerADState>());
-          } else if (index == 1) {
             return FilterTagsWidget(filterConfigs: _configs);
-          } else if (index == _summaryInfos.length + 2) {
+          } else if (index == _summaryInfos.length + 1) {
             return const Padding(
               padding: EdgeInsets.symmetric(vertical: ThemeSize.space16),
               child: Center(child: CircularProgressIndicator()),
             );
           } else {
-            RestaurantEntity summaryInfo = _summaryInfos[index - 2];
+            RestaurantEntity summaryInfo = _summaryInfos[index - 1];
 
             return GestureDetector(
               child: RestaurantItemCell(summaryInfo: summaryInfo),

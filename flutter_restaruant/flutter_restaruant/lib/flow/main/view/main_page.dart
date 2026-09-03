@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
 import '../../../component/component_barrel.dart';
+import '../../../di/di_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
@@ -70,6 +71,10 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
       drawer: _buildDrawer(context),
       appBar: _buildAppBar(context),
       body: content,
+      bottomNavigationBar: SafeArea(
+        top: false,
+        child: BannerAD(adState: getIt<BannerADState>()),
+      ),
     );
   }
 
