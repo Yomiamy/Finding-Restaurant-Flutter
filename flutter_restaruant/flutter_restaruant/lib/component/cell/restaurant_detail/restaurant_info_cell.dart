@@ -84,7 +84,7 @@ class RestaurantInfoCell extends StatelessWidget {
                       child: Container(
                         padding: const EdgeInsets.all(ThemeSize.space4),
                         decoration: BoxDecoration(
-                          color: Colors.black54,
+                          color: ThemeColor.color8a000000,
                           borderRadius: BorderRadius.circular(
                             ThemeSize.radius8,
                           ),
@@ -92,7 +92,7 @@ class RestaurantInfoCell extends StatelessWidget {
                         child: const Icon(
                           Icons.navigation_rounded,
                           size: ThemeSize.size16,
-                          color: Colors.white,
+                          color: ThemeColor.colorffffff,
                         ),
                       ),
                     ),
@@ -195,7 +195,7 @@ class RestaurantInfoCell extends StatelessWidget {
                         style: const TextStyle(
                           fontSize: ThemeFontSize.fontSize12,
                           fontWeight: FontWeight.bold,
-                          color: Colors.white,
+                          color: ThemeColor.colorffffff,
                         ),
                       ),
                     ),

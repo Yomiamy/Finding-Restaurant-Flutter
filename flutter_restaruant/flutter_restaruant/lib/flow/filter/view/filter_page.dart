@@ -41,9 +41,8 @@ class _FilterPageState extends State<FilterPage> {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
-
     return Scaffold(
+      backgroundColor: ThemeColor.colorfffbf7,
       appBar: AppBar(
         leading: IconButton(
           padding: EdgeInsets.zero,
@@ -57,7 +56,7 @@ class _FilterPageState extends State<FilterPage> {
             fontSize: ThemeFontSize.fontSize22,
           ),
         ),
-        backgroundColor: ThemeColor.appPrimary,
+        backgroundColor: ThemeColor.colord84a20,
       ),
       body: SafeArea(
         child: Padding(
@@ -135,7 +134,7 @@ class _FilterPageState extends State<FilterPage> {
                   minimumSize: const Size.fromHeight(
                     ThemeSize.size48,
                   ),
-                  backgroundColor: theme.colorScheme.primary,
+                  backgroundColor: ThemeColor.colord84a20,
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(ThemeSize.radius12),
                   ),

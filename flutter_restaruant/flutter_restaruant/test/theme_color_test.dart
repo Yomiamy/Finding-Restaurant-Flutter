@@ -6,7 +6,6 @@ void main() {
   group('ThemeColor Constants Tests', () {
     test('brand primary matches #D84A20', () {
       expect(ThemeColor.colord84a20, const Color(0xFFD84A20));
-      expect(ThemeColor.appPrimary, ThemeColor.colord84a20);
     });
 
     test('surface background matches #FFFBF7', () {

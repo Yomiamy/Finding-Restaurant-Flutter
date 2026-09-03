@@ -53,7 +53,7 @@ class RestaurantHeadCell extends StatelessWidget {
               right: ThemeSize.space12,
             ),
             child: Material(
-              color: Colors.transparent,
+              color: ThemeColor.color00000000,
               child: InkWell(
                 borderRadius: BorderRadius.circular(ThemeSize.space20),
                 onTap: () {
@@ -65,12 +65,12 @@ class RestaurantHeadCell extends StatelessWidget {
                   bloc.add(ToggleFavor(summaryInfo: _summaryInfo));
                 },
                 child: CircleAvatar(
-                  backgroundColor: Colors.white.withValues(alpha: 0.9),
+                  backgroundColor: ThemeColor.colorffffff.withValues(alpha: 0.9),
                   radius: ThemeSize.space20,
                   child: Icon(
                     _summaryInfo.favor ? Icons.favorite : Icons.favorite_border,
                     color: _summaryInfo.favor
-                        ? Colors.red
+                        ? ThemeColor.colorf44336
                         : Theme.of(context).colorScheme.onSurfaceVariant,
                     size: ThemeSize.size24,
                   ),

@@ -41,7 +41,7 @@ class SignInActionsWidget extends StatelessWidget {
               style: const TextStyle(
                 fontSize: ThemeFontSize.fontSize18,
                 fontWeight: FontWeight.bold,
-                color: Colors.white,
+                color: ThemeColor.colorffffff,
               ),
             ),
           ),

@@ -33,12 +33,12 @@ class SplashHeroWidget extends StatelessWidget {
             width: ThemeSize.size48,
             height: ThemeSize.size48,
             decoration: const BoxDecoration(
-              color: ThemeColor.appPrimary,
+              color: ThemeColor.colord84a20,
               shape: BoxShape.circle,
             ),
             child: const Icon(
               Icons.restaurant,
-              color: Colors.white,
+              color: ThemeColor.colorffffff,
               size: ThemeSize.size24,
             ),
           ),

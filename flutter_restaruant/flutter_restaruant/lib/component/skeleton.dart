@@ -18,7 +18,7 @@ class Skeleton extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // using Theme colors instead of hardcoded Colors.grey
+    // using Theme colors instead of hardcoded ThemeColor.color9e9e9e
     final colorScheme = Theme.of(context).colorScheme;
 
     return Shimmer.fromColors(

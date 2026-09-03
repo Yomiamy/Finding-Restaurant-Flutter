@@ -51,11 +51,11 @@ class _SettingsPageState extends State<SettingsPage> {
         title: PlatformText(
           S.current.settings_title,
           style: const TextStyle(
-            color: Colors.white,
+            color: ThemeColor.colorffffff,
             fontSize: ThemeFontSize.fontSize22,
           ),
         ),
-        backgroundColor: ThemeColor.appPrimary,
+        backgroundColor: ThemeColor.colord84a20,
       ),
       body: BlocListener<SettingsBloc, SettingsState>(
         listener: (context, state) {

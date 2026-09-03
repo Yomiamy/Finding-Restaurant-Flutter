@@ -25,8 +25,6 @@ class _SplashPageState extends State<SplashPage> {
   void initState() {
     super.initState();
     WidgetsBinding.instance.addPostFrameCallback((timeStamp) async {
-      // Waiting building is finish and run.
-      await Future.delayed(const Duration(seconds: 3));
       if (!mounted) return;
 
       // 訪客已在前次啟動選擇跳過登入，直接進主畫面。
@@ -115,7 +113,7 @@ class _SplashPageState extends State<SplashPage> {
                           borderRadius: BorderRadius.circular(ThemeSize.space4),
                           child: LinearProgressIndicator(
                             minHeight: ThemeSize.space4,
-                            color: ThemeColor.appPrimary,
+                            color: ThemeColor.colord84a20,
                             backgroundColor:
                                 theme.colorScheme.surfaceContainerHighest,
                           ),
