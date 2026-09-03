@@ -75,22 +75,20 @@
 | **RatingStars 評分星等元件 (取代 11 張 PNG)** | ✅ 實查 `rating_stars.dart` 已實作並接線，PNG 與 `RatingHelper` 已移除 (PR #73 驗證) |
 | **iOS UIScene Lifecycle 支援遷移** | ✅ **已於 2026-08-23 完成**，正確掛載 `FlutterSceneDelegate` 並保留原生推播委派 |
 
-**🔴 仍未解決與新納入阻擋項（6 項，全數為 P0 最高優先）**
+**🔴 仍未解決與新納入阻擋項（全數為 P0 最高優先，AdMob 合規為絕對最高阻擋項）**
 
 | 項目 | 現況 | 風險 / 影響 |
 | :--- | :--- | :--- |
-<<<<<<<< HEAD:flutter_restaruant/flutter_restaruant/docs/brainstorm/2026-08-26-features-brainstorm.md
-========
+| 🚨 **修復 AdMob 廣告刊登合規性 (防欺騙性點擊/防版面突跳)** | **新納入絕對最高優先（阻擋級）**：收到 Google 違規警告 | **帳號與營收阻擋**：違反「防範意外點擊/欺騙導入」政策，若未限期整改將遭廣告單元停權或帳號封禁 |
 | **自動化 CI/CD 發布流水線 (GitHub Actions)** | 新納入最高優先項目，依 Tag 自動發布 | 缺乏自動化發布導致人工打包易出錯且耗時 |
->>>>>>>> docs/202608/update-brainstorm:flutter_restaruant/flutter_restaruant/docs/brainstorm/2026-08-30-features-brainstorm.md
 | ✅ **Flutter SDK 版本遷移 (≥ 3.44.1)** | ✅ **已於 2026-08-26 完成** | 已更新 pubspec.yaml 及 CI 工作流程至 3.44.1 |
-| **iOS Swift Package Manager (SPM) 遷移** | 目前透過 `pubspec.yaml` 暫時關閉 SPM 回退 CocoaPods | **官方強制性遷移**：CocoaPods 即將唯讀且 Firebase 停止 CocoaPods 發布，Flutter 未來將移除關閉 SPM 選項，需等待/升級套件相容後完成全面遷移 |
+| ✅ **iOS Swift Package Manager (SPM) 遷移** | ✅ **已於 2026-08-24 完成 (混合模式)** | 暫時保留 CocoaPods 回退相容，消除建置阻礙 |
 | **Android Built-in Kotlin 遷移** | 已升級 Kotlin 2.2.20 消除過舊警告，但仍使用顯式 KGP | **官方棄用警告**：Flutter 未來將強制推行 Built-in Kotlin 並移除 KGP 支援，需在未來升級中徹底移除顯式 KGP 依賴 |
 | **硬編碼 API Key** | 僅改名為 `camelCase`，明碼仍在 `constants.dart:30,40` | 金鑰已入 git 歷史，須**撤銷並輪替**，非搬移可解 |
 | **修復地圖模式定位按鈕遮擋問題** | 地圖右下角 FAB 會被列表卡片遮擋 | 嚴重影響地圖操作體驗（按鈕完全無法點擊） |
 | ✅ **修復地圖底部列表 UI 溢出 (RenderFlex overflow)** | ~~Android 地圖底部發生溢出~~ | **已於 PR #73 修復**（實際位置為 `restaurant_item_cell.dart`，非 `rating_stars.dart`） |
 
-> **判斷**：架構地基已完成最關鍵的資料層重構（Subcollection）。但 **iOS UIScene Lifecycle 遷移**、**iOS SPM 遷移**、**Android Built-in Kotlin 遷移** 與 **Flutter SDK 升級** 關係到未來的平台相容性與可建置性，已與安全性（API Key）一同提升至 **P0 絕對最高優先序**。
+> **判斷**：架構地基已完成最關鍵的資料層重構（Subcollection）。當前 **🚨 AdMob 廣告刊登合規性** 攸關 App 營收與帳號存續，列為 **P0 絕對最高優先／阻擋級任務**；其餘底層遷移（Android Built-in Kotlin、CI/CD）與安全性（API Key）緊隨其後。
 
 ---
 
@@ -419,6 +417,20 @@ lib/
    * **實際解法與原先提案不同**: 未採用 `Wrap`（會讓星等換行，破壞單列版面）。改為把 `RatingStars` 移出 flex（不再包 `Expanded`），剩餘空間全部交給評論數與價格兩段文字，並為其加上 `overflow: TextOverflow.ellipsis` 與 `textAlign: TextAlign.right`——不可壓縮的元素不參與分配，可截斷的才參與。
    * **回歸測試**: `restaurant_item_cell_test.dart` 新增 298px 窄卡片測試，驗證無 layout exception 且 5 顆星維持完整寬度。
 
+10. **修復 AdMob 廣告刊登位置違規與欺騙性點擊問題 (AdMob Placement & Accidental Click Compliance)** (P0 絕對最高優先 / 阻擋級)
+    * **痛點與違規警告**:
+      * App 收到 Google AdMob 官方政策違規警告：「*發布商不得為了爭取點擊或觀看次數，而以欺騙的導入方式插入廣告，使人有可能誤以為廣告是選單、導覽列或下載連結...網頁將廣告放在直覺上適合瀏覽的版位*」。
+      * 若未限期修正，廣告投放將遭即刻中斷，甚至導致 AdMob 帳號停權與收益凍結。
+    * **當前程式碼四大致命根因**:
+      1. **非同步載入版面突跳 (Layout Shift / CLS)**：[`BannerAD`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/lib/component/ad/banner_ad.dart) 初始未載入時高度為 0 (`SizedBox()`)，載入完成後突然撐開 50~90dp，將下方的篩選標籤與店家列表猛烈下推，導致使用者手指誤觸剛出現的廣告（教科書級別的引誘意外點擊）。
+      2. **夾在導覽列與操作元件之間，無安全間距**：[`RestaurantInfoListWidget`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/lib/flow/main/view/restaurant_info_list_widget.dart) 將廣告直接頂在 `AppBar`（漢堡選單按鈕）與 `FilterTagsWidget`（篩選晶片）之間，極易誤觸且易被誤認為功能選單。
+      3. **置於可滾動列表 Index 0 (滑動起點手勢衝突)**：廣告隨 ListView 滾動且置於首項，恰為使用者下拉滾動（Scroll / Pull-to-refresh）之大拇指慣性接觸區。
+      4. **缺乏「廣告 (Ad)」標籤**：廣告未以文字明確標示，易與應用程式正常內容混淆。
+    * **最高品味重構方向**:
+      1. **移出 ListView，改置於畫面底部 (業界標準最佳實踐)**：將 Banner 移出滑動列表，固定於 `Scaffold` 的 `bottomNavigationBar` 或底層 Safe Area，徹底杜絕手勢衝突與滾動誤觸。
+      2. **預先佔位容器 (徹底消滅 Layout Shift)**：在廣告非同步加載完成前，預留固定高度骨架/占位容器，避免內容突跳。
+      3. **標示明確廣告字樣與保持安全邊距**：若維持特定版位，必須具備顯著之「廣告 / Ad」微型標籤，並與相鄰互動元件維持 8~16dp 安全邊距。
+
 ### 2.6 對照組架構與風格對齊重構 (Architecture Alignment) — ✅ 已於 2026-07-27～07-29 完成
 
 依據對標對照組 Monorepo 的架構風格所規劃的 Clean Architecture 調整，**5 項全數落地**。以下記錄各項的最終實作與偏離規劃之處：
@@ -528,7 +540,8 @@ lib/
 ### RICE / ICE 雙評估模型總表
 
 | 功能/修復項目 | 類別 | Reach (1-10) | Impact (0.25-3) | Confidence (%) | Effort (0.5-4) | RICE 得分 | ICE 得分 | 綜合排名 | **優先級** |
-| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| :--- | :--- | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: | :---: |
+| 🚨 **修復 AdMob 廣告刊登合規性 (防欺騙點擊/防版面突跳)** | 合規阻擋 | 10 | 3.0 | 100% | 0.5 | **60.0** | 28.5 | **0** | **P0（合規阻擋級最高優先）** |
 | ✅ **修復 `build()` 側邊效應反模式** | 既有修復 | 10 | 3.0 | 100% | 0.5 | **60.0** | 28.5 | 1 | **已完成** |
 | ✅ **修復 Yelp API 分頁邏輯 Bug** | 既有修復 | 9 | 2.5 | 100% | 0.5 | **45.0** | 23.75 | 2 | **已完成** |
 | ✅ **修復 `FilterPage` 狀態重置 Bug** | 既有修復 | 8 | 2.5 | 100% | 0.5 | **40.0** | 23.75 | 3 | **已完成** |
@@ -573,7 +586,9 @@ lib/
 +-----------------------------------------------------------------------------------+
 |                           STRATEGIC PRODUCT ROADMAP                               |
 +-----------------------------------------------------------------------------------+
-| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 13/20 ✅        |
+| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 17/22 ✅        |
+|   • [ ] P0 🚨 修復 AdMob 廣告刊登合規性 (防欺騙點擊/移至底部/消滅 Layout Shift) ⚠️ 阻擋項 |
+|   • [ ] P0 自動化 CI/CD 發布流水線 (GitHub Actions)                               |
 |   • [x] P-1 整合 flutter_inspector_kit ✅ 2026-08-05（量測地基就位）             |
 |   • [x] P0 修復 `build()` 側邊效應反模式                                          |
 |   • [x] P0 修復 Yelp API 分頁邏輯 Bug                                              |
