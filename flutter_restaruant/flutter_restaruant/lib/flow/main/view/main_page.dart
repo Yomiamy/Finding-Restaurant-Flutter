@@ -71,10 +71,6 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
       drawer: _buildDrawer(context),
       appBar: _buildAppBar(context),
       body: content,
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: BannerAD(adState: getIt<BannerADState>()),
-      ),
     );
   }
 
@@ -119,29 +115,37 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           _summaryInfos = state.summaryInfos;
         }
 
+        Widget mainView;
         if (state is InProgress ||
             state is MainInitial ||
             state is ResetSuccess) {
-          return _isListMode
+          mainView = _isListMode
               ? ListView.builder(
                   itemCount: 10,
                   itemBuilder: (_, __) => const RestaurantItemSkeleton(),
                 )
               : const Center(child: LoadingWidget());
+        } else if (_summaryInfos.isEmpty) {
+          mainView = EmptyDataWidget.withDefaults();
+        } else {
+          mainView = _isListMode
+              ? RestaurantInfoListWidget(
+                  _summaryInfos,
+                  _configs,
+                  isLoadingMore: state is LoadMoreInProgress,
+                )
+              : MapWidget(_summaryInfos);
         }
 
-        if (_summaryInfos.isEmpty) {
-          return EmptyDataWidget.withDefaults();
-        }
-
-        // display restaurant list
-        return _isListMode
-            ? RestaurantInfoListWidget(
-                _summaryInfos,
-                _configs,
-                isLoadingMore: state is LoadMoreInProgress,
-              )
-            : MapWidget(_summaryInfos);
+        return Column(
+          children: [
+            Expanded(child: mainView),
+            SafeArea(
+              top: false,
+              child: BannerAD(adState: getIt<BannerADState>()),
+            ),
+          ],
+        );
       },
     );
   }
