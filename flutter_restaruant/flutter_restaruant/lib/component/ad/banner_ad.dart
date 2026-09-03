@@ -4,9 +4,9 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import '../../features/foundation/style/style_barrel.dart';
 import 'banner_ad_state.dart';
 
-/// 底部常駐橫幅廣告元件 (Anchored Banner AD)。
+/// 底部常駐標準橫幅廣告元件 (Standard Banner AD, 320x50)。
 ///
-/// 預留固定高度佔位容器以消滅版面突跳 (CLS)，並透過頂部邊界線區隔廣告與應用內容。
+/// 高度嚴格鎖定 50dp 以消滅版面突跳 (CLS)，並透過頂部邊界線區隔廣告與應用內容。
 class BannerAD extends StatefulWidget {
   final BannerADState adState;
 
@@ -18,7 +18,7 @@ class BannerAD extends StatefulWidget {
 
 class _BannerADState extends State<BannerAD> {
   BannerAd? banner;
-  AnchoredAdaptiveBannerAdSize? size;
+  static const AdSize adSize = AdSize.banner;
   bool _isInitialized = false;
 
   @override
@@ -34,11 +34,8 @@ class _BannerADState extends State<BannerAD> {
     await widget.adState.initialization;
     if (!mounted) return;
 
-    final adSize = await anchoredAdaptiveBannerAdSize(context);
-    if (!mounted) return;
-
     final adUnitId = widget.adState.bannerAdUnitId;
-    if (adSize == null || adUnitId == null) return;
+    if (adUnitId == null) return;
 
     final newBanner = BannerAd(
       listener: widget.adState.adListener,
@@ -54,7 +51,6 @@ class _BannerADState extends State<BannerAD> {
     }
 
     setState(() {
-      size = adSize;
       banner = newBanner;
     });
   }
@@ -67,9 +63,7 @@ class _BannerADState extends State<BannerAD> {
 
   @override
   Widget build(BuildContext context) {
-    final loadedBanner = banner;
-    final loadedSize = size;
-    final height = loadedSize?.height.toDouble() ?? ThemeSize.space50;
+    const height = ThemeSize.space50;
 
     return Container(
       width: double.infinity,
@@ -84,21 +78,13 @@ class _BannerADState extends State<BannerAD> {
         ),
       ),
       alignment: Alignment.center,
-      child: loadedBanner != null && loadedSize != null
+      child: banner != null
           ? SizedBox(
-              width: loadedSize.width.toDouble(),
+              width: adSize.width.toDouble(),
               height: height,
-              child: AdWidget(ad: loadedBanner),
+              child: AdWidget(ad: banner!),
             )
           : const SizedBox.shrink(),
-    );
-  }
-
-  Future<AnchoredAdaptiveBannerAdSize?> anchoredAdaptiveBannerAdSize(
-    BuildContext context,
-  ) async {
-    return await AdSize.getLargeAnchoredAdaptiveBannerAdSize(
-      MediaQuery.sizeOf(context).width.toInt(),
     );
   }
 }
