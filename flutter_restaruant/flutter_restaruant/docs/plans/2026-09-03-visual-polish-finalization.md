@@ -8,18 +8,18 @@
 - **全域搜尋並替換 `ThemeColor.appPrimary`**：將所有 11 處出現替換為 `ThemeColor.colord84a20`。
 - **全域搜尋並替換裸 `Colors.xxx`**：
   - `lib/flow/restaurant/view/restaurant_detail_page.dart` (Colors.white)
-  - `lib/flow/restaurant/view/restaurant_info_cell.dart` (Colors.black54)
-  - `lib/flow/restaurant/view/restaurant_head_cell.dart` (Colors.transparent, Colors.red)
-  - `lib/flow/filter/view/filter_tags_widget.dart` (Colors.white)
+  - `lib/component/cell/restaurant_detail/restaurant_info_cell.dart` (Colors.black54)
+  - `lib/component/cell/restaurant_detail/restaurant_head_cell.dart` (Colors.transparent, Colors.red)
+  - `lib/flow/main/view/filter_tags_widget.dart` (Colors.white)
   - `lib/flow/signinup/view/sign_in_page.dart` (Colors.white)
   - `lib/flow/signinup/view/sign_in_header_widget.dart` (Colors.transparent, Colors.black54)
   - `lib/flow/settings/view/settings_page.dart` (Colors.white)
   - `lib/flow/settings/view/settings_account_section_widget.dart` (Colors.white)
   - `lib/flow/splash/view/splash_page.dart` (Colors.white)
-  - `lib/flow/photo/view/photo_viewer.dart` (Colors.white)
-  - `lib/flow/main/view/components/banner_ad.dart` (Colors.grey)
+  - `lib/flow/photo_viewer/view/photo_viewer.dart` (Colors.white)
+  - `lib/component/ad/banner_ad.dart` (Colors.grey)
 - **`lib/flow/filter/view/filter_page.dart`**：
-  - 將 AppBar `ThemeColor.appPrimary` 與按鈕 `theme.colorScheme.primary` 等皆替換為 `ThemeColor.colord84a20`，將底色替換為 `ThemeColor.colorffffff`。
+  - 將 AppBar `ThemeColor.appPrimary` 與按鈕 `theme.colorScheme.primary` 等皆替換為 `ThemeColor.colord84a20`，將底色替換為 `ThemeColor.colorfffbf7`。
 - **`lib/flow/splash/view/splash_page.dart`**：移除第 29 行的 `await Future.delayed(...)` 假延遲。
 - **`test/theme_color_test.dart`**：移除對 `ThemeColor.appPrimary` 的斷言。
 

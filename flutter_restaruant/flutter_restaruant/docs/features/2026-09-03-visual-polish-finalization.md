@@ -32,7 +32,7 @@
 
 ## 3. 驗收條件 (Acceptance Criteria)
 
-- [ ] 全專案搜尋不到任何 `ThemeColor.appPrimary`（包含 `theme_color.dart` 內的宣告本身也被徹底刪除）。
+- [ ] `lib/` 原始碼中搜尋不到任何 `ThemeColor.appPrimary`（包含 `theme_color.dart` 內的宣告本身也被徹底刪除）。
 - [ ] 全專案 `lib/` 原始碼內不存在任何裸 `Colors.xxx` 呼叫。
 - [ ] `flutter analyze` 靜態分析無警告。
 - [ ] `flutter test` 單元與整合測試全綠。
