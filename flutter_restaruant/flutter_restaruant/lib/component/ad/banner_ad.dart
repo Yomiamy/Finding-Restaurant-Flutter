@@ -98,7 +98,7 @@ class _BannerADState extends State<BannerAD> {
     BuildContext context,
   ) async {
     return await AdSize.getLargeAnchoredAdaptiveBannerAdSize(
-      MediaQuery.of(context).size.width.toInt(),
+      MediaQuery.sizeOf(context).width.toInt(),
     );
   }
 }
