@@ -33,11 +33,11 @@
 
 ## 3. 驗收條件 (Acceptance Criteria)
 
-- [ ] **移出列表**：`RestaurantInfoListWidget` 的 `ListView.builder` 內不再包含 `BannerAD`，清單第 0 項為篩選晶片 `FilterTagsWidget`，卡片索引偏移正常、無 Off-by-one 錯誤。
-- [ ] **底部固定**：`MainPage` 之 `Scaffold` 正確於底部（如 `bottomNavigationBar`）掛載 `BannerAD`，並包覆 `SafeArea` 避免被系統手勢條遮蔽。
-- [ ] **零版面突跳**：首頁進入時，底部廣告區塊在廣告載入前後無版面瞬間擠壓（Layout Shift），高度穩定。
-- [ ] **手勢不衝突**：清單上下滑動與點擊卡片時，手指接觸範圍不會觸發廣告點擊。
-- [ ] **品質保證**：
+- [x] **移出列表**：`RestaurantInfoListWidget` 的 `ListView.builder` 內不再包含 `BannerAD`，清單第 0 項為篩選晶片 `FilterTagsWidget`，卡片索引偏移正常、無 Off-by-one 錯誤。
+- [x] **底部固定**：`MainPage` 之 `Scaffold` 正確於底部（如 `bottomNavigationBar`）掛載 `BannerAD`，並包覆 `SafeArea` 避免被系統手勢條遮蔽。
+- [x] **零版面突跳**：首頁進入時，底部廣告區塊在廣告載入前後無版面瞬間擠壓（Layout Shift），高度穩定。
+- [x] **手勢不衝突**：清單上下滑動與點擊卡片時，手指接觸範圍不會觸發廣告點擊。
+- [x] **品質保證**：
   - `flutter analyze` 零警告 (`No issues found!`)。
   - 既有單元與 Widget 測試全數通過 (`flutter test`)。
   - 針對調整後的清單與首頁廣告版位補齊 Widget 測試。

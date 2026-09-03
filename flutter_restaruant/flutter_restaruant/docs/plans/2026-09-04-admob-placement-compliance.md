@@ -31,26 +31,26 @@
 
 ## 3. 任務拆分 (Tasks Breakdown)
 
-- **Task 1: 清理 `RestaurantInfoListWidget` 列表內廣告與校正索引**
+- [x] **Task 1: 清理 `RestaurantInfoListWidget` 列表內廣告與校正索引** ✅
   - 移除清單頂部的 `BannerAD`。
   - 校正 `itemCount` 及所有索引映射邏輯。
   - 移除不必要的 import。
-- **Task 2: 改造 `BannerAD` 元件（預留高度防突跳 + 視覺分隔 + 異步現代化）**
+- [x] **Task 2: 改造 `BannerAD` 元件（預留高度防突跳 + 視覺分隔 + 異步現代化）** ✅
   - 改寫 `didChangeDependencies` 內的異步流程為 `async/await`。
   - 即使在 `loadedBanner == null` 時亦提供預留高度容器（50dp），避免介面跳動。
   - 頂部加入微型分隔邊框。
-- **Task 3: 在 `MainPage` 底部固定掛載橫幅廣告**
+- [x] **Task 3: 在 `MainPage` 底部固定掛載橫幅廣告** ✅
   - 於 `MainPage` 的 `Scaffold` 配置 `bottomNavigationBar` 與 `SafeArea`。
   - 透過 `getIt<BannerADState>()` 注入廣告狀態。
-- **Task 4: 更新測試與全面驗證**
+- [x] **Task 4: 更新測試與全面驗證** ✅
   - 更新 `load_more_indicator_visibility_test.dart` 的列表結構。
   - 建立/維護 `BannerAD` 測試。
   - 執行 `flutter analyze` 與 `flutter test`。
 
 ## 4. 驗收標準 (Verification)
 
-- `RestaurantInfoListWidget` 列表第 0 項為篩選晶片，店家卡片自 `index == 1` 開始精確對齊，無任何 off-by-one 越界。
-- 首頁底部顯示固定之橫幅廣告區塊，不被手勢列遮擋。
-- 進入主頁面時，頁面元素不因廣告異步載入而發生位置位移或上下跳動。
-- `flutter analyze` 保持 `No issues found!`。
-- `flutter test` 全數綠燈通過。
+- [x] `RestaurantInfoListWidget` 列表第 0 項為篩選晶片，店家卡片自 `index == 1` 開始精確對齊，無任何 off-by-one 越界。
+- [x] 首頁底部顯示固定之橫幅廣告區塊，不被手勢列遮擋。
+- [x] 進入主頁面時，頁面元素不因廣告異步載入而發生位置位移或上下跳動。
+- [x] `flutter analyze` 保持 `No issues found!`。
+- [x] `flutter test` 全數綠燈通過。
