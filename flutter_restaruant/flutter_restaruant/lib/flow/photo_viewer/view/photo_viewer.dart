@@ -39,11 +39,11 @@ class _PhotoViewerState extends State<PhotoViewer> {
         title: Text(
           S.current.photo_viewer_title,
           style: const TextStyle(
-            color: Colors.white,
+            color: ThemeColor.colorffffff,
             fontSize: ThemeFontSize.fontSize22,
           ),
         ),
-        backgroundColor: ThemeColor.appPrimary,
+        backgroundColor: ThemeColor.colord84a20,
       ),
       body: InteractiveViewer(
         // Set it to false

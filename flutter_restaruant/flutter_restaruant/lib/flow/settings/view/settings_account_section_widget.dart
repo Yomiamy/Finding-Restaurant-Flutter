@@ -96,8 +96,8 @@ class _FilledAction extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final ButtonStyle style = FilledButton.styleFrom(
-      backgroundColor: ThemeColor.appPrimary,
-      foregroundColor: Colors.white,
+      backgroundColor: ThemeColor.colord84a20,
+      foregroundColor: ThemeColor.colorffffff,
       minimumSize: const Size.fromHeight(ThemeSize.size48),
       textStyle: const TextStyle(
         fontSize: ThemeFontSize.fontSize18,

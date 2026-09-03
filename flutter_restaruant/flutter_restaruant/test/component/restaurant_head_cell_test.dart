@@ -65,7 +65,7 @@ void main() {
       expect(find.byIcon(Icons.favorite_border), findsNothing);
 
       final iconWidget = tester.widget<Icon>(find.byIcon(Icons.favorite));
-      expect(iconWidget.color, Colors.red);
+      expect(iconWidget.color, ThemeColor.colorf44336);
     });
 
     testWidgets('未收藏時顯示 Icons.favorite_border 且點擊觸發 ToggleFavor', (

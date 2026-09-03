@@ -60,8 +60,8 @@ class FilterTagsWidget extends StatelessWidget {
                   ),
                   selected: true,
                   selectedColor: Theme.of(context).colorScheme.primary,
-                  checkmarkColor: Colors.white,
-                  labelStyle: const TextStyle(color: Colors.white),
+                  checkmarkColor: ThemeColor.colorffffff,
+                  labelStyle: const TextStyle(color: ThemeColor.colorffffff),
                   onSelected: (_) {
                     context
                         .findAncestorStateOfType<MainPageState>()

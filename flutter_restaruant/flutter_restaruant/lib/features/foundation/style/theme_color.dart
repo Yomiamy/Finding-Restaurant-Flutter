@@ -8,9 +8,6 @@ abstract final class ThemeColor {
   /// 品牌主橘色 (#D84A20)。
   static const Color colord84a20 = Color(0xFFD84A20);
 
-  /// 品牌主色相容過渡別名（後續批次全面替換後將刪除）。
-  static const Color appPrimary = colord84a20;
-
   /// 奶油白主背景色 (#FFFBF7，原 T-6 決策)。
   static const Color colorfffbf7 = Color(0xFFFFFBF7);
 

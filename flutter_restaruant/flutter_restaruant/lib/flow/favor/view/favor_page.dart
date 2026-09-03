@@ -45,7 +45,7 @@ class _FavorPageState extends State<FavorPage> {
             fontSize: ThemeFontSize.fontSize22,
           ),
         ),
-        backgroundColor: ThemeColor.appPrimary,
+        backgroundColor: ThemeColor.colord84a20,
       ),
       body: BlocBuilder<FavorBloc, FavorState>(
         bloc: _favorBloc,

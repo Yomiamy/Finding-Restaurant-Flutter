@@ -25,7 +25,7 @@ class SignInHeaderWidget extends StatelessWidget {
             gradient: LinearGradient(
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter,
-              colors: <Color>[Colors.black54, Colors.transparent],
+              colors: <Color>[ThemeColor.color8a000000, ThemeColor.color00000000],
             ),
           ),
         ),
@@ -40,7 +40,7 @@ class SignInHeaderWidget extends StatelessWidget {
                 Text(
                   S.current.main_page_title,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: ThemeColor.colorffffff,
                     fontSize: ThemeFontSize.fontSize28,
                     fontWeight: FontWeight.bold,
                   ),
@@ -49,7 +49,7 @@ class SignInHeaderWidget extends StatelessWidget {
                 Text(
                   S.current.signin_header_subtitle,
                   style: const TextStyle(
-                    color: Colors.white,
+                    color: ThemeColor.colorffffff,
                     fontSize: ThemeFontSize.fontSize16,
                   ),
                 ),

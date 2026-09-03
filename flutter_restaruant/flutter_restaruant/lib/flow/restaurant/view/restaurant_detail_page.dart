@@ -79,7 +79,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
             }
           },
         ),
-        backgroundColor: ThemeColor.appPrimary,
+        backgroundColor: ThemeColor.colord84a20,
       ),
       body: Padding(
         padding: const EdgeInsets.only(bottom: ThemeSize.space10),

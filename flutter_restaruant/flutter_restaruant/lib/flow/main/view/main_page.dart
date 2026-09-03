@@ -83,7 +83,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           fontSize: ThemeFontSize.fontSize24,
         ),
       ),
-      backgroundColor: ThemeColor.appPrimary,
+      backgroundColor: ThemeColor.colord84a20,
       leading: IconButton(
         padding: EdgeInsets.zero,
         onPressed: () => _openDrawer(),
@@ -150,7 +150,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           padding: EdgeInsets.zero,
           children: [
             DrawerHeader(
-              decoration: const BoxDecoration(color: ThemeColor.appPrimary),
+              decoration: const BoxDecoration(color: ThemeColor.colord84a20),
               child: Align(
                 alignment: Alignment.bottomLeft,
                 child: Text(
@@ -164,7 +164,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
               ),
             ),
             ListTile(
-              leading: const Icon(Icons.search, color: ThemeColor.appPrimary),
+              leading: const Icon(Icons.search, color: ThemeColor.colord84a20),
               title: Text(appLocalizations.keyword_search),
               onTap: () {
                 Navigator.of(context).pop();
@@ -176,7 +176,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
             ListTile(
               leading: const Icon(
                 Icons.filter_list,
-                color: ThemeColor.appPrimary,
+                color: ThemeColor.colord84a20,
               ),
               title: Text(appLocalizations.filter_rules),
               onTap: () {
@@ -187,7 +187,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.map, color: ThemeColor.appPrimary),
+              leading: const Icon(Icons.map, color: ThemeColor.colord84a20),
               title: Text(
                 _isListMode
                     ? appLocalizations.map_mode
@@ -207,7 +207,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
             ListTile(
               leading: const Icon(
                 Icons.navigation,
-                color: ThemeColor.appPrimary,
+                color: ThemeColor.colord84a20,
               ),
               title: Text(appLocalizations.map_my_loc_title),
               onTap: () {
@@ -218,7 +218,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.favorite, color: ThemeColor.appPrimary),
+              leading: const Icon(Icons.favorite, color: ThemeColor.colord84a20),
               title: Text(appLocalizations.favorite_stores),
               onTap: () {
                 Navigator.of(context).pop();
@@ -228,7 +228,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
               },
             ),
             ListTile(
-              leading: const Icon(Icons.settings, color: ThemeColor.appPrimary),
+              leading: const Icon(Icons.settings, color: ThemeColor.colord84a20),
               title: Text(appLocalizations.settings_title),
               onTap: () {
                 Navigator.of(context).pop();

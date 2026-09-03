@@ -44,7 +44,7 @@ class _SignInPageState extends State<SignInPage> {
         title: Text(
           S.current.signin_page_title,
           style: const TextStyle(
-            color: Colors.white,
+            color: ThemeColor.colorffffff,
             fontSize: ThemeFontSize.fontSize22,
           ),
         ),
@@ -53,7 +53,7 @@ class _SignInPageState extends State<SignInPage> {
         // 寫死 leading——那會讓 Splash 路徑也長出一顆按不動的返回鍵。
         // 交給 Flutter 依 canPop() 決定是否顯示，這裡只負責上色。
         iconTheme: const IconThemeData(color: ThemeColor.colorffffff),
-        backgroundColor: ThemeColor.appPrimary,
+        backgroundColor: ThemeColor.colord84a20,
       ),
       body: BlocConsumer<SignInBloc, SignInState>(
         listener: (context, state) {

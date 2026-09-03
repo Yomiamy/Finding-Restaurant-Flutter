@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import '../../features/foundation/style/style_barrel.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'banner_ad_state.dart';
 
@@ -49,7 +50,7 @@ class _BannerADState extends State<BannerAD> {
     }
 
     return Container(
-      color: Colors.grey,
+      color: ThemeColor.color9e9e9e,
       width: loadedSize.width.toDouble(),
       height: loadedSize.height.toDouble(),
       child: AdWidget(ad: loadedBanner),
