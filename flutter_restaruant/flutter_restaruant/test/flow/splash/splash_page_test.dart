@@ -8,7 +8,7 @@ import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('SplashPage Widget Tests', () {
-    testWidgets('渲染滿版背景圖並套用 BoxFit.fill', (tester) async {
+    testWidgets('渲染主視覺圖片並套用 BoxFit.cover', (tester) async {
       final originalErrorWidgetBuilder = ErrorWidget.builder;
       final originalFlutterErrorOnError = FlutterError.onError;
       final originalPlatformDispatcherOnError =
@@ -31,7 +31,7 @@ void main() {
         expect(imageFinder, findsOneWidget);
 
         final imageWidget = tester.widget<Image>(imageFinder);
-        expect(imageWidget.fit, BoxFit.fill);
+        expect(imageWidget.fit, BoxFit.cover);
 
         // Drain the 3s splash timer
         await tester.pump(const Duration(seconds: 3));
