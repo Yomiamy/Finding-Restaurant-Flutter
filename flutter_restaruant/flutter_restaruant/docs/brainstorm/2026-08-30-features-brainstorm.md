@@ -993,17 +993,17 @@ lib/features/foundation/style/
 | **S1 地基** | `lib/features/foundation/style/` 建立、`PlatformApp` 掛 `material:`／`cupertino:`／`builder:`、token 定義 | 無 | 低（僅 FilterChip 藍→橘） | ✅ **已完成 (2026-08-03)** |
 | **S2 共用元件** | ItemCell、RatingStars(✅)、Skeleton(✅)、EmptyDataWidget | S1 | **高**（列表與最愛同時改觀） | 🟡 **部分完成**（`RatingStars` 與 `Skeleton` 已完成，剩餘 `ItemCell`、`EmptyDataWidget` 與 Token 覆寫） |
 | **S3 頁面改造** | 詳情頁、登入頁、列表頁（實際另含設定頁、Splash 頁） | S2 | **高** | ✅ **已完成 (2026-08-29, PR #94)** |
-| **S4 收尾** | 篩選頁、Splash、移除假延遲、清理舊常數 | S3 | 中 | ⬜ 待辦 |
+| **S4 收尾** | 篩選頁、Splash、移除假延遲、清理舊常數 | S3 | 中 | ✅ **已完成 (2026-09-03, PR #106)** |
 
 ### S1 移交 S2 的債務清單
 
 | # | 債務 | 承接 |
 | :--- | :--- | :---: |
 | T-1 | ~~`sign_in_page.dart:183` 硬編碼藍 `Color.fromARGB(255, 5, 97, 245)`，品牌識別錯誤~~ | ✅ **已於 S3 (PR #94) 消除**（2026-08-30 實查：全 `lib/` grep `fromARGB(255, 5, 97, 245)` 已無命中） |
-| T-2 | 裸 `Colors.xxx` **25 處／16 檔**（2026-08-30 實查；原 33 處／13 檔）。⚠️ 處數降 8 但檔數增 3 —— S3 將 `sign_in_page` / `settings_page` / `splash_page` 拆為多個 widget 檔，既有用法被分散，非新增債務 | S4 |
+| T-2 | ~~裸 `Colors.xxx` **25 處／16 檔**~~ | ✅ **已於 S4 (PR #106) 清理歸零**（全專案改用 `ThemeColor.color[hex]` 常數） |
 | T-3 | 10 個 `@Deprecated` 字級常數、29 處使用、14 個檔案待遷移 | ✅ **已於 S1 (PR #66) 移除並由 ThemeFontSize 替換** |
-| T-6 | 奶油白 `surface` (`#FFFBF7`) 覆寫，D-4 的 3 個 `copyWith` 額度完整保留 | **S2** |
-| **T-9（新增）** | **`colorScheme.primary` = `#8F4B38` ≠ 品牌色 `#D84A20`**，與 **19 處**硬編 `ThemeColor.appPrimary`（**8 檔**）並存有色差。須決定是否 `copyWith` 鎖回品牌色。⚠️ 2026-08-05 複測更正：原記 16 處／7 檔 | **S2** |
+| T-6 | ~~奶油白 `surface` (`#FFFBF7`) 覆寫~~ | ✅ **已於 S2 (PR #105) 定義 `ThemeColor.colorfffbf7` 並於 S4 全面落地** |
+| **T-9（新增）** | ~~`colorScheme.primary` = `#8F4B38` ≠ 品牌色 `#D84A20`~~ | ✅ **已於 S2/S4 解決**：建立 `ThemeColor.colord84a20` 編譯期常數，全專案呼叫端全面替換並徹底移除 `appPrimary` 別名，消滅 `fromSeed` 色偏與 context 查表 |
 
 > **順序理由**：S2 完成後列表與最愛兩畫面同時改觀，是最快看到成果的切點。S1 單獨看幾乎無變化，但為 S2/S3 的前提。
 
@@ -1031,8 +1031,8 @@ lib/features/foundation/style/
 | :--- | :--- | :--- | :--- |
 | 1 | 骨架屏自繪 vs `shimmer` 套件 | 先自繪；超過 40 行改用套件 | ✅ **已於 S2 引入 `shimmer` 套件並完成 `Skeleton`** |
 | 2 | 舊 `UIConstants` 字級常數何時刪 | S4 標 `@Deprecated`；全數遷移後另開獨立 PR 移除 | ✅ **已於 S1 移除**（10 個常數全數移除並替換為 ThemeFontSize，PR #66 完成） |
-| 3 | `Colors.grey` 全域掃除 | 各階段順手改；S4 做最後一次 grep 確認歸零 | S1 刻意不掃（維持 AC-7 乾淨驗證），33 處原封不動 |
-| **4（新增）** | `colorScheme.primary` 是否 `copyWith` 鎖回 `#D84A20` | 見 T-9。與 T-6 的 `surface` 覆寫一併決定，共用 D-4 的 3 個額度 | **S2 待決** |
+| 3 | `Colors.grey` 全域掃除 | 各階段順手改；S4 做最後一次 grep 確認歸零 | ✅ **已於 S4 (PR #106) 全面替換為 ThemeColor.color9e9e9e** |
+| **4（新增）** | `colorScheme.primary` 是否 `copyWith` 鎖回 `#D84A20` | 見 T-9。與 T-6 的 `surface` 覆寫一併決定，共用 D-4 的 3 個額度 | ✅ **已於 S2/S4 解決**：改為在 `ThemeColor` 定義編譯期常數 `colord84a20`，全專案呼叫端直連，不經 context 查表 |
 
 ---
 
@@ -1072,7 +1072,7 @@ lib/features/foundation/style/
 |   • [x] S1 Design System 地基 (ThemeData / ColorScheme / token) ✅ 2026-08-03     |
 |   • [ ] S2 共用元件重塑 (ItemCell / RatingStars✅ / Skeleton✅ / Empty)           |
 |   • [x] S3 頁面改造 (詳情頁 / 登入頁 / 列表頁 / 設定 / Splash) ✅ 2026-08-29     |
-|   • [ ] S4 收尾 (篩選頁 / Splash / 移除假延遲 / 清理舊常數)                       |
+|   • [x] S4 收尾 (篩選頁 / Splash / 移除假延遲 / 清理舊常數) ✅ 2026-09-03 (PR #106)|
 |                                                                                   |
 |  ── 原 Phase 1.5 剩餘項（依賴 S1 完成）──                                         |
 |   • ❌ P1 地圖與 BottomSheet Carousel 雙向平滑連動 (含點擊至詳情頁) - 缺乏實質效益已放棄 |
