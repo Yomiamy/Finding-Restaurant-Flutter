@@ -2,33 +2,25 @@ import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/features/foundation/extension/widget_extension.dart';
 import 'package:flutter_test/flutter_test.dart';
 
-class _HostWidget extends StatefulWidget {
-  const _HostWidget({required this.onState});
+class _HostWidget extends StatelessWidget {
+  const _HostWidget({required this.onContext});
 
-  final void Function(_HostWidgetState state) onState;
+  final void Function(BuildContext context) onContext;
 
   @override
-  State<_HostWidget> createState() => _HostWidgetState();
-}
-
-class _HostWidgetState extends State<_HostWidget> {
-  @override
-  void initState() {
-    super.initState();
-    widget.onState(this);
+  Widget build(BuildContext context) {
+    onContext(context);
+    return const SizedBox.shrink();
   }
-
-  @override
-  Widget build(BuildContext context) => const SizedBox.shrink();
 }
 
 void main() {
-  group('StateFrameCallbackExtension', () {
+  group('ContextFrameCallbackExtension', () {
     testWidgets('runAfterFrame 在該幀後執行 action', (tester) async {
       var called = false;
       await tester.pumpWidget(
         _HostWidget(
-          onState: (state) => state.runAfterFrame(() => called = true),
+          onContext: (context) => context.runAfterFrame(() => called = true),
         ),
       );
 
@@ -37,9 +29,9 @@ void main() {
 
     testWidgets('runAfterFrame 在 unmount 後不執行 action', (tester) async {
       var called = false;
-      late _HostWidgetState captured;
+      late BuildContext captured;
       await tester.pumpWidget(
-        _HostWidget(onState: (state) => captured = state),
+        _HostWidget(onContext: (context) => captured = context),
       );
 
       await tester.pumpWidget(const SizedBox.shrink());
@@ -52,16 +44,16 @@ void main() {
     testWidgets('waitForFrame 掛載時回傳 true', (tester) async {
       late Future<bool> result;
       await tester.pumpWidget(
-        _HostWidget(onState: (state) => result = state.waitForFrame()),
+        _HostWidget(onContext: (context) => result = context.waitForFrame()),
       );
 
       expect(await result, isTrue);
     });
 
     testWidgets('waitForFrame 於 unmount 後回傳 false', (tester) async {
-      late _HostWidgetState captured;
+      late BuildContext captured;
       await tester.pumpWidget(
-        _HostWidget(onState: (state) => captured = state),
+        _HostWidget(onContext: (context) => captured = context),
       );
 
       await tester.pumpWidget(const SizedBox.shrink());

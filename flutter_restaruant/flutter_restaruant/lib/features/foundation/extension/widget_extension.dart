@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 
-extension StateFrameCallbackExtension on State {
+extension ContextFrameCallbackExtension on BuildContext {
   /// 在本幀 build 結束後執行 [action]，且僅在 widget 仍掛載時執行。
   ///
   /// 包裝 `WidgetsBinding.instance.addPostFrameCallback` 與 `mounted` 檢查，
@@ -19,7 +19,7 @@ extension StateFrameCallbackExtension on State {
   /// 若 widget 在該幀後已被 unmount，回傳 `false`；呼叫端據此提早返回：
   ///
   /// ```dart
-  /// if (!await waitForFrame()) return;
+  /// if (!await context.waitForFrame()) return;
   /// ```
   ///
   /// 注意：回傳 `true` 只保證「當下」仍掛載。之後每跨越一次 `await`，

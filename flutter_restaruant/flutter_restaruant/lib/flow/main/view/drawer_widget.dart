@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 
+import '../../../features/foundation/extension/extension_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../generated/l10n.dart';
 
@@ -28,9 +29,7 @@ class DrawerWidget extends StatelessWidget {
 
   void _handleTap(BuildContext context, VoidCallback action) {
     Navigator.of(context).pop();
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      action();
-    });
+    context.runAfterFrame(action);
   }
 
   @override

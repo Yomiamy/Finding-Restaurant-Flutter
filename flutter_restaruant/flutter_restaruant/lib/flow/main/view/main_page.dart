@@ -188,7 +188,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
 
   /// --- FCM notification
   void handleNotificationData() {
-    runAfterFrame(() {
+    context.runAfterFrame(() {
       // Waiting building is finish and run.
       final args =
           ModalRoute.of(context)?.settings.arguments

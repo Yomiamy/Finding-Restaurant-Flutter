@@ -37,7 +37,7 @@ class _RestaurantInfoListWidgetState extends State<RestaurantInfoListWidget> {
   bool get _isLoadingMore => widget._isLoadingMore;
 
   @override
-  void didUpdateWidget(RestaurantInfoListWidget oldWidget) {
+  void didUpdateWidget(covariant RestaurantInfoListWidget oldWidget) {
     super.didUpdateWidget(oldWidget);
 
     // Only react to the moment loading starts.
@@ -46,7 +46,7 @@ class _RestaurantInfoListWidgetState extends State<RestaurantInfoListWidget> {
     // The indicator is appended below the current bottom, so the viewport stays
     // pinned where it was and the spinner renders off-screen. Extend the scroll
     // to reveal it once loading starts.
-    runAfterFrame(() {
+    context.runAfterFrame(() {
       if (!_scrollController.hasClients) return;
 
       _scrollController.animateTo(
