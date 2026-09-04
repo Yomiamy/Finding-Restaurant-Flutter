@@ -5,6 +5,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import '../../../component/component_barrel.dart';
 import '../../../di/di_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
+import '../../../features/foundation/extension/extension_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../generated/l10n.dart';
@@ -187,8 +188,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
 
   /// --- FCM notification
   void handleNotificationData() {
-    WidgetsBinding.instance.addPostFrameCallback((timeStamp) {
-      if (!mounted) return;
+    runAfterFrame(() {
       // Waiting building is finish and run.
       final args =
           ModalRoute.of(context)?.settings.arguments
