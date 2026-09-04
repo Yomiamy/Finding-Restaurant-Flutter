@@ -18,7 +18,7 @@ class BannerAD extends StatefulWidget {
 
 class _BannerADState extends State<BannerAD> {
   BannerAd? banner;
-  static const AdSize adSize = AdSize.banner;
+  static const AdSize _adSize = AdSize.banner;
   bool _isInitialized = false;
 
   @override
@@ -41,7 +41,7 @@ class _BannerADState extends State<BannerAD> {
       listener: widget.adState.adListener,
       adUnitId: adUnitId,
       request: const AdRequest(),
-      size: adSize,
+      size: _adSize,
     );
 
     await newBanner.load();
@@ -80,7 +80,7 @@ class _BannerADState extends State<BannerAD> {
       alignment: Alignment.center,
       child: banner != null
           ? SizedBox(
-              width: adSize.width.toDouble(),
+              width: _adSize.width.toDouble(),
               height: height,
               child: AdWidget(ad: banner!),
             )
