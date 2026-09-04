@@ -15,9 +15,7 @@ void main() {
 
       await tester.pumpWidget(
         MaterialApp(
-          home: Scaffold(
-            bottomNavigationBar: BannerAD(adState: adState),
-          ),
+          home: Scaffold(bottomNavigationBar: BannerAD(adState: adState)),
         ),
       );
 
@@ -36,5 +34,36 @@ void main() {
       expect(decoration?.border?.top.color, equals(ThemeColor.color9e9e9e));
       expect(decoration?.border?.top.width, equals(0.5));
     });
+
+    test(
+      'createAdListener forwards callbacks and executes onAdLoaded/onAdFailedToLoad',
+      () {
+        final completer = Completer<InitializationStatus>();
+        final adState = BannerADState(completer.future);
+
+        bool loadedCalled = false;
+        bool failedCalled = false;
+
+        final listener = adState.createAdListener(
+          onAdLoaded: (_) => loadedCalled = true,
+          onAdFailedToLoad: (_, __) => failedCalled = true,
+        );
+
+        // Create a dummy BannerAd
+        final dummyAd = BannerAd(
+          adUnitId: 'test_id',
+          size: AdSize.banner,
+          request: const AdRequest(),
+          listener: const BannerAdListener(),
+        );
+
+        listener.onAdLoaded?.call(dummyAd);
+        expect(loadedCalled, isTrue);
+
+        final error = LoadAdError(1, 'domain', 'message', null);
+        listener.onAdFailedToLoad?.call(dummyAd, error);
+        expect(failedCalled, isTrue);
+      },
+    );
   });
 }

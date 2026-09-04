@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -37,19 +39,31 @@ class _BannerADState extends State<BannerAD> {
     final adUnitId = widget.adState.bannerAdUnitId;
     if (adUnitId == null) return;
 
-    _banner = BannerAd(
-      listener: widget.adState.adListener,
+    final banner = BannerAd(
+      listener: widget.adState.createAdListener(
+        onAdLoaded: (ad) {
+          if (!mounted) {
+            ad.dispose();
+            return;
+          }
+          setState(() {
+            _banner = ad as BannerAd;
+          });
+        },
+        onAdFailedToLoad: (ad, error) {
+          if (mounted && _banner != null) {
+            setState(() {
+              _banner = null;
+            });
+          }
+        },
+      ),
       adUnitId: adUnitId,
       request: const AdRequest(),
       size: _adSize,
     );
 
-    await _banner?.load();
-    if (!mounted) {
-      await _banner?.dispose();
-      _banner = null;
-    }
-    setState(() {});
+    unawaited(banner.load());
   }
 
   @override
