@@ -17,7 +17,7 @@ class BannerAD extends StatefulWidget {
 }
 
 class _BannerADState extends State<BannerAD> {
-  BannerAd? banner;
+  BannerAd? _banner;
   static const AdSize _adSize = AdSize.banner;
   bool _isInitialized = false;
 
@@ -37,27 +37,24 @@ class _BannerADState extends State<BannerAD> {
     final adUnitId = widget.adState.bannerAdUnitId;
     if (adUnitId == null) return;
 
-    final newBanner = BannerAd(
+    _banner = BannerAd(
       listener: widget.adState.adListener,
       adUnitId: adUnitId,
       request: const AdRequest(),
       size: _adSize,
     );
 
-    await newBanner.load();
+    await _banner?.load();
     if (!mounted) {
-      await newBanner.dispose();
-      return;
+      await _banner?.dispose();
+      _banner = null;
     }
-
-    setState(() {
-      banner = newBanner;
-    });
+    setState(() {});
   }
 
   @override
   void dispose() {
-    banner?.dispose();
+    _banner?.dispose();
     super.dispose();
   }
 
@@ -71,18 +68,15 @@ class _BannerADState extends State<BannerAD> {
       decoration: const BoxDecoration(
         color: ThemeColor.colorfffbf7,
         border: Border(
-          top: BorderSide(
-            color: ThemeColor.color9e9e9e,
-            width: 0.5,
-          ),
+          top: BorderSide(color: ThemeColor.color9e9e9e, width: 0.5),
         ),
       ),
       alignment: Alignment.center,
-      child: banner != null
+      child: _banner != null
           ? SizedBox(
               width: _adSize.width.toDouble(),
               height: height,
-              child: AdWidget(ad: banner!),
+              child: AdWidget(ad: _banner!),
             )
           : const SizedBox.shrink(),
     );
