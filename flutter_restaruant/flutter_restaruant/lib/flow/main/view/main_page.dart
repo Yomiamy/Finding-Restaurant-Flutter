@@ -174,7 +174,9 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
       return;
     }
 
-    _configs = result.item1;
+    setState(() {
+      _configs = result.item1;
+    });
     _mainBloc.add(const Reset());
   }
 
