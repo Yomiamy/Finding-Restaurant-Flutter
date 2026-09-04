@@ -14,8 +14,8 @@ import '../../filter/view/view_barrel.dart';
 import '../../restaurant/view/view_barrel.dart';
 import '../../settings/view/view_barrel.dart';
 import '../bloc/bloc_barrel.dart';
-import 'map_widget.dart';
-import 'restaurant_info_list_widget.dart';
+import 'drawer_widget.dart';
+import 'main_page_content_widget.dart';
 
 class MainPage extends StatefulWidget {
   static const routeName = '/MainPage';
@@ -32,7 +32,6 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
   bool _isListMode = true;
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late MainBloc _mainBloc;
-  late List<RestaurantEntity> _summaryInfos;
 
   MainPageState();
 
@@ -41,7 +40,6 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
     super.initState();
 
     _mainBloc = BlocProvider.of<MainBloc>(context);
-    _summaryInfos = List.empty();
 
     _mainBloc.add(const NotificationSetup());
     _mainBloc.add(
@@ -62,15 +60,22 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
 
   @override
   Widget build(BuildContext context) {
-    final Widget content = Builder(
-      builder: (innerContext) => _buildContent(innerContext),
-    );
-
     return Scaffold(
       key: _scaffoldKey,
-      drawer: _buildDrawer(context),
+      drawer: DrawerWidget(
+        isListMode: _isListMode,
+        onKeywordSearch: _showKeywordDialog,
+        onFilterRules: _openFilterPage,
+        onToggleViewMode: _toggleViewMode,
+        onMapMyLoc: () => _mainBloc.add(const Reset()),
+        onFavorites: _navigateToFavorites,
+        onSettings: _navigateToSettings,
+      ),
       appBar: _buildAppBar(context),
-      body: content,
+      body: MainPageContentWidget(
+        filterConfigs: _configs,
+        isListMode: _isListMode,
+      ),
       bottomNavigationBar: SafeArea(
         top: false,
         child: BannerAD(adState: getIt<BannerADState>()),
@@ -91,168 +96,28 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
       backgroundColor: ThemeColor.colord84a20,
       leading: IconButton(
         padding: EdgeInsets.zero,
-        onPressed: () => _openDrawer(),
+        onPressed: _openDrawer,
         icon: const Icon(Icons.menu, color: ThemeColor.colorffffff),
       ),
     );
   }
 
-  Widget _buildContent(BuildContext context) {
-    return BlocConsumer<MainBloc, MainState>(
-      listener: (context, state) {
-        if (state is ResetSuccess) {
-          _mainBloc.add(
-            FetchSearchInfo(
-              price: _configs.price,
-              openAt: _configs.openAtInSec,
-              sortBy: _configs.sortBy,
-            ),
-          );
-        }
-      },
-      builder: (context, state) {
-        if (state is Success) {
-          _summaryInfos = state.summaryInfos;
-        } else if (state is LoadMoreSuccess) {
-          _summaryInfos = state.summaryInfos;
-        } else if (state is LoadMoreInProgress) {
-          _summaryInfos = state.summaryInfos;
-        }
-
-        if (state is InProgress ||
-            state is MainInitial ||
-            state is ResetSuccess) {
-          return _isListMode
-              ? ListView.builder(
-                  itemCount: 10,
-                  itemBuilder: (_, __) => const RestaurantItemSkeleton(),
-                )
-              : const Center(child: LoadingWidget());
-        }
-
-        if (_summaryInfos.isEmpty) {
-          return EmptyDataWidget.withDefaults();
-        }
-
-        // display restaurant list
-        return _isListMode
-            ? RestaurantInfoListWidget(
-                _summaryInfos,
-                _configs,
-                isLoadingMore: state is LoadMoreInProgress,
-              )
-            : MapWidget(_summaryInfos);
-      },
-    );
-  }
-
-  Drawer _buildDrawer(BuildContext context) {
-    final appLocalizations = S.current;
-
-    return Drawer(
-      child: SafeArea(
-        child: ListView(
-          padding: EdgeInsets.zero,
-          children: [
-            DrawerHeader(
-              decoration: const BoxDecoration(color: ThemeColor.colord84a20),
-              child: Align(
-                alignment: Alignment.bottomLeft,
-                child: Text(
-                  appLocalizations.main_page_title,
-                  style: const TextStyle(
-                    color: ThemeColor.colorffffff,
-                    fontSize: ThemeFontSize.fontSize22,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-              ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.search, color: ThemeColor.colord84a20),
-              title: Text(appLocalizations.keyword_search),
-              onTap: () {
-                Navigator.of(context).pop();
-                _runAfterDrawerClosed(() {
-                  _showKeywordDialog();
-                });
-              },
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.filter_list,
-                color: ThemeColor.colord84a20,
-              ),
-              title: Text(appLocalizations.filter_rules),
-              onTap: () {
-                Navigator.of(context).pop();
-                _runAfterDrawerClosed(() {
-                  _openFilterPage();
-                });
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.map, color: ThemeColor.colord84a20),
-              title: Text(
-                _isListMode
-                    ? appLocalizations.map_mode
-                    : appLocalizations.list_mode,
-              ),
-              onTap: () {
-                Navigator.of(context).pop();
-                _runAfterDrawerClosed(() {
-                  if (!mounted) return;
-                  setState(() {
-                    _isListMode = !_isListMode;
-                  });
-                  _mainBloc.add(const Reset());
-                });
-              },
-            ),
-            ListTile(
-              leading: const Icon(
-                Icons.navigation,
-                color: ThemeColor.colord84a20,
-              ),
-              title: Text(appLocalizations.map_my_loc_title),
-              onTap: () {
-                Navigator.of(context).pop();
-                _runAfterDrawerClosed(() {
-                  _mainBloc.add(const Reset());
-                });
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.favorite, color: ThemeColor.colord84a20),
-              title: Text(appLocalizations.favorite_stores),
-              onTap: () {
-                Navigator.of(context).pop();
-                _runAfterDrawerClosed(() {
-                  Navigator.of(this.context).pushNamed(FavorPage.routeName);
-                });
-              },
-            ),
-            ListTile(
-              leading: const Icon(Icons.settings, color: ThemeColor.colord84a20),
-              title: Text(appLocalizations.settings_title),
-              onTap: () {
-                Navigator.of(context).pop();
-                _runAfterDrawerClosed(() {
-                  Navigator.of(this.context).pushNamed(SettingsPage.routeName);
-                });
-              },
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _runAfterDrawerClosed(VoidCallback action) {
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (!mounted) return;
-      action();
+  void _toggleViewMode() {
+    if (!mounted) return;
+    setState(() {
+      _isListMode = !_isListMode;
     });
+    _mainBloc.add(const Reset());
+  }
+
+  void _navigateToFavorites() {
+    if (!mounted) return;
+    Navigator.of(context).pushNamed(FavorPage.routeName);
+  }
+
+  void _navigateToSettings() {
+    if (!mounted) return;
+    Navigator.of(context).pushNamed(SettingsPage.routeName);
   }
 
   void _showKeywordDialog() {
