@@ -1,5 +1,3 @@
-import 'dart:async';
-
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -148,15 +146,27 @@ class _MapPageState extends State<MapWidget> {
           child: FloatingActionButton.small(
             backgroundColor: Colors.white,
             onPressed: () async {
-              final position = await Utils.getCurrentPosition();
-              unawaited(
-                _mapController!.animateCamera(
+              final messenger = ScaffoldMessenger.of(context);
+              try {
+                final position = await Utils.getCurrentPosition();
+                if (!mounted) return;
+                final controller = _mapController;
+                if (controller == null) return;
+                await controller.animateCamera(
                   CameraUpdate.newLatLngZoom(
                     LatLng(position.latitude, position.longitude),
                     15,
                   ),
-                ),
-              );
+                );
+              } catch (e) {
+                if (!mounted) return;
+                final message = e is Exception
+                    ? e.toString().replaceFirst('Exception: ', '')
+                    : e.toString();
+                messenger.showSnackBar(
+                  SnackBar(content: Text(message)),
+                );
+              }
             },
             child: const Icon(Icons.my_location, color: Colors.blue),
           ),
