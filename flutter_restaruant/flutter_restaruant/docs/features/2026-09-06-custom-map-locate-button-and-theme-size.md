@@ -2,13 +2,13 @@
 
 ## 1. 背景與動機 (Why)
 
-在首頁地圖探索模式中（[map_widget.dart](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/lib/flow/main/view/map_widget.dart)），目前存在以下使用者體驗與架構維護問題：
+在首頁地圖探索模式中（[`map_widget.dart`](../../lib/flow/main/view/map_widget.dart)），目前存在以下使用者體驗與架構維護問題：
 
 1. **原生控制項遮蔽與不可控**：
    - `GoogleMap` 啟用 `myLocationEnabled: true` 時，預設會連帶開啟原生的「我的位置」按鈕 (`myLocationButtonEnabled: true`)。
    - 原生按鈕的位置由底層 Google Maps SDK 決定，無法在 Flutter 層自由設定錨點與對齊方式；且底部常駐 130dp 餐廳卡片 `PageView`，容易與原生按鈕產生佈局遮擋與誤觸。
 2. **硬編碼數值與設計系統偏離**：
-   - `MapWidget` 內部散落多處裸數字（`height: 130`、`bottom: 20`、`left: 0`、`right: 0`、`horizontal: 4.0`），未對齊專案的 [`ThemeSize`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/lib/features/foundation/style/theme_size.dart) 規範，特別是底部卡片高度 `130` 缺乏對應的 token。
+   - `MapWidget` 內部散落多處裸數字（`height: 130`、`bottom: 20`、`left: 0`、`right: 0`、`horizontal: 4.0`），未對齊專案的 [`ThemeSize`](../../lib/features/foundation/style/theme_size.dart) 規範，特別是底部卡片高度 `130` 缺乏對應的 token。
 3. **定位體驗不佳**：
    - 預設原生按鈕外觀無法配合 Material 3 品牌色調與尺寸規範。
 
@@ -19,7 +19,7 @@
 ## 2. 規格需求 (What)
 
 ### 2.1. 擴充 Design System 尺寸常數 (ThemeSize)
-- 在 [theme_size.dart](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/lib/features/foundation/style/theme_size.dart) 的一般尺寸 (Size) 區塊新增 `static const double size130 = 130;`。
+- 在 [`theme_size.dart`](../../lib/features/foundation/style/theme_size.dart) 的一般尺寸 (Size) 區塊新增 `static const double size130 = 130;`。
 - 全面掃除 `MapWidget` 佈局中的魔術數字：
   - `bottom: 20` $\rightarrow$ `ThemeSize.space20`
   - `left: 0` / `right: 0` $\rightarrow$ `ThemeSize.zero`
@@ -27,7 +27,7 @@
   - 卡片邊距 `horizontal: 4.0` $\rightarrow$ `ThemeSize.space4`
 
 ### 2.2. 停用 GoogleMap 原生按鈕
-- 在 [map_widget.dart](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/lib/flow/main/view/map_widget.dart) 中設定：
+- 在 [`map_widget.dart`](../../lib/flow/main/view/map_widget.dart) 中設定：
   - `myLocationEnabled: true`：維持地圖藍色自身定位圖層（Blue Dot）。
   - `myLocationButtonEnabled: false`：關閉無法客製化且位置易衝突的原生定位按鈕。
   - `zoomControlsEnabled: false`：關閉 Android 原生縮放按鈕，讓版面保持純淨。
@@ -36,7 +36,7 @@
 - 於 `MapWidget` 的 `Stack` 右上角（`top: ThemeSize.space20`, `right: ThemeSize.space16`）掛載 `FloatingActionButton.small`：
   - 背景色：白色 (`Colors.white`)。
   - 圖示：`Icon(Icons.my_location, color: Colors.blue)`。
-  - 點擊行為：非同步呼叫專案既有的 [`Utils.getCurrentPosition()`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/lib/features/utils/utils.dart#L45) 獲取當前真實設備 GPS 座標，並透過 `_mapController.animateCamera` 結合 `CameraUpdate.newLatLngZoom(..., 15)` 平滑平移至目前位置並拉近視野。
+  - 點擊行為：非同步呼叫專案既有的 [`Utils.getCurrentPosition()`](../../lib/features/utils/utils.dart#L45) 獲取當前真實設備 GPS 座標，並透過 `_mapController.animateCamera` 結合 `CameraUpdate.newLatLngZoom(..., 15)` 平滑平移至目前位置並拉近視野。
 
 ---
 

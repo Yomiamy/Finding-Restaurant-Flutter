@@ -4,8 +4,8 @@
 
 本計畫旨在改善首頁地圖探索模式（`MapWidget`）的使用者體驗與程式碼品質：
 1. **關閉不可控原生按鈕**：停用 Google Maps 原生定位按鈕 (`myLocationButtonEnabled: false`) 與縮放控制 (`zoomControlsEnabled: false`)，消滅原生按鈕與底部 130dp 餐廳卡片 PageView 的佈局遮擋風險。
-2. **實作自訂定位按鈕 (FloatingActionButton)**：在右上角（`top: ThemeSize.space20, right: ThemeSize.space16`）掛載自訂定位小按鈕，點擊時透過既有 [`Utils.getCurrentPosition()`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/lib/features/utils/utils.dart#L45) 獲取裝置真實 GPS 座標，並以 `CameraUpdate.newLatLngZoom(..., 15)` 平滑平移相機。
-3. **擴充與對齊 Design System (`ThemeSize`)**：在 [`ThemeSize`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/lib/features/foundation/style/theme_size.dart) 定義 `size130 = 130;`，並將 `MapWidget` 內所有裸數字常數全數收斂為 `ThemeSize` token。
+2. **實作自訂定位按鈕 (FloatingActionButton)**：在右上角（`top: ThemeSize.space20, right: ThemeSize.space16`）掛載自訂定位小按鈕，點擊時透過既有 [`Utils.getCurrentPosition()`](../../lib/features/utils/utils.dart#L45) 獲取裝置真實 GPS 座標，並以 `CameraUpdate.newLatLngZoom(..., 15)` 平滑平移相機。
+3. **擴充與對齊 Design System (`ThemeSize`)**：在 [`ThemeSize`](../../lib/features/foundation/style/theme_size.dart) 定義 `size130 = 130;`，並將 `MapWidget` 內所有裸數字常數全數收斂為 `ThemeSize` token。
 
 ---
 
