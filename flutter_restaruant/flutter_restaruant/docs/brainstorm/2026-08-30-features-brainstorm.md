@@ -417,7 +417,7 @@ lib/
    * **實際解法與原先提案不同**: 未採用 `Wrap`（會讓星等換行，破壞單列版面）。改為把 `RatingStars` 移出 flex（不再包 `Expanded`），剩餘空間全部交給評論數與價格兩段文字，並為其加上 `overflow: TextOverflow.ellipsis` 與 `textAlign: TextAlign.right`——不可壓縮的元素不參與分配，可截斷的才參與。
    * **回歸測試**: `restaurant_item_cell_test.dart` 新增 298px 窄卡片測試，驗證無 layout exception 且 5 顆星維持完整寬度。
 
-10. **修復 AdMob 廣告刊登位置違規與欺騙性點擊問題 (AdMob Placement & Accidental Click Compliance)** (P0 絕對最高優先 / 阻擋級)
+10. **修復 AdMob 廣告刊登位置違規與欺騙性點擊問題 (AdMob Placement & Accidental Click Compliance)** (P0 絕對最高優先 / 阻擋級) — ✅ 已於 2026-09-04 完成（Issue #107 / PR #108）
     * **痛點與違規警告**:
       * App 收到 Google AdMob 官方政策違規警告：「*發布商不得為了爭取點擊或觀看次數，而以欺騙的導入方式插入廣告，使人有可能誤以為廣告是選單、導覽列或下載連結...網頁將廣告放在直覺上適合瀏覽的版位*」。
       * 若未限期修正，廣告投放將遭即刻中斷，甚至導致 AdMob 帳號停權與收益凍結。
@@ -426,10 +426,10 @@ lib/
       2. **夾在導覽列與操作元件之間，無安全間距**：[`RestaurantInfoListWidget`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/lib/flow/main/view/restaurant_info_list_widget.dart) 將廣告直接頂在 `AppBar`（漢堡選單按鈕）與 `FilterTagsWidget`（篩選晶片）之間，極易誤觸且易被誤認為功能選單。
       3. **置於可滾動列表 Index 0 (滑動起點手勢衝突)**：廣告隨 ListView 滾動且置於首項，恰為使用者下拉滾動（Scroll / Pull-to-refresh）之大拇指慣性接觸區。
       4. **缺乏「廣告 (Ad)」標籤**：廣告未以文字明確標示，易與應用程式正常內容混淆。
-    * **最高品味重構方向**:
-      1. **移出 ListView，改置於畫面底部 (業界標準最佳實踐)**：將 Banner 移出滑動列表，固定於 `Scaffold` 的 `bottomNavigationBar` 或底層 Safe Area，徹底杜絕手勢衝突與滾動誤觸。
-      2. **預先佔位容器 (徹底消滅 Layout Shift)**：在廣告非同步加載完成前，預留固定高度骨架/占位容器，避免內容突跳。
-      3. **標示明確廣告字樣與保持安全邊距**：若維持特定版位，必須具備顯著之「廣告 / Ad」微型標籤，並與相鄰互動元件維持 8~16dp 安全邊距。
+    * **最高品味重構方向與落地實況**:
+      1. **移出 ListView，改置於畫面底部 (業界標準最佳實踐)**：將 Banner 移出滑動列表，固定於 `Scaffold` 的 `bottomNavigationBar`（外層包覆 `SafeArea`），徹底杜絕手勢衝突與滾動誤觸。
+      2. **預先佔位容器 (徹底消滅 Layout Shift)**：重構 `BannerAD`，在非同步加載前預留 50dp 固定高度容器與頂部分隔邊框，載入前後零高度突跳。
+      3. **架構解耦拆分**：將 `MainPage` 拆解為 `MainPageContentWidget` 與 `DrawerWidget`，職責分明；消除 `RestaurantInfoListWidget` 內部索引偏移邏輯。
 
 ### 2.6 對照組架構與風格對齊重構 (Architecture Alignment) — ✅ 已於 2026-07-27～07-29 完成
 
