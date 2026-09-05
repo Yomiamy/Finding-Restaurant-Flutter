@@ -5,6 +5,7 @@ import 'package:google_maps_flutter/google_maps_flutter.dart';
 import '../../../component/cell/main_page/main_page_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../features/foundation/constants/constants_barrel.dart';
+import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../../restaurant/view/view_barrel.dart';
@@ -115,6 +116,8 @@ class _MapPageState extends State<MapWidget> {
           },
           markers: _markers,
           myLocationEnabled: true,
+          myLocationButtonEnabled: false,
+          zoomControlsEnabled: false,
           onCameraMove: (position) {
             _centerPos = position;
           },
@@ -137,12 +140,43 @@ class _MapPageState extends State<MapWidget> {
             });
           },
         ),
+        Positioned(
+          top: ThemeSize.space20,
+          right: ThemeSize.space16,
+          child: FloatingActionButton.small(
+            backgroundColor: Colors.white,
+            onPressed: () async {
+              final messenger = ScaffoldMessenger.of(context);
+              try {
+                final position = await Utils.getCurrentPosition();
+                if (!mounted) return;
+                final controller = _mapController;
+                if (controller == null) return;
+                await controller.animateCamera(
+                  CameraUpdate.newLatLngZoom(
+                    LatLng(position.latitude, position.longitude),
+                    15,
+                  ),
+                );
+              } catch (e) {
+                if (!mounted) return;
+                final message = e is Exception
+                    ? e.toString().replaceFirst('Exception: ', '')
+                    : e.toString();
+                messenger.showSnackBar(
+                  SnackBar(content: Text(message)),
+                );
+              }
+            },
+            child: const Icon(Icons.my_location, color: Colors.blue),
+          ),
+        ),
         if (_validRestaurants.isNotEmpty)
           Positioned(
-            bottom: 20,
-            left: 0,
-            right: 0,
-            height: 130,
+            bottom: ThemeSize.space20,
+            left: ThemeSize.zero,
+            right: ThemeSize.zero,
+            height: ThemeSize.size130,
             child: PageView.builder(
               controller: _pageController,
               itemCount: _validRestaurants.length,
@@ -163,7 +197,7 @@ class _MapPageState extends State<MapWidget> {
               },
               itemBuilder: (context, index) {
                 return Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                  padding: const EdgeInsets.symmetric(horizontal: ThemeSize.space4),
                   child: GestureDetector(
                     onTap: () {
                       final summaryInfo = _validRestaurants[index];
