@@ -92,7 +92,7 @@
 | [`lib/flow/main/view/main_page.dart`](../../lib/flow/main/view/main_page.dart) | `MainPage` | 主畫面 Scaffold，組合 `MainPageContentWidget`、`DrawerWidget` 與底部常駐 `BannerAD`。 |
 | [`lib/flow/main/view/drawer_widget.dart`](../../lib/flow/main/view/drawer_widget.dart) | `DrawerWidget` | 側邊導航抽屜（搜尋、重設位置、我的最愛、設定）。 |
 | [`lib/flow/main/view/main_page_content_widget.dart`](../../lib/flow/main/view/main_page_content_widget.dart) | `MainPageContentWidget` | 主頁內容容器（地圖與列表模式切換呈現、載入骨架屏）。 |
-| [`lib/flow/main/view/map_widget.dart`](../../lib/flow/main/view/map_widget.dart) | `MapWidget` | Google Maps 地圖與 Marker 呈現。 |
+| [`lib/flow/main/view/map_widget.dart`](../../lib/flow/main/view/map_widget.dart) | `MapWidget` | Google Maps 地圖與 Marker 呈現，右上角自訂定位按鈕與底部橫向餐廳卡片預覽。 |
 | [`lib/flow/main/view/restaurant_info_list_widget.dart`](../../lib/flow/main/view/restaurant_info_list_widget.dart) | `RestaurantInfoListWidget` | 餐廳列表（已移除內嵌廣告，含載入更多指示器）。 |
 | [`lib/flow/main/view/filter_tags_widget.dart`](../../lib/flow/main/view/filter_tags_widget.dart) | `FilterTagsWidget` | 已套用篩選條件的標籤列。 |
 | [`lib/flow/restaurant/bloc/restaurant_detail_bloc.dart`](../../lib/flow/restaurant/bloc/restaurant_detail_bloc.dart) | `RestaurantDetailBloc` | 餐廳詳情頁業務邏輯。 |
