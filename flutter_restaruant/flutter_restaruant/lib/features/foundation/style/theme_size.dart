@@ -46,6 +46,7 @@ abstract final class ThemeSize {
   static const double size100 = 100;
   static const double size110 = 110;
   static const double size120 = 120;
+  static const double size130 = 130;
   static const double size140 = 140;
   static const double size180 = 180;
   static const double size200 = 200;
