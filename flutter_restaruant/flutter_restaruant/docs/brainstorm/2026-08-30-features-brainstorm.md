@@ -85,7 +85,7 @@
 | ✅ **iOS Swift Package Manager (SPM) 遷移** | ✅ **已於 2026-08-24 完成 (混合模式)** | 暫時保留 CocoaPods 回退相容，消除建置阻礙 |
 | **Android Built-in Kotlin 遷移** | 已升級 Kotlin 2.2.20 消除過舊警告，但仍使用顯式 KGP | **官方棄用警告**：Flutter 未來將強制推行 Built-in Kotlin 並移除 KGP 支援，需在未來升級中徹底移除顯式 KGP 依賴 |
 | **硬編碼 API Key** | 僅改名為 `camelCase`，明碼仍在 `constants.dart:30,40` | 金鑰已入 git 歷史，須**撤銷並輪替**，非搬移可解 |
-| **修復地圖模式定位按鈕遮擋問題** | 地圖右下角 FAB 會被列表卡片遮擋 | 嚴重影響地圖操作體驗（按鈕完全無法點擊） |
+| ✅ **修復地圖模式定位按鈕遮擋與常數重構** | ✅ **已於 2026-09-06 完成 (Issue #110 / PR #111)**：關閉原生不可控控制項，右上角自訂 FAB 結合真實 GPS 定位，消除卡片遮擋與魔術數字 | **操作體驗與架構提升**：按鈕不再被底部卡片遮擋，全面收斂 ThemeSize 常數 |
 | ✅ **修復地圖底部列表 UI 溢出 (RenderFlex overflow)** | ~~Android 地圖底部發生溢出~~ | **已於 PR #73 修復**（實際位置為 `restaurant_item_cell.dart`，非 `rating_stars.dart`） |
 
 > **判斷**：架構地基已完成最關鍵的資料層重構（Subcollection）。當前 **🚨 AdMob 廣告刊登合規性** 攸關 App 營收與帳號存續，列為 **P0 絕對最高優先／阻擋級任務**；其餘底層遷移（Android Built-in Kotlin、CI/CD）與安全性（API Key）緊隨其後。
@@ -407,9 +407,9 @@ lib/
 7. **列表底部載入更多動畫 (Load-More Loading Indicator)**
    * **設計理念**: 在無限滾動 (Infinite Scroll) 觸發「加載更多」時，列表最底部應動態顯示一個 Loading Indicator (例如骨架屏的最後一個 item 或 `CircularProgressIndicator`)。這能讓使用者明確知道正在拉取下一頁資料，避免因網路延遲而產生「滑到底卡住」的錯覺。
 
-8. **修復地圖模式定位按鈕遮擋問題 (Map Locate Button Obscured Bug)**
+8. **修復地圖模式定位按鈕遮擋問題 (Map Locate Button Obscured Bug)** — ✅ 已於 2026-09-06 完成（Issue #110 / PR #111）
    * **痛點**: 首頁切換到地圖模式時，右下角的「定位當前位置」按鈕會被底部的橫向店家列表卡片遮住，導致使用者無法點擊。
-   * **改造要點**: 調整地圖元件的 `padding` (特別是 `bottom` padding) 或直接更改 FAB 的佈局位置，使其在橫向列表出現時自動上移，確保核心互動按鈕不被遮擋。
+   * **實際落地方案**: 停用 GoogleMap 原生定位與縮放按鈕 (`myLocationButtonEnabled: false`、`zoomControlsEnabled: false`)，改於右上角以純 Flutter `FloatingActionButton.small` 獨立掛載；點擊時透過 `Utils.getCurrentPosition()` 獲取真實 GPS 座標並以平滑動畫移動視角；同時全面收斂 `MapWidget` 內部尺寸常數至 `ThemeSize.size130`、`space20`、`zero`、`space4`。
 
 9. **修復地圖底部列表 UI 溢出問題 (RenderFlex Overflow Bug)** — ✅ 已於 2026-08-20 完成（Issue #72 / PR #73）
    * **痛點**: 在 Android 裝置上，地圖模式底部的橫向店家列表出現了右側溢出 14 pixels 的錯誤 (`A RenderFlex overflowed by 14 pixels on the right`)，導致畫面上出現黃黑警告條紋。
@@ -607,7 +607,7 @@ lib/
 |   • [ ] P0 移除硬編碼 API Key ⚠️ 未動；金鑰已入 git 歷史，須撤銷並輪替            |
 |   • [x] P0 移除無謂假延遲 (過濾 2s / 推播導航 8s) ✅ 實查已清除                   |
 |   • [x] P0 `MapWidget` 實作 `didUpdateWidget` 使 Marker 連動列表 ✅ 實查已實作    |
-|   • [ ] P0 修復地圖模式定位按鈕遮擋問題 (Map Locate Button Obscured Bug)          |
+|   • [x] P0 修復地圖模式定位按鈕遮擋問題 (Map Locate Button Obscured Bug) ✅ 2026-09-06 (Issue #110) |
 |   • [x] P0 修復地圖底部列表 UI 溢出 (Android RenderFlex overflow) ✅ PR #73        |
 +-----------------------------------------------------------------------------------+
                                          │
