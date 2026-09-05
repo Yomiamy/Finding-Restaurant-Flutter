@@ -89,9 +89,11 @@
 | [`lib/flow/main/bloc/main_bloc.dart`](../../lib/flow/main/bloc/main_bloc.dart) | `MainBloc` | 主畫面業務邏輯：搜尋、載入更多、關鍵字過濾、最愛切換、推播設定。 |
 | [`lib/flow/main/bloc/main_event.dart`](../../lib/flow/main/bloc/main_event.dart) | `MainEvent`<br>`FetchSearchInfo`<br>`FilterListByKeyword`<br>`ToggleFavor`<br>`Reset`<br>`NotificationSetup` | 主畫面事件定義（`Equatable`）。 |
 | [`lib/flow/main/bloc/main_state.dart`](../../lib/flow/main/bloc/main_state.dart) | `MainState`<br>`MainInitial` / `InProgress` / `Success` / `Failure` / `LoadMoreSuccess` / `ResetSuccess` / `ToggleFavorSuccess` | 主畫面狀態。以**具名子類別**表達互斥狀態，而非布林旗標組合。 |
-| [`lib/flow/main/view/main_page.dart`](../../lib/flow/main/view/main_page.dart) | `MainPage` | 主畫面（地圖 + 列表）。 |
+| [`lib/flow/main/view/main_page.dart`](../../lib/flow/main/view/main_page.dart) | `MainPage` | 主畫面 Scaffold，組合 `MainPageContentWidget`、`DrawerWidget` 與底部常駐 `BannerAD`。 |
+| [`lib/flow/main/view/drawer_widget.dart`](../../lib/flow/main/view/drawer_widget.dart) | `DrawerWidget` | 側邊導航抽屜（搜尋、重設位置、我的最愛、設定）。 |
+| [`lib/flow/main/view/main_page_content_widget.dart`](../../lib/flow/main/view/main_page_content_widget.dart) | `MainPageContentWidget` | 主頁內容容器（地圖與列表模式切換呈現、載入骨架屏）。 |
 | [`lib/flow/main/view/map_widget.dart`](../../lib/flow/main/view/map_widget.dart) | `MapWidget` | Google Maps 地圖與 Marker 呈現。 |
-| [`lib/flow/main/view/restaurant_info_list_widget.dart`](../../lib/flow/main/view/restaurant_info_list_widget.dart) | `RestaurantInfoListWidget` | 餐廳列表（含載入更多）。 |
+| [`lib/flow/main/view/restaurant_info_list_widget.dart`](../../lib/flow/main/view/restaurant_info_list_widget.dart) | `RestaurantInfoListWidget` | 餐廳列表（已移除內嵌廣告，含載入更多指示器）。 |
 | [`lib/flow/main/view/filter_tags_widget.dart`](../../lib/flow/main/view/filter_tags_widget.dart) | `FilterTagsWidget` | 已套用篩選條件的標籤列。 |
 | [`lib/flow/restaurant/bloc/restaurant_detail_bloc.dart`](../../lib/flow/restaurant/bloc/restaurant_detail_bloc.dart) | `RestaurantDetailBloc` | 餐廳詳情頁業務邏輯。 |
 | [`lib/flow/restaurant/view/restaurant_detail_page.dart`](../../lib/flow/restaurant/view/restaurant_detail_page.dart) | `RestaurantDetailPage` | 餐廳詳情頁。 |
@@ -129,7 +131,7 @@
 | [`lib/component/cell/restaurant_detail/restaurant_image_cell.dart`](../../lib/component/cell/restaurant_detail/restaurant_image_cell.dart) | `RestaurantImageCell` | 詳情頁照片輪播。 |
 | [`lib/component/cell/restaurant_detail/restaurant_business_hour_cell.dart`](../../lib/component/cell/restaurant_detail/restaurant_business_hour_cell.dart) | `RestaurantBusinessHourCell` | 詳情頁營業時間。 |
 | [`lib/component/cell/restaurant_detail/restaurant_comment_cell.dart`](../../lib/component/cell/restaurant_detail/restaurant_comment_cell.dart) | `RestaurantCommentCell` | 詳情頁評論卡片。 |
-| [`lib/component/ad/banner_ad.dart`](../../lib/component/ad/banner_ad.dart) | `BannerAdWidget` | AdMob 橫幅廣告元件。 |
+| [`lib/component/ad/banner_ad.dart`](../../lib/component/ad/banner_ad.dart) | `BannerAD` | AdMob 底部常駐標準 320x50 橫幅廣告元件，鎖定 50dp 高度佔位消滅版面突跳 (CLS) 並具備頂部邊界線。 |
 | [`lib/component/ad/interstitial_ad.dart`](../../lib/component/ad/interstitial_ad.dart) | `InterstitialAd` | 插頁廣告載入與展示。 |
 | [`lib/component/ad/app_open_ad.dart`](../../lib/component/ad/app_open_ad.dart) | `AppOpenAd` | 開屏廣告。 |
 | [`lib/component/ad/app_lifecycle_reactor.dart`](../../lib/component/ad/app_lifecycle_reactor.dart) | `AppLifecycleReactor` | 監聽 App 前景/背景切換以觸發開屏廣告。 |
