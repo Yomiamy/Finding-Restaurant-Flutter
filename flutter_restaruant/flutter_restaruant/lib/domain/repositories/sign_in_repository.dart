@@ -3,7 +3,7 @@ import '../entities/entities_barrel.dart';
 
 abstract interface class SignInRepository {
   Future<Tuple2<UserEntity?, String>> signInUp({
-    required AccountType accountType,
+    required AccountTypeModel accountType,
     bool isSignUp = false,
     String mail = '',
     String passwd = '',

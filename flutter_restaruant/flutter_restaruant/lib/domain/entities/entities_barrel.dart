@@ -9,3 +9,4 @@ export 'review_detail_entity.dart';
 export 'review_entity.dart';
 export 'reviewer_entity.dart';
 export 'user_entity.dart';
+export 'account_type_model.dart';

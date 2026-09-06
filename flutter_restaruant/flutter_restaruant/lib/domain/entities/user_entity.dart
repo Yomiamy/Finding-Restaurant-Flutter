@@ -1,33 +1,21 @@
-import 'package:json_annotation/json_annotation.dart';
 import '../../data_layer/dto/dto_barrel.dart';
-
-enum AccountType {
-  @JsonValue('GOOGLE')
-  google,
-  @JsonValue('FACEBOOK')
-  facebook,
-  @JsonValue('APPLE')
-  apple,
-  @JsonValue('MAIL')
-  mail,
-  @JsonValue('BIOMETRIC')
-  biometric,
-  @JsonValue('AUTO')
-  auto,
-  @JsonValue('NONE')
-  none,
-}
+import 'account_type_model.dart';
 
 class UserEntity {
   final String? uid;
   final String? account;
-  final AccountType type;
+  final AccountTypeModel type;
 
   const UserEntity({required this.type, this.uid, this.account});
 
   factory UserEntity.fromDto(AccountDto dto) {
-    return UserEntity(type: dto.type, uid: dto.uid, account: dto.account);
+    return UserEntity(
+      type: dto.type.toModel(),
+      uid: dto.uid,
+      account: dto.account,
+    );
   }
 
-  AccountDto get toDto => AccountDto(type: type, uid: uid, account: account);
+  AccountDto get toDto =>
+      AccountDto(type: type.toDto(), uid: uid, account: account);
 }

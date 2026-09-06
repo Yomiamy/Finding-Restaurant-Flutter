@@ -5,7 +5,7 @@ import 'package:flutter_restaruant/features/utils/utils_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class MockSignInRepository implements SignInRepository {
-  AccountType? lastAccountType;
+  AccountTypeModel? lastAccountType;
   bool? lastIsSignUp;
   String? lastMail;
   String? lastPasswd;
@@ -14,7 +14,7 @@ class MockSignInRepository implements SignInRepository {
 
   @override
   Future<Tuple2<UserEntity?, String>> signInUp({
-    required AccountType accountType,
+    required AccountTypeModel accountType,
     bool isSignUp = false,
     String mail = '',
     String passwd = '',
@@ -45,7 +45,7 @@ void main() {
     });
 
     test('GoogleSignInEvent passes correct parameters to repository', () async {
-      const account = UserEntity(type: AccountType.google, uid: '123');
+      const account = UserEntity(type: AccountTypeModel.google, uid: '123');
       mockRepo.returnAccountInfo = account;
 
       bloc.add(GoogleSignInEvent());
@@ -58,12 +58,12 @@ void main() {
         ]),
       );
 
-      expect(mockRepo.lastAccountType, AccountType.google);
+      expect(mockRepo.lastAccountType, AccountTypeModel.google);
       expect(mockRepo.lastIsSignUp, false);
     });
 
     test('MailSignUpEvent passes correct parameters to repository', () async {
-      const account = UserEntity(type: AccountType.mail, uid: '456');
+      const account = UserEntity(type: AccountTypeModel.mail, uid: '456');
       mockRepo.returnAccountInfo = account;
 
       bloc.add(const MailSignUpEvent(mail: 'test@mail.com', passwd: 'secret'));
@@ -76,7 +76,7 @@ void main() {
         ]),
       );
 
-      expect(mockRepo.lastAccountType, AccountType.mail);
+      expect(mockRepo.lastAccountType, AccountTypeModel.mail);
       expect(mockRepo.lastIsSignUp, true);
       expect(mockRepo.lastMail, 'test@mail.com');
       expect(mockRepo.lastPasswd, 'secret');

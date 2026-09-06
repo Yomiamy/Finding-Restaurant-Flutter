@@ -17,33 +17,27 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
     on<SignInEvent>((event, emit) async {
       emit(const InProgress());
 
-      AccountType type;
-      bool isSignUp = false;
-      String mail = '';
-      String passwd = '';
-
-      if (event is GoogleSignInEvent) {
-        type = AccountType.google;
-      } else if (event is FacebookSignInEvent) {
-        type = AccountType.facebook;
-      } else if (event is AppleSignInEvent) {
-        type = AccountType.apple;
-      } else if (event is MailSignInEvent) {
-        type = AccountType.mail;
-        mail = event.mail;
-        passwd = event.passwd;
-      } else if (event is MailSignUpEvent) {
-        type = AccountType.mail;
-        isSignUp = true;
-        mail = event.mail;
-        passwd = event.passwd;
-      } else if (event is BiometricSignInEvent) {
-        type = AccountType.biometric;
-      } else if (event is AutoSignInEvent) {
-        type = AccountType.auto;
-      } else {
-        type = AccountType.none;
-      }
+      final (AccountTypeModel type, bool isSignUp, String mail, String passwd) =
+          switch (event) {
+        GoogleSignInEvent() => (AccountTypeModel.google, false, '', ''),
+        FacebookSignInEvent() => (AccountTypeModel.facebook, false, '', ''),
+        AppleSignInEvent() => (AccountTypeModel.apple, false, '', ''),
+        MailSignInEvent(:final mail, :final passwd) => (
+            AccountTypeModel.mail,
+            false,
+            mail,
+            passwd,
+          ),
+        MailSignUpEvent(:final mail, :final passwd) => (
+            AccountTypeModel.mail,
+            true,
+            mail,
+            passwd,
+          ),
+        BiometricSignInEvent() => (AccountTypeModel.biometric, false, '', ''),
+        AutoSignInEvent() => (AccountTypeModel.auto, false, '', ''),
+        _ => (AccountTypeModel.none, false, '', ''),
+      };
 
       Tuple2<UserEntity?, String> result = await _signInRepository.signInUp(
         accountType: type,

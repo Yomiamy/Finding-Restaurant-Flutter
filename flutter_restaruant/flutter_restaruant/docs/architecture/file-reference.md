@@ -24,7 +24,7 @@
 
 > ⚠️ **本層不依賴 I/O 技術**：全目錄無 `dio`、`cloud_firestore`、`retrofit` 等 import。
 >
-> 🔴 **但有已知反向依賴**：11 個 entity 檔案全數 import `data_layer/dto/dto_barrel.dart`（因 `fromDto`/`toDto` 寫在 Entity 上），其中 `UserEntity` ⇄ `AccountDto` 為真實循環。5 個 Repository 介面則完全乾淨。詳見 [`overview.md`](./overview.md#-已知架構缺陷entity-反向依賴-dto)。
+> 🔴 **但有已知反向依賴**：11 個 entity 檔案全數 import `data_layer/dto/dto_barrel.dart`（因 `fromDto`/`toDto` 寫在 Entity 上）。原本 `UserEntity` ⇄ `AccountDto` 之雙向循環 import 已透過拆分 `AccountType` / `AccountTypeModel` 解開，`AccountDto` 不再反向依賴 Domain，但 Entity 對 DTO 的依賴仍待未來抽取 Mapper 解除。5 個 Repository 介面則完全乾淨。詳見 [`overview.md`](./overview.md#-已知架構缺陷entity-反向依賴-dto)。
 
 | 檔案路徑 | 關鍵類別/列舉 | 單一職責 (Single Responsibility) |
 | :--- | :--- | :--- |
@@ -39,6 +39,7 @@
 | [`lib/domain/entities/review_detail_entity.dart`](../../lib/domain/entities/review_detail_entity.dart) | `ReviewDetailEntity` | 單筆評論內容。 |
 | [`lib/domain/entities/reviewer_entity.dart`](../../lib/domain/entities/reviewer_entity.dart) | `ReviewerEntity` | 評論者資訊。 |
 | [`lib/domain/entities/user_entity.dart`](../../lib/domain/entities/user_entity.dart) | `UserEntity` | 使用者帳號業務模型。 |
+| [`lib/domain/entities/account_type_model.dart`](../../lib/domain/entities/account_type_model.dart) | `AccountTypeModel` | 使用者帳號登入方式之純領域枚舉（Domain Enum）。 |
 | [`lib/domain/entities/restaurant_category_entity.dart`](../../lib/domain/entities/restaurant_category_entity.dart) | `RestaurantCategoryEntity` | 餐廳分類標籤。 |
 | [`lib/domain/entities/restaurant_location_entity.dart`](../../lib/domain/entities/restaurant_location_entity.dart) | `RestaurantLocationEntity` | 地址資訊。 |
 | [`lib/domain/entities/restaurant_coordinates_entity.dart`](../../lib/domain/entities/restaurant_coordinates_entity.dart) | `RestaurantCoordinatesEntity` | 經緯度座標。 |
@@ -67,6 +68,7 @@
 | [`lib/data_layer/dto/yelp_restaurant_business_time_dto.dart`](../../lib/data_layer/dto/yelp_restaurant_business_time_dto.dart) | `YelpRestaurantBusinessTimeDto` | 營業時段 Dto。 |
 | [`lib/data_layer/dto/yelp_restaurant_hours_dto.dart`](../../lib/data_layer/dto/yelp_restaurant_hours_dto.dart) | `YelpRestaurantHoursDto` | 營業時間 Dto。 |
 | [`lib/data_layer/dto/account_dto.dart`](../../lib/data_layer/dto/account_dto.dart) | `AccountDto` | 帳號資料 Dto，對應 `UserEntity`。 |
+| [`lib/data_layer/dto/account_type.dart`](../../lib/data_layer/dto/account_type.dart) | `AccountType` | 帳號登入方式 Dto/Data 層枚舉（帶 `@JsonValue` 序列化與雙向映射）。 |
 
 ### 4. 網路層 (`lib/api/`)
 
