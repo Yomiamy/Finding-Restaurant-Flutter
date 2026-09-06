@@ -24,7 +24,7 @@
 
 > ⚠️ **本層不依賴 I/O 技術**：全目錄無 `dio`、`cloud_firestore`、`retrofit` 等 import。
 >
-> 🔴 **但有已知反向依賴**：11 個 entity 檔案全數 import `data_layer/dto/dto_barrel.dart`（因 `fromDto`/`toDto` 寫在 Entity 上），其中 `UserEntity` ⇄ `AccountDto` 為真實循環。5 個 Repository 介面則完全乾淨。詳見 [`overview.md`](./overview.md#-已知架構缺陷entity-反向依賴-dto)。
+> 🔴 **但有已知反向依賴**：11 個 entity 檔案全數 import `data_layer/dto/dto_barrel.dart`（因 `fromDto`/`toDto` 寫在 Entity 上）。原本 `UserEntity` ⇄ `AccountDto` 之雙向循環 import 已透過拆分 `AccountType` / `AccountTypeModel` 解開，`AccountDto` 不再反向依賴 Domain，但 Entity 對 DTO 的依賴仍待未來抽取 Mapper 解除。5 個 Repository 介面則完全乾淨。詳見 [`overview.md`](./overview.md#-已知架構缺陷entity-反向依賴-dto)。
 
 | 檔案路徑 | 關鍵類別/列舉 | 單一職責 (Single Responsibility) |
 | :--- | :--- | :--- |

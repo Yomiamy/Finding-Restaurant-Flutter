@@ -72,11 +72,11 @@ factory RestaurantEntity.fromDto(YelpRestaurantSummaryDto dto) => ...
 YelpRestaurantSummaryDto get toDto => ...
 ```
 
-更嚴重的是曾有 **`AccountDto` ⇄ `UserEntity` 構成循環 import**（`account_dto.dart` import domain 取得 `AccountType`，`user_entity.dart` import data_layer dto）。**現已完成解耦重構**：Data Layer 定義專屬的 `AccountType`（含 `@JsonValue` 與雙向映射），Domain Layer 定義純業務用的 `AccountTypeModel`，`AccountDto` 徹底切斷對 Domain 的 import，循環依賴已完全消除。
+更嚴重的是曾有 **`AccountDto` ⇄ `UserEntity` 構成直接循環 import**（`account_dto.dart` import domain 取得 `AccountType`，`user_entity.dart` import data_layer dto）。**現已完成解耦重構**：Data Layer 定義專屬的 `AccountType`（含 `@JsonValue` 與雙向映射），Domain Layer 定義純業務用的 `AccountTypeModel`，`AccountDto` 徹底切斷對 Domain 的 import，消除了檔案之間的直接循環引用（但 `user_entity.dart` 仍保留 `fromDto`/`toDto` 妥協派寫法，跨層傳遞依賴仍待未來抽取 Mapper 徹底解決）。
 
 另有兩處橫向洩漏：`sign_in_repository.dart:2` 與 `restaurant_business_time_entity.dart:2` import `features/utils/utils_barrel.dart`，而該 barrel 間接拉進 `geolocator` 與 `url_launcher`——一個 domain entity 只為了判斷語系，就把定位與瀏覽器套件掛上了。
 
-> 🐧 **Linus 式評註**：「依賴方向」不是靠目錄名字決定的，是靠 import 決定的。`AccountType` 拆分後，Data 到 Domain 的依賴單向化，消滅了物理循環 import。下一步重構方向是逐步將其餘 Entity 的 `fromDto`/`toDto` 移出到 Data 端的專用 Mapper。
+> 🐧 **Linus 式評註**：「依賴方向」不是靠目錄名字決定的，是靠 import 決定的。`AccountType` 拆分後，消滅了 `AccountDto` 與 `UserEntity` 之間的直接循環 import。但只要 `UserEntity` 身上還留著 `fromDto`/`toDto`，層級間的單向性就尚未完全達成。下一步重構方向是將所有 Entity 的 `fromDto`/`toDto` 移出到 Data 端的專用 Mapper，徹底達成零依賴。
 
 ### 2. 資料層 (Data Layer) — 實作契約，向內依賴
 
