@@ -3,7 +3,6 @@ import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../data_layer/dto/dto_barrel.dart';
-import '../domain/entities/entities_barrel.dart';
 import '../features/utils/utils_barrel.dart';
 
 class GoogleSignInManager {

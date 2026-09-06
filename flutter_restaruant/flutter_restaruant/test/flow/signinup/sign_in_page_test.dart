@@ -12,7 +12,7 @@ import 'package:flutter_test/flutter_test.dart';
 class _FakeSignInRepository implements SignInRepository {
   @override
   Future<Tuple2<UserEntity?, String>> signInUp({
-    required AccountType accountType,
+    required AccountTypeModel accountType,
     bool isSignUp = false,
     String mail = '',
     String passwd = '',

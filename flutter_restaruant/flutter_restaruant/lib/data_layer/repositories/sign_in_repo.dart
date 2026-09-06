@@ -18,7 +18,7 @@ class SignInRepo implements SignInRepository {
 
   @override
   Future<Tuple2<UserEntity?, String>> signInUp({
-    required AccountType accountType,
+    required AccountTypeModel accountType,
     bool isSignUp = false,
     String mail = '',
     String passwd = '',
@@ -28,13 +28,13 @@ class SignInRepo implements SignInRepository {
 
     if (isSignUp) {
       signInUpResult = await _signInManager.signUp(
-        accountType,
+        accountType.toDto(),
         mail: mail,
         passwd: passwd,
       );
     } else {
       signInUpResult = await _signInManager.signIn(
-        accountType,
+        accountType.toDto(),
         mail: mail,
         passwd: passwd,
       );

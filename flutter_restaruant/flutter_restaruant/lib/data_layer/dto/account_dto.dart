@@ -1,5 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
-import '../../features/foundation/foundation_barrel.dart';
+import 'account_type.dart';
 
 part 'account_dto.g.dart';
 

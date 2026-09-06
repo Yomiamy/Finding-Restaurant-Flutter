@@ -1,16 +1,21 @@
 import '../../data_layer/dto/dto_barrel.dart';
-import '../../features/foundation/foundation_barrel.dart';
+import 'account_type_model.dart';
 
 class UserEntity {
   final String? uid;
   final String? account;
-  final AccountType type;
+  final AccountTypeModel type;
 
   const UserEntity({required this.type, this.uid, this.account});
 
   factory UserEntity.fromDto(AccountDto dto) {
-    return UserEntity(type: dto.type, uid: dto.uid, account: dto.account);
+    return UserEntity(
+      type: dto.type.toModel(),
+      uid: dto.uid,
+      account: dto.account,
+    );
   }
 
-  AccountDto get toDto => AccountDto(type: type, uid: uid, account: account);
+  AccountDto get toDto =>
+      AccountDto(type: type.toDto(), uid: uid, account: account);
 }

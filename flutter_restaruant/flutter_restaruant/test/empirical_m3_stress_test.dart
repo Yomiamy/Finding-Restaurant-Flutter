@@ -12,7 +12,7 @@ void main() {
         final userEntity = UserEntity.fromDto(accountDto);
         expect(userEntity.uid, isNull);
         expect(userEntity.account, isNull);
-        expect(userEntity.type, AccountType.google);
+        expect(userEntity.type, AccountTypeModel.google);
 
         final bizTimeDto = YelpRestaurantBusinessTimeDto();
         final bizTimeEntity = RestaurantBusinessTimeEntity.fromDto(bizTimeDto);

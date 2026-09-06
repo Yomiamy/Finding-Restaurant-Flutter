@@ -101,7 +101,7 @@ void main() {
       },
     );
 
-    test('AccountDto to UserEntity mapping', () {
+    test('AccountDto to UserEntity mapping and round-trip', () {
       final accountDto = AccountDto(
         type: AccountType.google,
         uid: 'user_123',
@@ -109,9 +109,14 @@ void main() {
       );
 
       final userEntity = UserEntity.fromDto(accountDto);
-      expect(userEntity.type, AccountType.google);
+      expect(userEntity.type, AccountTypeModel.google);
       expect(userEntity.uid, 'user_123');
       expect(userEntity.account, 'test@example.com');
+
+      final backToDto = userEntity.toDto;
+      expect(backToDto.type, AccountType.google);
+      expect(backToDto.uid, 'user_123');
+      expect(backToDto.account, 'test@example.com');
     });
   });
 }
