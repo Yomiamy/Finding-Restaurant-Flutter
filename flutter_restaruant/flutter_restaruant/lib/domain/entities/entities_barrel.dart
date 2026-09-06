@@ -9,3 +9,4 @@ export 'review_detail_entity.dart';
 export 'review_entity.dart';
 export 'reviewer_entity.dart';
 export 'user_entity.dart';
+export '../../features/foundation/enums/enums_barrel.dart';
