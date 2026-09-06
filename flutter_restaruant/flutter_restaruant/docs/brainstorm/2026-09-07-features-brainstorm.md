@@ -62,7 +62,7 @@
 | 修復 `FilterPage` 狀態重置 | 改用 `didChangeDependencies` + `_isInit` |
 | 目錄分層 (Domain / Data) | 新增 `domain/`、`data_layer/`、`di/` |
 | 導入 DI | `get_it: ^8.0.0`（未用 `injectable`） |
-| DTO 與 Domain Entity 分離 | `RestaurantEntity` / `UserEntity` 取代 legacy model |
+| DTO 與 Domain Entity 分離 | `RestaurantEntity` / `UserEntity` 取代 legacy model；2026-09-07 (PR #112) 拆分 `AccountType` (Data) 與 `AccountTypeModel` (Domain) 解除 `AccountDto` 循環 import |
 | 常數清理與 Lint 嚴格化 | `flutter analyze` → `No issues found!` |
 | 側選單順序調整 | 設定已移至末位 |
 | 訪客模式 Guest Mode | 規劃外新增，PR #56 |
@@ -549,7 +549,7 @@ lib/
 | 🔴 **移除硬編碼 API Key (改用 Server-side Broker)** | 安全修復 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | 5 | **P0（唯一未解安全風險）** |
 | ✅ **對照組風格: 目錄架構與層級分離重構** | 架構重構 | 10 | 3.0 | 100% | 2.0 | **15.0** | 24.0 | - | **已完成** |
 | ✅ **對照組風格: 導入全域依賴注入 (GetIt)** | 架構重構 | 10 | 2.5 | 100% | 1.5 | **16.6** | 21.2 | - | **已完成** |
-| ✅ **對照組風格: DTO 與 Domain Entity 分離** | 架構重構 | 10 | 2.5 | 100% | 1.5 | **16.6** | 21.2 | - | **已完成** |
+| ✅ **對照組風格: DTO 與 Domain Entity 分離** | 架構重構 | 10 | 2.5 | 100% | 1.5 | **16.6** | 21.2 | - | **已完成**（2026-09-07, PR #112 解除 AccountDto 循環依賴） |
 | ✅ **對照組風格: 全域常數與可變狀態清理** | 程式碼重構 | 10 | 2.0 | 100% | 1.0 | **20.0** | 18.0 | - | **已完成** |
 | ✅ **對照組風格: 程式碼風格與 Lint 嚴格化** | 程式碼重構 | 10 | 1.0 | 100% | 1.0 | **10.0** | 9.0 | - | **已完成** |
 | ✅ **訪客模式 (Guest Mode)** | 轉化優化 | 10 | 2.0 | 100% | 1.0 | **20.0** | 18.0 | - | **已完成** |

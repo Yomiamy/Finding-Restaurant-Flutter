@@ -32,7 +32,7 @@
 
 #### 1. Domain 層反向依賴 Data 層（架構規則實質失效）
 
-**11 個 entity 檔案全數 `import '../../data_layer/dto/dto_barrel.dart'`**，根因是 `fromDto` / `toDto` 這對轉換方法被放在 Entity 自己身上。更嚴重的是 `AccountDto` ⇄ `UserEntity` 構成**真實的循環 import**（`account_dto.dart:2` ⇄ `user_entity.dart:2`）。
+**11 個 entity 檔案全數 `import '../../data_layer/dto/dto_barrel.dart'`**，根因是 `fromDto` / `toDto` 這對轉換方法被放在 Entity 自己身上。原先 `AccountDto` ⇄ `UserEntity` 構成**真實的循環 import**（`account_dto.dart:2` ⇄ `user_entity.dart:2`）；此問題已於 2026-09-07（PR #112）透過在 Data 層定義 `AccountType`、Domain 層定義 `AccountTypeModel` 解耦消除，`AccountDto` 不再反向依賴 Domain。剩餘 Entity 的 `fromDto`/`toDto` 則維持妥協派設計，待後續規劃專用 Mapper。
 
 Dart 允許循環 import 故編譯不會失敗，但這代表 **domain 層物理上無法獨立於 data_layer 抽出來編譯或測試**——Clean Architecture 最主要的收益就此蒸發。
 
