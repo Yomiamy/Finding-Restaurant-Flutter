@@ -144,12 +144,22 @@ jobs:
 
       - name: Upload to Firebase App Distribution (dev-android)
         if: steps.parse_tag.outputs.release_type == 'dev-android'
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: 1:35224406241:android:00f352bb5d635a1b924fa0
-          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
-          file: flutter_restaruant/flutter_restaruant/build/app/outputs/flutter-apk/app-release.apk
-          releaseNotes: "Build ${{ steps.parse_tag.outputs.version }} (Android Dev) from GitHub Actions"
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          echo "📦 安裝 Firebase CLI..."
+          npm install -g firebase-tools
+
+          echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > /tmp/firebase_credentials.json
+          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/firebase_credentials.json
+
+          echo "📤 上傳 APK 至 Firebase App Distribution..."
+          firebase appdistribution:distribute flutter_restaruant/flutter_restaruant/build/app/outputs/flutter-apk/app-release.apk \
+            --app 1:35224406241:android:00f352bb5d635a1b924fa0 \
+            --release-notes "Build ${{ steps.parse_tag.outputs.version }} (Android Dev) from GitHub Actions"
+
+          rm -f /tmp/firebase_credentials.json
+          echo "✅ Firebase APK 上傳完成"
 
       # ==================== iOS Build & Upload ====================
 
@@ -369,12 +379,22 @@ jobs:
 
       - name: Upload to Firebase App Distribution (dev-ios)
         if: steps.parse_tag.outputs.release_type == 'dev-ios'
-        uses: wzieba/Firebase-Distribution-Github-Action@v1
-        with:
-          appId: 1:35224406241:ios:d8eb3d68795bc2d1924fa0
-          serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
-          file: flutter_restaruant/flutter_restaruant/build/ios/ipa/*.ipa
-          releaseNotes: "Build ${{ steps.parse_tag.outputs.version }} (iOS Dev) from GitHub Actions"
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          echo "📦 安裝 Firebase CLI..."
+          npm install -g firebase-tools
+
+          echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > /tmp/firebase_credentials.json
+          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/firebase_credentials.json
+
+          echo "📤 上傳 IPA 至 Firebase App Distribution..."
+          firebase appdistribution:distribute flutter_restaruant/flutter_restaruant/build/ios/ipa/*.ipa \
+            --app 1:35224406241:ios:d8eb3d68795bc2d1924fa0 \
+            --release-notes "Build ${{ steps.parse_tag.outputs.version }} (iOS Dev) from GitHub Actions"
+
+          rm -f /tmp/firebase_credentials.json
+          echo "✅ Firebase IPA 上傳完成"
 
       # ==================== Summary ====================
 
