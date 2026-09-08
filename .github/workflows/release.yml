@@ -1,0 +1,544 @@
+name: Build and Release
+
+on:
+  push:
+    tags:
+      - 'prod-v*'
+      - 'prod-android-v*'
+      - 'prod-ios-v*'
+      - 'dev-android-v*'
+      - 'dev-ios-v*'
+      - 'rc/prod-v*'
+      - 'rc/prod-android-v*'
+      - 'rc/prod-ios-v*'
+      - 'rc/dev-android-v*'
+      - 'rc/dev-ios-v*'
+  workflow_dispatch:
+    inputs:
+      tag_name:
+        description: 'Tag name (e.g. prod-v2.1.0+35, rc/prod-android-v2.1.0+35, dev-android-v2.1.0+35)'
+        required: true
+        type: string
+
+jobs:
+  release:
+    name: Build and Release
+    runs-on: macos-15
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag_name || '' }}
+
+      - name: Validate Tag Format and Parse Type
+        id: parse_tag
+        env:
+          INPUT_TAG: ${{ github.event.inputs.tag_name }}
+        run: |
+          RAW_TAG="${INPUT_TAG:-$GITHUB_REF_NAME}"
+          # 一行消滅特殊情況：若帶有 rc/ 前綴，自動剝除修剪，標準化為統一格式
+          TAG="${RAW_TAG#rc/}"
+          echo "tag=$RAW_TAG" >> $GITHUB_OUTPUT
+
+          # 初始化平台建置標記
+          BUILD_ANDROID="false"
+          BUILD_IOS="false"
+          IS_PROD_ANDROID="false"
+          IS_DEV_ANDROID="false"
+          IS_PROD_IOS="false"
+          IS_DEV_IOS="false"
+
+          # 判斷 tag 類型 (較具體的 prod-android 與 prod-ios 必須先於 prod-v 判定)
+          if [[ "$TAG" =~ ^prod-android-v ]]; then
+            RELEASE_TYPE="prod-android"
+            VERSION="${TAG#prod-android-v}"
+            BUILD_ANDROID="true"
+            IS_PROD_ANDROID="true"
+          elif [[ "$TAG" =~ ^prod-ios-v ]]; then
+            RELEASE_TYPE="prod-ios"
+            VERSION="${TAG#prod-ios-v}"
+            BUILD_IOS="true"
+            IS_PROD_IOS="true"
+          elif [[ "$TAG" =~ ^prod-v ]]; then
+            RELEASE_TYPE="prod"
+            VERSION="${TAG#prod-v}"
+            BUILD_ANDROID="true"
+            BUILD_IOS="true"
+            IS_PROD_ANDROID="true"
+            IS_PROD_IOS="true"
+          elif [[ "$TAG" =~ ^dev-android-v ]]; then
+            RELEASE_TYPE="dev-android"
+            VERSION="${TAG#dev-android-v}"
+            BUILD_ANDROID="true"
+            IS_DEV_ANDROID="true"
+          elif [[ "$TAG" =~ ^dev-ios-v ]]; then
+            RELEASE_TYPE="dev-ios"
+            VERSION="${TAG#dev-ios-v}"
+            BUILD_IOS="true"
+            IS_DEV_IOS="true"
+          else
+            echo "❌ 錯誤: 不支援的 tag 格式: $RAW_TAG"
+            echo "請使用以下格式之一（皆可選加 rc/ 前綴，例如 rc/prod-v2.1.0+35）："
+            echo "  - prod-v2.1.0+35 (正式版雙平台: Google Play + TestFlight)"
+            echo "  - prod-android-v2.1.0+35 (正式版 Android: Google Play)"
+            echo "  - prod-ios-v2.1.0+35 (正式版 iOS: TestFlight)"
+            echo "  - dev-android-v2.1.0+35 (開發版 Android -> Firebase App Distribution)"
+            echo "  - dev-ios-v2.1.0+35 (開發版 iOS -> Firebase App Distribution)"
+            exit 1
+          fi
+
+          echo "release_type=$RELEASE_TYPE" >> $GITHUB_OUTPUT
+          echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "build_android=$BUILD_ANDROID" >> $GITHUB_OUTPUT
+          echo "build_ios=$BUILD_IOS" >> $GITHUB_OUTPUT
+          echo "is_prod_android=$IS_PROD_ANDROID" >> $GITHUB_OUTPUT
+          echo "is_dev_android=$IS_DEV_ANDROID" >> $GITHUB_OUTPUT
+          echo "is_prod_ios=$IS_PROD_IOS" >> $GITHUB_OUTPUT
+          echo "is_dev_ios=$IS_DEV_IOS" >> $GITHUB_OUTPUT
+
+          # 解析版本號與建置號
+          VERSION_NAME="${VERSION%+*}"
+          BUILD_NUMBER="${VERSION#*+}"
+          echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
+          echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
+
+          echo "✅ Tag: $RAW_TAG"
+          if [ "$RAW_TAG" != "$TAG" ]; then
+            echo "ℹ️ 已自動修剪 rc/ 前綴 ➔ $TAG"
+          fi
+          echo "✅ Release Type: $RELEASE_TYPE"
+          echo "✅ Version: $VERSION_NAME+$BUILD_NUMBER"
+          echo "✅ Build Android: $BUILD_ANDROID (Prod: $IS_PROD_ANDROID, Dev: $IS_DEV_ANDROID)"
+          echo "✅ Build iOS: $BUILD_IOS (Prod: $IS_PROD_IOS, Dev: $IS_DEV_IOS)"
+
+      - name: Verify Version Match with pubspec.yaml
+        run: |
+          PUBSPEC_VERSION=$(grep '^version:' flutter_restaruant/flutter_restaruant/pubspec.yaml | sed 's/version: *//;s/ .*//')
+          TAG_VERSION="${{ steps.parse_tag.outputs.version }}"
+
+          echo "📌 pubspec.yaml version: $PUBSPEC_VERSION"
+          echo "📌 Tag version: $TAG_VERSION"
+
+          if [ "$TAG_VERSION" != "$PUBSPEC_VERSION" ]; then
+            echo "❌ 錯誤: Tag ($TAG_VERSION) 與 pubspec.yaml ($PUBSPEC_VERSION) 版號不一致"
+            echo "請確認 pubspec.yaml 的 version 與 tag 完全相同"
+            exit 1
+          fi
+
+          echo "✅ 版號驗證通過"
+
+      - name: Setup Java
+        uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '17'
+          cache: 'gradle'
+
+      - name: Setup Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          flutter-version: '3.44.1'
+          channel: 'stable'
+          cache: true
+
+      - name: Install Dependencies
+        working-directory: flutter_restaruant/flutter_restaruant
+        run: |
+          mkdir -p build/ios/SourcePackages
+          flutter pub get
+
+      # ==================== Android Build & Upload ====================
+
+      - name: Decode Android Keystore
+        if: steps.parse_tag.outputs.build_android == 'true'
+        working-directory: flutter_restaruant/flutter_restaruant
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/release.keystore
+          echo "✅ Keystore 已解碼"
+
+      - name: Create key.properties
+        if: steps.parse_tag.outputs.build_android == 'true'
+        working-directory: flutter_restaruant/flutter_restaruant
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
+        run: |
+          printf '%s\n' \
+            "storePassword=${ANDROID_KEYSTORE_PASSWORD}" \
+            "keyPassword=${ANDROID_KEY_PASSWORD}" \
+            "keyAlias=${ANDROID_KEY_ALIAS}" \
+            "storeFile=release.keystore" > android/key.properties
+          echo "✅ key.properties 已建立"
+
+      - name: Build Android App Bundle (for prod)
+        if: steps.parse_tag.outputs.is_prod_android == 'true'
+        working-directory: flutter_restaruant/flutter_restaruant
+        run: |
+          flutter build appbundle --release
+          echo "✅ AAB 建置完成"
+
+      - name: Build Android APK (for dev-android)
+        if: steps.parse_tag.outputs.is_dev_android == 'true'
+        working-directory: flutter_restaruant/flutter_restaruant
+        run: |
+          flutter build apk --release
+          echo "✅ APK 建置完成"
+
+      - name: Upload to Google Play Internal Testing (prod)
+        if: steps.parse_tag.outputs.is_prod_android == 'true'
+        uses: r0adkll/upload-google-play@v1
+        with:
+          serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_JSON }}
+          packageName: com.yomi.flutter_restaruant
+          releaseFiles: flutter_restaruant/flutter_restaruant/build/app/outputs/bundle/release/*.aab
+          track: internal
+          status: completed
+
+      - name: Upload to Firebase App Distribution (dev-android)
+        if: steps.parse_tag.outputs.is_dev_android == 'true'
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          echo "📦 安裝 Firebase CLI..."
+          npm install -g firebase-tools
+
+          echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > /tmp/firebase_credentials.json
+          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/firebase_credentials.json
+
+          echo "📤 上傳 APK 至 Firebase App Distribution..."
+          firebase appdistribution:distribute flutter_restaruant/flutter_restaruant/build/app/outputs/flutter-apk/app-release.apk \
+            --app 1:35224406241:android:00f352bb5d635a1b924fa0 \
+            --release-notes "Build ${{ steps.parse_tag.outputs.version }} (Android Dev) from GitHub Actions"
+
+          rm -f /tmp/firebase_credentials.json
+          echo "✅ Firebase APK 上傳完成"
+
+      # ==================== iOS Build & Upload ====================
+
+      - name: Select Xcode 26
+        if: steps.parse_tag.outputs.build_ios == 'true'
+        run: |
+          echo "🔧 選取 Xcode 26..."
+          if [ -n "$XCODE_26_DEVELOPER_DIR" ] && [ -d "$XCODE_26_DEVELOPER_DIR" ]; then
+            sudo xcode-select -s "$XCODE_26_DEVELOPER_DIR"
+          elif [ -d "/Applications/Xcode_26.3.app/Contents/Developer" ]; then
+            sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
+          elif [ -d "/Applications/Xcode_26.app/Contents/Developer" ]; then
+            sudo xcode-select -s /Applications/Xcode_26.app/Contents/Developer
+          fi
+          SELECTED_XCODE=$(xcode-select -p)
+          echo "DEVELOPER_DIR=$SELECTED_XCODE" >> $GITHUB_ENV
+          echo "✅ 目前使用 Xcode: $SELECTED_XCODE"
+          xcodebuild -version
+
+      - name: Setup iOS Signing & Profile
+        id: ios_signing
+        if: steps.parse_tag.outputs.build_ios == 'true'
+        env:
+          IS_PROD_IOS: ${{ steps.parse_tag.outputs.is_prod_ios }}
+          IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
+          IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
+          IOS_APPSTORE_PROFILE_BASE64: ${{ secrets.IOS_APPSTORE_PROFILE_BASE64 }}
+          IOS_ADHOC_PROFILE_BASE64: ${{ secrets.IOS_ADHOC_PROFILE_BASE64 }}
+        run: |
+          echo "📦 設定 iOS 簽章資源..."
+
+          # 解碼憑證
+          echo "$IOS_CERTIFICATE_BASE64" | base64 --decode > certificate.p12
+
+          # 依發布類型解碼對應的 Provisioning Profile
+          if [ "$IS_PROD_IOS" = "true" ]; then
+            echo "解碼 App Store Provisioning Profile..."
+            echo "$IOS_APPSTORE_PROFILE_BASE64" | base64 --decode > profile.mobileprovision
+          else
+            echo "解碼 Ad Hoc Provisioning Profile..."
+            echo "$IOS_ADHOC_PROFILE_BASE64" | base64 --decode > profile.mobileprovision
+          fi
+
+          # 建立臨時鑰匙圈
+          security create-keychain -p actions temp.keychain
+          security default-keychain -s temp.keychain
+          security unlock-keychain -p actions temp.keychain
+          security set-keychain-settings -lut 21600 temp.keychain
+
+          # 匯入憑證
+          security import certificate.p12 \
+            -k ~/Library/Keychains/temp.keychain \
+            -P "$IOS_CERTIFICATE_PASSWORD" \
+            -T /usr/bin/codesign \
+            -T /usr/bin/security
+
+          security set-key-partition-list -S apple-tool:,apple: -s -k actions ~/Library/Keychains/temp.keychain
+
+          # 取得 Provisioning Profile 資訊
+          PROFILE_UUID=$(/usr/libexec/PlistBuddy -c 'Print :UUID' /dev/stdin <<< $(/usr/bin/security cms -D -i profile.mobileprovision))
+          PROFILE_NAME=$(/usr/libexec/PlistBuddy -c 'Print :Name' /dev/stdin <<< $(/usr/bin/security cms -D -i profile.mobileprovision))
+          TEAM_ID=$(/usr/libexec/PlistBuddy -c 'Print :TeamIdentifier:0' /dev/stdin <<< $(/usr/bin/security cms -D -i profile.mobileprovision))
+
+          echo "📋 Provisioning Profile 資訊:"
+          echo "   UUID: $PROFILE_UUID"
+          echo "   Name: $PROFILE_NAME"
+          echo "   Team ID: $TEAM_ID"
+
+          echo "profile_uuid=$PROFILE_UUID" >> $GITHUB_OUTPUT
+          echo "profile_name=$PROFILE_NAME" >> $GITHUB_OUTPUT
+          echo "team_id=$TEAM_ID" >> $GITHUB_OUTPUT
+
+          # 安裝描述檔
+          mkdir -p ~/Library/MobileDevice/Provisioning\ Profiles
+          cp profile.mobileprovision ~/Library/MobileDevice/Provisioning\ Profiles/$PROFILE_UUID.mobileprovision
+          echo "✅ iOS 簽章資源已安裝完成"
+
+      - name: Build iOS Archive
+        if: steps.parse_tag.outputs.build_ios == 'true'
+        working-directory: flutter_restaruant/flutter_restaruant
+        env:
+          PROFILE_NAME: ${{ steps.ios_signing.outputs.profile_name }}
+          TEAM_ID: ${{ steps.ios_signing.outputs.team_id }}
+        run: |
+          echo "🔨 開始建置 iOS Archive..."
+          echo "🔍 簽章資訊:"
+          echo "   Profile: $PROFILE_NAME"
+          echo "   Team ID: $TEAM_ID"
+
+          flutter build ios --release --no-codesign
+
+          # 精確設定 Runner target 簽章資訊，直接更新 Runner.xcodeproj 避免污染 SPM 套件
+          python3 -c '
+          import re, sys
+          profile_name = sys.argv[1]
+          team_id = sys.argv[2]
+          pbxproj_file = "ios/Runner.xcodeproj/project.pbxproj"
+
+          with open(pbxproj_file, "r") as f:
+              content = f.read()
+
+          target_release_pattern = r"(97C147071CF9000F007C117D /\* Release \*/ = \{[\s\S]*?buildSettings = \{)([\s\S]*?)(\n\t\t\t\};)"
+
+          def update_settings(match):
+              header = match.group(1)
+              settings = match.group(2)
+              footer = match.group(3)
+
+              settings = re.sub(r"CODE_SIGN_STYLE = [^;]+;", "CODE_SIGN_STYLE = Manual;", settings)
+              settings = re.sub(r"CODE_SIGN_IDENTITY = [^;]+;", "CODE_SIGN_IDENTITY = \"Apple Distribution\";", settings)
+              settings = re.sub(r"DEVELOPMENT_TEAM = [^;]+;", f"DEVELOPMENT_TEAM = {team_id};", settings)
+              settings = re.sub(r"PROVISIONING_PROFILE_SPECIFIER = [^;]+;", f"PROVISIONING_PROFILE_SPECIFIER = \"{profile_name}\";", settings)
+
+              if "\"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]\"" in settings:
+                  settings = re.sub(r"\"PROVISIONING_PROFILE_SPECIFIER\[sdk=iphoneos\*\]\" = [^;]+;", f"\"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]\" = \"{profile_name}\";", settings)
+              else:
+                  settings += f"\n\t\t\t\t\"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]\" = \"{profile_name}\";"
+
+              if "\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\"" in settings:
+                  settings = re.sub(r"\"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]\" = [^;]+;", "\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\" = \"Apple Distribution\";", settings)
+              else:
+                  settings += "\n\t\t\t\t\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\" = \"Apple Distribution\";"
+
+              return header + settings + footer
+
+          new_content = re.sub(target_release_pattern, update_settings, content)
+          with open(pbxproj_file, "w") as f:
+              f.write(new_content)
+          ' "$PROFILE_NAME" "$TEAM_ID"
+
+          # 同步注入至 Release.xcconfig 確保全域雙重保險
+          cat >> ios/Flutter/Release.xcconfig << EOF
+          CODE_SIGN_STYLE = Manual
+          CODE_SIGN_IDENTITY = Apple Distribution
+          DEVELOPMENT_TEAM = $TEAM_ID
+          PROVISIONING_PROFILE_SPECIFIER = $PROFILE_NAME
+          EOF
+
+          cd ios
+          xcodebuild -workspace Runner.xcworkspace \
+            -scheme Runner \
+            -sdk iphoneos \
+            -configuration Release \
+            -archivePath ../build/ios/Runner.xcarchive \
+            -destination "generic/platform=iOS" \
+            archive | tee /tmp/xcodebuild.log
+
+          BUILD_EXIT_CODE=${PIPESTATUS[0]}
+          cd ..
+
+          if [ $BUILD_EXIT_CODE -ne 0 ]; then
+            echo "❌ xcodebuild archive 失敗 (退出碼: $BUILD_EXIT_CODE)"
+            tail -100 /tmp/xcodebuild.log
+            exit 1
+          fi
+
+          if [ ! -d "build/ios/Runner.xcarchive" ]; then
+            echo "❌ Archive 未產生"
+            exit 1
+          fi
+          echo "✅ Archive 建置成功"
+
+      - name: Upload Archive to TestFlight (prod)
+        if: steps.parse_tag.outputs.is_prod_ios == 'true'
+        working-directory: flutter_restaruant/flutter_restaruant
+        env:
+          APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
+          APPLE_API_ISSUER_ID: ${{ secrets.APPLE_API_ISSUER_ID }}
+          APPLE_API_KEY_CONTENTS: ${{ secrets.APPLE_API_KEY_CONTENTS }}
+          PROFILE_NAME: ${{ steps.ios_signing.outputs.profile_name }}
+          TEAM_ID: ${{ steps.ios_signing.outputs.team_id }}
+        run: |
+          echo "📤 上傳 Archive 到 TestFlight..."
+          ARCHIVE_PATH="build/ios/Runner.xcarchive"
+
+          cat > /tmp/ExportOptions.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>app-store-connect</string>
+            <key>teamID</key>
+            <string>$TEAM_ID</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>signingCertificate</key>
+            <string>Apple Distribution</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.yomi.find-restaurant</key>
+              <string>$PROFILE_NAME</string>
+            </dict>
+            <key>uploadBitcode</key>
+            <false/>
+            <key>uploadSymbols</key>
+            <true/>
+            <key>compileBitcode</key>
+            <false/>
+            <key>manageAppVersionAndBuildNumber</key>
+            <false/>
+            <key>destination</key>
+            <string>upload</string>
+          </dict>
+          </plist>
+          EOF
+
+          mkdir -p ~/private_keys
+          echo "$APPLE_API_KEY_CONTENTS" > ~/private_keys/AuthKey_${APPLE_API_KEY_ID}.p8
+          chmod 600 ~/private_keys/AuthKey_${APPLE_API_KEY_ID}.p8
+
+          xcodebuild -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportOptionsPlist /tmp/ExportOptions.plist \
+            -exportPath build/ios/ipa \
+            -authenticationKeyPath ~/private_keys/AuthKey_${APPLE_API_KEY_ID}.p8 \
+            -authenticationKeyID "$APPLE_API_KEY_ID" \
+            -authenticationKeyIssuerID "$APPLE_API_ISSUER_ID" | tee /tmp/export.log
+
+          EXPORT_EXIT_CODE=${PIPESTATUS[0]}
+          if [ $EXPORT_EXIT_CODE -ne 0 ]; then
+            echo "❌ exportArchive 失敗 (退出碼: $EXPORT_EXIT_CODE)"
+            tail -50 /tmp/export.log
+            exit 1
+          fi
+
+          echo "✅ iOS Archive 已成功匯出並直連上傳至 TestFlight"
+
+      - name: Export Ad Hoc IPA (dev-ios)
+        if: steps.parse_tag.outputs.is_dev_ios == 'true'
+        working-directory: flutter_restaruant/flutter_restaruant
+        env:
+          PROFILE_NAME: ${{ steps.ios_signing.outputs.profile_name }}
+          TEAM_ID: ${{ steps.ios_signing.outputs.team_id }}
+        run: |
+          echo "📤 匯出 Ad Hoc IPA 供 Firebase App Distribution..."
+          ARCHIVE_PATH="build/ios/Runner.xcarchive"
+
+          cat > /tmp/ExportOptionsAdHoc.plist << EOF
+          <?xml version="1.0" encoding="UTF-8"?>
+          <!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+          <plist version="1.0">
+          <dict>
+            <key>method</key>
+            <string>ad-hoc</string>
+            <key>teamID</key>
+            <string>$TEAM_ID</string>
+            <key>signingStyle</key>
+            <string>manual</string>
+            <key>signingCertificate</key>
+            <string>Apple Distribution</string>
+            <key>provisioningProfiles</key>
+            <dict>
+              <key>com.yomi.find-restaurant</key>
+              <string>$PROFILE_NAME</string>
+            </dict>
+            <key>compileBitcode</key>
+            <false/>
+          </dict>
+          </plist>
+          EOF
+
+          xcodebuild -exportArchive \
+            -archivePath "$ARCHIVE_PATH" \
+            -exportOptionsPlist /tmp/ExportOptionsAdHoc.plist \
+            -exportPath build/ios/ipa | tee /tmp/export-adhoc.log
+
+          EXPORT_EXIT_CODE=${PIPESTATUS[0]}
+          if [ $EXPORT_EXIT_CODE -ne 0 ]; then
+            echo "❌ Ad Hoc exportArchive 失敗 (退出碼: $EXPORT_EXIT_CODE)"
+            tail -50 /tmp/export-adhoc.log
+            exit 1
+          fi
+
+          echo "✅ Ad Hoc IPA 匯出成功"
+          ls -lh build/ios/ipa
+
+      - name: Upload to Firebase App Distribution (dev-ios)
+        if: steps.parse_tag.outputs.is_dev_ios == 'true'
+        env:
+          FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
+        run: |
+          echo "📦 安裝 Firebase CLI..."
+          npm install -g firebase-tools
+
+          echo "$FIREBASE_SERVICE_ACCOUNT_JSON" > /tmp/firebase_credentials.json
+          export GOOGLE_APPLICATION_CREDENTIALS=/tmp/firebase_credentials.json
+
+          echo "📤 上傳 IPA 至 Firebase App Distribution..."
+          firebase appdistribution:distribute flutter_restaruant/flutter_restaruant/build/ios/ipa/*.ipa \
+            --app 1:35224406241:ios:d8eb3d68795bc2d1924fa0 \
+            --release-notes "Build ${{ steps.parse_tag.outputs.version }} (iOS Dev) from GitHub Actions"
+
+          rm -f /tmp/firebase_credentials.json
+          echo "✅ Firebase IPA 上傳完成"
+
+      # ==================== Summary ====================
+
+      - name: Release Summary
+        if: success()
+        run: |
+          RELEASE_TYPE="${{ steps.parse_tag.outputs.release_type }}"
+          VERSION="${{ steps.parse_tag.outputs.version }}"
+
+          echo "=========================================="
+          echo "🎉 發布流程執行完成！"
+          echo "📦 版本號: $VERSION"
+          echo "📋 發布類型: $RELEASE_TYPE"
+          case "$RELEASE_TYPE" in
+            "prod")
+              echo "🤖 Android: 已上傳至 Google Play Console (Internal Testing)"
+              echo "🍎 iOS: 已上傳至 Apple TestFlight"
+              ;;
+            "prod-android")
+              echo "🤖 Android: 已上傳至 Google Play Console (Internal Testing)"
+              ;;
+            "prod-ios")
+              echo "🍎 iOS: 已上傳至 Apple TestFlight"
+              ;;
+            "dev-android")
+              echo "🤖 Android APK: 已上傳至 Firebase App Distribution"
+              ;;
+            "dev-ios")
+              echo "🍎 iOS IPA: 已上傳至 Firebase App Distribution"
+              ;;
+          esac
+          echo "=========================================="
