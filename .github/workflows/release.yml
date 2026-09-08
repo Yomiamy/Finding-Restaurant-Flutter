@@ -93,7 +93,9 @@ jobs:
 
       - name: Install Dependencies
         working-directory: flutter_restaruant/flutter_restaruant
-        run: flutter pub get
+        run: |
+          mkdir -p build/ios/SourcePackages
+          flutter pub get
 
       # ==================== Android Build & Upload ====================
 
