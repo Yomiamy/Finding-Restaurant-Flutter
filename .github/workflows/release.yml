@@ -235,7 +235,46 @@ jobs:
 
           flutter build ios --release --no-codesign
 
-          # 將簽章設定僅注入至 Runner 主程式專屬的 Release.xcconfig，避免污染 SPM 套件
+          # 精確設定 Runner target 簽章資訊，直接更新 Runner.xcodeproj 避免污染 SPM 套件
+          python3 -c '
+          import re, sys
+          profile_name = sys.argv[1]
+          team_id = sys.argv[2]
+          pbxproj_file = "ios/Runner.xcodeproj/project.pbxproj"
+
+          with open(pbxproj_file, "r") as f:
+              content = f.read()
+
+          target_release_pattern = r"(97C147071CF9000F007C117D /\* Release \*/ = \{[\s\S]*?buildSettings = \{)([\s\S]*?)(\n\t\t\t\};)"
+
+          def update_settings(match):
+              header = match.group(1)
+              settings = match.group(2)
+              footer = match.group(3)
+
+              settings = re.sub(r"CODE_SIGN_STYLE = [^;]+;", "CODE_SIGN_STYLE = Manual;", settings)
+              settings = re.sub(r"CODE_SIGN_IDENTITY = [^;]+;", "CODE_SIGN_IDENTITY = \"Apple Distribution\";", settings)
+              settings = re.sub(r"DEVELOPMENT_TEAM = [^;]+;", f"DEVELOPMENT_TEAM = {team_id};", settings)
+              settings = re.sub(r"PROVISIONING_PROFILE_SPECIFIER = [^;]+;", f"PROVISIONING_PROFILE_SPECIFIER = \"{profile_name}\";", settings)
+
+              if "\"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]\"" in settings:
+                  settings = re.sub(r"\"PROVISIONING_PROFILE_SPECIFIER\[sdk=iphoneos\*\]\" = [^;]+;", f"\"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]\" = \"{profile_name}\";", settings)
+              else:
+                  settings += f"\n\t\t\t\t\"PROVISIONING_PROFILE_SPECIFIER[sdk=iphoneos*]\" = \"{profile_name}\";"
+
+              if "\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\"" in settings:
+                  settings = re.sub(r"\"CODE_SIGN_IDENTITY\[sdk=iphoneos\*\]\" = [^;]+;", "\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\" = \"Apple Distribution\";", settings)
+              else:
+                  settings += "\n\t\t\t\t\"CODE_SIGN_IDENTITY[sdk=iphoneos*]\" = \"Apple Distribution\";"
+
+              return header + settings + footer
+
+          new_content = re.sub(target_release_pattern, update_settings, content)
+          with open(pbxproj_file, "w") as f:
+              f.write(new_content)
+          ' "$PROFILE_NAME" "$TEAM_ID"
+
+          # 同步注入至 Release.xcconfig 確保全域雙重保險
           cat >> ios/Flutter/Release.xcconfig << EOF
           CODE_SIGN_STYLE = Manual
           CODE_SIGN_IDENTITY = Apple Distribution
