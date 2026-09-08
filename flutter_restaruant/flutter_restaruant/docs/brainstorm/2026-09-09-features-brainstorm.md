@@ -80,7 +80,7 @@
 | 項目 | 現況 | 風險 / 影響 |
 | :--- | :--- | :--- |
 | 🚨 **修復 AdMob 廣告刊登合規性 (防欺騙性點擊/防版面突跳)** | ✅ **已於 2026-09-04 完成 (Issue #107)**：移至底部常駐、預留 50dp 佔位消除 CLS、加上頂部分隔邊框 | **帳號與營收阻擋**：已徹底消除意外點擊與欺騙導入風險 |
-| **自動化 CI/CD 發布流水線 (GitHub Actions)** | 新納入最高優先項目，依 Tag 自動發布 | 缺乏自動化發布導致人工打包易出錯且耗時 |
+| ✅ **自動化 CI/CD 發布流水線 (GitHub Actions)** | ✅ **已於 2026-09-08 完成 (Issue #113 / PR #114)**：基於 GitHub Actions 原生建構自動化發布工作流，支援 prod 雙平台/單平台 (Google Play / TestFlight) 與 dev (Firebase App Distribution) 自動化打包與分發 | **基礎設施地基完成**：徹底淘汰人工打包，多平台通道自動化分發 |
 | ✅ **Flutter SDK 版本遷移 (≥ 3.44.1)** | ✅ **已於 2026-08-26 完成** | 已更新 pubspec.yaml 及 CI 工作流程至 3.44.1 |
 | ✅ **iOS Swift Package Manager (SPM) 遷移** | ✅ **已於 2026-08-24 完成 (混合模式)** | 暫時保留 CocoaPods 回退相容，消除建置阻礙 |
 | **Android Built-in Kotlin 遷移** | 已升級 Kotlin 2.2.20 消除過舊警告，但仍使用顯式 KGP | **官方棄用警告**：Flutter 未來將強制推行 Built-in Kotlin 並移除 KGP 支援，需在未來升級中徹底移除顯式 KGP 依賴 |
@@ -467,7 +467,7 @@ lib/
 
 為確保 App 在最新行動作業系統上的相容性、建置效能與長期可維護性，以下幾項底層升級列為 **P0 阻擋級地基任務**：
 
-#### F-0.1A 自動化 CI/CD 發布流水線 (Automated CI/CD Pipeline) (絕對最高優先)
+#### F-0.1A 自動化 CI/CD 發布流水線 (Automated CI/CD Pipeline) (絕對最高優先) — ✅ 已於 2026-09-08 完成 (Issue #113 / PR #114)
 * **背景與痛點**:
   * 目前專案缺乏自動化發布機制，人工打包既耗時又容易發生環境變數切換遺漏的錯誤。
 * **改造要點**:
@@ -586,9 +586,9 @@ lib/
 +-----------------------------------------------------------------------------------+
 |                           STRATEGIC PRODUCT ROADMAP                               |
 +-----------------------------------------------------------------------------------+
-| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 18/22 ✅        |
+| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 19/22 ✅        |
 |   • [x] P0 🚨 修復 AdMob 廣告刊登合規性 (防欺騙點擊/移至底部/消滅 Layout Shift) ✅ 2026-09-04 (Issue #107) |
-|   • [ ] P0 自動化 CI/CD 發布流水線 (GitHub Actions)                               |
+|   • [x] P0 自動化 CI/CD 發布流水線 (GitHub Actions) ✅ 2026-09-08 (Issue #113 / PR #114) |
 |   • [x] P-1 整合 flutter_inspector_kit ✅ 2026-08-05（量測地基就位）             |
 |   • [x] P0 修復 `build()` 側邊效應反模式                                          |
 |   • [x] P0 修復 Yelp API 分頁邏輯 Bug                                              |
