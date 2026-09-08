@@ -22,11 +22,15 @@ jobs:
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.inputs.tag_name || '' }}
 
       - name: Validate Tag Format and Parse Type
         id: parse_tag
+        env:
+          INPUT_TAG: ${{ github.event.inputs.tag_name }}
         run: |
-          TAG="${{ github.event.inputs.tag_name || github.ref_name }}"
+          TAG="${INPUT_TAG:-$GITHUB_REF_NAME}"
           echo "tag=$TAG" >> $GITHUB_OUTPUT
 
           # 判斷 tag 類型
