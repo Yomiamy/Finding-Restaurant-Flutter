@@ -170,6 +170,22 @@ jobs:
 
       # ==================== iOS Build & Upload ====================
 
+      - name: Select Xcode 26
+        if: steps.parse_tag.outputs.release_type == 'prod' || steps.parse_tag.outputs.release_type == 'dev-ios'
+        run: |
+          echo "🔧 選取 Xcode 26..."
+          if [ -n "$XCODE_26_DEVELOPER_DIR" ] && [ -d "$XCODE_26_DEVELOPER_DIR" ]; then
+            sudo xcode-select -s "$XCODE_26_DEVELOPER_DIR"
+          elif [ -d "/Applications/Xcode_26.3.app/Contents/Developer" ]; then
+            sudo xcode-select -s /Applications/Xcode_26.3.app/Contents/Developer
+          elif [ -d "/Applications/Xcode_26.app/Contents/Developer" ]; then
+            sudo xcode-select -s /Applications/Xcode_26.app/Contents/Developer
+          fi
+          SELECTED_XCODE=$(xcode-select -p)
+          echo "DEVELOPER_DIR=$SELECTED_XCODE" >> $GITHUB_ENV
+          echo "✅ 目前使用 Xcode: $SELECTED_XCODE"
+          xcodebuild -version
+
       - name: Setup iOS Signing & Profile
         id: ios_signing
         if: steps.parse_tag.outputs.release_type == 'prod' || steps.parse_tag.outputs.release_type == 'dev-ios'
