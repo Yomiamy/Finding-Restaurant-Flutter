@@ -235,6 +235,14 @@ jobs:
 
           flutter build ios --release --no-codesign
 
+          # 將簽章設定僅注入至 Runner 主程式專屬的 Release.xcconfig，避免污染 SPM 套件
+          cat >> ios/Flutter/Release.xcconfig << EOF
+          CODE_SIGN_STYLE = Manual
+          CODE_SIGN_IDENTITY = Apple Distribution
+          DEVELOPMENT_TEAM = $TEAM_ID
+          PROVISIONING_PROFILE_SPECIFIER = $PROFILE_NAME
+          EOF
+
           cd ios
           xcodebuild -workspace Runner.xcworkspace \
             -scheme Runner \
@@ -242,11 +250,7 @@ jobs:
             -configuration Release \
             -archivePath ../build/ios/Runner.xcarchive \
             -destination "generic/platform=iOS" \
-            archive \
-            CODE_SIGN_STYLE=Manual \
-            CODE_SIGN_IDENTITY="Apple Distribution" \
-            DEVELOPMENT_TEAM="$TEAM_ID" \
-            PROVISIONING_PROFILE_SPECIFIER="$PROFILE_NAME" | tee /tmp/xcodebuild.log
+            archive | tee /tmp/xcodebuild.log
 
           BUILD_EXIT_CODE=${PIPESTATUS[0]}
           cd ..
