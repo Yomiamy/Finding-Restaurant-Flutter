@@ -71,7 +71,7 @@
      - 使用 `r0adkll/upload-google-play@v1` 上傳至 Google Play Internal Testing（憑證：`secrets.GOOGLE_PLAY_JSON`，套件名：`com.yomi.flutter_restaruant`）。
    - **`dev-android` 路線**：
      - 執行 `flutter build apk --release` 產生 APK。
-     - 使用 `wzieba/Firebase-App-Distribution-Github-Action@v1` 上傳至 Firebase App Distribution（App ID：`1:35224406241:android:00f352bb5d635a1b924fa0`，憑證：`secrets.FIREBASE_SERVICE_ACCOUNT_JSON`）。
+     - 使用 `wzieba/Firebase-Distribution-Github-Action@v1` 上傳至 Firebase App Distribution（App ID：`1:35224406241:android:00f352bb5d635a1b924fa0`，憑證：`secrets.FIREBASE_SERVICE_ACCOUNT_JSON`）。
 
 3. **iOS 建置與上傳**（僅於 `prod` 或 `dev-ios` 執行）：
    - 解碼憑證 `certificate.p12`。
@@ -91,7 +91,7 @@
      - **`dev-ios` 路線**：
        - 生成 `ExportOptions.plist`（`method: ad-hoc`, `compileBitcode: false`）。
        - 呼叫 `xcodebuild -exportArchive` 產出 `Runner.ipa`。
-       - 使用 `wzieba/Firebase-App-Distribution-Github-Action@v1` 上傳至 Firebase App Distribution（App ID：`1:35224406241:ios:d8eb3d68795bc2d1924fa0`，憑證：`secrets.FIREBASE_SERVICE_ACCOUNT_JSON`）。
+       - 使用 `wzieba/Firebase-Distribution-Github-Action@v1` 上傳至 Firebase App Distribution（App ID：`1:35224406241:ios:d8eb3d68795bc2d1924fa0`，憑證：`secrets.FIREBASE_SERVICE_ACCOUNT_JSON`）。
 
 4. **發布摘要 (Release Summary)**：
    - 輸出成功發布資訊與版本詳情。

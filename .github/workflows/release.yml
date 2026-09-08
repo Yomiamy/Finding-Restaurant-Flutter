@@ -142,7 +142,7 @@ jobs:
 
       - name: Upload to Firebase App Distribution (dev-android)
         if: steps.parse_tag.outputs.release_type == 'dev-android'
-        uses: wzieba/Firebase-App-Distribution-Github-Action@v1
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: 1:35224406241:android:00f352bb5d635a1b924fa0
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
@@ -367,7 +367,7 @@ jobs:
 
       - name: Upload to Firebase App Distribution (dev-ios)
         if: steps.parse_tag.outputs.release_type == 'dev-ios'
-        uses: wzieba/Firebase-App-Distribution-Github-Action@v1
+        uses: wzieba/Firebase-Distribution-Github-Action@v1
         with:
           appId: 1:35224406241:ios:d8eb3d68795bc2d1924fa0
           serviceCredentialsFileContent: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}

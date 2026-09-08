@@ -18,8 +18,8 @@
    - 自動提取版本號並強制比對 `pubspec.yaml`，防止版號漂移。
 2. **多通道自動化分發**：
    - **`prod-v*`**：Android 打包 AAB 並透過 `r0adkll/upload-google-play@v1` 上傳至 Google Play 內部測試軌；iOS 使用 `IOS_APPSTORE_PROFILE_BASE64` 打包 Archive 並透過原生 `xcodebuild -exportArchive` 直連上傳至 Apple TestFlight。
-   - **`dev-android-v*`**：打包 APK 並透過 `wzieba/Firebase-App-Distribution-Github-Action@v1` 上傳至 Firebase App Distribution。
-   - **`dev-ios-v*`**：使用 `IOS_ADHOC_PROFILE_BASE64` 匯出 Ad Hoc IPA，並透過 `wzieba/Firebase-App-Distribution-Github-Action@v1` 上傳至 Firebase App Distribution。
+   - **`dev-android-v*`**：打包 APK 並透過 `wzieba/Firebase-Distribution-Github-Action@v1` 上傳至 Firebase App Distribution。
+   - **`dev-ios-v*`**：使用 `IOS_ADHOC_PROFILE_BASE64` 匯出 Ad Hoc IPA，並透過 `wzieba/Firebase-Distribution-Github-Action@v1` 上傳至 Firebase App Distribution。
 3. **零機密洩漏與極簡環境依賴**：
    - 移除 Ruby、Bundler 與 Fastlane 等厚重依賴，建置環境極致輕量化。
    - 所有 Keystore、P12、Profiles、API Keys 透過 GitHub Secrets（共 13 個）安全注入。
@@ -39,7 +39,7 @@
 - **`dev-ios` 路線**：
   - 解碼 `IOS_ADHOC_PROFILE_BASE64`（包含測試機 UDID 清單）
   - `ExportOptions.plist` 設定 `method: ad-hoc`, `compileBitcode: false`
-  - 呼叫 `xcodebuild -exportArchive` 匯出 `Runner.ipa`，再由 `wzieba/Firebase-App-Distribution-Github-Action@v1` 上傳至 Firebase App Distribution。
+  - 呼叫 `xcodebuild -exportArchive` 匯出 `Runner.ipa`，再由 `wzieba/Firebase-Distribution-Github-Action@v1` 上傳至 Firebase App Distribution。
 
 ### 2.3 Android 簽名設定整合
 - 透過 CI 動態建立 `android/key.properties`，並在 `android/app/build.gradle` 補充 `key.properties` 讀取支援，與環境變數 fallback 並存。
@@ -73,7 +73,7 @@
   - 宣告 Tag 觸發規則：`prod-v*`、`dev-android-v*`、`dev-ios-v*`。
   - 實作 Step 1~3：Tag 解析、版本比對守門、Java 17 與 Flutter 3.44.1 環境配置。
   - 實作 Step 4：Android Keystore 解碼、`key.properties` 產出、AAB (`prod`) 與 APK (`dev-android`) 建置。
-  - 實作 Step 5：Android 分發（Google Play Internal Testing 透過 `r0adkll/upload-google-play@v1`；Firebase 透過 `wzieba/Firebase-App-Distribution-Github-Action@v1`）。
+  - 實作 Step 5：Android 分發（Google Play Internal Testing 透過 `r0adkll/upload-google-play@v1`；Firebase 透過 `wzieba/Firebase-Distribution-Github-Action@v1`）。
   - 實作 Step 6：iOS 臨時 Keychain、P12 匯入、Profile 依類型分流（`IOS_APPSTORE_PROFILE_BASE64` vs `IOS_ADHOC_PROFILE_BASE64`）解析與安裝。
   - 實作 Step 7：iOS `flutter build ios --no-codesign` 與原生 `xcodebuild archive`。
   - 實作 Step 8：iOS 匯出與分發分流：
