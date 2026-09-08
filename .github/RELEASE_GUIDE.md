@@ -13,6 +13,8 @@
 | 發布類型 | 觸發 Tag 格式範例 | 建置產物 | 發布目標通道 |
 |:---|:---|:---|:---|
 | **正式版雙平台** (`prod`) | `prod-v2.0.1+33` | Android AAB<br>iOS Archive | 🤖 Google Play Console (Internal Testing)<br>🍎 Apple TestFlight |
+| **正式版 Android** (`prod-android`) | `prod-android-v2.0.1+33` | Android AAB | 🤖 Google Play Console (Internal Testing) |
+| **正式版 iOS** (`prod-ios`) | `prod-ios-v2.0.1+33` | iOS Archive | 🍎 Apple TestFlight |
 | **Android 開發版** (`dev-android`) | `dev-android-v2.0.1+33` | Android Release APK | 🔥 Firebase App Distribution |
 | **iOS 開發版** (`dev-ios`) | `dev-ios-v2.0.1+33` | iOS Ad Hoc IPA | 🔥 Firebase App Distribution |
 
@@ -92,10 +94,22 @@ git push origin main
 
 依欲發布的通道選擇對應的 Tag 指令：
 
-#### 方案 A：正式發布（雙平台：Google Play Internal + Apple TestFlight）
+#### 方案 A-1：正式發布雙平台（Google Play Internal + Apple TestFlight）
 ```bash
 git tag prod-v2.0.1+33
 git push origin prod-v2.0.1+33
+```
+
+#### 方案 A-2：正式發布僅 Android（Google Play Internal）
+```bash
+git tag prod-android-v2.0.1+33
+git push origin prod-android-v2.0.1+33
+```
+
+#### 方案 A-3：正式發布僅 iOS（Apple TestFlight）
+```bash
+git tag prod-ios-v2.0.1+33
+git push origin prod-ios-v2.0.1+33
 ```
 
 #### 方案 B：Android 開發版（Firebase App Distribution）

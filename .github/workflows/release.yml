@@ -4,12 +4,14 @@ on:
   push:
     tags:
       - 'prod-v*'
+      - 'prod-android-v*'
+      - 'prod-ios-v*'
       - 'dev-android-v*'
       - 'dev-ios-v*'
   workflow_dispatch:
     inputs:
       tag_name:
-        description: 'Tag name (e.g. prod-v2.0.1+33, dev-android-v2.0.1+33, dev-ios-v2.0.1+33)'
+        description: 'Tag name (e.g. prod-v2.0.1+33, prod-android-v2.0.1+33, prod-ios-v2.0.1+33, dev-android-v2.0.1+33, dev-ios-v2.0.1+33)'
         required: true
         type: string
 
@@ -33,20 +35,48 @@ jobs:
           TAG="${INPUT_TAG:-$GITHUB_REF_NAME}"
           echo "tag=$TAG" >> $GITHUB_OUTPUT
 
-          # 判斷 tag 類型
-          if [[ "$TAG" =~ ^prod-v ]]; then
+          # 初始化平台建置標記
+          BUILD_ANDROID="false"
+          BUILD_IOS="false"
+          IS_PROD_ANDROID="false"
+          IS_DEV_ANDROID="false"
+          IS_PROD_IOS="false"
+          IS_DEV_IOS="false"
+
+          # 判斷 tag 類型 (較具體的 prod-android 與 prod-ios 必須先於 prod-v 判定)
+          if [[ "$TAG" =~ ^prod-android-v ]]; then
+            RELEASE_TYPE="prod-android"
+            VERSION="${TAG#prod-android-v}"
+            BUILD_ANDROID="true"
+            IS_PROD_ANDROID="true"
+          elif [[ "$TAG" =~ ^prod-ios-v ]]; then
+            RELEASE_TYPE="prod-ios"
+            VERSION="${TAG#prod-ios-v}"
+            BUILD_IOS="true"
+            IS_PROD_IOS="true"
+          elif [[ "$TAG" =~ ^prod-v ]]; then
             RELEASE_TYPE="prod"
             VERSION="${TAG#prod-v}"
+            BUILD_ANDROID="true"
+            BUILD_IOS="true"
+            IS_PROD_ANDROID="true"
+            IS_PROD_IOS="true"
           elif [[ "$TAG" =~ ^dev-android-v ]]; then
             RELEASE_TYPE="dev-android"
             VERSION="${TAG#dev-android-v}"
+            BUILD_ANDROID="true"
+            IS_DEV_ANDROID="true"
           elif [[ "$TAG" =~ ^dev-ios-v ]]; then
             RELEASE_TYPE="dev-ios"
             VERSION="${TAG#dev-ios-v}"
+            BUILD_IOS="true"
+            IS_DEV_IOS="true"
           else
             echo "❌ 錯誤: 不支援的 tag 格式: $TAG"
             echo "請使用以下格式之一："
             echo "  - prod-v2.0.1+33 (正式版雙平台: Google Play + TestFlight)"
+            echo "  - prod-android-v2.0.1+33 (正式版 Android: Google Play)"
+            echo "  - prod-ios-v2.0.1+33 (正式版 iOS: TestFlight)"
             echo "  - dev-android-v2.0.1+33 (開發版 Android -> Firebase App Distribution)"
             echo "  - dev-ios-v2.0.1+33 (開發版 iOS -> Firebase App Distribution)"
             exit 1
@@ -54,6 +84,12 @@ jobs:
 
           echo "release_type=$RELEASE_TYPE" >> $GITHUB_OUTPUT
           echo "version=$VERSION" >> $GITHUB_OUTPUT
+          echo "build_android=$BUILD_ANDROID" >> $GITHUB_OUTPUT
+          echo "build_ios=$BUILD_IOS" >> $GITHUB_OUTPUT
+          echo "is_prod_android=$IS_PROD_ANDROID" >> $GITHUB_OUTPUT
+          echo "is_dev_android=$IS_DEV_ANDROID" >> $GITHUB_OUTPUT
+          echo "is_prod_ios=$IS_PROD_IOS" >> $GITHUB_OUTPUT
+          echo "is_dev_ios=$IS_DEV_IOS" >> $GITHUB_OUTPUT
 
           # 解析版本號與建置號
           VERSION_NAME="${VERSION%+*}"
@@ -64,6 +100,8 @@ jobs:
           echo "✅ Tag: $TAG"
           echo "✅ Release Type: $RELEASE_TYPE"
           echo "✅ Version: $VERSION_NAME+$BUILD_NUMBER"
+          echo "✅ Build Android: $BUILD_ANDROID (Prod: $IS_PROD_ANDROID, Dev: $IS_DEV_ANDROID)"
+          echo "✅ Build iOS: $BUILD_IOS (Prod: $IS_PROD_IOS, Dev: $IS_DEV_IOS)"
 
       - name: Verify Version Match with pubspec.yaml
         run: |
@@ -104,14 +142,14 @@ jobs:
       # ==================== Android Build & Upload ====================
 
       - name: Decode Android Keystore
-        if: steps.parse_tag.outputs.release_type == 'prod' || steps.parse_tag.outputs.release_type == 'dev-android'
+        if: steps.parse_tag.outputs.build_android == 'true'
         working-directory: flutter_restaruant/flutter_restaruant
         run: |
           echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 --decode > android/app/release.keystore
           echo "✅ Keystore 已解碼"
 
       - name: Create key.properties
-        if: steps.parse_tag.outputs.release_type == 'prod' || steps.parse_tag.outputs.release_type == 'dev-android'
+        if: steps.parse_tag.outputs.build_android == 'true'
         working-directory: flutter_restaruant/flutter_restaruant
         env:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
@@ -126,21 +164,21 @@ jobs:
           echo "✅ key.properties 已建立"
 
       - name: Build Android App Bundle (for prod)
-        if: steps.parse_tag.outputs.release_type == 'prod'
+        if: steps.parse_tag.outputs.is_prod_android == 'true'
         working-directory: flutter_restaruant/flutter_restaruant
         run: |
           flutter build appbundle --release
           echo "✅ AAB 建置完成"
 
       - name: Build Android APK (for dev-android)
-        if: steps.parse_tag.outputs.release_type == 'dev-android'
+        if: steps.parse_tag.outputs.is_dev_android == 'true'
         working-directory: flutter_restaruant/flutter_restaruant
         run: |
           flutter build apk --release
           echo "✅ APK 建置完成"
 
       - name: Upload to Google Play Internal Testing (prod)
-        if: steps.parse_tag.outputs.release_type == 'prod'
+        if: steps.parse_tag.outputs.is_prod_android == 'true'
         uses: r0adkll/upload-google-play@v1
         with:
           serviceAccountJsonPlainText: ${{ secrets.GOOGLE_PLAY_JSON }}
@@ -150,7 +188,7 @@ jobs:
           status: completed
 
       - name: Upload to Firebase App Distribution (dev-android)
-        if: steps.parse_tag.outputs.release_type == 'dev-android'
+        if: steps.parse_tag.outputs.is_dev_android == 'true'
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
         run: |
@@ -171,7 +209,7 @@ jobs:
       # ==================== iOS Build & Upload ====================
 
       - name: Select Xcode 26
-        if: steps.parse_tag.outputs.release_type == 'prod' || steps.parse_tag.outputs.release_type == 'dev-ios'
+        if: steps.parse_tag.outputs.build_ios == 'true'
         run: |
           echo "🔧 選取 Xcode 26..."
           if [ -n "$XCODE_26_DEVELOPER_DIR" ] && [ -d "$XCODE_26_DEVELOPER_DIR" ]; then
@@ -188,9 +226,9 @@ jobs:
 
       - name: Setup iOS Signing & Profile
         id: ios_signing
-        if: steps.parse_tag.outputs.release_type == 'prod' || steps.parse_tag.outputs.release_type == 'dev-ios'
+        if: steps.parse_tag.outputs.build_ios == 'true'
         env:
-          RELEASE_TYPE: ${{ steps.parse_tag.outputs.release_type }}
+          IS_PROD_IOS: ${{ steps.parse_tag.outputs.is_prod_ios }}
           IOS_CERTIFICATE_BASE64: ${{ secrets.IOS_CERTIFICATE_BASE64 }}
           IOS_CERTIFICATE_PASSWORD: ${{ secrets.IOS_CERTIFICATE_PASSWORD }}
           IOS_APPSTORE_PROFILE_BASE64: ${{ secrets.IOS_APPSTORE_PROFILE_BASE64 }}
@@ -202,7 +240,7 @@ jobs:
           echo "$IOS_CERTIFICATE_BASE64" | base64 --decode > certificate.p12
 
           # 依發布類型解碼對應的 Provisioning Profile
-          if [ "$RELEASE_TYPE" = "prod" ]; then
+          if [ "$IS_PROD_IOS" = "true" ]; then
             echo "解碼 App Store Provisioning Profile..."
             echo "$IOS_APPSTORE_PROFILE_BASE64" | base64 --decode > profile.mobileprovision
           else
@@ -245,7 +283,7 @@ jobs:
           echo "✅ iOS 簽章資源已安裝完成"
 
       - name: Build iOS Archive
-        if: steps.parse_tag.outputs.release_type == 'prod' || steps.parse_tag.outputs.release_type == 'dev-ios'
+        if: steps.parse_tag.outputs.build_ios == 'true'
         working-directory: flutter_restaruant/flutter_restaruant
         env:
           PROFILE_NAME: ${{ steps.ios_signing.outputs.profile_name }}
@@ -330,7 +368,7 @@ jobs:
           echo "✅ Archive 建置成功"
 
       - name: Upload Archive to TestFlight (prod)
-        if: steps.parse_tag.outputs.release_type == 'prod'
+        if: steps.parse_tag.outputs.is_prod_ios == 'true'
         working-directory: flutter_restaruant/flutter_restaruant
         env:
           APPLE_API_KEY_ID: ${{ secrets.APPLE_API_KEY_ID }}
@@ -376,6 +414,7 @@ jobs:
 
           mkdir -p ~/private_keys
           echo "$APPLE_API_KEY_CONTENTS" > ~/private_keys/AuthKey_${APPLE_API_KEY_ID}.p8
+          chmod 600 ~/private_keys/AuthKey_${APPLE_API_KEY_ID}.p8
 
           xcodebuild -exportArchive \
             -archivePath "$ARCHIVE_PATH" \
@@ -395,7 +434,7 @@ jobs:
           echo "✅ iOS Archive 已成功匯出並直連上傳至 TestFlight"
 
       - name: Export Ad Hoc IPA (dev-ios)
-        if: steps.parse_tag.outputs.release_type == 'dev-ios'
+        if: steps.parse_tag.outputs.is_dev_ios == 'true'
         working-directory: flutter_restaruant/flutter_restaruant
         env:
           PROFILE_NAME: ${{ steps.ios_signing.outputs.profile_name }}
@@ -444,7 +483,7 @@ jobs:
           ls -lh build/ios/ipa
 
       - name: Upload to Firebase App Distribution (dev-ios)
-        if: steps.parse_tag.outputs.release_type == 'dev-ios'
+        if: steps.parse_tag.outputs.is_dev_ios == 'true'
         env:
           FIREBASE_SERVICE_ACCOUNT_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
         run: |
@@ -477,6 +516,12 @@ jobs:
           case "$RELEASE_TYPE" in
             "prod")
               echo "🤖 Android: 已上傳至 Google Play Console (Internal Testing)"
+              echo "🍎 iOS: 已上傳至 Apple TestFlight"
+              ;;
+            "prod-android")
+              echo "🤖 Android: 已上傳至 Google Play Console (Internal Testing)"
+              ;;
+            "prod-ios")
               echo "🍎 iOS: 已上傳至 Apple TestFlight"
               ;;
             "dev-android")
