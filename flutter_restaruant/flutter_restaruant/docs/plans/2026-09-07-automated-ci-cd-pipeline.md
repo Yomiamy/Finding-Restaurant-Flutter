@@ -49,16 +49,16 @@
 ## 3. 檔案異動清單 (File Changes)
 
 ### 3.1 既有檔案修改
-- **[`flutter_restaruant/flutter_restaruant/android/app/build.gradle`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/android/app/build.gradle)**：
+- **[`flutter_restaruant/flutter_restaruant/android/app/build.gradle`](../../android/app/build.gradle)**：
   - 增強簽名設定讀取邏輯：優先讀取 `android/key.properties`（若存在），次優先讀取 `System.getenv(...)`，最後 fallback 至 `local.properties`。
 
 ### 3.2 新增檔案
-- **[`.github/workflows/release.yml`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/.github/workflows/release.yml)**：
+- **[`.github/workflows/release.yml`](../../../.github/workflows/release.yml)**：
   - 配置於 Git 根目錄 `.github/workflows/` 下。
   - 實現 Tag 格式解析、Pubspec 驗證、Java/Flutter/Xcode 環境初始化。
   - 實現 Android Keystore 解碼、AAB/APK 打包、Google Play 上傳與 Firebase App Distribution 上傳。
   - 實現 iOS 憑證匯入、雙 Profile 分流（App Store vs Ad Hoc）、Archive 建置、TestFlight 上傳與 Firebase App Distribution 上傳。
-- **[`.github/RELEASE_GUIDE.md`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/.github/RELEASE_GUIDE.md)**：
+- **[`.github/RELEASE_GUIDE.md`](../../../.github/RELEASE_GUIDE.md)**：
   - 完整的 Tag 發布操作指引與 13 個 GitHub Secrets 的配置說明清單（特別標註 Ad Hoc UDID 需求）。
 
 ---

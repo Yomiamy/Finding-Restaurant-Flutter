@@ -109,13 +109,16 @@ jobs:
       - name: Create key.properties
         if: steps.parse_tag.outputs.release_type == 'prod' || steps.parse_tag.outputs.release_type == 'dev-android'
         working-directory: flutter_restaruant/flutter_restaruant
+        env:
+          ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
+          ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
+          ANDROID_KEY_ALIAS: ${{ secrets.ANDROID_KEY_ALIAS }}
         run: |
-          cat > android/key.properties <<EOF
-          storePassword=${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
-          keyPassword=${{ secrets.ANDROID_KEY_PASSWORD }}
-          keyAlias=${{ secrets.ANDROID_KEY_ALIAS }}
-          storeFile=release.keystore
-          EOF
+          printf '%s\n' \
+            "storePassword=${ANDROID_KEYSTORE_PASSWORD}" \
+            "keyPassword=${ANDROID_KEY_PASSWORD}" \
+            "keyAlias=${ANDROID_KEY_ALIAS}" \
+            "storeFile=release.keystore" > android/key.properties
           echo "✅ key.properties 已建立"
 
       - name: Build Android App Bundle (for prod)

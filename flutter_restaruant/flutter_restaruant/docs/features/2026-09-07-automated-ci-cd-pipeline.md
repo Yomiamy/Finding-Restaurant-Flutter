@@ -126,7 +126,7 @@
 ## 3. 驗收條件 (Acceptance Criteria)
 
 - [ ] **Workflow 檔案就緒**：
-  - [ ] 於專案根目錄建立 [`.github/workflows/release.yml`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/.github/workflows/release.yml)。
+  - [ ] 於專案根目錄建立 [`.github/workflows/release.yml`](../../../.github/workflows/release.yml)。
   - [ ] 工作目錄正確適應 `flutter_restaruant/flutter_restaruant`。
 - [ ] **淘汰 Fastlane**：
   - [ ] 不依賴 Ruby/Bundler/Fastlane，全流程使用純 CLI 與標準 GitHub Actions。

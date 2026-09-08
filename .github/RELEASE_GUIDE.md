@@ -6,7 +6,7 @@
 
 ## 1. 發布流程概覽 (Overview)
 
-流水線定義於 [`.github/workflows/release.yml`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/.github/workflows/release.yml)，支援由 Git Tag 或手動 (`workflow_dispatch`) 觸發。
+流水線定義於 [`.github/workflows/release.yml`](workflows/release.yml)，支援由 Git Tag 或手動 (`workflow_dispatch`) 觸發。
 
 ### 支援的發布類型與分發通道
 
@@ -139,7 +139,7 @@ git push origin dev-ios-v2.0.1+33
 
 ### Q2: `❌ xcodebuild archive 失敗` 或憑證找不到
 - **原因**：`IOS_CERTIFICATE_BASE64` 解碼失敗、密碼錯誤，或 Profile 名稱/Team ID 與憑證不吻合。
-- **解法**：確認 `.p12` 匯出時包含私鑰，且密碼與 `IOS_CERTIFICATE_PASSWORD` 一致。手冊中的 Step 6 會自動解析 Profile 的 UUID、名稱與 Team ID。
+- **解法**：確認 `.p12` 匯出時包含私鑰，且密碼與 `IOS_CERTIFICATE_PASSWORD` 一致。工作流中的 `Setup iOS Signing & Profile` 步驟會自動解析 Profile 的 UUID、名稱與 Team ID。
 
 ### Q3: iOS 測試人員無法安裝 Firebase 的測試版本
 - **原因**：使用了 App Store Profile 匯出，或 Ad Hoc Profile 未將該裝置的 UDID 加入。
