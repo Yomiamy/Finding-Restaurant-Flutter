@@ -16,7 +16,7 @@ on:
 jobs:
   release:
     name: Build and Release
-    runs-on: macos-14
+    runs-on: macos-15
     timeout-minutes: 60
 
     steps:
