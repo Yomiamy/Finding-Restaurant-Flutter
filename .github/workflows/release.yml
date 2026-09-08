@@ -8,10 +8,15 @@ on:
       - 'prod-ios-v*'
       - 'dev-android-v*'
       - 'dev-ios-v*'
+      - 'rc/prod-v*'
+      - 'rc/prod-android-v*'
+      - 'rc/prod-ios-v*'
+      - 'rc/dev-android-v*'
+      - 'rc/dev-ios-v*'
   workflow_dispatch:
     inputs:
       tag_name:
-        description: 'Tag name (e.g. prod-v2.0.1+33, prod-android-v2.0.1+33, prod-ios-v2.0.1+33, dev-android-v2.0.1+33, dev-ios-v2.0.1+33)'
+        description: 'Tag name (e.g. prod-v2.1.0+35, rc/prod-android-v2.1.0+35, dev-android-v2.1.0+35)'
         required: true
         type: string
 
@@ -32,8 +37,10 @@ jobs:
         env:
           INPUT_TAG: ${{ github.event.inputs.tag_name }}
         run: |
-          TAG="${INPUT_TAG:-$GITHUB_REF_NAME}"
-          echo "tag=$TAG" >> $GITHUB_OUTPUT
+          RAW_TAG="${INPUT_TAG:-$GITHUB_REF_NAME}"
+          # 一行消滅特殊情況：若帶有 rc/ 前綴，自動剝除修剪，標準化為統一格式
+          TAG="${RAW_TAG#rc/}"
+          echo "tag=$RAW_TAG" >> $GITHUB_OUTPUT
 
           # 初始化平台建置標記
           BUILD_ANDROID="false"
@@ -72,13 +79,13 @@ jobs:
             BUILD_IOS="true"
             IS_DEV_IOS="true"
           else
-            echo "❌ 錯誤: 不支援的 tag 格式: $TAG"
-            echo "請使用以下格式之一："
-            echo "  - prod-v2.0.1+33 (正式版雙平台: Google Play + TestFlight)"
-            echo "  - prod-android-v2.0.1+33 (正式版 Android: Google Play)"
-            echo "  - prod-ios-v2.0.1+33 (正式版 iOS: TestFlight)"
-            echo "  - dev-android-v2.0.1+33 (開發版 Android -> Firebase App Distribution)"
-            echo "  - dev-ios-v2.0.1+33 (開發版 iOS -> Firebase App Distribution)"
+            echo "❌ 錯誤: 不支援的 tag 格式: $RAW_TAG"
+            echo "請使用以下格式之一（皆可選加 rc/ 前綴，例如 rc/prod-v2.1.0+35）："
+            echo "  - prod-v2.1.0+35 (正式版雙平台: Google Play + TestFlight)"
+            echo "  - prod-android-v2.1.0+35 (正式版 Android: Google Play)"
+            echo "  - prod-ios-v2.1.0+35 (正式版 iOS: TestFlight)"
+            echo "  - dev-android-v2.1.0+35 (開發版 Android -> Firebase App Distribution)"
+            echo "  - dev-ios-v2.1.0+35 (開發版 iOS -> Firebase App Distribution)"
             exit 1
           fi
 
@@ -97,7 +104,10 @@ jobs:
           echo "version_name=$VERSION_NAME" >> $GITHUB_OUTPUT
           echo "build_number=$BUILD_NUMBER" >> $GITHUB_OUTPUT
 
-          echo "✅ Tag: $TAG"
+          echo "✅ Tag: $RAW_TAG"
+          if [ "$RAW_TAG" != "$TAG" ]; then
+            echo "ℹ️ 已自動修剪 rc/ 前綴 ➔ $TAG"
+          fi
           echo "✅ Release Type: $RELEASE_TYPE"
           echo "✅ Version: $VERSION_NAME+$BUILD_NUMBER"
           echo "✅ Build Android: $BUILD_ANDROID (Prod: $IS_PROD_ANDROID, Dev: $IS_DEV_ANDROID)"

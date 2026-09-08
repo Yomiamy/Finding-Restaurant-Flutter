@@ -18,6 +18,10 @@
 | **Android 開發版** (`dev-android`) | `dev-android-v2.0.1+33` | Android Release APK | 🔥 Firebase App Distribution |
 | **iOS 開發版** (`dev-ios`) | `dev-ios-v2.0.1+33` | iOS Ad Hoc IPA | 🔥 Firebase App Distribution |
 
+> [!TIP]
+> **支援 `rc/` 前綴**：
+> 所有 Tag 皆支援選填的 `rc/` 前綴（例如 `rc/prod-android-v2.1.0+35` 或 `rc/dev-ios-v2.1.0+35`），工作流會自動識別並安全修剪前綴。
+
 > [!IMPORTANT]
 > **版本號強校驗守門**：
 > 工作流的第一步會嚴格比對 Tag 中的版本號與 `flutter_restaruant/flutter_restaruant/pubspec.yaml` 內的 `version:` 是否完全一致。若不一致將立即中止發布，防止版號混亂。
