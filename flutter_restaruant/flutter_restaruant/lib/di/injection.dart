@@ -3,6 +3,8 @@ import '../api/api_barrel.dart';
 import '../data_layer/datasources/datasources_barrel.dart';
 import '../data_layer/repositories/repositories_barrel.dart';
 import '../domain/repositories/repositories_barrel.dart';
+import '../features/ai_assistant/data/repositories/menu_vision_repo.dart';
+import '../features/ai_assistant/domain/repositories/menu_vision_repository.dart';
 import '../manager/manager_barrel.dart';
 
 final getIt = GetIt.instance;
@@ -32,4 +34,5 @@ void setupInjection() {
   );
   getIt.registerLazySingleton<SignInRepository>(() => SignInRepo());
   getIt.registerLazySingleton<SettingsRepository>(() => const SettingsRepo());
+  getIt.registerLazySingleton<MenuVisionRepository>(() => MenuVisionRepo());
 }

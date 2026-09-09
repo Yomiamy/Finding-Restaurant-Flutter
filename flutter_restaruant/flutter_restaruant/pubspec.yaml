@@ -54,6 +54,7 @@ dependencies:
   firebase_auth: ^6.5.6 # Firebase 身分驗證系統
   firebase_messaging: ^16.4.3 # Firebase Cloud Messaging (FCM) 推播通知
   firebase_analytics: ^12.4.5 # Firebase 數據統計與分析服務
+  firebase_ai: ^4.0.0 # Google Gemini / Firebase AI Logic 多模態套件
 
   # 第三方身分驗證與登入 (Third-Party Authentication)
   google_sign_in: ^6.3.0 # Google 帳號登入 SDK

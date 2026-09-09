@@ -4,6 +4,7 @@ import 'package:flutter_restaruant/api/api_barrel.dart';
 import 'package:flutter_restaruant/data_layer/datasources/datasources_barrel.dart';
 import 'package:flutter_restaruant/di/di_barrel.dart';
 import 'package:flutter_restaruant/domain/repositories/repositories_barrel.dart';
+import 'package:flutter_restaruant/features/ai_assistant/domain/repositories/menu_vision_repository.dart';
 import 'package:flutter_restaruant/manager/manager_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -90,7 +91,12 @@ void main() {
       expect(GetIt.I.isRegistered<SettingsRepository>(), isTrue);
       final repo = GetIt.I<SettingsRepository>();
       expect(repo, isA<SettingsRepository>());
-      expect(repo, isA<SettingsRepository>());
+    });
+
+    test('MenuVisionRepository resolves to MenuVisionRepository', () {
+      expect(GetIt.I.isRegistered<MenuVisionRepository>(), isTrue);
+      final repo = GetIt.I<MenuVisionRepository>();
+      expect(repo, isA<MenuVisionRepository>());
     });
 
     test('Lazy singletons return the same instance', () {
