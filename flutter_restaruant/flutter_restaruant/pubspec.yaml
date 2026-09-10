@@ -100,6 +100,7 @@ dev_dependencies:
 
   flutter_test:
     sdk: flutter
+  bloc_test: ^10.0.0 # BLoC 狀態管理測試輔助套件
   fake_cloud_firestore: ^4.2.0
 
 flutter:
