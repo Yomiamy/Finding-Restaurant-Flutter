@@ -35,11 +35,12 @@ class MenuVisionRepo implements MenuVisionRepository {
   GenerativeModel _getModel() {
     final ai = _firebaseAI ?? FirebaseAI.googleAI();
     return ai.generativeModel(
-      model: 'gemini-2.5-flash',
+      model: 'gemini-3.7-flash',
       systemInstruction: Content.system(systemInstruction),
       generationConfig: GenerationConfig(
         responseMimeType: 'application/json',
         responseSchema: menuAnalysisSchema,
+        thinkingConfig: ThinkingConfig.withThinkingBudget(0),
       ),
     );
   }
@@ -72,6 +73,17 @@ class MenuVisionRepo implements MenuVisionRepository {
     return analyzeMenuImageBytes(imageBytes);
   }
 
+  static String _detectMimeType(Uint8List bytes) {
+    if (bytes.length >= 8 &&
+        bytes[0] == 0x89 &&
+        bytes[1] == 0x50 &&
+        bytes[2] == 0x4E &&
+        bytes[3] == 0x47) {
+      return 'image/png';
+    }
+    return 'image/jpeg';
+  }
+
   @override
   Future<A2UIComponent> analyzeMenuImageBytes(Uint8List imageBytes) async {
     try {
@@ -80,10 +92,11 @@ class MenuVisionRepo implements MenuVisionRepository {
         rawJson = await _analyzer(imageBytes);
       } else {
         final model = _getModel();
+        final mimeType = _detectMimeType(imageBytes);
         final prompt = [
           Content.multi([
             const TextPart('請完整拆解這張菜單的菜色、價格與過敏原資訊。'),
-            InlineDataPart('image/jpeg', imageBytes),
+            InlineDataPart(mimeType, imageBytes),
           ]),
         ];
 
