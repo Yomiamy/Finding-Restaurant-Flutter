@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'dart:ui' as ui;
 
+import 'package:firebase_app_check/firebase_app_check.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
@@ -39,6 +40,15 @@ void main() async {
       // 於 runApp 前載入，使 isGuest 可被 UI 同步查詢
       SignInManager().loadPrefs(),
     ]);
+
+    // ignore: deprecated_member_use
+    await FirebaseAppCheck.instance.activate(
+      // Set appleProvider to `AppleProvider.debug`
+      // ignore: deprecated_member_use
+      appleProvider: AppleProvider.debug,
+      // ignore: deprecated_member_use
+      androidProvider: AndroidProvider.debug,
+    );
 
     await FcmManager().init();
   } catch (e, st) {
