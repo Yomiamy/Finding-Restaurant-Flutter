@@ -1,7 +1,7 @@
 part of 'menu_vision_bloc.dart';
 
 @immutable
-abstract class MenuVisionState extends Equatable {
+sealed class MenuVisionState extends Equatable {
   const MenuVisionState();
 
   @override
