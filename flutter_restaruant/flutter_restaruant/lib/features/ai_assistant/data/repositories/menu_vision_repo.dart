@@ -40,7 +40,6 @@ class MenuVisionRepo implements MenuVisionRepository {
       generationConfig: GenerationConfig(
         responseMimeType: 'application/json',
         responseSchema: menuAnalysisSchema,
-        thinkingConfig: ThinkingConfig.withThinkingBudget(0),
       ),
     );
   }
