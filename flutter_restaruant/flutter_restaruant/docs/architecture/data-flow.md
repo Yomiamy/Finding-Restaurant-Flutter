@@ -440,3 +440,62 @@ Inspector 的 pending→complete 機制靠 `options.extra` 傳遞：`onRequest` 
 `FlutterInspector` 建構式內會立即改寫三個全域 error hook（`FlutterError.onError`、`PlatformDispatcher.instance.onError`、`ErrorWidget.builder`）。由於 `inspector` 是**頂層 lazy final**，首次求值發生在第一次被讀取時——全專案只有 `test/app_theme_platform_test.dart` 會 mount 真實的 `FindingRestaruantApp`，因此該測試必須在 `try/finally` 中自行還原這三個 hook。
 
 > ⚠️ `tearDown()` 來不及救：`flutter_test` 對 `ErrorWidget.builder` 的前後比對發生在測試主體結束時、`tearDown` 執行**之前**。日後若有新測試 mount 真實 App，同樣需要處理。
+
+---
+
+## 6. AI 多模態菜單視覺識別與點餐流程 (AI Multimodal Menu Vision Flow)
+
+> 🐧 **Linus 好品味實踐**：以 `sealed class` 狀態窮盡比對消滅零散布林旗標，以 `failedImageBytes` 保留快取消滅重複選圖重試分支。
+
+```text
+  [RestaurantDetailPage]
+           │ 點擊相機圖示 (AppBar)
+           ▼
+    MenuVisionSheet.show(...)
+           │ 拍照 / 相簿選圖 (ImagePicker)
+           ▼
+    MenuVisionBloc.add(AnalyzeMenuImage(bytes))
+           │
+           ├─► State: MenuVisionLoading
+           │
+           ├─► MenuVisionRepository.analyzeMenu(bytes)
+           │         │
+           │         ▼
+           │   [MenuVisionRepo]
+           │         │ 本機偵測 MIME 類型 + 壓縮
+           │         ▼
+           │   FirebaseAI.googleAI().generativeModel(
+           │     model: 'gemini-3.5-flash-lite',
+           │     generationConfig: GenerationConfig(
+           │       responseMimeType: 'application/json',
+           │       responseSchema: menuAnalysisSchema,
+           │     ),
+           │   )
+           │         │
+           │         ▼
+           │   返回 Structured JSON
+           │         │ 解析映射
+           │         ▼
+           │   DishCatalogComponent / List<DishItemEntity>
+           │
+           ├─► 成功 ──► State: MenuVisionSuccess(catalog, orderCounts, currency)
+           │                 │
+           │                 ▼
+           │           MenuVisionSheet (DraggableScrollableSheet)
+           │             ├─ 類別 Tab 篩選列
+           │             ├─ DishCard 清單 (菜名、價格、AllergenBadge)
+           │             └─ 虛擬點餐試算底欄 (即時金額累計)
+           │
+           └─► 失敗 ──► State: MenuVisionFailure(error, failedImageBytes)
+                             │
+                             ▼
+                       優雅錯誤提示 + 一鍵重試 (直接複用快取 bytes，免重新拍照)
+```
+
+### 關鍵設計細節
+
+1. **結構化輸出 (Structured Output)**：透過 `menu_analysis_schema.dart` 嚴格約束 Gemini 輸出為 JSON Schema，杜絕正則或 Markdown 字串修剪之脆弱性。
+2. **零 DTO 污染 (Pure Domain Entities)**：AI 相關業務模型（`DishItemEntity`、`AllergenInfo`、`A2UIComponent`）定義於 `lib/domain/entities/`，完全不 import `data_layer/dto`，建立 Clean Architecture 的良好示範。
+3. **貨幣符號相容性 (`formatPrice`)**：依餐廳幣別格式化價格，前綴符號（如 `$120`）與後綴／文字貨幣（如 `120 TWD`）皆能正確渲染。
+4. **App Check 整合**：`main.dart` 於 `kDebugMode` 配置 `AndroidDebugProvider` 與 `AppleDebugProvider`，Release 模式則無縫對接正式 App Attest / Play Integrity。
+

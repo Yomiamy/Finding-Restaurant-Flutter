@@ -2,7 +2,7 @@
 # (AI Multimodal Menu Vision — Dish Lens)
 
 > **狀態**：STAGE 0a 功能規格 (Feature Spec)
-> **來源**：`docs/brainstorm/2026-09-09-features-brainstorm.md` §2.3 F-3.1 + Ch.7 情境 2
+> **來源**：`docs/brainstorm/2026-09-12-features-brainstorm.md` §2.3 F-3.1 + Ch.7 情境 2
 > **日期**：2026-09-09
 
 ---

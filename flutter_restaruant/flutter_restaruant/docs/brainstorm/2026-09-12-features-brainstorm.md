@@ -49,11 +49,11 @@
 
 ---
 
-## 📌 進度覆核摘要 (Progress Review — 2026-08-19 更新)
+## 📌 進度覆核摘要 (Progress Review — 2026-09-12 更新)
 
-初版報告產出於 2026-07-26，歷經多次迭代覆核。本次依 2026-08-19 實際落地的變更（PR #70, v1.5.0+31）覆核全文。**覆核方式為直接檢視當前程式碼，而非採信 commit 訊息**。
+初版報告產出於 2026-07-26，歷經多次迭代覆核。本次依 2026-09-12 實際落地的變更（PR #116，AI 多模態菜單視覺識別落地）覆核全文。**覆核方式為直接檢視當前程式碼，而非採信 commit 訊息**。
 
-**✅ 已落地（16 項）**
+**✅ 已落地（17 項）**
 
 | 項目 | 驗證依據 |
 | :--- | :--- |
@@ -74,6 +74,7 @@
 | **列表底部載入更多動畫** | ✅ 實查 `restaurant_info_list_widget.dart` 已實作 |
 | **RatingStars 評分星等元件 (取代 11 張 PNG)** | ✅ 實查 `rating_stars.dart` 已實作並接線，PNG 與 `RatingHelper` 已移除 (PR #73 驗證) |
 | **iOS UIScene Lifecycle 支援遷移** | ✅ **已於 2026-08-23 完成**，正確掛載 `FlutterSceneDelegate` 並保留原生推播委派 |
+| **AI 多模態 Vision 菜單翻譯 (F-3.1)** | ✅ **已於 2026-09-12 完成 (Issue #115 / PR #116)**：以 `firebase_ai` + `gemini-3.5-flash-lite` 實現結構化 JSON 菜單辨識與過敏原標註，架構落地於 `lib/domain/`、`lib/data_layer/` 與 `lib/flow/menu_vision/` |
 
 **🔴 仍未解決與新納入阻擋項（全數為 P0 最高優先，AdMob 合規為絕對最高阻擋項）**
 
@@ -343,10 +344,15 @@ lib/
 
 ### 2.3 AI 與個人化 (AI & Personalization)
 
-#### F-3.1 AI 多模態 Vision 菜單翻譯與食材拆解 (AI Multimodal Menu Vision)
+#### F-3.1 AI 多模態 Vision 菜單翻譯與食材拆解 (AI Multimodal Menu Vision) — ✅ 已於 2026-09-12 完成 (Issue #115 / PR #116)
 * **設計理念**: 解決外國旅客或看不懂特色菜單的用餐痛點。
-* **技術實現**: 使用者拍照上傳紙本菜單，傳送至 Gemini 1.5 Flash Vision / OpenAI GPT-4o API。
-* **結構化輸出**: 返回 JSON 包含：原始菜名、繁體中文翻譯、食材解析（如「含花生/麩質/牛奶」過敏原標示）、辣度等級、估算熱量，並自動抓取網路參考菜色圖片。
+* **技術實現**: 使用者拍照或選取紙本菜單圖片，傳送至 Gemini 3.5 Flash Lite (`gemini-3.5-flash-lite`) API，透過 `firebase_ai: ^3.7.1` 原生串接，支援相機/相簿選圖、本機 MIME 偵測與品質壓縮、App Check Debug/Safety 防護，並由 `MenuVisionBloc` 驅動 `DraggableScrollableSheet`。
+* **結構化輸出**: 返回 JSON Schema 規範之 `DishCatalogComponent`，包含：原始菜名、繁體中文翻譯、食材解析（`AllergenInfo` 含過敏原等級與標籤）、辣度等級、估算價格，並自動計算虛擬點餐總額。
+* **架構落地**:
+  - **Domain**: `lib/domain/entities/dish_item_entity.dart`、`allergen_info.dart`、`a2ui_component.dart`（Sealed class 階層）、`lib/domain/repositories/menu_vision_repository.dart`
+  - **Data**: `lib/data_layer/repositories/menu_vision_repo.dart`、`menu_analysis_schema.dart`
+  - **Flow**: `lib/flow/menu_vision/bloc/` (`menu_vision_bloc.dart`)、`lib/flow/menu_vision/view/` (`menu_vision_sheet.dart`、`dish_card.dart`、`allergen_badge.dart`)
+  - **進入點**: `RestaurantDetailPage` 右上角相機按鈕喚起。
 
 #### F-3.2 個人味蕾配對度 (0-100% Personal Flavor Match Score)
 * **設計理念**: 突破傳統星級評分，提供「針對使用者個人」的專屬相性評分。
@@ -571,7 +577,7 @@ lib/
 | **輕量化線上微訂位 Time-Slot 選擇器** | 商業轉化 | 7 | 3.0 | 80% | 2.0 | **8.4** | 19.2 | 11 | **P1** |
 | **自訂美食地圖社群共編** | 社群生態 | 6 | 2.0 | 80% | 2.0 | **4.8** | 9.6 | 12 | **P2** |
 | **線上候位與動態隊列 FCM 追蹤** | 商業轉化 | 5 | 2.5 | 80% | 2.5 | **4.0** | 10.0 | 13 | **P2** |
-| **AI 多模態 Vision 菜單翻譯** | AI 創新 | 6 | 2.5 | 80% | 2.5 | **4.8** | 12.0 | 14 | **P2** |
+| ✅ **AI 多模態 Vision 菜單翻譯 (F-3.1)** | AI 創新 | 6 | 2.5 | 80% | 2.5 | **4.8** | 12.0 | 14 | **已完成 (2026-09-12)** |
 | **個人味蕾配對度 (0-100% Match)** | AI 創新 | 7 | 2.0 | 70% | 2.5 | **3.92** | 9.8 | 15 | **P2** |
 | **自然語言選店助手與命運轉盤** | AI 創新 | 6 | 2.0 | 70% | 2.0 | **4.2** | 11.2 | 16 | **P2** |
 | **雙排瀑布流 UGC 食記與短影片** | 內容生態 | 5 | 2.0 | 70% | 3.0 | **2.33** | 9.8 | 17 | **P2** |
@@ -634,7 +640,7 @@ lib/
                                          ▼
 +-----------------------------------------------------------------------------------+
 | Phase 3: AI 差異化壁壘與白地探索 (AI Differentiators & White Space)                |
-|   • AI 多模態 Vision 菜單翻譯與食材過敏原拆解                                       |
+|   • [x] AI 多模態 Vision 菜單翻譯與食材過敏原拆解 ✅ 2026-09-12 (Issue #115 / PR #116) |
 |   • 個人味蕾配對度 (0-100% Match Score & 味覺雷達)                                  |
 |   • 自然語言選店對話助手與命運轉盤                                                  |
 |   • 雙排瀑布流 UGC 食記與 15 秒探店短影片                                           |
@@ -1304,19 +1310,22 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 ---
 
-### 情境 2：多模態拍菜單 AI 助手 (Multimodal Menu & Dish Lens)
+### 情境 2：多模態拍菜單 AI 助手 (Multimodal Menu & Dish Lens) — ✅ 已於 2026-09-12 完成 (Issue #115 / PR #116)
 
 * **痛點**：到異國餐廳或特色小吃店，紙本菜單字體密密麻麻、無圖片、食材不明，過敏體質或外食族難以抉擇。
 * **進入點**：
-  - 餐廳詳情頁頂部「📸 **拍菜單 AI 拆解**」浮動按鈕。
+  - 餐廳詳情頁頂部 AppBar 右側「📸 **拍菜單 AI 拆解**」圖示按鈕。
 * **互動流程**：
-  1. 使用者拍照或選取紙本菜單圖片。
-  2. 圖片經本地壓縮後送入 Google AI Studio (Gemini API) (Gemini 2.5 Flash Multimodal)。
+  1. 使用者點擊相機或相簿選取紙本菜單圖片。
+  2. 圖片經本地偵測 MIME 類型與品質壓縮後，送入 Google AI (`FirebaseAI.googleAI().generativeModel(model: 'gemini-3.5-flash-lite')`)。
   3. **GenUI 動態生成【互動式菜單看板 (Interactive Dish Catalog)】**：
-     - **分頁標籤**：自動歸類為「前菜」、「主食」、「湯品」、「甜點/飲品」。
+     - **分頁標籤**：自動歸類為「前菜」、「主食」、「湯品」、「甜點/飲品」等類別。
      - **過敏原與食材警示 Badge**：自動標註「⚠️ 含花生/堅果」、「🌱 純素」、「🌶️ 中辣」。
-     - **招牌必點指數**：AI 結合 Yelp 網友評論標註「🔥 89% 顧客推薦」。
-     - **虛擬點餐試算**：點擊加入點餐單，即時計算總金額與分攤人均。
+     - **招牌必點指數**：AI 標註顧客推薦亮點。
+     - **虛擬點餐試算**：點擊加入/增減點餐數量，即時依餐廳貨幣符號計算總金額。
+* **落地架構**：
+  - 依循 Clean Architecture 慣例放置於 `lib/domain/`、`lib/data_layer/`、`lib/flow/menu_vision/`。
+  - 整合 App Check debug provider、圖片重試快取與全面單元／元件測試。
 
 ---
 
@@ -1351,7 +1360,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 1. **Firebase App Check 嚴格保護**
    - 透過 App Check (iOS DeviceCheck / App Attest; Android Play Integrity) 鎖定 API 請求來源，杜絕未經授權的惡意客戶端盜刷 Gemini 配額。
 2. **Firebase Remote Config 動態模型控制**
-   - 模型名稱（如 `gemini-2.5-flash`）、Temperature、System Instructions 與 Prompt 模板全數由 Remote Config 遠端控制，無需發布新版本即可調整。
+   - 模型名稱（如 `gemini-3.5-flash-lite`）、Temperature、System Instructions 與 Prompt 模板全數由 Remote Config 遠端控制，無需發布新版本即可調整。
 3. **優雅降級 (Graceful Fallback Policy)**
    - 當遇 HTTP 429 (Rate Limit)、網路離線或 JSON 語法破損時：
      - 降級為本地快取之推薦結果或標準搜尋列表。
@@ -1367,7 +1376,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | :--- | :--- | :--- | :---: |
 | **M1** | Google AI Studio 基礎設施與 A2UI Protocol 核心 | 引入 `google_generative_ai`，完成 GetIt 註冊、API Key 遠端派發與 Remote Config 接線 | 1.0 |
 | **M2** | A2UI 動態元件解析引擎 | 實作 `A2UIParser`、`A2UIWidgetRegistry` 與 5 款基礎 M3 動態卡片元件 | 1.5 |
-| **M3** | 拍菜單多模態視覺助手 (Dish Lens) | 完成相機拍照、圖片壓縮、食材/過敏原解析與互動點餐看板 UI | 2.0 |
+| **M3** | ✅ 拍菜單多模態視覺助手 (Dish Lens) — 已於 2026-09-12 完成 (PR #116) | 完成相機拍照/選圖、圖片壓縮、`gemini-3.5-flash-lite` 結構化食材/過敏原解析與互動點餐看板 UI | 2.0 |
 | **M4** | AI 智能覓食助理與 GenUI 畫布 | 完成對話式 BottomSheet、Yelp Function Calling、對比卡片與命運轉盤 | 2.0 |
 | **M5** | 評論智慧摘要與美食巡禮行程 | 完成評價情報卡、0-100% 味蕾相性雷達與最愛行程產生器 | 1.5 |
 

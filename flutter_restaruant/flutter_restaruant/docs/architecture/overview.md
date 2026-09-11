@@ -32,9 +32,10 @@
   ┌────────────────────────────────────────────────────────────┐
   │                   領域層 (Domain Layer)                    │
   │   lib/domain/repositories/  ── abstract interface class    │
-  │   ⚠️ 介面層乾淨：5 個介面皆不 import data_layer            │
+  │   ⚠️ 介面層乾淨：6 個介面皆不 import data_layer            │
   │   lib/domain/entities/      ── Entity (業務模型)            │
-  │   🔴 11/11 entity 反向 import data_layer/dto（見下方缺陷）  │
+  │   🔴 11 個 Yelp entity 反向 import data_layer/dto（見下方）│
+  │   ✅ 新增 AI entities (DishItem/Allergen/A2UI) 零依賴 DTO   │
   └─────────────────────────────▲──────────────────────────────┘
                                 │ implements（依賴反轉）
                                 │ ▲ 但 entity 有反向 import ─┐
@@ -50,6 +51,7 @@
   │                外部資源 (External Sources)                 │
   │  [APIClz @RestApi] ──► Yelp Fusion API (經 Dio)            │
   │  [FavorDataSource] ──► Cloud Firestore                     │
+  │  [FirebaseAI]      ──► Google AI (Gemini 3.5 Flash Lite)   │
   │  [Manager × 9]     ──► Firebase Auth / FCM / 生物辨識 / 廣告 │
   └────────────────────────────────────────────────────────────┘
 ```
@@ -57,12 +59,12 @@
 ### 1. 領域層 (Domain Layer) — 架構的錨點（但錨沒有完全打穩）
 
 - **不依賴 I/O 技術**：`lib/domain/` 全目錄**沒有** import `dio`、`cloud_firestore`、`shared_preferences`、`retrofit`。業務契約確實獨立於任何網路／資料庫技術。
-- **`abstract interface class` 契約**：五個 Repository 介面（`MainRepository`、`RestaurantDetailRepository`、`FavorRepository`、`SignInRepository`、`SettingsRepository`）以 Dart 3 的 `abstract interface class` 宣告，明確表達「只能被 implement，不能被 extend」。**這 5 個介面檔案全數乾淨**，不 import 任何 data_layer 內容。
-- **Entity 為業務模型**：`RestaurantEntity`、`RestaurantDetailEntity`、`UserEntity`、`ReviewEntity` 等 11 個。
+- **`abstract interface class` 契約**：六個 Repository 介面（`MainRepository`、`RestaurantDetailRepository`、`FavorRepository`、`SignInRepository`、`SettingsRepository`、`MenuVisionRepository`）以 Dart 3 的 `abstract interface class` 宣告，明確表達「只能被 implement，不能被 extend」。**這 6 個介面檔案全數乾淨**，不 import 任何 data_layer 內容。
+- **Entity 為業務模型**：除既有 Yelp 相關的 11 個模型（`RestaurantEntity`、`RestaurantDetailEntity`、`UserEntity`、`ReviewEntity` 等）外，包含 AI 視覺菜單領域的 `DishItemEntity`、`AllergenInfo` 與 `A2UIComponent` sealed 階層。新加入的 AI 領域模型實現了無 DTO 污染的高品味架構。
 
 #### 🔴 已知架構缺陷：Entity 反向依賴 DTO
 
-**11 個 entity 檔案全數 `import '../../data_layer/dto/dto_barrel.dart'`**，理由是轉換方法被放在 Entity 自己身上：
+**11 個 Yelp entity 檔案全數 `import '../../data_layer/dto/dto_barrel.dart'`**，理由是轉換方法被放在 Entity 自己身上：
 
 ```dart
 // lib/domain/entities/restaurant_entity.dart:1
@@ -72,7 +74,7 @@ factory RestaurantEntity.fromDto(YelpRestaurantSummaryDto dto) => ...
 YelpRestaurantSummaryDto get toDto => ...
 ```
 
-更嚴重的是曾有 **`AccountDto` ⇄ `UserEntity` 構成直接循環 import**（`account_dto.dart` import domain 取得 `AccountType`，`user_entity.dart` import data_layer dto）。**現已完成解耦重構**：Data Layer 定義專屬的 `AccountType`（含 `@JsonValue` 與雙向映射），Domain Layer 定義純業務用的 `AccountTypeModel`，`AccountDto` 徹底切斷對 Domain 的 import，消除了檔案之間的直接循環引用（但 `user_entity.dart` 仍保留 `fromDto`/`toDto` 妥協派寫法，跨層傳遞依賴仍待未來抽取 Mapper 徹底解決）。
+更嚴重的是曾有 **`AccountDto` ⇄ `UserEntity` 構成直接循環 import**（`account_dto.dart` import domain 取得 `AccountType`，`user_entity.dart` import data_layer dto）。**現已完成解耦重構**：Data Layer 定義專屬的 `AccountType`（含 `@JsonValue` 與雙向映射），Domain Layer 定義純業務用的 `AccountTypeModel`，`AccountDto` 徹底切斷對 Domain 的 import，消除了檔案之間的直接循環引用（但 `user_entity.dart` 仍保留 `fromDto`/`toDto` 妥協派寫法，跨層傳遞依賴仍待未來抽取 Mapper 徹底解決；新開發的 `DishItemEntity` 等 AI 業務模型則徹底杜絕此問題）。
 
 另有兩處橫向洩漏：`sign_in_repository.dart:2` 與 `restaurant_business_time_entity.dart:2` import `features/utils/utils_barrel.dart`，而該 barrel 間接拉進 `geolocator` 與 `url_launcher`——一個 domain entity 只為了判斷語系，就把定位與瀏覽器套件掛上了。
 
@@ -80,15 +82,15 @@ YelpRestaurantSummaryDto get toDto => ...
 
 ### 2. 資料層 (Data Layer) — 實作契約，向內依賴
 
-- **`*Repo` implements `*Repository`**：`MainRepo`、`RestaurantDetailRepo`、`FavorRepo`、`SignInRepo`、`SettingsRepo`。依賴方向朝內——`data_layer` import `domain`，反之絕無。
-- **Dto 與 Entity 分離**：`lib/data_layer/dto/` 下的 `Yelp*Dto` 以 `@JsonSerializable` 標註，由 `json_serializable` 產生 `*.g.dart`。Dto 是 API 線上格式的鏡射（欄位名對齊 Yelp JSON），Entity 才是 App 內部使用的模型。
+- **`*Repo` implements `*Repository`**：`MainRepo`、`RestaurantDetailRepo`、`FavorRepo`、`SignInRepo`、`SettingsRepo`、`MenuVisionRepo`。依賴方向朝內——`data_layer` import `domain`，反之絕無。
+- **Dto 與 Entity 分離**：`lib/data_layer/dto/` 下的 `Yelp*Dto` 以 `@JsonSerializable` 標註，由 `json_serializable` 產生 `*.g.dart`。Dto 是 API 線上格式的鏡射（欄位名對齊 Yelp JSON），Entity 才是 App 內部使用的模型；AI 菜單辨識則透過 `menu_analysis_schema.dart` 定義 Gemini Structured Output Schema，輸出由 `MenuVisionRepo` 映射為領域 Entity。
 - **轉換點明確**：`RestaurantEntity.fromDto(dto)` 一律在 `data_layer` 內呼叫（`main_repo.dart:63`、`restaurant_detail_repo.dart:22,29`、`sign_in_repo.dart:43`、`favor_data_source.dart:52`）。**Dto 永不外洩到 Presentation 層。**
 - **`FavorDataSource`**：最愛清單在 Firestore 的**單一存取點**，每個最愛項目以 subcollection `favors/{uid}/items/{restaurant_id}` 結構儲存。內含空字串 uid 的 guard——少了它 Firestore 會拋 `ArgumentError`。
 
 ### 3. 表現層 (Presentation Layer)
 
-- **Feature-First 目錄**：`lib/flow/<feature>/` 下再分 `bloc/` 與 `view/`，每個 feature 自成一個垂直切片（main、restaurant、favor、signinup、settings、splash、filter、photo_viewer）。
-- **BLoC 單向資料流**：`Bloc<Event, State>` + `Equatable`。State 以**具名子類別**表達（`MainInitial` / `InProgress` / `Success` / `Failure` / `LoadMoreSuccess` / `ToggleFavorSuccess`），而非單一 class 塞 `isLoading` 布林旗標——狀態互斥性由型別系統保證。
+- **Feature-First 目錄**：`lib/flow/<feature>/` 下再分 `bloc/` 與 `view/`，每個 feature 自成一個垂直切片（main、restaurant、favor、signinup、settings、splash、filter、photo_viewer、menu_vision）。
+- **BLoC 單向資料流**：`Bloc<Event, State>` + `Equatable`。State 以**具名子類別**表達（`MainInitial` / `InProgress` / `Success` / `Failure` / `LoadMoreSuccess` / `ToggleFavorSuccess`；MenuVision 則採 `sealed class MenuVisionState` 搭配 Pattern Matching），而非單一 class 塞 `isLoading` 布林旗標——狀態互斥性由型別系統保證。
 - **`PlatformWidget<I, A>`**：泛型抽象類別，以 `Platform.isAndroid` / `Platform.isIOS` 分派到 `createAndroidWidget` / `createIosWidget`。子類別必須同時提供兩個平台的實作，**分歧在編譯期就被強制處理**。
 - **Design Tokens**：`lib/features/foundation/style/` 下的 `AppThemeData`、`ThemeColor`、`ThemeSize`、`ThemeFontSize`、`ThemeTextStyle`。
 
