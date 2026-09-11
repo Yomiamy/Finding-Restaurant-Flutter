@@ -90,7 +90,12 @@ void main() {
       expect(GetIt.I.isRegistered<SettingsRepository>(), isTrue);
       final repo = GetIt.I<SettingsRepository>();
       expect(repo, isA<SettingsRepository>());
-      expect(repo, isA<SettingsRepository>());
+    });
+
+    test('MenuVisionRepository resolves to MenuVisionRepository', () {
+      expect(GetIt.I.isRegistered<MenuVisionRepository>(), isTrue);
+      final repo = GetIt.I<MenuVisionRepository>();
+      expect(repo, isA<MenuVisionRepository>());
     });
 
     test('Lazy singletons return the same instance', () {

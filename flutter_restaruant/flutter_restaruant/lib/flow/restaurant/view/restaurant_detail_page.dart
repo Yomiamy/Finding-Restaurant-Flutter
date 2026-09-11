@@ -4,6 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../component/component_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
+import '../../menu_vision/menu_vision_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../generated/l10n.dart';
@@ -80,6 +81,22 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
           },
         ),
         backgroundColor: ThemeColor.colord84a20,
+        actions: [
+          IconButton(
+            key: const Key('menu_vision_action_button'),
+            tooltip: 'AI 拍照辨識菜單',
+            icon: const Icon(
+              Icons.document_scanner_outlined,
+              color: ThemeColor.colorffffff,
+            ),
+            onPressed: () {
+              MenuVisionSheet.show(
+                context,
+                restaurantTitle: _summaryInfo.name ?? '',
+              );
+            },
+          ),
+        ],
       ),
       body: Padding(
         padding: const EdgeInsets.only(bottom: ThemeSize.space10),
