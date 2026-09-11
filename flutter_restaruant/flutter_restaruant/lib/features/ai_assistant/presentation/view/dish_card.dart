@@ -7,11 +7,30 @@ import 'allergen_badge.dart';
 /// 菜色卡片元件
 class DishCard extends StatelessWidget {
   final DishItemEntity dish;
+  final String currency;
 
   const DishCard({
     super.key,
     required this.dish,
+    this.currency = 'TWD',
   });
+
+  /// 依幣別代碼格式化價格標記
+  static String formatPrice(double price, String currency) {
+    final symbol = switch (currency.toUpperCase()) {
+      'JPY' => '¥',
+      'TWD' || 'NTD' || 'NT\$' => 'NT\$',
+      'USD' => '\$',
+      'EUR' => '€',
+      'GBP' => '£',
+      'KRW' => '₩',
+      _ => '$currency ',
+    };
+    final formattedNumber = price.truncateToDouble() == price
+        ? price.toStringAsFixed(0)
+        : price.toStringAsFixed(2);
+    return '$symbol$formattedNumber';
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -73,7 +92,7 @@ class DishCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Text(
-                      '¥${dish.price.toStringAsFixed(0)}',
+                      formatPrice(dish.price, currency),
                       style: TextStyle(
                         fontWeight: FontWeight.bold,
                         color: theme.colorScheme.onPrimaryContainer,

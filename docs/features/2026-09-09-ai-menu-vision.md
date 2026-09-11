@@ -48,7 +48,7 @@
 在餐廳詳情頁 (`RestaurantDetailPage`) 新增「📸 拍菜單 AI 拆解」入口，觸發以下流程：
 
 ```
-使用者拍照 → 本地壓縮 (≤1500px/85%) → Firebase AI Logic (Gemini 2.5 Flash)
+使用者拍照 → 本地壓縮 (≤1500px/85%) → Firebase AI Logic (Gemini 3.5 Flash-Lite)
 → Structured JSON → Dart Sealed Class 解析 → 互動式菜單看板 UI
 ```
 
@@ -73,7 +73,7 @@
    - 本地自動壓縮：長邊 ≤1500px、品質 85%
 
 2. **Gemini 多模態菜單分析**
-   - 傳送壓縮圖片至 Firebase AI Logic (Gemini 2.5 Flash)
+   - 傳送壓縮圖片至 Firebase AI Logic (Gemini 3.5 Flash-Lite)
    - 使用 Structured Output Schema 強制回傳結構化 JSON
    - System Instruction 定位為「資深餐飲專家與食品安全顧問」
 
@@ -121,7 +121,7 @@
 ### AC-1：端到端拍照分析
 - [ ] 使用者在餐廳詳情頁點擊「📸 拍菜單」按鈕
 - [ ] 系統喚起相機（或相簿），使用者拍攝/選取菜單圖片
-- [ ] 圖片自動壓縮後送至 Gemini 2.5 Flash
+- [ ] 圖片自動壓縮後送至 Gemini 3.5 Flash-Lite
 - [ ] 結果以互動式菜單看板呈現（< 5 秒完成分析，一般菜單）
 
 ### AC-2：過敏原正確標示
@@ -197,7 +197,7 @@
 │  ┌───────────────────────────────────────────────────────────┐ │
 │  │ MenuVisionRepositoryImpl                                   │ │
 │  │ 1. ImagePicker → 拍照/選取 + 本地壓縮                     │ │
-│  │ 2. FirebaseAI.generativeModel('gemini-2.5-flash')         │ │
+│  │ 2. FirebaseAI.generativeModel('gemini-3.5-flash-lite')    │ │
 │  │    + systemInstruction + responseSchema                    │ │
 │  │ 3. generateContent([text prompt, InlineDataPart])         │ │
 │  │ 4. jsonDecode → A2UIComponent.fromJson → DishCatalog      │ │

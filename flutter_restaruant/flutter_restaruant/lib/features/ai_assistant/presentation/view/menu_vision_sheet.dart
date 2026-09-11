@@ -117,8 +117,16 @@ class _MenuVisionSheetState extends State<MenuVisionSheet> {
                     MenuVisionLoading() => const _LoadingProgressView(),
                     MenuVisionSuccess(:final catalog) =>
                       _CatalogContentView(catalog: catalog),
-                    MenuVisionFailure(:final message) => _FailureRetryView(
+                    MenuVisionFailure(:final message, :final failedImageBytes) =>
+                      _FailureRetryView(
                         message: message,
+                        onRetryPhoto: failedImageBytes != null
+                            ? () => _bloc.add(
+                                  RetryMenuAnalysis(
+                                    imageBytes: failedImageBytes,
+                                  ),
+                                )
+                            : null,
                         onRetryCamera: () => _bloc.add(
                           const CaptureAndAnalyzeMenu(
                             source: ImageSource.camera,
@@ -387,7 +395,10 @@ class _CatalogContentView extends StatelessWidget {
                   padding: const EdgeInsets.symmetric(vertical: 8),
                   itemCount: filteredDishes.length,
                   itemBuilder: (context, index) {
-                    return DishCard(dish: filteredDishes[index]);
+                    return DishCard(
+                      dish: filteredDishes[index],
+                      currency: catalog.currency,
+                    );
                   },
                 );
               }).toList(growable: false),
@@ -401,11 +412,13 @@ class _CatalogContentView extends StatelessWidget {
 
 class _FailureRetryView extends StatelessWidget {
   final String message;
+  final VoidCallback? onRetryPhoto;
   final VoidCallback onRetryCamera;
   final VoidCallback onRetryGallery;
 
   const _FailureRetryView({
     required this.message,
+    this.onRetryPhoto,
     required this.onRetryCamera,
     required this.onRetryGallery,
   });
@@ -441,10 +454,22 @@ class _FailureRetryView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 24),
+            if (onRetryPhoto != null) ...[
+              FilledButton.icon(
+                key: const Key('retry_photo_button'),
+                onPressed: onRetryPhoto,
+                icon: const Icon(Icons.refresh),
+                label: const Text('重試此照片'),
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size(220, 44),
+                ),
+              ),
+              const SizedBox(height: 12),
+            ],
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                FilledButton.icon(
+                OutlinedButton.icon(
                   onPressed: onRetryCamera,
                   icon: const Icon(Icons.camera_alt),
                   label: const Text('重新拍攝'),

@@ -41,14 +41,17 @@ void main() async {
       SignInManager().loadPrefs(),
     ]);
 
-    // ignore: deprecated_member_use
-    await FirebaseAppCheck.instance.activate(
-      // Set appleProvider to `AppleProvider.debug`
-      // ignore: deprecated_member_use
-      appleProvider: AppleProvider.debug,
-      // ignore: deprecated_member_use
-      androidProvider: AndroidProvider.debug,
-    );
+    if (kDebugMode) {
+      await FirebaseAppCheck.instance.activate(
+        providerApple: const AppleDebugProvider(),
+        providerAndroid: const AndroidDebugProvider(),
+      );
+    } else {
+      await FirebaseAppCheck.instance.activate(
+        providerApple: const AppleDeviceCheckProvider(),
+        providerAndroid: const AndroidPlayIntegrityProvider(),
+      );
+    }
 
     await FcmManager().init();
   } catch (e, st) {

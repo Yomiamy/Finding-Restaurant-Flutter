@@ -98,6 +98,44 @@ void main() {
       expect((result as FallbackMarkdownComponent).text, contains('菜單辨識異常'));
     });
 
+    test('analyzeMenuImageBytes falls back to FallbackMarkdownComponent on non-map JSON', () async {
+      final repo = MenuVisionRepo(
+        analyzer: (bytes) async => jsonEncode(['not', 'a', 'map']),
+      );
+
+      final result = await repo.analyzeMenuImageBytes(Uint8List.fromList([1, 2, 3]));
+      expect(result, isA<FallbackMarkdownComponent>());
+      expect((result as FallbackMarkdownComponent).text, contains('非預期物件'));
+    });
+
+    test('analyzeMenuImageBytes falls back on TypeError during field extraction', () async {
+      final repo = MenuVisionRepo(
+        analyzer: (bytes) async => jsonEncode({
+          'restaurant_title': 12345, // Not a string!
+          'dishes': 'not a list',
+        }),
+      );
+
+      final result = await repo.analyzeMenuImageBytes(Uint8List.fromList([1, 2, 3]));
+      expect(result, isA<FallbackMarkdownComponent>());
+      expect((result as FallbackMarkdownComponent).text, contains('欄位型別異常'));
+    });
+
+    test('captureImage and pickImageFromGallery return bytes correctly', () async {
+      final dummyBytes = Uint8List.fromList([1, 2, 3]);
+      final dummyFile = XFile.fromData(dummyBytes, name: 'test.jpg');
+      final picker = FakeImagePicker(fileToReturn: dummyFile);
+
+      final repo = MenuVisionRepo(picker: picker);
+      final captured = await repo.captureImage();
+      expect(captured, equals(dummyBytes));
+      expect(picker.lastSource, ImageSource.camera);
+
+      final picked = await repo.pickImageFromGallery();
+      expect(picked, equals(dummyBytes));
+      expect(picker.lastSource, ImageSource.gallery);
+    });
+
     test('captureAndAnalyzeMenu returns null when user cancels camera', () async {
       final picker = FakeImagePicker(fileToReturn: null);
       final repo = MenuVisionRepo(

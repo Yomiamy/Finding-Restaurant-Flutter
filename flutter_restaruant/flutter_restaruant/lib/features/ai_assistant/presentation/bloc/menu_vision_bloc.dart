@@ -21,26 +21,32 @@ class MenuVisionBloc extends Bloc<MenuVisionEvent, MenuVisionState> {
     : _repository = repository,
       super(const MenuVisionInitial()) {
     on<CaptureAndAnalyzeMenu>((event, emit) async {
+      if (state is MenuVisionLoading) return;
       emit(const MenuVisionLoading());
 
       try {
-        final A2UIComponent? result;
+        final Uint8List? imageBytes;
         if (event.source == ImageSource.camera) {
-          result = await _repository.captureAndAnalyzeMenu();
+          imageBytes = await _repository.captureImage();
         } else {
-          result = await _repository.pickFromGalleryAndAnalyzeMenu();
+          imageBytes = await _repository.pickImageFromGallery();
         }
 
-        if (result == null) {
+        if (imageBytes == null) {
           emit(const MenuVisionCancelled());
           return;
         }
+
+        final result = await _repository.analyzeMenuImageBytes(imageBytes);
 
         switch (result) {
           case DishCatalogComponent():
             emit(MenuVisionSuccess(catalog: result));
           case FallbackMarkdownComponent():
-            emit(MenuVisionFailure(message: result.text));
+            emit(MenuVisionFailure(
+              message: result.text,
+              failedImageBytes: imageBytes,
+            ));
         }
       } on Exception catch (e) {
         emit(MenuVisionFailure(message: '菜單辨識失敗：$e'));
@@ -48,6 +54,7 @@ class MenuVisionBloc extends Bloc<MenuVisionEvent, MenuVisionState> {
     });
 
     on<RetryMenuAnalysis>((event, emit) async {
+      if (state is MenuVisionLoading) return;
       emit(const MenuVisionLoading());
 
       try {
@@ -59,10 +66,16 @@ class MenuVisionBloc extends Bloc<MenuVisionEvent, MenuVisionState> {
           case DishCatalogComponent():
             emit(MenuVisionSuccess(catalog: result));
           case FallbackMarkdownComponent():
-            emit(MenuVisionFailure(message: result.text));
+            emit(MenuVisionFailure(
+              message: result.text,
+              failedImageBytes: event.imageBytes,
+            ));
         }
       } on Exception catch (e) {
-        emit(MenuVisionFailure(message: '重試分析失敗：$e'));
+        emit(MenuVisionFailure(
+          message: '重試分析失敗：$e',
+          failedImageBytes: event.imageBytes,
+        ));
       }
     });
 

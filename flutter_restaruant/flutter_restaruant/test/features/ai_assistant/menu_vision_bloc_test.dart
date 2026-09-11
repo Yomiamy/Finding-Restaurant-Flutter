@@ -11,9 +11,26 @@ class MockMenuVisionRepository implements MenuVisionRepository {
   A2UIComponent? captureResult;
   A2UIComponent? galleryResult;
   A2UIComponent? analyzeResult;
+  final sampleBytes = Uint8List.fromList([1, 2, 3, 4]);
   bool shouldThrow = false;
   bool captureCalled = false;
   bool galleryCalled = false;
+
+  @override
+  Future<Uint8List?> captureImage() async {
+    captureCalled = true;
+    if (shouldThrow) throw Exception('模擬相機錯誤');
+    if (captureResult == null) return null;
+    return sampleBytes;
+  }
+
+  @override
+  Future<Uint8List?> pickImageFromGallery() async {
+    galleryCalled = true;
+    if (shouldThrow) throw Exception('模擬相簿錯誤');
+    if (galleryResult == null) return null;
+    return sampleBytes;
+  }
 
   @override
   Future<A2UIComponent?> captureAndAnalyzeMenu() async {
@@ -33,6 +50,8 @@ class MockMenuVisionRepository implements MenuVisionRepository {
   Future<A2UIComponent> analyzeMenuImageBytes(Uint8List imageBytes) async {
     if (shouldThrow) throw Exception('模擬重試錯誤');
     return analyzeResult ??
+        captureResult ??
+        galleryResult ??
         const FallbackMarkdownComponent(text: '未設定結果');
   }
 }
@@ -98,7 +117,10 @@ void main() {
       act: (bloc) => bloc.add(const CaptureAndAnalyzeMenu()),
       expect: () => [
         const MenuVisionLoading(),
-        const MenuVisionFailure(message: '辨識失敗'),
+        MenuVisionFailure(
+          message: '辨識失敗',
+          failedImageBytes: mockRepo.sampleBytes,
+        ),
       ],
     );
 

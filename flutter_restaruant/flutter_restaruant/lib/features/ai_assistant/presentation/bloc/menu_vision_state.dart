@@ -28,14 +28,18 @@ class MenuVisionSuccess extends MenuVisionState {
   List<Object?> get props => [catalog];
 }
 
-/// 分析失敗（含錯誤訊息，供 UI 顯示重試按鈕）
+/// 分析失敗（含錯誤訊息與失敗圖片，供 UI 顯示重試按鈕）
 class MenuVisionFailure extends MenuVisionState {
   final String message;
+  final Uint8List? failedImageBytes;
 
-  const MenuVisionFailure({required this.message});
+  const MenuVisionFailure({
+    required this.message,
+    this.failedImageBytes,
+  });
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [message, failedImageBytes];
 }
 
 /// 使用者主動取消拍攝（靜默返回，不顯示錯誤）

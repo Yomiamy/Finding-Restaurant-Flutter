@@ -16,6 +16,20 @@ class MockMenuVisionRepository implements MenuVisionRepository {
   bool shouldThrow = false;
 
   @override
+  Future<Uint8List?> captureImage() {
+    if (shouldThrow) return Future.error(Exception('模擬錯誤'));
+    if (captureResult == null) return Future.value(null);
+    return Future.value(Uint8List.fromList([1, 2, 3]));
+  }
+
+  @override
+  Future<Uint8List?> pickImageFromGallery() {
+    if (shouldThrow) return Future.error(Exception('模擬錯誤'));
+    if (galleryResult == null) return Future.value(null);
+    return Future.value(Uint8List.fromList([1, 2, 3]));
+  }
+
+  @override
   Future<A2UIComponent?> captureAndAnalyzeMenu() {
     if (shouldThrow) return Future.error(Exception('模擬錯誤'));
     return Future.value(captureResult);
@@ -31,7 +45,10 @@ class MockMenuVisionRepository implements MenuVisionRepository {
   Future<A2UIComponent> analyzeMenuImageBytes(Uint8List imageBytes) {
     if (shouldThrow) return Future.error(Exception('模擬錯誤'));
     return Future.value(
-      analyzeResult ?? const FallbackMarkdownComponent(text: '無結果'),
+      analyzeResult ??
+          captureResult ??
+          galleryResult ??
+          const FallbackMarkdownComponent(text: '無結果'),
     );
   }
 }
@@ -111,7 +128,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: DishCard(dish: sampleDish),
+            body: DishCard(dish: sampleDish, currency: 'JPY'),
           ),
         ),
       );
@@ -124,6 +141,18 @@ void main() {
       expect(find.text('蛋 (含)'), findsOneWidget);
       expect(find.text('花生 (可能含有)'), findsOneWidget);
       expect(find.text('人氣招牌'), findsOneWidget);
+    });
+
+    testWidgets('formats price correctly for TWD currency', (tester) async {
+      await tester.pumpWidget(
+        MaterialApp(
+          home: Scaffold(
+            body: DishCard(dish: sampleDish, currency: 'TWD'),
+          ),
+        ),
+      );
+
+      expect(find.text('NT\$280'), findsOneWidget);
     });
   });
 

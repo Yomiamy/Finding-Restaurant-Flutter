@@ -45,30 +45,40 @@ class MenuVisionRepo implements MenuVisionRepository {
   }
 
   @override
-  Future<A2UIComponent?> captureAndAnalyzeMenu() async {
+  Future<Uint8List?> captureImage() async {
     final xFile = await _picker.pickImage(
       source: ImageSource.camera,
       maxWidth: 1500,
       maxHeight: 1500,
       imageQuality: 85,
     );
-
     if (xFile == null) return null;
-    final imageBytes = await xFile.readAsBytes();
-    return analyzeMenuImageBytes(imageBytes);
+    return xFile.readAsBytes();
   }
 
   @override
-  Future<A2UIComponent?> pickFromGalleryAndAnalyzeMenu() async {
+  Future<Uint8List?> pickImageFromGallery() async {
     final xFile = await _picker.pickImage(
       source: ImageSource.gallery,
       maxWidth: 1500,
       maxHeight: 1500,
       imageQuality: 85,
     );
-
     if (xFile == null) return null;
-    final imageBytes = await xFile.readAsBytes();
+    return xFile.readAsBytes();
+  }
+
+  @override
+  Future<A2UIComponent?> captureAndAnalyzeMenu() async {
+    final imageBytes = await captureImage();
+    if (imageBytes == null) return null;
+    return analyzeMenuImageBytes(imageBytes);
+  }
+
+  @override
+  Future<A2UIComponent?> pickFromGalleryAndAnalyzeMenu() async {
+    final imageBytes = await pickImageFromGallery();
+    if (imageBytes == null) return null;
     return analyzeMenuImageBytes(imageBytes);
   }
 
@@ -107,11 +117,26 @@ class MenuVisionRepo implements MenuVisionRepository {
         return const FallbackMarkdownComponent(text: '未能取得菜單辨識結果，請重試。');
       }
 
-      final decoded = jsonDecode(rawJson) as Map<String, Object?>;
+      final Object? rawDecoded = jsonDecode(rawJson);
+      if (rawDecoded is! Map) {
+        return const FallbackMarkdownComponent(
+          text: '菜單辨識回傳格式非預期物件，請確認照片清晰度後重試。',
+        );
+      }
+
+      final decoded = Map<String, Object?>.from(rawDecoded);
       return A2UIComponent.fromJson({
         'component_type': 'dish_catalog',
         'data': decoded,
       });
+    } on FormatException catch (e) {
+      return FallbackMarkdownComponent(
+        text: 'JSON 解析失敗，請確認照片清晰度後重試 ($e)',
+      );
+    } on TypeError catch (e) {
+      return FallbackMarkdownComponent(
+        text: '菜單資料欄位型別異常，請確認照片清晰度後重試 ($e)',
+      );
     } on Exception catch (e) {
       return FallbackMarkdownComponent(
         text: '菜單辨識異常，請確認照片清晰度後重試 ($e)',
