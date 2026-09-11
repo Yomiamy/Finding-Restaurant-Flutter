@@ -1,8 +1,8 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
-import 'package:flutter_restaruant/features/ai_assistant/data/repositories/menu_vision_repo.dart';
-import 'package:flutter_restaruant/features/ai_assistant/domain/entities/ai_entities_barrel.dart';
+import 'package:flutter_restaruant/data_layer/data_layer_barrel.dart';
+import 'package:flutter_restaruant/domain/domain_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 

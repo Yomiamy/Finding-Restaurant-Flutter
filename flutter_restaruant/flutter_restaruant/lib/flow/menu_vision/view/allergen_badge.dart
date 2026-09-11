@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/entities/allergen_info.dart';
+import '../../../domain/entities/entities_barrel.dart';
 
 /// 過敏原醒目標籤
 class AllergenBadge extends StatelessWidget {

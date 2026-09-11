@@ -1,6 +1,6 @@
 import 'dart:typed_data';
 
-import '../entities/ai_entities_barrel.dart';
+import '../entities/entities_barrel.dart';
 
 /// 拍菜單視覺辨識 Repository 抽象契約
 abstract interface class MenuVisionRepository {

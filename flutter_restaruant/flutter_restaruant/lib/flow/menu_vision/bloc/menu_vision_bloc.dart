@@ -5,8 +5,8 @@ import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:meta/meta.dart';
 
-import '../../domain/entities/ai_entities_barrel.dart';
-import '../../domain/repositories/menu_vision_repository.dart';
+import '../../../domain/entities/entities_barrel.dart';
+import '../../../domain/repositories/repositories_barrel.dart';
 
 part 'menu_vision_event.dart';
 part 'menu_vision_state.dart';

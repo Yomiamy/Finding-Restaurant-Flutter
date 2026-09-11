@@ -1,8 +1,7 @@
 import 'dart:typed_data';
 
-import 'package:flutter_restaruant/features/ai_assistant/domain/entities/ai_entities_barrel.dart';
-import 'package:flutter_restaruant/features/ai_assistant/domain/repositories/menu_vision_repository.dart';
-import 'package:flutter_restaruant/features/ai_assistant/presentation/bloc/menu_vision_bloc.dart';
+import 'package:flutter_restaruant/domain/domain_barrel.dart';
+import 'package:flutter_restaruant/flow/menu_vision/menu_vision_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:bloc_test/bloc_test.dart';
 import 'package:image_picker/image_picker.dart';

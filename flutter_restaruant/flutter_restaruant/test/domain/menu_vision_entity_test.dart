@@ -1,4 +1,4 @@
-import 'package:flutter_restaruant/features/ai_assistant/domain/entities/ai_entities_barrel.dart';
+import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

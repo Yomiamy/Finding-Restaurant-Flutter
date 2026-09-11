@@ -3,8 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../domain/entities/ai_entities_barrel.dart';
-import '../../domain/repositories/menu_vision_repository.dart';
+import '../../../domain/domain_barrel.dart';
 import '../bloc/menu_vision_bloc.dart';
 import 'dish_card.dart';
 

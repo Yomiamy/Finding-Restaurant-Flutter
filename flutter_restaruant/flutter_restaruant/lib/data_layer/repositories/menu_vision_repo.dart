@@ -4,7 +4,7 @@ import 'dart:typed_data';
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../domain/entities/ai_entities_barrel.dart';
+import '../../domain/entities/entities_barrel.dart';
 import '../../domain/repositories/menu_vision_repository.dart';
 import 'menu_analysis_schema.dart';
 

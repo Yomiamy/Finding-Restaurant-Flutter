@@ -4,7 +4,7 @@ import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../component/component_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
-import '../../../features/ai_assistant/presentation/view/menu_vision_sheet.dart';
+import '../../menu_vision/menu_vision_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../generated/l10n.dart';

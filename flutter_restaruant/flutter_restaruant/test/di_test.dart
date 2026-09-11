@@ -4,7 +4,6 @@ import 'package:flutter_restaruant/api/api_barrel.dart';
 import 'package:flutter_restaruant/data_layer/datasources/datasources_barrel.dart';
 import 'package:flutter_restaruant/di/di_barrel.dart';
 import 'package:flutter_restaruant/domain/repositories/repositories_barrel.dart';
-import 'package:flutter_restaruant/features/ai_assistant/domain/repositories/menu_vision_repository.dart';
 import 'package:flutter_restaruant/manager/manager_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';

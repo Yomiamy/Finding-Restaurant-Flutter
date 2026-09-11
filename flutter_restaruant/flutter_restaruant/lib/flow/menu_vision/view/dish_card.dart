@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../domain/entities/allergen_info.dart';
-import '../../domain/entities/dish_item_entity.dart';
+import '../../../domain/entities/entities_barrel.dart';
 import 'allergen_badge.dart';
 
 /// 菜色卡片元件
