@@ -35,7 +35,7 @@ class MenuVisionRepo implements MenuVisionRepository {
   GenerativeModel _getModel() {
     final ai = _firebaseAI ?? FirebaseAI.googleAI();
     return ai.generativeModel(
-      model: 'gemini-3.7-flash',
+      model: 'gemini-3.5-flash-lite',
       systemInstruction: Content.system(systemInstruction),
       generationConfig: GenerationConfig(
         responseMimeType: 'application/json',
