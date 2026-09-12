@@ -74,7 +74,7 @@
 | **列表底部載入更多動畫** | ✅ 實查 `restaurant_info_list_widget.dart` 已實作 |
 | **RatingStars 評分星等元件 (取代 11 張 PNG)** | ✅ 實查 `rating_stars.dart` 已實作並接線，PNG 與 `RatingHelper` 已移除 (PR #73 驗證) |
 | **iOS UIScene Lifecycle 支援遷移** | ✅ **已於 2026-08-23 完成**，正確掛載 `FlutterSceneDelegate` 並保留原生推播委派 |
-| **AI 多模態 Vision 菜單翻譯 (F-3.1)** | ✅ **已於 2026-09-12 完成 (Issue #115 / PR #116)**：以 `firebase_ai` + `gemini-3.5-flash-lite` 實現結構化 JSON 菜單辨識與過敏原標註，架構落地於 `lib/domain/`、`lib/data_layer/` 與 `lib/flow/menu_vision/` |
+| **AI 多模態 Vision 菜單翻譯 (F-3.1)** | ✅ **已於 2026-09-12 完成 (Issue #115 / PR #116)**：以 `firebase_ai` + `gemini-3.5-flash-lite` 實現結構化 JSON 菜單辨識與過敏原標註，架構落地於 `lib/domain/`、`lib/data_layer/` 與 `lib/flow/menu_vision/`（34 測試全過零警告，獲 Linus 🟢 好品味與 Production-Ready 裁決；揭露 2 項架構微調 Action Items） |
 
 **🔴 仍未解決與新納入阻擋項（全數為 P0 最高優先，AdMob 合規為絕對最高阻擋項）**
 
@@ -90,6 +90,14 @@
 | ✅ **修復地圖底部列表 UI 溢出 (RenderFlex overflow)** | ~~Android 地圖底部發生溢出~~ | **已於 PR #73 修復**（實際位置為 `restaurant_item_cell.dart`，非 `rating_stars.dart`） |
 
 > **判斷**：架構地基已完成最關鍵的資料層重構（Subcollection）。當前 **🚨 AdMob 廣告刊登合規性** 攸關 App 營收與帳號存續，列為 **P0 絕對最高優先／阻擋級任務**；其餘底層遷移（Android Built-in Kotlin、CI/CD）與安全性（API Key）緊隨其後。
+
+**📋 跨專案架構審查待微調項目（依據 2026-09-12 審查報告 `cross_repo_architecture_audit_menu_vision.md`）**
+
+| 項目 | 優先級 | 現況與調整目標 | 風險 / 影響 |
+| :--- | :---: | :--- | :--- |
+| **消除例外偽裝，回歸 Sealed Result** | **P1** | `MenuVisionRepo` 將底層解析/網路例外偽裝為 `FallbackMarkdownComponent`，BLoC 再解開強轉為 `MenuVisionFailure`（概念偷渡 Error Smuggling）。目標：重構為 Dart 3 `sealed class MenuVisionResult`（`MenuVisionSuccessResult` / `MenuVisionFailureResult`）或拋出語意化自訂例外。 | **代碼品味與健壯性**：杜絕概念偷渡，避免未來 LLM 合法回傳 Markdown 遭誤殺為失敗。 |
+| **抽離硬體 `MediaPickerService`** | **P2** | `MenuVisionRepo` 同時混雜 `ImagePicker` 硬體 I/O 與多模態推論。目標：抽離為獨立 Service 介面，依賴注入進 Repo 或 BLoC。 | **關注點分離**：資料層不再依賴硬體選圖細節，提升可測試性。 |
+| **堅守 YAGNI（UseCase 邊界守衛）** | **架構守衛** | 在無跨多 Repo 業務編排（如使用者配額扣除 `QuotaRepo`）前，嚴禁引入純單行轉發的 `AnalyzeMenuUseCase`，維持 BLoC 直連 Repository 介面契約。 | **防範過度工程**：杜絕對照組 eslite 的形式主義與無效轉發「儀式稅」。 |
 
 ---
 
@@ -349,10 +357,17 @@ lib/
 * **技術實現**: 使用者拍照或選取紙本菜單圖片，傳送至 Gemini 3.5 Flash Lite (`gemini-3.5-flash-lite`) API，透過 `firebase_ai: ^3.7.1` 原生串接，支援相機/相簿選圖、本機 MIME 偵測與品質壓縮、App Check Debug/Safety 防護，並由 `MenuVisionBloc` 驅動 `DraggableScrollableSheet`。
 * **結構化輸出**: 返回 JSON Schema 規範之 `DishCatalogComponent`，包含：原始菜名、繁體中文翻譯、食材解析（`AllergenInfo` 含過敏原等級與標籤）、辣度等級、估算價格，並自動計算虛擬點餐總額。
 * **架構落地**:
+  - **模組邊界**: 對主工程僅透過 DI 容器 (`lib/di/injection.dart`) 與 AppBar 相機按鈕 2 處銜接，具備極致模組隔離（貫徹 Never break userspace）。
   - **Domain**: `lib/domain/entities/dish_item_entity.dart`、`allergen_info.dart`、`a2ui_component.dart`（Sealed class 階層）、`lib/domain/repositories/menu_vision_repository.dart`
   - **Data**: `lib/data_layer/repositories/menu_vision_repo.dart`、`menu_analysis_schema.dart`
-  - **Flow**: `lib/flow/menu_vision/bloc/` (`menu_vision_bloc.dart`)、`lib/flow/menu_vision/view/` (`menu_vision_sheet.dart`、`dish_card.dart`、`allergen_badge.dart`)
+  - **Presentation / Flow**: `lib/flow/menu_vision/bloc/` (`menu_vision_bloc.dart`、`menu_vision_state.dart`（Sealed class 狀態機）)、`lib/flow/menu_vision/view/` (`menu_vision_sheet.dart`、`dish_card.dart`、`allergen_badge.dart`)
   - **進入點**: `RestaurantDetailPage` 右上角相機按鈕喚起。
+* **跨專案架構審查評級 (2026-09-12 對標 `eslite-monorepo-app`)**:
+  - **Linus 品味裁決**: 🟢 **好品味 (Good Taste)** / **Production-Ready**。全套 34 個單元與 Widget 測試在 3 秒內全數通過，靜態分析零警告。相較於對照組的偽善架構（DIP 破裂、三重模型重複反序列化、Single State 防禦性判空地獄），本分支以 Dart 3 Sealed Class 達成「非法狀態在編譯期無法表達」，並在失敗時攜帶 `failedImageBytes` 提供免重拍重試體驗。
+* **後續架構微調 Action Items (依據架構審查報告)**:
+  1. **[P1] 消除例外偽裝，回歸 Dart 3 Sealed Result**: 目前 Repository 將底層 `FormatException`、`TypeError` 與網路異常就地包裝為 `FallbackMarkdownComponent`，BLoC 再解開強轉為 `MenuVisionFailure`。此舉構成概念偷渡 (Error Smuggling)，且若未來 LLM 正常輸出純 Markdown 會被誤殺為失敗。後續應重構為 `sealed class MenuVisionResult`（`MenuVisionSuccessResult` 與 `MenuVisionFailureResult`），或拋出自訂語意化例外由 BLoC 收斂。
+  2. **[P2] 職責分離：抽離硬體 MediaPicker**: 目前 `MenuVisionRepo` 混雜了 `ImagePicker`（相機/相簿硬體 I/O）與多模態推論。應將圖片選取抽離為獨立的 `MediaPickerService`，使 Repository 純粹聚焦於資料與推論。
+  3. **[架構守衛] 堅守 YAGNI，維持 BLoC 直連 Repository**: 拒絕為了「形式上的 Clean Architecture」而加入純單行轉發的 `AnalyzeMenuUseCase`。保持精簡直接，待未來引入跨 Repository 業務編排（如使用者辨識額度扣除 `QuotaRepo`）時再提煉 UseCase。
 
 #### F-3.2 個人味蕾配對度 (0-100% Personal Flavor Match Score)
 * **設計理念**: 突破傳統星級評分，提供「針對使用者個人」的專屬相性評分。
