@@ -97,7 +97,7 @@
 | :--- | :---: | :--- | :--- |
 | **消除例外偽裝，回歸 Sealed Result** | **P1** | `MenuVisionRepo` 將底層解析/網路例外偽裝為 `FallbackMarkdownComponent`，BLoC 再解開強轉為 `MenuVisionFailure`（概念偷渡 Error Smuggling）。目標：重構為 Dart 3 `sealed class MenuVisionResult`（`MenuVisionSuccessResult` / `MenuVisionFailureResult`）或拋出語意化自訂例外。 | **代碼品味與健壯性**：杜絕概念偷渡，避免未來 LLM 合法回傳 Markdown 遭誤殺為失敗。 |
 | **抽離硬體 `MediaPickerService`** | **P2** | `MenuVisionRepo` 同時混雜 `ImagePicker` 硬體 I/O 與多模態推論。目標：抽離為獨立 Service 介面，依賴注入進 Repo 或 BLoC。 | **關注點分離**：資料層不再依賴硬體選圖細節，提升可測試性。 |
-| **堅守 YAGNI（UseCase 邊界守衛）** | **架構守衛** | 在無跨多 Repo 業務編排（如使用者配額扣除 `QuotaRepo`）前，嚴禁引入純單行轉發的 `AnalyzeMenuUseCase`，維持 BLoC 直連 Repository 介面契約。 | **防範過度工程**：杜絕對照組 eslite 的形式主義與無效轉發「儀式稅」。 |
+| **堅守 YAGNI（UseCase 邊界守衛）** | **架構守衛** | 在無跨多 Repo 業務編排（如使用者配額扣除 `QuotaRepo`）前，嚴禁引入純單行轉發的 `AnalyzeMenuUseCase`，維持 BLoC 直連 Repository 介面契約。 | **防範過度工程**：杜絕對照組的形式主義與無效轉發「儀式稅」。 |
 
 ---
 
@@ -362,7 +362,7 @@ lib/
   - **Data**: `lib/data_layer/repositories/menu_vision_repo.dart`、`menu_analysis_schema.dart`
   - **Presentation / Flow**: `lib/flow/menu_vision/bloc/` (`menu_vision_bloc.dart`、`menu_vision_state.dart`（Sealed class 狀態機）)、`lib/flow/menu_vision/view/` (`menu_vision_sheet.dart`、`dish_card.dart`、`allergen_badge.dart`)
   - **進入點**: `RestaurantDetailPage` 右上角相機按鈕喚起。
-* **跨專案架構審查評級 (2026-09-12 對標 `eslite-monorepo-app`)**:
+* **跨專案架構審查評級 (2026-09-12 對標對照組大型專案)**:
   - **Linus 品味裁決**: 🟢 **好品味 (Good Taste)** / **Production-Ready**。全套 34 個單元與 Widget 測試在 3 秒內全數通過，靜態分析零警告。相較於對照組的偽善架構（DIP 破裂、三重模型重複反序列化、Single State 防禦性判空地獄），本分支以 Dart 3 Sealed Class 達成「非法狀態在編譯期無法表達」，並在失敗時攜帶 `failedImageBytes` 提供免重拍重試體驗。
 * **後續架構微調 Action Items (依據架構審查報告)**:
   1. **[P1] 消除例外偽裝，回歸 Dart 3 Sealed Result**: 目前 Repository 將底層 `FormatException`、`TypeError` 與網路異常就地包裝為 `FallbackMarkdownComponent`，BLoC 再解開強轉為 `MenuVisionFailure`。此舉構成概念偷渡 (Error Smuggling)，且若未來 LLM 正常輸出純 Markdown 會被誤殺為失敗。後續應重構為 `sealed class MenuVisionResult`（`MenuVisionSuccessResult` 與 `MenuVisionFailureResult`），或拋出自訂語意化例外由 BLoC 收斂。
@@ -1397,4 +1397,341 @@ class ComparisonMatrixComponent extends A2UIComponent {
 - **首字響應時間 (TTFT - Time To First Token)**：串流對話模式下 $\le 800\text{ ms}$。
 - **A2UI 解析穩定度**：結構化 JSON 解析錯誤率 $< 0.1\%$，且異常時 $100\%$ 安全降級。
 - **程式碼品質**：`flutter analyze` 維持零警告 (`No issues found!`)；單元測試覆蓋率 $\ge 85\%$。
+
+---
+
+# 8. 對照組架構審查與借鏡優化提案 (Cross-Repo Architecture Audit & Actionable Proposals)
+
+## 8.1 跨專案全方位架構對比總表 (Cross-Project Architecture Comparison Table)
+
+本章節基於對照組大型商業 Monorepo 專案與當前專案 `/Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter` 的全方位白箱審計事實，從 9 大核心維度展開深層對比。
+
+| # | 維度 / 架構特性 | 對照組專案 | 當前專案 (`Finding-Restaurant-Flutter`) | Linus 模式技術裁決與核心洞察 |
+| :-: | :--- | :--- | :--- | :--- |
+| **1** | **模組組織與套件架構** | 🔴 **Melos 15+ packages + 24+ overrides**<br>`pubspec.yaml:40-60` 劃分 15 個 workspace packages，但在 `pubspec.yaml:14-39` 被迫宣告 24+ 項 `dependency_overrides`（`intl`, `dio`, `retrofit`, `json_serializable` 等）壓制套件版本衝突。 | 🟢 **Single Package 目錄分層**<br>`pubspec.yaml` 單一 package (`flutter_restaruant` 2.2.0+37)，以目錄切分職責 (`domain/`, `data_layer/`, `flow/`, `features/foundation/`)。 | 🔴 **對照組陷入 Monorepo 泥淖**：未享受獨立部署好處，反承受多套件維護地獄。<br>🟢 **本專案勝在簡潔**：單一 Package 結構緊湊、全域一鍵建置 (`make gen`)，拒絕無謂拆分。 |
+| **2** | **分層邊界與依賴方向** | 🔴 **依賴倒置徹底失靈**<br>`domain/pubspec.yaml:26-45` 竟然直接依賴 8 個底層 API packages（`goons_retrofit_api`, `krakend_retrofit_api`, `db` 等）；`domain_adapter.dart:50-60` 直接接 `DataSource` 與 `Dio`。 | 🟢 **嚴格單向依賴倒置**<br>`flow` -> `domain` <- `data_layer` -> `api`。抽象 Repository 介面定義於 Domain，Data 實作之。<br>⚠️ 唯一瑕疵：`restaurant_detail_entity.dart:1` 存在反向 `import '../../data_layer/dto/dto_barrel.dart'`。 | 🔴 **對照組犯了架構虛偽罪**：嘴上說 Clean Architecture，核心 Domain 卻被底層 Infrastructure 綁架。<br>🟢 **本專案架構邊界更純粹**：修復 DTO 輕微引用後即為完美依賴倒置。 |
+| **3** | **依賴注入機制與生命週期** | 🔴 **GetIt 全域 Singleton Bloc 狀態污染**<br>`main_app/lib/main.dart:240-286` 與 `member_center_bloc.dart:16-25` 將 80+ Blocs 全數註冊為 GetIt 全域單例，離開畫面不銷毀，靠人肉 Clear 事件清狀態。 | 🟢 **BlocProvider 路由生命週期託管**<br>`lib/di/injection.dart:1-37`（僅 37 行）GetIt 只註冊無狀態 Repo/Client；`routes_table.dart:29-35` 由 `BlocProvider` 隨路由建立與銷毀。 | 🔴 **對照組致命破壞生命週期**：Bloc 淪為全域 Service Locator，引發記憶體洩漏與跨頁狀態污染。<br>🟢 **本專案完勝**：嚴守 Flutter 單向數據流與路由樹生命週期。 |
+| **4** | **呼叫鏈深度與儀式稅** | 🔴 **5 層轉發儀式稅 (Ritual Tax)**<br>查會員資訊經歷：UI -> Bloc -> `MemberCenterFacade:44-46` -> `GetMemberInfoUC:18-29` -> `MemberRepo:23-27` -> `ClaimInvoiceService:21-47` -> API。單行轉發高達 80%。 | 🟢 **直球 2 層鏈接**<br>UI -> `RestaurantDetailBloc:12-61` -> `RestaurantDetailRepository:3-11` -> `RestaurantDetailRepo:12-41` -> Retrofit。直截了當，零廢話。 | 🔴 **對照組嚴重形式主義**：只會轉發的 UseCase 是在浪費 CPU 與增加 Call Stack。<br>🟢 **本專案保持好品味**：堅持 Bloc 直連 Repo，無複合業務邏輯絕不加層。 |
+| **5** | **狀態管理架構** | 🟡 **80+ Blocs 巨大上帝狀態**<br>80+ Blocs 僅 1 個 Cubit，State 採巨大巢狀類別 + 手寫 `copyWith`（達 377 行），出現 God State 且遍布 `// TODO: 拆分` 註解。 | 🟡 **7 個高內聚 Bloc**<br>7 個高內聚 Bloc（`MainBloc`, `FavorBloc`, `RestaurantDetailBloc` 等），搭配 `part / part of`，但兩者皆尚未採用 Dart 3 sealed class 模式。 | 🟡 **平庸對平庸**：對照組的狀態過於臃腫；本專案規模適中，但雙方皆需現代化進化為 Dart 3 Sealed Class 窮盡比對。 |
+| **6** | **網路層、攔截器與防護** | 🟢 **工業級防護鏈，但 9 個 Dio 爆炸**<br>`krakend_dio_provider.dart:25-41` 實作 `RefreshTokenInterceptor`（401 自動換約）、憑證釘選、RateLimit、聚合錯誤處理；但分立 9 個 Dio 實例。 | 🟡 **單一 DioClient，但防護裸奔**<br>`lib/api/api_clz.dart:57-67` 單一實例，集中管理，但 Token 靜態寫死，無 401 自動刷新、無憑證釘選、無逾時重試。 | 🟢 **借鏡對照組攔截器**：移植其 401 自動換約與錯誤對應攔截器。<br>🔴 **拒絕對照組多 Dio 反模式**：維持本專案單一 `DioClient` 實例。 |
+| **7** | **錯誤處理與 Result 模式** | 🟡 **Record 模式但具 (null, null) 缺陷**<br>`common_exception.dart:177-195` 提供完整列舉，但回傳 `(Entity?, CommonException?)`，在 `member_center_bloc.dart:57-69` 被迫雙重防禦檢查。 | 🔴 **錯誤黑洞與吞錯崩潰**<br>`restaurant_detail_bloc.dart:42-44, 56-58` 採用 `on Exception catch (_)` 吞掉所有例外，僅拋出 `emit(const Failure())`，UI 無法感知原因。 | 🟢 **超越兩者的好品味方案**：拒絕對照組允許 `(null, null)` 的寬鬆 Record，引入 Dart 3 `sealed class Result<T>`，消除特殊情況。 |
+| **8** | **UI Token、元件與無障礙** | 🔴 **Sizes 廚房水槽 + 閹割無障礙**<br>`sizes.dart:1-248`（248 行 16 級 padding、刮刮卡高度）；`app.dart:272-286` 強行 `TextScaler.noScaling`；按鈕偽裝與 24x24 觸控違規。但有優雅的 `DialogQueueManager`。 | 🟢 **M3 現代化元件，但色票需微調**<br>`EmptyDataWidget`, `Skeleton`, `RatingStars` 現代化；無鎖死字體。但 `ThemeColor` 為十六進位命名 (`colord84a20`)，且存有未使用的 `PlatformWidget`。 | 🟢 **借鏡對照組對話框佇列**：移植 `DialogQueueManager` 消除彈窗併發重疊。<br>🔴 **嚴禁學對照組閹割無障礙**：堅決捍衛使用者字體縮放權利。 |
+| **9** | **工程化與測試品質** | 🟢 **mocktail 零 Codegen + PR CI 門禁**<br>`mocktail: ^1.0.4`（`mock_auth.dart:1-5`）免代碼生成；`.github/workflows/analysis.yml` 與 `tests.yml` 提供完整的 PR CI 自動化門禁。 | 🔴 **手寫 47 行 Fake Repo + PR CI 缺失**<br>`menu_vision_bloc_test.dart:9-56` 手寫 47 行 Fake 類別；Makefile 缺乏 `test`；GitHub Actions 僅有 Tag 發布，PR 零自動檢查。 | 🟢 **全盤借鏡測試工具鏈**：引入 `mocktail` 淘汰手寫 Fake；重構 Makefile 補齊 `make test`；新增 PR CI 門禁工作流。 |
+
+---
+
+## 8.2 嚴格 Linus 模式品味裁決表 (Linus Torvalds Taste Verdict Table)
+
+```
+========================================================================================
+                       LINUS TASTE VERDICT: ARCHITECTURAL ARBITRATION
+========================================================================================
+「爛程式員擔心程式碼，好程式員擔心資料結構。
+ 當你為了抽象而製造抽象，多寫了 4 層轉發卻連一行業務邏輯都沒有，那就是垃圾。
+ 當你為了解 Layout 溢位而閹割使用者的系統字體縮放，那就是破壞用戶空間的犯罪。」
+========================================================================================
+```
+
+| 評級 | 標的項目 (專案 / 檔案路徑) | 致命問題 / 核心優勢深度剖析 | 裁決與落地指引 |
+| :---: | :--- | :--- | :--- |
+| 🟢 **好品味** | 對照組主 App<br>`features/message_manager/dialog_queue_manager/` | **佇列化消滅競態**：核心採用 `Queue<QueuedDialog>` 與 `DialogIdentity` 去重，解決多重 API 失敗彈窗重疊遮擋、多次點擊跳窗與 Navigator 路由黑屏死鎖。 | **全面借鏡 (P1 - UI-8.1)**<br>移植為輕量 Dialog 佇列管理器，保護網路錯誤通知與系統彈窗。 |
+| 🟢 **好品味** | 對照組主 App<br>`pubspec.yaml:89-91`, `test/mock/mock_auth.dart` | **零 Codegen 現代化打樁**：採用 `mocktail` 基於 `noSuchMethod` 動態代理，擺脫 Mockito 沉重的 `build_runner` 儀式，具備優雅的 `when()` 與 `verify()`。 | **全面借鏡 (P1 - E-8.2)**<br>引入 `mocktail: ^1.0.4`，淘汰本專案手寫 47 行 Fake Repository 的低品味技術債。 |
+| 🟢 **好品味** | 對照組主 App<br>`.github/workflows/analysis.yml`, `tests.yml` | **PR 門禁防線**：任何合併進主幹的 PR 自動觸發靜態分析與單元測試，嚴守「絕不破壞 main 分支」原則。 | **全面借鏡 (P0 - E-8.1)**<br>補齊本專案缺失的 PR CI 門禁，防止警告與崩潰代碼入侵主幹。 |
+| 🟢 **好品味** | `Finding-Restaurant-Flutter`<br>`lib/features/foundation/extension/widget_extension.dart` | **平坦化非同步生命週期**：`runAfterFrame` 與 `waitForFrame` 簡化 `mounted` 判斷，消除深層回呼巢狀。 | **堅守並擴充 (P2 - UI-8.3)**<br>擴充 `context.colorScheme` 與 `context.textTheme` 語法糖。 |
+| 🔴 **致命缺陷** | 對照組主 App<br>`lib/app.dart:272-286` (`_SystemTextScaler`) | **公然閹割無障礙 (Break Userspace)**：強加 `TextScaler.noScaling`，註解稱「維持設計稿大小」。直接摧毀系統字體放大功能，違反 WCAG 1.4.4，讓視障長輩無法閱讀。 | **絕對禁止！列為反面教材**<br>堅守本專案尊重系統縮放原則，透過 Flexible/Scroll 解決版面溢位。 |
+| 🔴 **致命缺陷** | 對照組主 App<br>`lib/main.dart:240-286`, `member_center_bloc.dart:16-25` | **Bloc 淪為全域 Singleton**：將 80+ Blocs 全數註冊為 GetIt 單例，破壞 Flutter 生命週期，導致記憶體洩漏與跨頁狀態污染。 | **絕對禁止！堅守防線**<br>堅持本專案 `routes_table.dart` 的 `BlocProvider` 路由生命週期管理。 |
+| 🔴 **垃圾** | `domain`<br>`lib/src/facades/`, `lib/src/domains/*/usecase/` | **形式主義 5 層轉發儀式稅**：超過 80% 的 UseCase 僅有一行 `await repo.fetch()`。為分層而分層，徒增 4 倍類別與維護負擔。 | **絕對禁止！堅守直球架構**<br>維持本專案 `Bloc -> Repository` 直連架構，無跨領域協同絕不加 UseCase。 |
+| 🔴 **垃圾** | `domain`<br>`pubspec.yaml:26-45` (8 個 API 依賴) | **依賴反轉欺詐**：Monorepo 切了 15 個 package，核心 `domain` 卻反向依賴 8 個底層 API 與 DB 套件，既得 Monorepo 之害，又無分層之利。 | **絕對禁止！拒絕 Melos**<br>維持本專案單一 Package 目錄級嚴格分層，全域一鍵建置與測試。 |
+| 🔴 **垃圾** | `domain`<br>`entities/get_member_profile_entity.dart:48-51` | **四層無效資料映射馬戲團**：built_value DTO -> 轉 Map -> 轉 json_serializable Entity -> 轉 UI Model。純屬對 CPU 與 GC 的犯罪。 | **絕對禁止！單一實體原則**<br>維持單一不可變資料模型，UI 直接消費 Entity，消滅重複拷貝。 |
+| 🔴 **垃圾** | 對照組主 App<br>`features/foundation/style/sizes.dart:1-248` | **廚房水槽上帝常數**：248 行塞滿 16 級 padding、7 層 X 的圖示尺度、以及特定頁面的刮刮卡高度與按鈕寬度。 | **絕對禁止！收斂 Token**<br>全域 Token 庫只保留 8-pt 基準尺度，版面私有數值留在元件內部。 |
+| 🟡 **平庸** | `Finding-Restaurant-Flutter`<br>`lib/flow/restaurant/bloc/restaurant_detail_bloc.dart` | **錯誤吞沒黑洞**：`on Exception catch (_)` 吞掉所有錯誤，僅發送無參數的 `const Failure()`，UI 盲目白屏無法引導重試。 | **重構升級 (P0 - A-8.1)**<br>引入 Dart 3 `sealed class Result<T>` 與 `AppException` 階層。 |
+| 🟡 **平庸** | `Finding-Restaurant-Flutter`<br>`lib/features/foundation/style/theme_color.dart` | **十六進位無效抽象**：`colord84a20`, `size14` 屬於「數值即名稱」，失去語意價值，換色即需改名。 | **重構優化 (P2 - UI-8.4)**<br>重構為語意化命名並校正 Material 3 `primary` 色差。 |
+
+### 8.2.1 🟢 好品味精華 (Good Taste to Adopt)
+
+1. **Dart 3 Sealed Result 模式消除 (null, null) 與錯誤黑洞**
+   - **痛點根治**：消滅本專案 `emit(const Failure())` 的錯誤黑洞，同時超越對照組 `(T?, CommonException?)` 寬鬆 Record 帶來的合法狀態漏洞。
+   - **實作設計**：
+     ```dart
+     sealed class Result<T> {
+       const Result();
+     }
+     final class Success<T> extends Result<T> {
+       final T data;
+       const Success(this.data);
+     }
+     final class Failure<T> extends Result<T> {
+       final AppException error;
+       const Failure(this.error);
+     }
+     ```
+     搭配清晰的 `AppException` 階層（`NetworkException`, `AuthException`, `NotFoundException`, `UnexpectedException`），強制調用端使用 Dart 3 pattern matching 窮盡比對：
+     ```dart
+     switch (result) {
+       case Success(:final data): emit(RestaurantDetailLoaded(data));
+       case Failure(:final error): emit(RestaurantDetailError(error));
+     }
+     ```
+     **好品味之處**：編譯期檢查、消除 `(null, null)` 邊界條件、零 defensive check。
+
+2. **工業級 Dio Interceptor 套件**
+   - **痛點根治**：解決本專案 Token 靜態寫死、無 401 續約、無逾時重試、無網路離線統一捕獲的脆弱性。
+   - **吸收精華**：借鏡對照組 `krakend_dio_provider.dart:25-41` 模式，在單一 `DioClient` 中串聯：
+     - `RefreshTokenInterceptor`：401 自動暫停佇列，換發 Token 後重放請求。
+     - `NetworkExceptionInterceptor`：將 `DioException` 統一轉換為結構化 `AppException`。
+     - `RetryInterceptor`：針對冪等 GET 請求提供指數退避重試。
+
+3. **優雅對話框佇列 (`DialogQueueManager`) 去重與有序彈出**
+   - **痛點根治**：商業環境中，網路不穩或多重 API 同時逾時會瞬間彈出 3~4 個錯誤彈窗互相覆蓋，點擊背景導致黑屏死鎖。
+   - **吸收精華**：借鏡對照組 `dialog_queue_manager.dart:12-103`，使用 `Queue<QueuedDialog>` 與 `DialogIdentity` 去重，前一個彈窗 `await` 關閉後才處理下一個，以簡潔資料結構徹底消滅 UI 競態。
+
+4. **`mocktail` 現代化測試框架**
+   - **痛點根治**：淘汰 `menu_vision_bloc_test.dart:9-56` 手寫 47 行且充滿布林旗標的 `MockMenuVisionRepository`。
+   - **吸收精華**：引入 `mocktail: ^1.0.4`，純 Dart 動態代理，零 Codegen，宣告式打樁 `when(() => repo.analyze(...)).thenAnswer(...)` 與精準次數驗證 `verify(...).called(1)`。
+
+5. **GitHub Actions PR CI 門禁工作流 (`.github/workflows/pr-check.yml`)**
+   - **痛點根治**：本專案發布流水線極為強大（545 行 release.yml），但 PR 環節竟然零檢查，存在 main 分支被污染的巨大風險。
+   - **吸收精華**：借鏡對照組 `analysis.yml` 與 `tests.yml`，在 PR 開發階段加入急速門禁（< 3 分鐘），自動跑 `flutter analyze` 與 `flutter test`。
+
+6. **Makefile 健全化 (`make test`, `make test_coverage`)**
+   - **痛點根治**：補齊缺失的測試目標，修復 `analyze_custom` 懸掛目標，剔除複製貼上殘留的 `clean_architecture_feature_riverpod` 垃圾指令。
+
+---
+
+### 8.2.2 🔴 形式主義反模式 (Anti-patterns to Reject)
+
+1. **堅決拒絕單行 UseCase / Facade 儀式稅 (Ritual Tax)**
+   - **反模式事實**：對照組 `domain/lib/src/facades/member_center_facade.dart:44` 與 `get_member_info_uc.dart:18`，五層結構中三層純做參數轉發，新增一個欄位要改 8 個檔案。
+   - **Linus 裁決**：這是典型的「為架構而架構」。本專案堅決維持 `Bloc -> Repository` 直連！只有當需要跨 2 個以上 Repository 協調複雜事務或計算時，才允許封裝 Coordinator。
+
+2. **堅決拒絕 Melos Monorepo 虛偽分層**
+   - **反模式事實**：對照組切成 15 個 package，根目錄寫滿 24+ 項 `dependency_overrides`；然而 `domain/pubspec.yaml:26-45` 卻直接依賴 8 個 API packages。
+   - **Linus 裁決**：這不是解耦，這是自欺欺人。本專案堅決維持單一 Package 目錄分層，依賴關係純淨，建置速度快十倍。
+
+3. **堅決拒絕四層無效資料映射 (DTO -> Map -> Entity -> UI Model)**
+   - **反模式事實**：對照組 `get_member_profile_entity.dart:48-51` 將 built_value 序列化成 Map 再反序列化成 Entity，Bloc 裡再手動 new 一遍 Model。
+   - **Linus 裁決**：記憶體與 CPU 的無謂浪費。本專案堅持單一不可變實體，UI 直接消費 Entity，消滅中間層。
+
+4. **堅決拒絕 Bloc 全域單例 (GetIt Singleton)**
+   - **反模式事實**：對照組 `main_app/lib/main.dart:240` 將所有 Bloc 註冊為全域單例，離開頁面狀態不釋放，靠手寫 Clear 事件補破網。
+   - **Linus 裁決**：違背 Flutter 設計哲學。Bloc 是 UI 狀態控制器，必須綁定路由生命週期。本專案堅持 `BlocProvider`，頁面 Pop 即自動 Close。
+
+5. **堅決拒絕破壞無障礙的 `TextScaler.noScaling`**
+   - **反模式事實**：對照組 `main_app/lib/app.dart:272` 強制全域鎖死文字縮放，剝奪長輩與弱視用戶權利，嚴重違背 WCAG 1.4.4。
+   - **Linus 裁決**：這是在用戶空間拉屎。我們寫軟體是給人用，不是給設計師當壁畫。本專案嚴格守護原生文字縮放。
+
+6. **堅決拒絕 248 行 `Sizes` 廚房水槽與指鹿為馬的按鈕偽裝**
+   - **反模式事實**：對照組 `sizes.dart` 充斥 7 層 X padding 與業務特定高度；`elevated_button_style.dart` 拿 `ElevatedButton` 改樣式假裝是 `OutlinedButton`。
+   - **Linus 裁決**：全域命名空間污染，且摧毀 Flutter 原生元件語意。本專案全面使用原生 Material 3 按鈕與語意化 8-pt 間距。
+
+---
+
+## 8.3 分級待辦事項清單 (Actionable Backlog: P0 / P1 / P2)
+
+依據專案編號規範：**A-8.x**（架構類）、**UI-8.x**（介面類）、**E-8.x**（工程測試類）。
+
+### 8.3.1 P0 阻擋級 (Blocking / Immediate Corrective Action)
+
+#### [A-8.1] 引入 Dart 3 `sealed class Result<T>` 與 `AppException` 階層
+- **優先級**：`P0`
+- **預估 Effort**：`1.0d`
+- **價值與收益**：徹底根除 `restaurant_detail_bloc.dart:42` 等處的 `emit(const Failure())` 錯誤黑洞，超越對照組 `(null, null)` 缺陷，實現強型別錯誤傳播與編譯期窮盡檢查。
+- **影響檔案路徑**：
+  - 新增：`lib/features/foundation/result/result.dart`
+  - 新增：`lib/features/foundation/errors/app_exception.dart`
+  - 修改：`lib/domain/repositories/restaurant_detail_repository.dart`
+  - 修改：`lib/data_layer/repositories/restaurant_detail_repo.dart`
+  - 修改：`lib/flow/restaurant/bloc/restaurant_detail_bloc.dart`
+- **具體實作建議**：
+  1. 定義 `sealed class Result<T>` 包含 `Success<T>(this.data)` 與 `Failure<T>(this.error)`。
+  2. 定義 `AppException` 階層：`NetworkException`, `ServerException`, `AuthException`, `NotFoundException`, `UnexpectedException`。
+  3. Repository 方法簽名全面改為 `Future<Result<RestaurantDetailEntity>>`。
+  4. Bloc 以 `switch (result)` 精準發布載入成功或具體錯誤狀態。
+
+#### [E-8.1] 補齊 GitHub Actions PR CI 門禁工作流 (`.github/workflows/pr-check.yml`)
+- **優先級**：`P0`
+- **預估 Effort**：`0.5d`
+- **價值與收益**：彌補當前專案僅有 Tag 發布工作流的致命死角，在每次 Pull Request 到 `main` 分支時自動執行 `flutter analyze` 與 `flutter test`，嚴格捍衛主幹穩定。
+- **影響檔案路徑**：
+  - 新增：`.github/workflows/pr-check.yml`
+- **具體實作建議**：
+  1. 監聽 `pull_request: branches: [ main ]` 與 `push: branches: [ main ]`。
+  2. 使用 `subosito/flutter-action@v2` 配置 Flutter 環境（鎖定 channel stable）。
+  3. 執行步驟：`flutter pub get` -> `flutter analyze .` -> `flutter test`。
+  4. 設定 `concurrency: group: ${{ github.ref }}, cancel-in-progress: true`，節省 GitHub Action runner 額度。
+
+#### [A-8.2] 修復 `RestaurantDetailEntity` 反向依賴 DTO 的分層邊界瑕疵
+- **優先級**：`P0`
+- **預估 Effort**：`0.2d`
+- **價值與收益**：消除 Domain 層對 Data Layer DTO 的反向 import，達成 100% 純粹的單向依賴倒置。
+- **影響檔案路徑**：
+  - 修改：`lib/domain/entities/restaurant_detail_entity.dart`
+  - 修改：`lib/data_layer/dto/yelp_restaurant_detail_dto.dart` 或新增 `lib/data_layer/mapper/restaurant_mapper.dart`
+- **具體實作建議**：
+  1. 移除 `restaurant_detail_entity.dart:1` 的 `import '../../data_layer/dto/dto_barrel.dart';`。
+  2. 將 `fromDto` 工廠建構子改寫為 Data Layer 內的擴充方法 `extension YelpRestaurantDetailDtoX on YelpRestaurantDetailDto { RestaurantDetailEntity toEntity() => ... }`。
+
+---
+
+### 8.3.2 P1 核心改進 (Core Architecture & Testing Upgrades)
+
+#### [E-8.2] 引入 `mocktail: ^1.0.4` 淘汰手寫 Fake Repository
+- **優先級**：`P1`
+- **預估 Effort**：`0.5d`
+- **價值與收益**：消滅 `menu_vision_bloc_test.dart:9-56` 手寫 47 行且充滿布林旗標的脆弱技術債，使後續新增 Repository 方法時測試不中斷。
+- **影響檔案路徑**：
+  - 修改：`pubspec.yaml`（`dev_dependencies` 加入 `mocktail: ^1.0.4`）
+  - 修改：`test/flow/menu_vision/menu_vision_bloc_test.dart`
+- **具體實作建議**：
+  1. 執行 `flutter pub add --dev mocktail`。
+  2. 宣告 `class MockMenuVisionRepository extends Mock implements MenuVisionRepository {}`。
+  3. 替換既有手寫 flags，改為標準宣告式打樁：
+     ```dart
+     when(() => mockRepo.analyzeMenu(any())).thenAnswer((_) async => mockComponent);
+     ```
+  4. 使用 `verify(() => mockRepo.analyzeMenu(any())).called(1)` 驗證互動。
+
+#### [E-8.3] Makefile 健全化（補齊 test/coverage，修復懸掛目標，清理殘留模板）
+- **優先級**：`P1`
+- **預估 Effort**：`0.2d`
+- **價值與收益**：提供本地開發與 CI 統一呼叫的乾淨契約，消滅認知負擔。
+- **影響檔案路徑**：
+  - 修改：`Makefile`
+- **具體實作建議**：
+  1. 補齊 `test` target: `@flutter test`。
+  2. 補齊 `test_coverage` target: `@flutter test --coverage && lcov --summary coverage/lcov.info`。
+  3. 移除 Line 1 與 Line 24 懸掛未實現的 `analyze_custom` 目標。
+  4. 刪除 Line 118 複製貼上殘留的 `mason_feature: @mason make clean_architecture_feature_riverpod`。
+
+#### [UI-8.1] 移植優雅對話框佇列 (`DialogQueueManager`)
+- **優先級**：`P1`
+- **預估 Effort**：`0.5d`
+- **價值與收益**：根治多重 API 同時失敗時彈窗重疊覆蓋、連點穿透與 Navigator 路由黑屏死鎖問題。
+- **影響檔案路徑**：
+  - 新增：`lib/component/dialog/dialog_queue_manager.dart`
+  - 修改：各頁面調用 `showDialog` 或 `ScaffoldMessenger` 處
+- **具體實作建議**：
+  1. 移植基於 `Queue<QueuedDialog>` 的輕量對話框管理器。
+  2. 實作 `DialogIdentity` 去重機制：若佇列中已有相同標識的彈窗則自動短路忽略。
+  3. 透過 `unawaited(_processQueue())` 循序顯示，前一個關閉才彈出下一個。
+
+#### [UI-8.2] 刪除 0 處調用的幽靈死代碼 `lib/component/platform_widget.dart`
+- **優先級**：`P1`
+- **預估 Effort**：`0.1d`
+- **價值與收益**：拔除 0 處引用的假跨平台抽象層，維護程式碼庫純淨度，遵循 YAGNI 原則。
+- **影響檔案路徑**：
+  - 刪除：`lib/component/platform_widget.dart`
+
+#### [A-8.3] 健全 Dio 攔截器體系 (401 自動刷新、逾時重試、錯誤對應)
+- **優先級**：`P1`
+- **預估 Effort**：`0.5d`
+- **價值與收益**：告別寫死的靜態 Token，建立生產級網路彈性與安全性。
+- **影響檔案路徑**：
+  - 新增：`lib/api/interceptors/token_refresh_interceptor.dart`
+  - 新增：`lib/api/interceptors/error_handling_interceptor.dart`
+  - 修改：`lib/api/dio_client.dart`
+- **具體實作建議**：
+  1. 實作 `TokenRefreshInterceptor`：攔截 401 響應，暫停請求隊列，向 Auth 服務換取新 Token 後自動重放原始請求。
+  2. 實作 `ErrorHandlingInterceptor`：將 `DioExceptionType.connectionTimeout`, `badResponse` 對應為具體的 `AppException`。
+
+---
+
+### 8.3.3 P2 架構優化與體驗打磨 (Enhancements & Polish)
+
+#### [UI-8.3] 新增 BuildContext 語法糖擴充 (`context.colorScheme`, `context.textTheme`)
+- **優先級**：`P2`
+- **預估 Effort**：`0.2d`
+- **價值與收益**：消除專案內 18+ 處冗長的 `Theme.of(context).colorScheme` 與 `Theme.of(context).textTheme` 樣板程式碼。
+- **影響檔案路徑**：
+  - 新增：`lib/features/foundation/extension/theme_extension.dart`
+- **具體實作建議**：
+  ```dart
+  extension ThemeContextExtension on BuildContext {
+    ThemeData get theme => Theme.of(this);
+    ColorScheme get colorScheme => Theme.of(this).colorScheme;
+    TextTheme get textTheme => Theme.of(this).textTheme;
+  }
+  ```
+
+#### [UI-8.4] 重構 ThemeColor 語意化命名與 M3 primary 濁橘色差校正
+- **優先級**：`P2`
+- **預估 Effort**：`0.5d`
+- **價值與收益**：淘汰 `colord84a20` 十六進位無效命名，消除 `ColorScheme.fromSeed` 將品牌橘 `#D84A20` 映射為 `#8F4B38` 的濁橘色差。
+- **影響檔案路徑**：
+  - 修改：`lib/features/foundation/style/theme_color.dart`
+  - 修改：`lib/features/foundation/style/theme_data.dart`
+- **具體實作建議**：
+  1. `ThemeColor` 命名改為 `brandPrimary`, `backgroundCream`, `textSecondary` 等語意化常數。
+  2. 在 `theme_data.dart` 的 `ColorScheme.fromSeed(...)` 鏈後顯式覆寫 `primary: ThemeColor.brandPrimary`，徹底消除 AppBar 與按鈕色差。
+
+#### [UI-8.5] 建立 8-pt 語意間距尺度，收斂 ThemeSize 數字命名
+- **優先級**：`P2`
+- **預估 Effort**：`0.5d`
+- **價值與收益**：將 `space3` 至 `space64`、`size14` 至 `size320` 扁平數字命名收斂為標準 8-pt 設計標記尺度。
+- **影響檔案路徑**：
+  - 修改：`lib/features/foundation/style/theme_size.dart`
+- **具體實作建議**：
+  1. 建立 `AppSpacing`: `xxs=2`, `xs=4`, `sm=8`, `md=16`, `lg=24`, `xl=32`。
+  2. 將業務畫面特有的尺寸數字回歸元件內部，避免全域命名空間膨脹。
+
+#### [A-8.4] 評估 DTO 與 Entity 合一可行性
+- **優先級**：`P2`
+- **預估 Effort**：`0.5d`
+- **價值與收益**：針對欄位 100% 相同且無業務邏輯計算的 DTO 與 Entity，簡化為單一不可變類別，減少代碼行數與轉換開銷。
+- **影響檔案路徑**：
+  - `lib/data_layer/dto/` vs `lib/domain/entities/`
+
+#### [E-8.4] 建立核心業務單元測試覆蓋率基準線 ($\ge 80\%$) 與報告生成
+- **優先級**：`P2`
+- **預估 Effort**：`1.0d`
+- **價值與收益**：量化業務邏輯覆蓋率，防止迴歸缺陷。
+- **影響檔案路徑**：
+  - `test/` 全目錄、`Makefile`
+
+#### [UI-8.6] 嚴格無障礙架構守衛：永久禁止 TextScaler.noScaling，補齊 Semantics 標籤
+- **優先級**：`P2`
+- **預估 Effort**：`0.2d`
+- **價值與收益**：將無障礙守衛寫入專案規範，並為無文字 Icon 按鈕（星星評分、關閉按鈕）補齊語義標籤。
+- **影響檔案路徑**：
+  - 專案規則：`.agents/rules/flutter-styles.md`
+  - 元件：`lib/component/rating_stars.dart`, `lib/flow/main/view/restaurant_item_cell.dart`
+
+---
+
+## 8.4 與既有 Roadmap 的對齊建議 (Alignment with Existing Roadmap)
+
+本架構審查與優化提案並非憑空增加負擔，而是與當前專案既有的 Roadmap (第 4 章) 進行無縫鑲嵌，作為現有里程碑的堅實支撐：
+
+```
+========================================================================================
+                          ROADMAP ALIGNMENT ARCHITECTURE
+========================================================================================
+ Phase 1 收尾 (地基修復) ──► 納入 E-8.1 (PR CI) & A-8.2 (DTO邊界) & E-8.3 (Makefile)
+                                     │
+ Phase 1.5 (體驗升級)   ──► 納入 A-8.1 (Sealed Result) & UI-8.1 (Dialog佇列) & UI-8.2 (砍死碼)
+                                     │
+ Phase 2 (社群/轉化)    ──► 納入 A-8.3 (Dio攔截器) & UI-8.4 (色差校正) & UI-8.3 (語法糖)
+                                     │
+ Phase 3 (AI M4/M5 支撐) ──► 納入 E-8.2 (mocktail測試) & E-8.4 (80%覆蓋率) & UI-8.6 (A11y)
+========================================================================================
+```
+
+1. **融入 Phase 1 基礎設施剩餘收尾**：
+   - 目前 Phase 1 進度為 19/22。**E-8.1 (GitHub Actions PR CI 門禁)** 與 **E-8.3 (Makefile 健全化)** 應直接歸入 Phase 1 基礎設施驗收，補齊 PR #114 僅完成發布 CD 的缺口。
+   - **A-8.2 (修復 DTO 反向依賴)** 作為 Phase 1 領域模型解耦的最終閉環。
+
+2. **融入 Phase 1.5 空間與視覺體驗升級**：
+   - 伴隨目前正在進行的離線快取與標籤過濾開發，同步落地 **A-8.1 (Dart 3 Sealed Result 體系)**，徹底終結網路層錯誤黑洞。
+   - **UI-8.1 (DialogQueueManager)** 融入通知與網路異常彈窗機制，杜絕快速連點重疊。
+   - **UI-8.2 (刪除 PlatformWidget 死代碼)** 隨即執行，保持 codebase 斯巴達式簡潔。
+
+3. **融入 Phase 2 社群生態與轉化閉環**：
+   - 微訂位與候位排隊涉及敏感的使用者認證，此時引入 **A-8.3 (健全 Dio 攔截器體系：401 自動換約)** 能直接保障交易 session 的穩定。
+   - **UI-8.4 (色差校正)** 與 **UI-8.3 (BuildContext 擴充語法糖)** 將作為視覺打磨的主力。
+
+4. **全面支撐 Phase 3 (Google AI Studio M4/M5 推進)**：
+   - 隨著 2026-09-12 PR #116 拍菜單助手 (M3) 的落地，即將展開 M4 (覓食助理) 與 M5 (行程生成)。
+   - **E-8.2 (`mocktail` 測試框架)** 將直接應用於 M4 對話式 BottomSheet 與 Function Calling 的 Mock 測試，消滅脆弱的手寫 Fake。
+   - **E-8.4 (核心測試覆蓋率 $\ge 80\%$)** 與 **UI-8.6 (無障礙守衛)** 將作為 M5 最終交付上線的堅實品質驗收指標。
+
 
