@@ -83,8 +83,7 @@
 | 🚨 **修復 AdMob 廣告刊登合規性 (防欺騙性點擊/防版面突跳)** | ✅ **已於 2026-09-04 完成 (Issue #107)**：移至底部常駐、預留 50dp 佔位消除 CLS、加上頂部分隔邊框 | **帳號與營收阻擋**：已徹底消除意外點擊與欺騙導入風險 |
 | ✅ **自動化 CI/CD 發布流水線 (GitHub Actions)** | ✅ **已於 2026-09-08 完成 (Issue #113 / PR #114)**：基於 GitHub Actions 原生建構自動化發布工作流，支援 prod 雙平台/單平台 (Google Play / TestFlight) 與 dev (Firebase App Distribution) 自動化打包與分發 | **基礎設施地基完成**：徹底淘汰人工打包，多平台通道自動化分發 |
 | ✅ **Flutter SDK 版本遷移 (≥ 3.44.1)** | ✅ **已於 2026-08-26 完成** | 已更新 pubspec.yaml 及 CI 工作流程至 3.44.1 |
-| ✅ **iOS Swift Package Manager (SPM) 遷移** | ✅ **已於 2026-08-24 完成 (混合模式)** | 暫時保留 CocoaPods 回退相容，消除建置阻礙 |
-| **Android Built-in Kotlin 遷移** | 已升級 Kotlin 2.2.20 消除過舊警告，但仍使用顯式 KGP | **官方棄用警告**：Flutter 未來將強制推行 Built-in Kotlin 並移除 KGP 支援，需在未來升級中徹底移除顯式 KGP 依賴 |
+| ✅ **Android Built-in Kotlin 遷移** | ✅ **已於 2026-09-13 完成 (Issue #117 / PR #118)**：移除 `app/build.gradle` 顯式 `kotlin-android` plugin，由 Flutter Gradle Plugin 自動託管 | **官方棄用警告已消除** |
 | **硬編碼 API Key** | 僅改名為 `camelCase`，明碼仍在 `constants.dart:30,40` | 金鑰已入 git 歷史，須**撤銷並輪替**，非搬移可解 |
 | ✅ **修復地圖模式定位按鈕遮擋與常數重構** | ✅ **已於 2026-09-06 完成 (Issue #110 / PR #111)**：關閉原生不可控控制項，右上角自訂 FAB 結合真實 GPS 定位，消除卡片遮擋與魔術數字 | **操作體驗與架構提升**：按鈕不再被底部卡片遮擋，全面收斂 ThemeSize 常數 |
 | ✅ **修復地圖底部列表 UI 溢出 (RenderFlex overflow)** | ~~Android 地圖底部發生溢出~~ | **已於 PR #73 修復**（實際位置為 `restaurant_item_cell.dart`，非 `rating_stars.dart`） |
@@ -577,7 +576,7 @@ lib/
 | ✅ **Firestore Subcollection 口袋名單** | 資料架構 | 10 | 2.5 | 100% | 1.0 | **25.0** | 22.5 | - | **已完成**（2026-08-19, PR #70） |
 | ✅ **iOS UIScene Lifecycle 支援遷移 (強制性相容)** | 平台遷移 | 10 | 3.0 | 100% | 1.0 | **30.0** | 27.0 | - | **已完成**（2026-08-23） |
 | ✅ **iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (混合模式)** | 平台遷移 | 10 | 2.5 | 90% | 1.5 | **15.0** | 19.12 | - | **已完成**（2026-08-24，以混合模式完工） |
-| 🔴 **Android Built-in Kotlin 遷移 (移除顯式 KGP)** | 平台遷移 | 10 | 2.5 | 100% | 0.5 | **50.0** | 23.75 | - | **P0（官方棄用警告）** |
+| ✅ **Android Built-in Kotlin 遷移 (移除顯式 KGP)** | 平台遷移 | 10 | 2.5 | 100% | 0.5 | **50.0** | 23.75 | - | **已完成**（2026-09-13, PR #118） |
 | ✅ **Flutter SDK 版本遷移 (≥ 3.44.1)** | 基礎設施 | 10 | 2.5 | 100% | 1.0 | **25.0** | 22.5 | - | **P0（基礎設施升級）** |
 | ✅ **移除無謂假延遲 (過濾 2s / 推播 8s)** | 既有修復 | 9 | 1.5 | 100% | 0.5 | **27.0** | 14.25 | - | **已完成** |
 | ✅ **`MapWidget` 實作 `didUpdateWidget` 連動 Marker** | 既有修復 | 8 | 2.0 | 100% | 0.5 | **32.0** | 19.0 | - | **已完成** |
@@ -607,7 +606,7 @@ lib/
 +-----------------------------------------------------------------------------------+
 |                           STRATEGIC PRODUCT ROADMAP                               |
 +-----------------------------------------------------------------------------------+
-| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 19/22 ✅        |
+| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 20/22 ✅        |
 |   • [x] P0 🚨 修復 AdMob 廣告刊登合規性 (防欺騙點擊/移至底部/消滅 Layout Shift) ✅ 2026-09-04 (Issue #107) |
 |   • [x] P0 自動化 CI/CD 發布流水線 (GitHub Actions) ✅ 2026-09-08 (Issue #113 / PR #114) |
 |   • [x] P-1 整合 flutter_inspector_kit ✅ 2026-08-05（量測地基就位）             |
@@ -623,7 +622,7 @@ lib/
 |   • [x] P1 Firestore Subcollection 最愛名單重構 ✅ 2026-08-19 (PR #70)            |
 |   • [x] P0 ✅ iOS UIScene Lifecycle 支援遷移 ✅ 2026-08-23                               |
 |   • [x] P0 ✅ iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (混合模式)               |
-|   • [ ] P0 🔴 Android Built-in Kotlin 遷移 (移除顯式 KGP)                             |
+|   • [x] P0 ✅ Android Built-in Kotlin 遷移 (移除顯式 KGP) ✅ 2026-09-13 (Issue #117 / PR #118) |
 |   • [x] P0 ✅ Flutter SDK 版本遷移至 3.44.1+                                       |
 |   • [ ] P0 移除硬編碼 API Key ⚠️ 未動；金鑰已入 git 歷史，須撤銷並輪替            |
 |   • [x] P0 移除無謂假延遲 (過濾 2s / 推播導航 8s) ✅ 實查已清除                   |
@@ -1563,16 +1562,10 @@ class ComparisonMatrixComponent extends A2UIComponent {
   3. 執行步驟：`flutter pub get` -> `flutter analyze .` -> `flutter test`。
   4. 設定 `concurrency: group: ${{ github.ref }}, cancel-in-progress: true`，節省 GitHub Action runner 額度。
 
-#### [A-8.2] 修復 `RestaurantDetailEntity` 反向依賴 DTO 的分層邊界瑕疵
-- **優先級**：`P0`
-- **預估 Effort**：`0.2d`
-- **價值與收益**：消除 Domain 層對 Data Layer DTO 的反向 import，達成 100% 純粹的單向依賴倒置。
-- **影響檔案路徑**：
-  - 修改：`lib/domain/entities/restaurant_detail_entity.dart`
-  - 修改：`lib/data_layer/dto/yelp_restaurant_detail_dto.dart` 或新增 `lib/data_layer/mapper/restaurant_mapper.dart`
-- **具體實作建議**：
-  1. 移除 `restaurant_detail_entity.dart:1` 的 `import '../../data_layer/dto/dto_barrel.dart';`。
-  2. 將 `fromDto` 工廠建構子改寫為 Data Layer 內的擴充方法 `extension YelpRestaurantDetailDtoX on YelpRestaurantDetailDto { RestaurantDetailEntity toEntity() => ... }`。
+#### [A-8.2] 修復 `RestaurantDetailEntity` 反向依賴 DTO 的分層邊界瑕疵 — ❌ 不需要調整 (As-Designed)
+- **優先級**：`不排程 / 維持現狀`
+- **架構裁決 (Linus 模式)**：依本專案「`Infra (DTO, API, DB) ← Domain (UseCase, Entity) ← Data Layer (Repository) ← BLoC ← Presentation`」之資料驅動分層設計，Domain 建立在底層 Infra 契約之上。`RestaurantDetailEntity.fromDto` 屬 Entity 自然且高內聚的構造方式，無須多引入一層無效的 Mapper 類別或轉發代碼，符合 YAGNI 與好品味原則，故自待辦清單中除名，維持既有實作。
+- **影響檔案路徑**：無須調整
 
 ---
 
@@ -1709,7 +1702,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 ========================================================================================
                           ROADMAP ALIGNMENT ARCHITECTURE
 ========================================================================================
- Phase 1 收尾 (地基修復) ──► 納入 E-8.1 (PR CI) & A-8.2 (DTO邊界) & E-8.3 (Makefile)
+ Phase 1 收尾 (地基修復) ──► 納入 E-8.1 (PR CI) & E-8.3 (Makefile)
                                      │
  Phase 1.5 (體驗升級)   ──► 納入 A-8.1 (Sealed Result) & UI-8.1 (Dialog佇列) & UI-8.2 (砍死碼)
                                      │
@@ -1720,8 +1713,8 @@ class ComparisonMatrixComponent extends A2UIComponent {
 ```
 
 1. **融入 Phase 1 基礎設施剩餘收尾**：
-   - 目前 Phase 1 進度為 19/22。**E-8.1 (GitHub Actions PR CI 門禁)** 與 **E-8.3 (Makefile 健全化)** 應直接歸入 Phase 1 基礎設施驗收，補齊 PR #114 僅完成發布 CD 的缺口。
-   - **A-8.2 (修復 DTO 反向依賴)** 作為 Phase 1 領域模型解耦的最終閉環。
+   - 目前 Phase 1 進度為 20/22。**E-8.1 (GitHub Actions PR CI 門禁)** 與 **E-8.3 (Makefile 健全化)** 應直接歸入 Phase 1 基礎設施驗收，補齊 PR #114 僅完成發布 CD 的缺口。
+   - 原規劃之 **A-8.2 (DTO 反向依賴)** 經架構審查確認為「Infra $\leftarrow$ Domain」資料驅動分層之合法構造模式，維持現狀不調整，不再作為收尾項。
 
 2. **融入 Phase 1.5 空間與視覺體驗升級**：
    - 伴隨目前正在進行的離線快取與標籤過濾開發，同步落地 **A-8.1 (Dart 3 Sealed Result 體系)**，徹底終結網路層錯誤黑洞。
