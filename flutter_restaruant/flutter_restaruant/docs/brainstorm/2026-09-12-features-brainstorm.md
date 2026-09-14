@@ -1559,16 +1559,10 @@ class ComparisonMatrixComponent extends A2UIComponent {
   3. 執行步驟：`flutter pub get` -> `flutter analyze .` -> `flutter test`。
   4. 設定 `concurrency: group: ${{ github.ref }}, cancel-in-progress: true`，節省 GitHub Action runner 額度。
 
-#### [A-8.2] 修復 `RestaurantDetailEntity` 反向依賴 DTO 的分層邊界瑕疵
-- **優先級**：`P0`
-- **預估 Effort**：`0.2d`
-- **價值與收益**：消除 Domain 層對 Data Layer DTO 的反向 import，達成 100% 純粹的單向依賴倒置。
-- **影響檔案路徑**：
-  - 修改：`lib/domain/entities/restaurant_detail_entity.dart`
-  - 修改：`lib/data_layer/dto/yelp_restaurant_detail_dto.dart` 或新增 `lib/data_layer/mapper/restaurant_mapper.dart`
-- **具體實作建議**：
-  1. 移除 `restaurant_detail_entity.dart:1` 的 `import '../../data_layer/dto/dto_barrel.dart';`。
-  2. 將 `fromDto` 工廠建構子改寫為 Data Layer 內的擴充方法 `extension YelpRestaurantDetailDtoX on YelpRestaurantDetailDto { RestaurantDetailEntity toEntity() => ... }`。
+#### [A-8.2] 修復 `RestaurantDetailEntity` 反向依賴 DTO 的分層邊界瑕疵 — ❌ 不需要調整 (As-Designed)
+- **優先級**：`不排程 / 維持現狀`
+- **架構裁決 (Linus 模式)**：依本專案「`Infra (DTO, API, DB) ← Domain (UseCase, Entity) ← Data Layer (Repository) ← BLoC ← Presentation`」之資料驅動分層設計，Domain 建立在底層 Infra 契約之上。`RestaurantDetailEntity.fromDto` 屬 Entity 自然且高內聚的構造方式，無須多引入一層無效的 Mapper 類別或轉發代碼，符合 YAGNI 與好品味原則，故自待辦清單中除名，維持既有實作。
+- **影響檔案路徑**：無須調整
 
 ---
 
@@ -1705,7 +1699,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 ========================================================================================
                           ROADMAP ALIGNMENT ARCHITECTURE
 ========================================================================================
- Phase 1 收尾 (地基修復) ──► 納入 E-8.1 (PR CI) & A-8.2 (DTO邊界) & E-8.3 (Makefile)
+ Phase 1 收尾 (地基修復) ──► 納入 E-8.1 (PR CI) & E-8.3 (Makefile)
                                      │
  Phase 1.5 (體驗升級)   ──► 納入 A-8.1 (Sealed Result) & UI-8.1 (Dialog佇列) & UI-8.2 (砍死碼)
                                      │
@@ -1717,7 +1711,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 1. **融入 Phase 1 基礎設施剩餘收尾**：
    - 目前 Phase 1 進度為 19/22。**E-8.1 (GitHub Actions PR CI 門禁)** 與 **E-8.3 (Makefile 健全化)** 應直接歸入 Phase 1 基礎設施驗收，補齊 PR #114 僅完成發布 CD 的缺口。
-   - **A-8.2 (修復 DTO 反向依賴)** 作為 Phase 1 領域模型解耦的最終閉環。
+   - 原規劃之 **A-8.2 (DTO 反向依賴)** 經架構審查確認為「Infra $\leftarrow$ Domain」資料驅動分層之合法構造模式，維持現狀不調整，不再作為收尾項。
 
 2. **融入 Phase 1.5 空間與視覺體驗升級**：
    - 伴隨目前正在進行的離線快取與標籤過濾開發，同步落地 **A-8.1 (Dart 3 Sealed Result 體系)**，徹底終結網路層錯誤黑洞。

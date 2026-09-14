@@ -60,23 +60,25 @@
 - **`abstract interface class` 契約**：五個 Repository 介面（`MainRepository`、`RestaurantDetailRepository`、`FavorRepository`、`SignInRepository`、`SettingsRepository`）以 Dart 3 的 `abstract interface class` 宣告，明確表達「只能被 implement，不能被 extend」。**這 5 個介面檔案全數乾淨**，不 import 任何 data_layer 內容。
 - **Entity 為業務模型**：`RestaurantEntity`、`RestaurantDetailEntity`、`UserEntity`、`ReviewEntity` 等 11 個。
 
-#### 🔴 已知架構缺陷：Entity 反向依賴 DTO
+#### 📌 分層邊界說明：Entity 與 DTO 的關係（資料驅動分層架構 As-Designed）
 
-**11 個 entity 檔案全數 `import '../../data_layer/dto/dto_barrel.dart'`**，理由是轉換方法被放在 Entity 自己身上：
+本專案採用「`Infra (DTO, API, DB) ← Domain (UseCase, Entity) ← Data Layer (Repository) ← BLoC ← Presentation`」之分層拓撲：
 
+- **以底層傳輸契約為基石**：`Infra/DTO` 定義原始資料結構，`Domain` 建立在 `Infra` 之上。因此 Entity 提供 `fromDto` 建構子，將底層 DTO 轉化為高階領域模型，乃本專案既定之高內聚實作方式：
 ```dart
 // lib/domain/entities/restaurant_entity.dart:1
-import '../../data_layer/dto/dto_barrel.dart';   // ← domain 反向依賴 data
+import '../../data_layer/dto/dto_barrel.dart';
 
 factory RestaurantEntity.fromDto(YelpRestaurantSummaryDto dto) => ...
 YelpRestaurantSummaryDto get toDto => ...
 ```
 
-更嚴重的是 **`AccountDto` ⇄ `UserEntity` 構成真實的循環 import**：`account_dto.dart:2` import domain entities（為取得 `AccountType` enum），而 `user_entity.dart:2` import data_layer dto。Dart 允許循環 import 故編譯不會失敗，但**這代表 domain 層物理上無法獨立於 data_layer 抽出編譯或測試**。
+- **無須額外 Mapper 抽象**：在單一後端（Yelp API / Firebase）的實務情境下，若將 `fromDto` 抽離至獨立 Mapper 類別，純屬形式主義的無效轉發（儀式稅）。`fromDto` 由 Entity 自行封裝，維持程式碼短小精悍。
+- **DTO 永不外洩**：轉換一律在資料層與領域層內部完成，`Presentation`（UI 與 BLoC）完全不認識 DTO，確保表現層的純淨度。
 
-另有兩處橫向洩漏：`sign_in_repository.dart:2` 與 `restaurant_business_time_entity.dart:2` import `features/utils/utils_barrel.dart`，而該 barrel 間接拉進 `geolocator` 與 `url_launcher`——一個 domain entity 只為了判斷語系，就把定位與瀏覽器套件掛上了。
+> 🐧 **Linus 式評註**：依賴關係必須服務於真實問題。在「Infra 為契約、Domain 居中組裝」的架構下，`Entity.fromDto` 是最直接、最少樣板代碼的設計。不需要為了滿足教科書圓圈圖而多寫一層 Mapper 搬運代碼。
 
-> 🐧 **Linus 式評註**：「依賴方向」不是靠目錄名字決定的，是靠 import 決定的。目前的 `domain/` 目錄名字說它是內層，import 說它不是。修法很明確——**把 `fromDto`/`toDto` 從 Entity 搬到 data_layer 的 mapper**，Entity 就不再需要認識 DTO，循環自然消失。這不是理論潔癖：真要為 domain 寫獨立單元測試時，現在得把整個 data_layer 一起拖進來。
+另曾有橫向洩漏：`sign_in_repository.dart:2` 與 `restaurant_business_time_entity.dart:2` import `features/utils/utils_barrel.dart`，而該 barrel 間接拉進 `geolocator` 與 `url_launcher`——後續已隨基礎設施整理收斂。
 
 ### 2. 資料層 (Data Layer) — 實作契約，向內依賴
 
