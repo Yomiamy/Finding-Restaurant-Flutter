@@ -83,8 +83,7 @@
 | 🚨 **修復 AdMob 廣告刊登合規性 (防欺騙性點擊/防版面突跳)** | **新納入絕對最高優先（阻擋級）**：收到 Google 違規警告 | **帳號與營收阻擋**：違反「防範意外點擊/欺騙導入」政策，若未限期整改將遭廣告單元停權或帳號封禁 |
 | **自動化 CI/CD 發布流水線 (GitHub Actions)** | 新納入最高優先項目，依 Tag 自動發布 | 缺乏自動化發布導致人工打包易出錯且耗時 |
 | ✅ **Flutter SDK 版本遷移 (≥ 3.44.1)** | ✅ **已於 2026-08-26 完成** | 已更新 pubspec.yaml 及 CI 工作流程至 3.44.1 |
-| ✅ **iOS Swift Package Manager (SPM) 遷移** | ✅ **已於 2026-08-24 完成 (混合模式)** | 暫時保留 CocoaPods 回退相容，消除建置阻礙 |
-| **Android Built-in Kotlin 遷移** | 已升級 Kotlin 2.2.20 消除過舊警告，但仍使用顯式 KGP | **官方棄用警告**：Flutter 未來將強制推行 Built-in Kotlin 並移除 KGP 支援，需在未來升級中徹底移除顯式 KGP 依賴 |
+| ✅ **Android Built-in Kotlin 遷移** | ✅ **已於 2026-09-13 完成 (Issue #117 / PR #118)**：移除 `app/build.gradle` 顯式 `kotlin-android` plugin，由 Flutter Gradle Plugin 自動託管 | **官方棄用警告已消除** |
 | **硬編碼 API Key** | 僅改名為 `camelCase`，明碼仍在 `constants.dart:30,40` | 金鑰已入 git 歷史，須**撤銷並輪替**，非搬移可解 |
 | **修復地圖模式定位按鈕遮擋問題** | 地圖右下角 FAB 會被列表卡片遮擋 | 嚴重影響地圖操作體驗（按鈕完全無法點擊） |
 | ✅ **修復地圖底部列表 UI 溢出 (RenderFlex overflow)** | ~~Android 地圖底部發生溢出~~ | **已於 PR #73 修復**（實際位置為 `restaurant_item_cell.dart`，非 `rating_stars.dart`） |
@@ -577,7 +576,7 @@ lib/
 | ✅ **Firestore Subcollection 口袋名單** | 資料架構 | 10 | 2.5 | 100% | 1.0 | **25.0** | 22.5 | - | **已完成**（2026-08-19, PR #70） |
 | ✅ **iOS UIScene Lifecycle 支援遷移 (強制性相容)** | 平台遷移 | 10 | 3.0 | 100% | 1.0 | **30.0** | 27.0 | - | **已完成**（2026-08-23） |
 | ✅ **iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (混合模式)** | 平台遷移 | 10 | 2.5 | 90% | 1.5 | **15.0** | 19.12 | - | **已完成**（2026-08-24，以混合模式完工） |
-| 🔴 **Android Built-in Kotlin 遷移 (移除顯式 KGP)** | 平台遷移 | 10 | 2.5 | 100% | 0.5 | **50.0** | 23.75 | - | **P0（官方棄用警告）** |
+| ✅ **Android Built-in Kotlin 遷移 (移除顯式 KGP)** | 平台遷移 | 10 | 2.5 | 100% | 0.5 | **50.0** | 23.75 | - | **已完成**（2026-09-13, PR #118） |
 | ✅ **Flutter SDK 版本遷移 (≥ 3.44.1)** | 基礎設施 | 10 | 2.5 | 100% | 1.0 | **25.0** | 22.5 | - | **P0（基礎設施升級）** |
 | ✅ **移除無謂假延遲 (過濾 2s / 推播 8s)** | 既有修復 | 9 | 1.5 | 100% | 0.5 | **27.0** | 14.25 | - | **已完成** |
 | ✅ **`MapWidget` 實作 `didUpdateWidget` 連動 Marker** | 既有修復 | 8 | 2.0 | 100% | 0.5 | **32.0** | 19.0 | - | **已完成** |
@@ -607,7 +606,7 @@ lib/
 +-----------------------------------------------------------------------------------+
 |                           STRATEGIC PRODUCT ROADMAP                               |
 +-----------------------------------------------------------------------------------+
-| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 17/22 ✅        |
+| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 18/22 ✅        |
 |   • [ ] P0 🚨 修復 AdMob 廣告刊登合規性 (防欺騙點擊/移至底部/消滅 Layout Shift) ⚠️ 阻擋項 |
 |   • [ ] P0 自動化 CI/CD 發布流水線 (GitHub Actions)                               |
 |   • [x] P-1 整合 flutter_inspector_kit ✅ 2026-08-05（量測地基就位）             |
@@ -623,7 +622,7 @@ lib/
 |   • [x] P1 Firestore Subcollection 最愛名單重構 ✅ 2026-08-19 (PR #70)            |
 |   • [x] P0 ✅ iOS UIScene Lifecycle 支援遷移 ✅ 2026-08-23                               |
 |   • [x] P0 ✅ iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (混合模式)               |
-|   • [ ] P0 🔴 Android Built-in Kotlin 遷移 (移除顯式 KGP)                             |
+|   • [x] P0 ✅ Android Built-in Kotlin 遷移 (移除顯式 KGP) ✅ 2026-09-13 (Issue #117 / PR #118) |
 |   • [x] P0 ✅ Flutter SDK 版本遷移至 3.44.1+                                       |
 |   • [ ] P0 移除硬編碼 API Key ⚠️ 未動；金鑰已入 git 歷史，須撤銷並輪替            |
 |   • [x] P0 移除無謂假延遲 (過濾 2s / 推播導航 8s) ✅ 實查已清除                   |
