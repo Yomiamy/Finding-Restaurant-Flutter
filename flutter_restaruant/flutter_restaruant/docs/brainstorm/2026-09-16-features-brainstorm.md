@@ -49,9 +49,9 @@
 
 ---
 
-## 📌 進度覆核摘要 (Progress Review — 2026-09-12 更新)
+## 📌 進度覆核摘要 (Progress Review — 2026-09-16 更新)
 
-初版報告產出於 2026-07-26，歷經多次迭代覆核。本次依 2026-09-12 實際落地的變更（PR #116，AI 多模態菜單視覺識別落地）覆核全文。**覆核方式為直接檢視當前程式碼，而非採信 commit 訊息**。
+初版報告產出於 2026-07-26，歷經多次迭代覆核。本次依 2026-09-13 實際落地的變更（PR #118，Android Built-in Kotlin 遷移落地）覆核全文。**覆核方式為直接檢視當前程式碼，而非採信 commit 訊息**。
 
 **✅ 已落地（17 項）**
 
@@ -84,7 +84,7 @@
 | ✅ **自動化 CI/CD 發布流水線 (GitHub Actions)** | ✅ **已於 2026-09-08 完成 (Issue #113 / PR #114)**：基於 GitHub Actions 原生建構自動化發布工作流，支援 prod 雙平台/單平台 (Google Play / TestFlight) 與 dev (Firebase App Distribution) 自動化打包與分發 | **基礎設施地基完成**：徹底淘汰人工打包，多平台通道自動化分發 |
 | ✅ **Flutter SDK 版本遷移 (≥ 3.44.1)** | ✅ **已於 2026-08-26 完成** | 已更新 pubspec.yaml 及 CI 工作流程至 3.44.1 |
 | ✅ **iOS Swift Package Manager (SPM) 遷移** | ✅ **已於 2026-08-24 完成 (混合模式)** | 暫時保留 CocoaPods 回退相容，消除建置阻礙 |
-| **Android Built-in Kotlin 遷移** | 已升級 Kotlin 2.2.20 消除過舊警告，但仍使用顯式 KGP | **官方棄用警告**：Flutter 未來將強制推行 Built-in Kotlin 並移除 KGP 支援，需在未來升級中徹底移除顯式 KGP 依賴 |
+| ✅ **Android Built-in Kotlin 遷移** | ✅ **已於 2026-09-13 完成 (Issue #117 / PR #118)**：移除 `app/build.gradle` 顯式 `id "kotlin-android"`，由 Flutter Gradle Plugin 內部自動管理套用 | **官方棄用警告消除**：建置 0 警告，消除未來工具鏈衝突隱患 |
 | **硬編碼 API Key** | 僅改名為 `camelCase`，明碼仍在 `constants.dart:30,40` | 金鑰已入 git 歷史，須**撤銷並輪替**，非搬移可解 |
 | ✅ **修復地圖模式定位按鈕遮擋與常數重構** | ✅ **已於 2026-09-06 完成 (Issue #110 / PR #111)**：關閉原生不可控控制項，右上角自訂 FAB 結合真實 GPS 定位，消除卡片遮擋與魔術數字 | **操作體驗與架構提升**：按鈕不再被底部卡片遮擋，全面收斂 ThemeSize 常數 |
 | ✅ **修復地圖底部列表 UI 溢出 (RenderFlex overflow)** | ~~Android 地圖底部發生溢出~~ | **已於 PR #73 修復**（實際位置為 `restaurant_item_cell.dart`，非 `rating_stars.dart`） |
@@ -531,18 +531,15 @@ lib/
   * 遷移 iOS 原生依賴至 Swift Package Manager（`FlutterGeneratedPluginSwiftPackage`）。
   * 移除 `ios/Podfile`、`Podfile.lock` 與 `Pods/` 目錄，徹底消除 CocoaPods 技術債務，提升 iOS 建置效能。
 
-#### F-0.5 Android Built-in Kotlin 遷移 (移除顯式 KGP 依賴)
+#### F-0.5 Android Built-in Kotlin 遷移 (移除顯式 KGP 依賴) — ✅ 已於 2026-09-13 完成 (Issue #117 / PR #118)
 * **背景與痛點**:
-  * 專案原先的 Kotlin 版本過舊 (2.2.0)，目前雖已暫時升級至 2.2.20 以消除 Flutter 3.44.1 的警告，但專案仍在使用顯式的 Kotlin Gradle Plugin (`org.jetbrains.kotlin.android`) 依賴。
-  * Flutter 3.27+ 已棄用顯式的 KGP 依賴，轉而強制推行 "Built-in Kotlin" (由 Flutter 工具鏈內部統一管理 Kotlin 版本)。
+  * 專案原先使用顯式的 Kotlin Gradle Plugin (`org.jetbrains.kotlin.android`) 依賴，在 Flutter 3.27+ / 3.44.1 面臨官方棄用警告。
   * 若持續保留顯式的 KGP 宣告，在未來的 Flutter SDK 更新中將面臨 Android 建置失敗或工具鏈衝突的風險。
-* **🔴 遷移阻礙與決策 (Blocked by Ecosystem - 2026-08-23)**:
-  * 經實地評估，專案中有 11 個第三方套件（如 `fluttertoast`, `sign_in_with_apple` 等）最新版本尚未相容 Built-in Kotlin，強制移除 KGP 會導致編譯直接崩潰。
-  * 基於「Never break userspace」原則，**決策為維持現狀 (`android.builtInKotlin=false`) 暫緩遷移**。
-  * **詳細調研報告請見：[2026-08-23 AGP 9 遷移調研報告](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/docs/features/2026-08-23-agp9-built-in-kotlin-migration-analysis.md)**
-* **後續行動要點**:
-  * 定期追蹤相依套件版本，待阻礙套件完成相容更新後再重啟遷移。
-  * 屆時依據 Flutter 官方指南，徹底移除 `android/settings.gradle` 或 `android/app/build.gradle` 內的 `org.jetbrains.kotlin.android` 與 `kotlin-android` 宣告，並設回 `android.builtInKotlin=true`。
+* **落地成果 (2026-09-13, PR #118)**:
+  * 依據 Flutter 官方指南移除 `android/app/build.gradle` 內的 `id "kotlin-android"`，由 Flutter Gradle Plugin (FGP) 內部自動套用與管理 Kotlin 支援。
+  * 根目錄 `android/settings.gradle` 保留 `org.jetbrains.kotlin.android: 2.2.20` 宣告，確保 Gradle buildscript classpath 能正確解析。
+  * 驗證 `./gradlew assembleDebug`（BUILD SUCCESSFUL，0 警告）及 Flutter 測試（137 個測試全數通過），達成零破壞用戶空間並徹底消除官方棄用警告。
+  * **規格與計畫文件**：見 [`2026-09-13-android-builtin-kotlin-migration.md`](../features/2026-09-13-android-builtin-kotlin-migration.md)。
 
 ---
 
@@ -577,7 +574,7 @@ lib/
 | ✅ **Firestore Subcollection 口袋名單** | 資料架構 | 10 | 2.5 | 100% | 1.0 | **25.0** | 22.5 | - | **已完成**（2026-08-19, PR #70） |
 | ✅ **iOS UIScene Lifecycle 支援遷移 (強制性相容)** | 平台遷移 | 10 | 3.0 | 100% | 1.0 | **30.0** | 27.0 | - | **已完成**（2026-08-23） |
 | ✅ **iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (混合模式)** | 平台遷移 | 10 | 2.5 | 90% | 1.5 | **15.0** | 19.12 | - | **已完成**（2026-08-24，以混合模式完工） |
-| 🔴 **Android Built-in Kotlin 遷移 (移除顯式 KGP)** | 平台遷移 | 10 | 2.5 | 100% | 0.5 | **50.0** | 23.75 | - | **P0（官方棄用警告）** |
+| ✅ **Android Built-in Kotlin 遷移 (移除顯式 KGP)** | 平台遷移 | 10 | 2.5 | 100% | 0.5 | **50.0** | 23.75 | - | **已完成 (2026-09-13, PR #118)** |
 | ✅ **Flutter SDK 版本遷移 (≥ 3.44.1)** | 基礎設施 | 10 | 2.5 | 100% | 1.0 | **25.0** | 22.5 | - | **P0（基礎設施升級）** |
 | ✅ **移除無謂假延遲 (過濾 2s / 推播 8s)** | 既有修復 | 9 | 1.5 | 100% | 0.5 | **27.0** | 14.25 | - | **已完成** |
 | ✅ **`MapWidget` 實作 `didUpdateWidget` 連動 Marker** | 既有修復 | 8 | 2.0 | 100% | 0.5 | **32.0** | 19.0 | - | **已完成** |
@@ -607,7 +604,7 @@ lib/
 +-----------------------------------------------------------------------------------+
 |                           STRATEGIC PRODUCT ROADMAP                               |
 +-----------------------------------------------------------------------------------+
-| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 19/22 ✅        |
+| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 20/22 ✅        |
 |   • [x] P0 🚨 修復 AdMob 廣告刊登合規性 (防欺騙點擊/移至底部/消滅 Layout Shift) ✅ 2026-09-04 (Issue #107) |
 |   • [x] P0 自動化 CI/CD 發布流水線 (GitHub Actions) ✅ 2026-09-08 (Issue #113 / PR #114) |
 |   • [x] P-1 整合 flutter_inspector_kit ✅ 2026-08-05（量測地基就位）             |
@@ -623,7 +620,7 @@ lib/
 |   • [x] P1 Firestore Subcollection 最愛名單重構 ✅ 2026-08-19 (PR #70)            |
 |   • [x] P0 ✅ iOS UIScene Lifecycle 支援遷移 ✅ 2026-08-23                               |
 |   • [x] P0 ✅ iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (混合模式)               |
-|   • [ ] P0 🔴 Android Built-in Kotlin 遷移 (移除顯式 KGP)                             |
+|   • [x] P0 ✅ Android Built-in Kotlin 遷移 (移除顯式 KGP) ✅ 2026-09-13 (Issue #117 / PR #118) |
 |   • [x] P0 ✅ Flutter SDK 版本遷移至 3.44.1+                                       |
 |   • [ ] P0 移除硬編碼 API Key ⚠️ 未動；金鑰已入 git 歷史，須撤銷並輪替            |
 |   • [x] P0 移除無謂假延遲 (過濾 2s / 推播導航 8s) ✅ 實查已清除                   |
