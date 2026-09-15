@@ -15,6 +15,7 @@ import '../../filter/view/view_barrel.dart';
 import '../../restaurant/view/view_barrel.dart';
 import '../../settings/view/view_barrel.dart';
 import '../bloc/bloc_barrel.dart';
+import '../../ai_foodie/ai_foodie_barrel.dart';
 import 'drawer_widget.dart';
 import 'main_page_content_widget.dart';
 
@@ -100,6 +101,14 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         onPressed: _openDrawer,
         icon: const Icon(Icons.menu, color: ThemeColor.colorffffff),
       ),
+      actions: [
+        IconButton(
+          key: const Key('ai_foodie_button'),
+          icon: const Icon(Icons.auto_awesome, color: ThemeColor.colorffffff),
+          tooltip: 'AI 覓食助理',
+          onPressed: () => AiFoodieSheet.show(context),
+        ),
+      ],
     );
   }
 
