@@ -47,6 +47,11 @@ class MenuVisionBloc extends Bloc<MenuVisionEvent, MenuVisionState> {
               message: result.text,
               failedImageBytes: imageBytes,
             ));
+          default:
+            emit(MenuVisionFailure(
+              message: '未預期的組件格式',
+              failedImageBytes: imageBytes,
+            ));
         }
       } on Exception catch (e) {
         emit(MenuVisionFailure(message: '菜單辨識失敗：$e'));
@@ -68,6 +73,11 @@ class MenuVisionBloc extends Bloc<MenuVisionEvent, MenuVisionState> {
           case FallbackMarkdownComponent():
             emit(MenuVisionFailure(
               message: result.text,
+              failedImageBytes: event.imageBytes,
+            ));
+          default:
+            emit(MenuVisionFailure(
+              message: '未預期的組件格式',
               failedImageBytes: event.imageBytes,
             ));
         }
