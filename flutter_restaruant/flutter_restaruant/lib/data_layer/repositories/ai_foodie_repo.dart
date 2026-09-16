@@ -4,6 +4,7 @@ import 'package:firebase_ai/firebase_ai.dart';
 
 import '../../domain/entities/entities_barrel.dart';
 import '../../domain/repositories/ai_foodie_repository.dart';
+import 'ai_foodie_schema.dart';
 
 /// AI 推論執行函式簽章（便於測試與無網路/離線打樁）
 typedef AiPromptFunction =
@@ -23,10 +24,17 @@ class AiFoodieRepo implements AiFoodieRepository {
   static const String _systemInstruction = '''
 你是一位擁有米其林指南品味、通曉在地街巷私房菜的專業 AI 覓食助理。
 請針對使用者的用餐情境（如人數、預算、喜好、時間）：
-1. 提供溫暖、專業且生動的自然語言推薦語。
-2. 推薦 2~4 家符合條件的餐廳進行對比分析。
-3. 提供後續行動建議（如地圖瀏覽、轉盤抽籤）。
-一律以 JSON 格式回應，包含 text 與 components。
+1. 提供溫暖、專業且生動的自然語言推薦語 (text)。
+2. 推薦 2~4 家符合條件的餐廳進行對比分析，並封裝在 components 陣列中。
+3. 提供後續行動建議（如後續查詢標籤、轉盤抽籤）。
+
+【嚴格元件型別規範】
+components 陣列內的每個物件必須包含 component_type 與 data：
+- component_type 嚴格限定為下列三者之一：
+  1. "comparison_matrix": 多店橫向評分與特色對比 (data 包含 title 與 items 陣列)
+  2. "action_chip_group": 快捷行動按鈕 (data 包含 chips 陣列，action 為 "query" 或 "open_roulette")
+  3. "decision_roulette": 命運轉盤隨機抽籤 (data 包含 title 與 options 陣列)
+一律以符合定義 Schema 的 JSON 格式回應。
 ''';
 
   @override
@@ -82,6 +90,7 @@ class AiFoodieRepo implements AiFoodieRepository {
         systemInstruction: Content.system(_systemInstruction),
         generationConfig: GenerationConfig(
           responseMimeType: 'application/json',
+          responseSchema: aiFoodieResponseSchema,
         ),
       );
 

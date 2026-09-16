@@ -31,6 +31,8 @@
 ### 2.2 資料層 (Data Layer)
 - **[`lib/data_layer/repositories/ai_foodie_repo.dart`](../../lib/data_layer/repositories/ai_foodie_repo.dart)**（新增）：
   - 實作 `AiFoodieRepository`，封裝 Gemini 推薦與本地智慧兜底引擎。
+- **[`lib/data_layer/repositories/ai_foodie_schema.dart`](../../lib/data_layer/repositories/ai_foodie_schema.dart)**（新增）：
+  - 定義 Gemini 結構化輸出 JSON 綱要 `aiFoodieResponseSchema`，在 Token 採樣層約束合法元件型別。
 - **[`lib/di/injection.dart`](../../lib/di/injection.dart)**：
   - 註冊 `AiFoodieRepository` 到 GetIt 容器。
 
@@ -48,6 +50,7 @@
   - AppBar 加入 ✨ AI 覓食按鈕，點擊彈出 `AiFoodieSheet.show(context)`。
 
 ### 2.4 測試層 (Tests)
+- **`test/data_layer/ai_foodie_repo_test.dart`**（新增）：驗證 AI Foodie 結構化輸出 Schema 與 Repository 解析。
 - **`test/domain/entities/a2ui_component_test.dart`**（新增）：驗證新增元件序列化與防禦性解析。
 - **`test/flow/ai_foodie/ai_foodie_bloc_test.dart`**（新增）：單元測試覆蓋對話與轉盤狀態流轉。
 - **`test/flow/ai_foodie/decision_roulette_test.dart`**（新增）：Widget 測試驗證轉盤渲染與動畫觸發。
