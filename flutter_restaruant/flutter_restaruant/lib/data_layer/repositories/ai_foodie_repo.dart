@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:meta/meta.dart';
 
 import '../../domain/entities/entities_barrel.dart';
 import '../../domain/repositories/ai_foodie_repository.dart';
@@ -100,7 +101,7 @@ components 陣列內的每個物件必須包含 component_type 與 data：
             if (msg.isUser)
               Content.text(msg.text)
             else
-              Content.model([TextPart(_formatAssistantHistory(msg))]),
+              Content.model([TextPart(formatAssistantHistory(msg))]),
         Content.text(prompt),
       ];
 
@@ -117,7 +118,9 @@ components 陣列內的每個物件必須包含 component_type 與 data：
     return _generateSmartFallback(prompt);
   }
 
-  String _formatAssistantHistory(AiFoodieMessage msg) {
+  /// 將助理訊息及其攜帶的元件實體（如比對卡片中的餐廳 ID/名稱、轉盤候選）序列化為多輪對話上下文
+  @visibleForTesting
+  String formatAssistantHistory(AiFoodieMessage msg) {
     if (msg.components.isEmpty) return msg.text;
 
     final buffer = StringBuffer(msg.text);

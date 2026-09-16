@@ -111,20 +111,16 @@ void main() {
       expect(suggestions.first.components.first, isA<ActionChipGroupComponent>());
     });
 
-    test('多輪對話歷程中攜帶前輪元件的餐廳實體資訊', () async {
-      List<AiFoodieMessage>? capturedHistory;
-      final repo = AiFoodieRepo(
-        promptExecutor: (prompt, history) async {
-          capturedHistory = history;
-          return jsonEncode({
-            'text': '推薦您這兩家都很合適！',
-            'components': <Object>[],
-          });
-        },
-      );
+    test('多輪對話歷程中 formatAssistantHistory 正確序列化前輪元件的餐廳與轉盤實體', () async {
+      final repo = AiFoodieRepo();
 
-      final prevAssistantMsg = AiFoodieMessage.assistant(
-        text: '推薦以下兩家：',
+      // 1. 驗證空 components 不變更純文字
+      final plainMsg = AiFoodieMessage.assistant(text: '你好，想吃什麼？');
+      expect(repo.formatAssistantHistory(plainMsg), '你好，想吃什麼？');
+
+      // 2. 驗證 ComparisonMatrixComponent 包含餐廳名稱與 ID
+      final matrixMsg = AiFoodieMessage.assistant(
+        text: '推薦以下餐廳：',
         components: const [
           ComparisonMatrixComponent(
             title: '精選比對',
@@ -135,22 +131,41 @@ void main() {
                 rating: 4.8,
                 highlights: ['小籠包'],
               ),
+              RestaurantComparisonItem(
+                id: 'rest_102',
+                name: '阜杭豆漿',
+                rating: 4.6,
+                highlights: ['厚餅夾蛋'],
+              ),
             ],
           ),
         ],
       );
 
-      await repo.askAssistant(
-        '這家有訂位嗎？',
-        history: [
-          AiFoodieMessage.user('想吃小籠包'),
-          prevAssistantMsg,
+      final formattedMatrix = repo.formatAssistantHistory(matrixMsg);
+      expect(formattedMatrix, contains('推薦以下餐廳：'));
+      expect(
+        formattedMatrix,
+        contains('[推薦餐廳: 鼎泰豐 (id: rest_101), 阜杭豆漿 (id: rest_102)]'),
+      );
+
+      // 3. 驗證 DecisionRouletteComponent 包含轉盤候選選項
+      final rouletteMsg = AiFoodieMessage.assistant(
+        text: '幫您挑選出以下候選：',
+        components: const [
+          DecisionRouletteComponent(
+            title: '今晚吃什麼',
+            options: ['野武士居酒屋', '狸御殿和食酒場'],
+          ),
         ],
       );
 
-      expect(capturedHistory, isNotNull);
-      expect(capturedHistory!.length, 2);
-      expect(capturedHistory![1].isAssistant, isTrue);
+      final formattedRoulette = repo.formatAssistantHistory(rouletteMsg);
+      expect(formattedRoulette, contains('幫您挑選出以下候選：'));
+      expect(
+        formattedRoulette,
+        contains('[轉盤選項: 野武士居酒屋, 狸御殿和食酒場]'),
+      );
     });
   });
 
