@@ -71,5 +71,20 @@
   "business_status_open": "OPEN",
   "business_status_closed": "CLOSED",
   "signin_header_subtitle": "Your premium dining concierge.",
-  "ai_foodie_assistant_tooltip": "AI Foodie Assistant"
+  "ai_foodie_assistant_tooltip": "AI Foodie Assistant",
+  "ai_foodie_sheet_title": "AI Foodie Assistant",
+  "ai_foodie_sheet_subtitle": "Contextual Recommendations · Menu Comparison · Decision Roulette",
+  "ai_foodie_reset_tooltip": "Reset",
+  "ai_foodie_close_tooltip": "Close",
+  "ai_foodie_input_hint": "Enter scenario, e.g. 4 people wanting izakaya to chat...",
+  "ai_foodie_loading_hint": "AI is curating and comparing culinary gems for you...",
+  "ai_foodie_roulette_winner_title": "🎉 Destiny decided! Tonight we eat:",
+  "ai_foodie_roulette_spinning": "The roulette wheel is spinning rapidly...",
+  "ai_foodie_roulette_hint": "Tap the button below and let destiny choose!",
+  "ai_foodie_roulette_spin_again": "Spin Again",
+  "ai_foodie_roulette_awesome": "Awesome!",
+  "ai_foodie_roulette_spin_btn": "🎲 Spin the Wheel!",
+  "ai_foodie_roulette_spinning_btn": "Spinning...",
+  "ai_foodie_roulette_default_title": "What to eat tonight? Decision Roulette",
+  "ai_foodie_roulette_result_msg": "🎲 Decision roulette selected the top choice for you:\n👉 **{winner}** 👈\nWishing you a delightful dining experience!"
 }

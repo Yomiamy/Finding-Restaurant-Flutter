@@ -2,6 +2,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../domain/repositories/ai_foodie_repository.dart';
+import '../../../generated/l10n.dart';
 import 'ai_foodie_event.dart';
 import 'ai_foodie_state.dart';
 
@@ -104,7 +105,7 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
     if (action == 'open_roulette') {
       final title = payload['title'] is String
           ? payload['title'] as String
-          : '今晚吃什麼？命運大轉盤';
+          : _rouletteDefaultTitle();
       final rawOptions = payload['options'];
       if (rawOptions is! List) return;
       final options = rawOptions
@@ -140,10 +141,26 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
       messages: [
         ...state.messages,
         AiFoodieMessage.assistant(
-          text: '🎲 命運轉盤為您抽出了最棒的選擇：\n👉 **${event.winner}** 👈\n祝您今晚用餐愉快，吃得開心滿足！',
+          text: _rouletteResultMessage(event.winner),
         ),
       ],
     ));
+  }
+
+  String _rouletteDefaultTitle() {
+    try {
+      return S.current.ai_foodie_roulette_default_title;
+    } catch (_) {
+      return '今晚吃什麼？命運大轉盤';
+    }
+  }
+
+  String _rouletteResultMessage(String winner) {
+    try {
+      return S.current.ai_foodie_roulette_result_msg(winner);
+    } catch (_) {
+      return '🎲 命運轉盤為您抽出了最棒的選擇：\n👉 **$winner** 👈\n祝您今晚用餐愉快，吃得開心滿足！';
+    }
   }
 
   void _onCloseRoulette(

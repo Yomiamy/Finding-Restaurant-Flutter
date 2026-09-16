@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_restaruant/flow/ai_foodie/view/decision_roulette_dialog.dart';
+import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -8,6 +10,14 @@ void main() {
 
     await tester.pumpWidget(
       MaterialApp(
+        localizationsDelegates: const [
+          S.delegate,
+          GlobalWidgetsLocalizations.delegate,
+          GlobalCupertinoLocalizations.delegate,
+          GlobalMaterialLocalizations.delegate,
+        ],
+        supportedLocales: S.delegate.supportedLocales,
+        locale: const Locale('zh', 'TW'),
         home: Scaffold(
           body: DecisionRouletteDialog(
             title: '今晚吃什麼大轉盤',

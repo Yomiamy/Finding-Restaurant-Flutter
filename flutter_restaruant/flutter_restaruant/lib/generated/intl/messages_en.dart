@@ -20,10 +20,52 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
+  static String m0(winner) =>
+      "🎲 Decision roulette selected the top choice for you:\n👉 **${winner}** 👈\nWishing you a delightful dining experience!";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "account_section_title": MessageLookupByLibrary.simpleMessage("Account"),
     "ai_foodie_assistant_tooltip": MessageLookupByLibrary.simpleMessage(
+      "AI Foodie Assistant",
+    ),
+    "ai_foodie_close_tooltip": MessageLookupByLibrary.simpleMessage("Close"),
+    "ai_foodie_input_hint": MessageLookupByLibrary.simpleMessage(
+      "Enter scenario, e.g. 4 people wanting izakaya to chat...",
+    ),
+    "ai_foodie_loading_hint": MessageLookupByLibrary.simpleMessage(
+      "AI is curating and comparing culinary gems for you...",
+    ),
+    "ai_foodie_reset_tooltip": MessageLookupByLibrary.simpleMessage("Reset"),
+    "ai_foodie_roulette_awesome": MessageLookupByLibrary.simpleMessage(
+      "Awesome!",
+    ),
+    "ai_foodie_roulette_default_title": MessageLookupByLibrary.simpleMessage(
+      "What to eat tonight? Decision Roulette",
+    ),
+    "ai_foodie_roulette_hint": MessageLookupByLibrary.simpleMessage(
+      "Tap the button below and let destiny choose!",
+    ),
+    "ai_foodie_roulette_result_msg": m0,
+    "ai_foodie_roulette_spin_again": MessageLookupByLibrary.simpleMessage(
+      "Spin Again",
+    ),
+    "ai_foodie_roulette_spin_btn": MessageLookupByLibrary.simpleMessage(
+      "🎲 Spin the Wheel!",
+    ),
+    "ai_foodie_roulette_spinning": MessageLookupByLibrary.simpleMessage(
+      "The roulette wheel is spinning rapidly...",
+    ),
+    "ai_foodie_roulette_spinning_btn": MessageLookupByLibrary.simpleMessage(
+      "Spinning...",
+    ),
+    "ai_foodie_roulette_winner_title": MessageLookupByLibrary.simpleMessage(
+      "🎉 Destiny decided! Tonight we eat:",
+    ),
+    "ai_foodie_sheet_subtitle": MessageLookupByLibrary.simpleMessage(
+      "Contextual Recommendations · Menu Comparison · Decision Roulette",
+    ),
+    "ai_foodie_sheet_title": MessageLookupByLibrary.simpleMessage(
       "AI Foodie Assistant",
     ),
     "apply": MessageLookupByLibrary.simpleMessage("Apply"),
