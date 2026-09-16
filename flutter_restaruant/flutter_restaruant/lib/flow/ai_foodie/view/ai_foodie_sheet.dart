@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
+import '../../../features/utils/utils_barrel.dart';
 
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../domain/repositories/ai_foodie_repository.dart';
 import '../../../features/foundation/foundation_barrel.dart';
+import '../../restaurant/view/restaurant_detail_page.dart';
 import '../bloc/bloc_barrel.dart';
 import 'action_chip_group_widget.dart';
 import 'comparison_matrix_card.dart';
@@ -32,7 +34,7 @@ class AiFoodieSheet extends StatefulWidget {
 class _AiFoodieSheetState extends State<AiFoodieSheet> {
   late final AiFoodieBloc _bloc;
   final TextEditingController _textController = TextEditingController();
-  final ScrollController _scrollController = ScrollController();
+  ScrollController? _sheetScrollController;
 
   @override
   void initState() {
@@ -45,7 +47,6 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
   @override
   void dispose() {
     _textController.dispose();
-    _scrollController.dispose();
     if (widget.bloc == null) {
       _bloc.close();
     }
@@ -54,14 +55,33 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
 
   void _scrollToBottom() {
     WidgetsBinding.instance.addPostFrameCallback((_) {
-      if (_scrollController.hasClients) {
-        _scrollController.animateTo(
-          _scrollController.position.maxScrollExtent,
+      final controller = _sheetScrollController;
+      if (controller != null && controller.hasClients) {
+        controller.animateTo(
+          controller.position.maxScrollExtent,
           duration: const Duration(milliseconds: 300),
           curve: Curves.easeOut,
         );
       }
     });
+  }
+
+  void _navigateToRestaurantDetail(RestaurantComparisonItem item) {
+    final entity = RestaurantEntity(
+      id: item.id,
+      name: item.name,
+      rating: item.rating,
+      price: item.price,
+      imageUrl: item.imageUrl,
+      location: item.address != null
+          ? RestaurantLocationEntity(address1: item.address)
+          : null,
+    );
+    final arguments = Tuple2<RestaurantEntity, dynamic>(entity, null);
+    Navigator.of(context).pushNamed(
+      RestaurantDetailPage.routeName,
+      arguments: arguments,
+    );
   }
 
   void _sendMessage() {
@@ -101,6 +121,7 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
             minChildSize: 0.5,
             maxChildSize: 0.95,
             builder: (context, scrollController) {
+              _sheetScrollController = scrollController;
               return Container(
                 decoration: BoxDecoration(
                   color: colorScheme.surface,
@@ -186,7 +207,7 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
                     // Message List
                     Expanded(
                       child: ListView.builder(
-                        controller: _scrollController,
+                        controller: scrollController,
                         padding: const EdgeInsets.symmetric(
                           horizontal: ThemeSize.space16,
                           vertical: ThemeSize.space12,
@@ -204,6 +225,7 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
                               _bloc.add(TriggerActionChip(chip));
                               _scrollToBottom();
                             },
+                            onRestaurantTap: _navigateToRestaurantDetail,
                           );
                         },
                       ),
@@ -278,10 +300,12 @@ class _MessageItem extends StatelessWidget {
   const _MessageItem({
     required this.message,
     required this.onChipTap,
+    this.onRestaurantTap,
   });
 
   final AiFoodieMessage message;
   final void Function(ActionChipItem chip) onChipTap;
+  final void Function(RestaurantComparisonItem item)? onRestaurantTap;
 
   @override
   Widget build(BuildContext context) {
@@ -343,6 +367,7 @@ class _MessageItem extends StatelessWidget {
                   return switch (comp) {
                     ComparisonMatrixComponent() => ComparisonMatrixCard(
                         component: comp,
+                        onRestaurantTap: onRestaurantTap,
                       ),
                     ActionChipGroupComponent() => ActionChipGroupWidget(
                         component: comp,

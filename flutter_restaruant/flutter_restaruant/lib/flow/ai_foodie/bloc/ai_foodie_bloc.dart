@@ -20,6 +20,7 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
   }
 
   final AiFoodieRepository _repository;
+  int _requestToken = 0;
 
   Future<void> _onLoadInitialSuggestions(
     LoadInitialSuggestions event,
@@ -27,14 +28,17 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
   ) async {
     if (state.messages.isNotEmpty) return;
 
+    final token = ++_requestToken;
     emit(state.copyWith(isLoading: true, clearError: true));
     try {
       final initialMessages = await _repository.getInitialSuggestions();
+      if (token != _requestToken) return;
       emit(state.copyWith(
         messages: initialMessages,
         isLoading: false,
       ));
     } catch (e) {
+      if (token != _requestToken) return;
       emit(state.copyWith(
         isLoading: false,
         errorMessage: '載入建議時發生錯誤：$e',
@@ -49,6 +53,8 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
     final trimmed = event.prompt.trim();
     if (trimmed.isEmpty || state.isLoading) return;
 
+    final token = ++_requestToken;
+    final priorHistory = state.messages;
     final userMessage = AiFoodieMessage.user(trimmed);
     final updatedMessages = [...state.messages, userMessage];
 
@@ -61,14 +67,18 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
     try {
       final assistantResponse = await _repository.askAssistant(
         trimmed,
-        history: updatedMessages,
+        history: priorHistory,
       );
+
+      if (token != _requestToken) return;
 
       emit(state.copyWith(
         messages: [...updatedMessages, assistantResponse],
         isLoading: false,
       ));
     } catch (e) {
+      if (token != _requestToken) return;
+
       emit(state.copyWith(
         isLoading: false,
         errorMessage: '連線助理時發生錯誤：$e',
@@ -92,9 +102,15 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
     }
 
     if (action == 'open_roulette') {
-      final title = payload['title'] as String? ?? '今晚吃什麼？命運大轉盤';
-      final rawOptions = payload['options'] as List<Object?>? ?? const [];
-      final options = rawOptions.whereType<String>().toList();
+      final title = payload['title'] is String
+          ? payload['title'] as String
+          : '今晚吃什麼？命運大轉盤';
+      final rawOptions = payload['options'];
+      if (rawOptions is! List) return;
+      final options = rawOptions
+          .whereType<String>()
+          .where((s) => s.trim().isNotEmpty)
+          .toList(growable: false);
 
       if (options.isNotEmpty) {
         add(OpenRoulette(title: title, options: options));
@@ -141,6 +157,8 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
     ResetAiFoodie event,
     Emitter<AiFoodieState> emit,
   ) {
+    _requestToken++;
     emit(AiFoodieState.initial());
+    add(const LoadInitialSuggestions());
   }
 }

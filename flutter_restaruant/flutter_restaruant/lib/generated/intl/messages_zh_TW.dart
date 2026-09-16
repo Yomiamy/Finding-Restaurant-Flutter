@@ -23,6 +23,9 @@ class MessageLookup extends MessageLookupByLibrary {
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "account_section_title": MessageLookupByLibrary.simpleMessage("帳戶"),
+    "ai_foodie_assistant_tooltip": MessageLookupByLibrary.simpleMessage(
+      "AI 覓食助理",
+    ),
     "apply": MessageLookupByLibrary.simpleMessage("套用"),
     "business_hour": MessageLookupByLibrary.simpleMessage("營業時間"),
     "business_status_closed": MessageLookupByLibrary.simpleMessage("已打烊"),

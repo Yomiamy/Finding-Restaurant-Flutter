@@ -74,6 +74,9 @@ class _DecisionRouletteDialogState extends State<DecisionRouletteDialog>
         });
 
         widget.onWinnerSelected(selected);
+        if (mounted && Navigator.of(context).canPop()) {
+          Navigator.of(context).pop();
+        }
       }
     });
   }
