@@ -100,7 +100,7 @@ components 陣列內的每個物件必須包含 component_type 與 data：
             if (msg.isUser)
               Content.text(msg.text)
             else
-              Content.model([TextPart(msg.text)]),
+              Content.model([TextPart(_formatAssistantHistory(msg))]),
         Content.text(prompt),
       ];
 
@@ -115,6 +115,24 @@ components 陣列內的每個物件必須包含 component_type 與 data：
     }
 
     return _generateSmartFallback(prompt);
+  }
+
+  String _formatAssistantHistory(AiFoodieMessage msg) {
+    if (msg.components.isEmpty) return msg.text;
+
+    final buffer = StringBuffer(msg.text);
+    for (final comp in msg.components) {
+      if (comp is ComparisonMatrixComponent && comp.items.isNotEmpty) {
+        final summary = comp.items
+            .map((it) => '${it.name} (id: ${it.id})')
+            .join(', ');
+        buffer.write('\n[推薦餐廳: $summary]');
+      } else if (comp is DecisionRouletteComponent && comp.options.isNotEmpty) {
+        final summary = comp.options.join(', ');
+        buffer.write('\n[轉盤選項: $summary]');
+      }
+    }
+    return buffer.toString();
   }
 
   AiFoodieMessage _parseResponse(String rawJson) {

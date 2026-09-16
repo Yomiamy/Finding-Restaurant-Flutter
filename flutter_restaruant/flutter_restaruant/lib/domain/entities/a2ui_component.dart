@@ -16,10 +16,42 @@ sealed class A2UIComponent extends Equatable {
         (json['data'] as Map<String, Object?>?) ?? const <String, Object?>{};
 
     return switch (componentType) {
-      'dish_catalog' => DishCatalogComponent.fromJson(data),
-      'comparison_matrix' => ComparisonMatrixComponent.fromJson(data),
-      'action_chip_group' => ActionChipGroupComponent.fromJson(data),
-      'decision_roulette' => DecisionRouletteComponent.fromJson(data),
+      'dish_catalog' => () {
+          final comp = DishCatalogComponent.fromJson(data);
+          if (comp.dishes.isEmpty) {
+            return FallbackMarkdownComponent(
+              text: (json['text'] as String?) ?? comp.restaurantTitle ?? '菜單資料為空',
+            );
+          }
+          return comp;
+        }(),
+      'comparison_matrix' => () {
+          final comp = ComparisonMatrixComponent.fromJson(data);
+          if (comp.items.isEmpty) {
+            return FallbackMarkdownComponent(
+              text: (json['text'] as String?) ?? comp.title,
+            );
+          }
+          return comp;
+        }(),
+      'action_chip_group' => () {
+          final comp = ActionChipGroupComponent.fromJson(data);
+          if (comp.chips.isEmpty) {
+            return FallbackMarkdownComponent(
+              text: (json['text'] as String?) ?? '快捷操作選項',
+            );
+          }
+          return comp;
+        }(),
+      'decision_roulette' => () {
+          final comp = DecisionRouletteComponent.fromJson(data);
+          if (comp.options.length < 2) {
+            return FallbackMarkdownComponent(
+              text: (json['text'] as String?) ?? comp.title,
+            );
+          }
+          return comp;
+        }(),
       _ => FallbackMarkdownComponent(
         text: (json['text'] as String?) ?? '無法識別的 GenUI 元件結構',
       ),
@@ -176,6 +208,7 @@ final class ActionChipGroupComponent extends A2UIComponent {
     final chips = rawChips
         .whereType<Map<String, Object?>>()
         .map(ActionChipItem.fromJson)
+        .where((c) => c.isValid)
         .toList(growable: false);
 
     return ActionChipGroupComponent(chips: chips);
@@ -214,6 +247,23 @@ final class ActionChipItem extends Equatable {
   final String label;
   final String action;
   final Map<String, Object?> payload;
+
+  /// 檢查此行動標籤是否具備合法的必要欄位與載荷
+  bool get isValid {
+    if (label.trim().isEmpty || action.trim().isEmpty) return false;
+    return switch (action) {
+      'query' => (payload['prompt'] as String?)?.trim().isNotEmpty ?? false,
+      'open_roulette' => () {
+        final options = payload['options'] as List<Object?>?;
+        return options != null &&
+            options
+                .whereType<String>()
+                .where((s) => s.trim().isNotEmpty)
+                .length >= 2;
+      }(),
+      _ => true, // 保留對未知或未來自訂動作的向後相容性
+    };
+  }
 
   Map<String, Object?> toJson() => {
     'label': label,

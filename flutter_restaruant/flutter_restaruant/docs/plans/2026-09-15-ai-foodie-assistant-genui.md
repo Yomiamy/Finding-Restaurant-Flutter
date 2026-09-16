@@ -59,26 +59,31 @@
 
 ## 3. 任務拆分 (Tasks Breakdown)
 
-- [ ] **Task 1: Domain Entities 擴充與 Repository 抽象契約**（複雜度：標準）
+- [x] **Task 1: Domain Entities 擴充與 Repository 抽象契約**（複雜度：標準）
   - 在 `a2ui_component.dart` 擴充 `ComparisonMatrixComponent`、`ActionChipGroupComponent`、`DecisionRouletteComponent`。
   - 建立 `AiFoodieMessage` 與 `AiFoodieRepository`，更新 barrels。
 
-- [ ] **Task 2: Data Layer 實作與 GetIt 依賴註冊**（複雜度：標準）
+- [x] **Task 2: Data Layer 實作與 GetIt 依賴註冊**（複雜度：標準）
   - 實作 `AiFoodieRepo`，內建情境推論模板與 fallback 對策。
   - 在 `lib/di/injection.dart` 完成 LazySingleton 註冊。
 
-- [ ] **Task 3: Presentation BLoC 狀態機實作**（複雜度：標準）
+- [x] **Task 3: Presentation BLoC 狀態機實作**（複雜度：標準）
   - 建立 `AiFoodieEvent`, `AiFoodieState`, `AiFoodieBloc`。
   - 支援初次加載預設情境與使用者 Prompt 對話。
 
-- [ ] **Task 4: GenUI 元件與對話畫布視窗實作（含命運轉盤）**（複雜度：標準）
+- [x] **Task 4: GenUI 元件與對話畫布視窗實作（含命運轉盤）**（複雜度：標準）
   - 實作 `ComparisonMatrixCard`、`ActionChipGroupWidget`。
   - 實作 `DecisionRouletteDialog`（自訂輪盤扇區繪製與緩動動畫）。
   - 實作 `AiFoodieSheet`（支援拖曳拉伸與對話氣泡佈局）。
 
-- [ ] **Task 5: 主頁進入點接線與全套單元測試覆蓋**（複雜度：標準）
+- [x] **Task 5: 主頁進入點接線與全套單元測試覆蓋**（複雜度：標準）
   - 在 `MainPage` 掛載 ✨ 助理進入點。
   - 撰寫 Domain 與 BLoC 單元測試，跑通 `flutter analyze .` 與 `flutter test`。
+
+- [x] **Task 6: Code Review 防禦強化與架構完善**（複雜度：標準）
+  - 在 `AiFoodieRepo` 對話歷程中攜帶前輪元件的餐廳實體 (ID 與名稱)，杜絕多輪對話指代丟失。
+  - 修正 `DecisionRouletteDialog` 轉完後立即 pop 的問題，停留在勝選結果並提供「再轉一次」與「太棒了！」按鈕。
+  - 在 `A2UIComponent.fromJson` 建立必要欄位有效性校驗與 Fallback 防禦，並補齊反例測試。
 
 ---
 
