@@ -34,7 +34,7 @@
 ## 3. 檔案異動清單 (File Changes)
 
 ### 3.1 新增檔案
-- **[`.github/workflows/pr-check.yml`](../../../.github/workflows/pr-check.yml)**：
+- **[`.github/workflows/pr-check.yml`](../../../../.github/workflows/pr-check.yml)**：
   - 放置於 Git 根目錄之 `.github/workflows/` 下。
   - 定義 PR 與 main push 觸發條件、concurrency 控制、Flutter 環境配置及 analyze / test 檢查。
 
