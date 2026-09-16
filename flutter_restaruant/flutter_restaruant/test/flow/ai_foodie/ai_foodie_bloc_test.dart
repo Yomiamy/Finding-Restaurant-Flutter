@@ -149,7 +149,7 @@ void main() {
       expect(bloc.state.messages.last.text, contains('餐廳 A'));
     });
 
-    test('ResetAiFoodie 正確重置所有狀態', () async {
+    test('ResetAiFoodie 正確重置狀態並重新載入初始建議', () async {
       bloc.add(const SendUserPrompt('測試'));
       await pumpEventQueue();
       expect(bloc.state.messages.isNotEmpty, isTrue);
@@ -157,7 +157,18 @@ void main() {
       bloc.add(const ResetAiFoodie());
       await pumpEventQueue();
 
-      expect(bloc.state.messages, isEmpty);
+      expect(bloc.state.messages.length, 1);
+      expect(bloc.state.messages.first.text, contains('歡迎使用'));
+      expect(bloc.state.isLoading, isFalse);
+    });
+
+    test('ResetAiFoodie 會作廢先前的非同步請求避免覆蓋重設狀態', () async {
+      bloc.add(const SendUserPrompt('延遲提問'));
+      bloc.add(const ResetAiFoodie());
+      await pumpEventQueue();
+
+      expect(bloc.state.messages.length, 1);
+      expect(bloc.state.messages.first.text, contains('歡迎使用'));
       expect(bloc.state.isLoading, isFalse);
     });
   });

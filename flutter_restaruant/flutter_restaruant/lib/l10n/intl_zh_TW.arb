@@ -70,5 +70,6 @@
   "comments": "評論",
   "business_status_open": "營業中",
   "business_status_closed": "已打烊",
-  "signin_header_subtitle": "您的頂級餐飲嚮導"
+  "signin_header_subtitle": "您的頂級餐飲嚮導",
+  "ai_foodie_assistant_tooltip": "AI 覓食助理"
 }

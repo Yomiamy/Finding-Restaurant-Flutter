@@ -70,12 +70,12 @@ class AiFoodieRepo implements AiFoodieRepository {
     String prompt, {
     List<AiFoodieMessage>? history,
   }) async {
-    if (_promptExecutor != null) {
-      final rawResponse = await _promptExecutor(prompt, history);
-      return _parseResponse(rawResponse);
-    }
-
     try {
+      if (_promptExecutor != null) {
+        final rawResponse = await _promptExecutor(prompt, history);
+        return _parseResponse(rawResponse);
+      }
+
       final ai = _firebaseAI ?? FirebaseAI.googleAI();
       final model = ai.generativeModel(
         model: 'gemini-3.5-flash-lite',
@@ -85,9 +85,17 @@ class AiFoodieRepo implements AiFoodieRepository {
         ),
       );
 
-      final response = await model.generateContent([
+      final contents = <Content>[
+        if (history != null)
+          for (final msg in history)
+            if (msg.isUser)
+              Content.text(msg.text)
+            else
+              Content.model([TextPart(msg.text)]),
         Content.text(prompt),
-      ]);
+      ];
+
+      final response = await model.generateContent(contents);
 
       final text = response.text;
       if (text != null && text.isNotEmpty) {
@@ -165,9 +173,9 @@ class AiFoodieRepo implements AiFoodieRepository {
           const ActionChipGroupComponent(
             chips: [
               ActionChipItem(
-                label: '📍 在地圖上標記這 3 間',
-                action: 'show_on_map',
-                payload: {'ids': ['izakaya_1', 'izakaya_2', 'izakaya_3']},
+                label: '🍢 查看必點招牌下酒菜',
+                action: 'query',
+                payload: {'prompt': '推薦這幾家居酒屋最受歡迎的必點招牌下酒菜'},
               ),
               ActionChipItem(
                 label: '🎲 選擇困難？轉盤隨機挑一家',
@@ -213,9 +221,9 @@ class AiFoodieRepo implements AiFoodieRepository {
           const ActionChipGroupComponent(
             chips: [
               ActionChipItem(
-                label: '📍 在地圖上查看約會地點',
-                action: 'show_on_map',
-                payload: {'ids': ['date_1', 'date_2']},
+                label: '🍷 詢問穿著與訂位注意事項',
+                action: 'query',
+                payload: {'prompt': '這兩家約會餐廳有服儀限制 (Dress Code) 或低消嗎？'},
               ),
               ActionChipItem(
                 label: '🎲 轉盤交給命運決定',
@@ -270,9 +278,9 @@ class AiFoodieRepo implements AiFoodieRepository {
         const ActionChipGroupComponent(
           chips: [
             ActionChipItem(
-              label: '📍 在地圖上高亮這些餐廳',
-              action: 'show_on_map',
-              payload: {'ids': ['top_1', 'top_2', 'top_3']},
+              label: '🥢 推薦排隊小吃與熱門時段',
+              action: 'query',
+              payload: {'prompt': '這些人氣餐廳哪些時段比較不用排隊？'},
             ),
             ActionChipItem(
               label: '🎲 轉盤抽籤：今晚吃哪家？',

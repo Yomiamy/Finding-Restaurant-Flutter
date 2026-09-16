@@ -17,26 +17,26 @@
 ## 2. 檔案異動清單 (File Changes)
 
 ### 2.1 領域層 (Domain Layer)
-- **[`lib/domain/entities/a2ui_component.dart`](../../domain/entities/a2ui_component.dart)**：
+- **[`lib/domain/entities/a2ui_component.dart`](../../lib/domain/entities/a2ui_component.dart)**：
   - 擴充 `sealed class A2UIComponent`，加入 `ComparisonMatrixComponent`、`ActionChipGroupComponent`、`DecisionRouletteComponent`。
-- **[`lib/domain/entities/ai_foodie_message.dart`](../../domain/entities/ai_foodie_message.dart)**（新增）：
+- **[`lib/domain/entities/ai_foodie_message.dart`](../../lib/domain/entities/ai_foodie_message.dart)**（新增）：
   - 定義對話訊息實體 `AiFoodieMessage`。
-- **[`lib/domain/entities/entities_barrel.dart`](../../domain/entities/entities_barrel.dart)**：
+- **[`lib/domain/entities/entities_barrel.dart`](../../lib/domain/entities/entities_barrel.dart)**：
   - Export 新增之實體類別。
-- **[`lib/domain/repositories/ai_foodie_repository.dart`](../../domain/repositories/ai_foodie_repository.dart)**（新增）：
+- **[`lib/domain/repositories/ai_foodie_repository.dart`](../../lib/domain/repositories/ai_foodie_repository.dart)**（新增）：
   - 宣告 `AiFoodieRepository` 抽象介面。
-- **[`lib/domain/repositories/repositories_barrel.dart`](../../domain/repositories/repositories_barrel.dart)**：
+- **[`lib/domain/repositories/repositories_barrel.dart`](../../lib/domain/repositories/repositories_barrel.dart)**：
   - Export `AiFoodieRepository`。
 
 ### 2.2 資料層 (Data Layer)
-- **[`lib/data_layer/repositories/ai_foodie_repo.dart`](../../data_layer/repositories/ai_foodie_repo.dart)**（新增）：
+- **[`lib/data_layer/repositories/ai_foodie_repo.dart`](../../lib/data_layer/repositories/ai_foodie_repo.dart)**（新增）：
   - 實作 `AiFoodieRepository`，封裝 Gemini 推薦與本地智慧兜底引擎。
-- **[`lib/di/injection.dart`](../../di/injection.dart)**：
+- **[`lib/di/injection.dart`](../../lib/di/injection.dart)**：
   - 註冊 `AiFoodieRepository` 到 GetIt 容器。
 
 ### 2.3 表現層 (Presentation Layer)
 - **`lib/flow/ai_foodie/`**（新增模組）：
-  - `bloc/ai_foodie_event.dart`：宣告事件（`LoadInitialSuggestions`, `SendUserPrompt`, `SelectActionChip`, `SelectRouletteWinner`）。
+  - `bloc/ai_foodie_event.dart`：宣告事件（`LoadInitialSuggestions`, `SendUserPrompt`, `TriggerActionChip`, `OpenRoulette`, `SpinRouletteWinnerSelected`, `CloseRoulette`, `ResetAiFoodie`）。
   - `bloc/ai_foodie_state.dart`：宣告狀態（`AiFoodieState`，包含 messages, isLoading, currentRouletteWinner 等）。
   - `bloc/ai_foodie_bloc.dart`：實作狀態流轉。
   - `view/comparison_matrix_card.dart`：橫向對比卡片 Carousel。
@@ -44,7 +44,7 @@
   - `view/decision_roulette_dialog.dart`：原生 CustomPainter 繪製之命運轉盤與旋轉動畫。
   - `view/ai_foodie_sheet.dart`：底部 DraggableScrollableSheet 對話畫布。
   - `ai_foodie_barrel.dart`：模組 Barrel export。
-- **[`lib/flow/main/view/main_page.dart`](../../flow/main/view/main_page.dart)**：
+- **[`lib/flow/main/view/main_page.dart`](../../lib/flow/main/view/main_page.dart)**：
   - AppBar 加入 ✨ AI 覓食按鈕，點擊彈出 `AiFoodieSheet.show(context)`。
 
 ### 2.4 測試層 (Tests)

@@ -56,7 +56,7 @@
 
 ### 2.3 表現層 (BLoC & UI)
 - **`AiFoodieBloc`**：
-  - 事件：`LoadInitialSuggestions`, `SendUserPrompt`, `TriggerActionChip`, `SpinRoulette`。
+  - 事件：`LoadInitialSuggestions`, `SendUserPrompt`, `TriggerActionChip`, `OpenRoulette`, `SpinRouletteWinnerSelected`, `CloseRoulette`, `ResetAiFoodie`。
   - 狀態：`AiFoodieState`（包含訊息列表、載入中旗標、當前轉盤抽籤狀態）。
 - **元件視窗 (`AiFoodieSheet`)**：
   - 彈性底部對話畫布 (`DraggableScrollableSheet`)。

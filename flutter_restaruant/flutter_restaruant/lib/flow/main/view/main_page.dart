@@ -105,7 +105,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         IconButton(
           key: const Key('ai_foodie_button'),
           icon: const Icon(Icons.auto_awesome, color: ThemeColor.colorffffff),
-          tooltip: 'AI 覓食助理',
+          tooltip: S.current.ai_foodie_assistant_tooltip,
           onPressed: () => AiFoodieSheet.show(context),
         ),
       ],

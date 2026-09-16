@@ -70,5 +70,6 @@
   "comments": "Reviews",
   "business_status_open": "OPEN",
   "business_status_closed": "CLOSED",
-  "signin_header_subtitle": "Your premium dining concierge."
+  "signin_header_subtitle": "Your premium dining concierge.",
+  "ai_foodie_assistant_tooltip": "AI Foodie Assistant"
 }

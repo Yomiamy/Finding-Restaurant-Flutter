@@ -633,6 +633,16 @@ class S {
       args: [],
     );
   }
+
+  /// `AI Foodie Assistant`
+  String get ai_foodie_assistant_tooltip {
+    return Intl.message(
+      'AI Foodie Assistant',
+      name: 'ai_foodie_assistant_tooltip',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
