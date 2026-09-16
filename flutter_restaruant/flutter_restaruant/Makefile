@@ -20,7 +20,7 @@ help:
 	@echo "Code Quality & Testing:"
 	@echo "  format          Format Dart code"
 	@echo "  fix             Apply automated dart fixes"
-	@echo "  analyze         Analyze code with dart analyze"
+	@echo "  analyze         Analyze code with flutter analyze"
 	@echo "  test            Run unit and widget tests"
 	@echo "  test_coverage   Run tests and generate coverage report"
 	@echo ""
