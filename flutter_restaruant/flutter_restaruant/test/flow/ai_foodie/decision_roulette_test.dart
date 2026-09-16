@@ -38,5 +38,11 @@ void main() {
       ['野武士居酒屋', '狸御殿和食酒場', '鳥幸本格炭火串燒'],
       contains(selectedWinner),
     );
+
+    // 驗證勝選結果與操作按鈕正常渲染展示
+    expect(find.text('🎉 命運欽點！今晚就吃：'), findsOneWidget);
+    expect(find.text(selectedWinner!), findsOneWidget);
+    expect(find.text('再轉一次'), findsOneWidget);
+    expect(find.text('太棒了！'), findsOneWidget);
   });
 }

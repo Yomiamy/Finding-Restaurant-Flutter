@@ -56,7 +56,7 @@ void main() {
                   'action': 'open_roulette',
                   'payload': {
                     'title': '抽籤轉盤',
-                    'options': ['頂級居酒屋'],
+                    'options': ['頂級居酒屋', '狸御殿'],
                   },
                 },
               ],
@@ -109,6 +109,130 @@ void main() {
       expect(suggestions.first.text, contains('AI 覓食助手'));
       expect(suggestions.first.components.length, 1);
       expect(suggestions.first.components.first, isA<ActionChipGroupComponent>());
+    });
+
+    test('多輪對話歷程中攜帶前輪元件的餐廳實體資訊', () async {
+      List<AiFoodieMessage>? capturedHistory;
+      final repo = AiFoodieRepo(
+        promptExecutor: (prompt, history) async {
+          capturedHistory = history;
+          return jsonEncode({
+            'text': '推薦您這兩家都很合適！',
+            'components': <Object>[],
+          });
+        },
+      );
+
+      final prevAssistantMsg = AiFoodieMessage.assistant(
+        text: '推薦以下兩家：',
+        components: const [
+          ComparisonMatrixComponent(
+            title: '精選比對',
+            items: [
+              RestaurantComparisonItem(
+                id: 'rest_101',
+                name: '鼎泰豐',
+                rating: 4.8,
+                highlights: ['小籠包'],
+              ),
+            ],
+          ),
+        ],
+      );
+
+      await repo.askAssistant(
+        '這家有訂位嗎？',
+        history: [
+          AiFoodieMessage.user('想吃小籠包'),
+          prevAssistantMsg,
+        ],
+      );
+
+      expect(capturedHistory, isNotNull);
+      expect(capturedHistory!.length, 2);
+      expect(capturedHistory![1].isAssistant, isTrue);
+    });
+  });
+
+  group('A2UIComponent Schema Validation & Fallback Tests (反例測試)', () {
+    test('comparison_matrix 缺少 items 或 items 為空時降級為 FallbackMarkdownComponent', () {
+      final emptyMatrixJson = {
+        'component_type': 'comparison_matrix',
+        'data': {
+          'title': '空比對清單',
+          'items': <Object>[],
+        },
+      };
+
+      final comp = A2UIComponent.fromJson(emptyMatrixJson);
+      expect(comp, isA<FallbackMarkdownComponent>());
+      expect((comp as FallbackMarkdownComponent).text, '空比對清單');
+    });
+
+    test('decision_roulette options 小於 2 時降級為 FallbackMarkdownComponent', () {
+      final invalidRouletteJson = {
+        'component_type': 'decision_roulette',
+        'data': {
+          'title': '單一選項轉盤',
+          'options': ['只有一家無法轉'],
+        },
+      };
+
+      final comp = A2UIComponent.fromJson(invalidRouletteJson);
+      expect(comp, isA<FallbackMarkdownComponent>());
+      expect((comp as FallbackMarkdownComponent).text, '單一選項轉盤');
+    });
+
+    test('action_chip_group 缺少必要 prompt 或 options 時自動過濾，無效時降級', () {
+      final invalidChipsJson = {
+        'component_type': 'action_chip_group',
+        'data': {
+          'chips': [
+            {
+              'label': '無效 query',
+              'action': 'query',
+              'payload': <String, Object?>{}, // 缺少 prompt
+            },
+            {
+              'label': '無效 roulette',
+              'action': 'open_roulette',
+              'payload': {
+                'title': '選項不足',
+                'options': ['單店'], // 選項 < 2
+              },
+            },
+          ],
+        },
+      };
+
+      final comp = A2UIComponent.fromJson(invalidChipsJson);
+      expect(comp, isA<FallbackMarkdownComponent>());
+    });
+
+    test('action_chip_group 包含部分有效項目時保留有效項目', () {
+      final partiallyValidChipsJson = {
+        'component_type': 'action_chip_group',
+        'data': {
+          'chips': [
+            {
+              'label': '無效 query',
+              'action': 'query',
+              'payload': <String, Object?>{},
+            },
+            {
+              'label': '有效 query',
+              'action': 'query',
+              'payload': {'prompt': '我想吃拉麵'},
+            },
+          ],
+        },
+      };
+
+      final comp = A2UIComponent.fromJson(partiallyValidChipsJson);
+      expect(comp, isA<ActionChipGroupComponent>());
+      final chipGroup = comp as ActionChipGroupComponent;
+      expect(chipGroup.chips.length, 1);
+      expect(chipGroup.chips.first.label, '有效 query');
     });
   });
 }

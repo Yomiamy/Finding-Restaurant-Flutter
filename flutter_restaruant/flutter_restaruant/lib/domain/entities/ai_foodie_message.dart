@@ -55,6 +55,7 @@ final class AiFoodieMessage extends Equatable {
 
   final String id;
   final bool isUser;
+  bool get isAssistant => !isUser;
   final String text;
   final List<A2UIComponent> components;
   final DateTime createdAt;

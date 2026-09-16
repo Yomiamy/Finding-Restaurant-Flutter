@@ -74,9 +74,6 @@ class _DecisionRouletteDialogState extends State<DecisionRouletteDialog>
         });
 
         widget.onWinnerSelected(selected);
-        if (mounted && Navigator.of(context).canPop()) {
-          Navigator.of(context).pop();
-        }
       }
     });
   }
@@ -252,17 +249,54 @@ class _DecisionRouletteDialogState extends State<DecisionRouletteDialog>
                 ),
               ),
             const SizedBox(height: ThemeSize.space20),
-            FilledButton.icon(
-              onPressed: _isSpinning ? null : _spin,
-              icon: const Icon(Icons.play_arrow_rounded),
-              label: Text(_isSpinning ? '轉動中...' : '🎲 轉動命運！'),
-              style: FilledButton.styleFrom(
-                minimumSize: const Size.fromHeight(44),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(ThemeSize.radius8),
+            if (_winner != null)
+              Row(
+                children: [
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: _isSpinning ? null : _spin,
+                      icon: const Icon(Icons.refresh_rounded),
+                      label: const Text('再轉一次'),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size.fromHeight(44),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(ThemeSize.radius8),
+                        ),
+                      ),
+                    ),
+                  ),
+                  const SizedBox(width: ThemeSize.space8),
+                  Expanded(
+                    child: FilledButton.icon(
+                      onPressed: () {
+                        if (mounted && Navigator.of(context).canPop()) {
+                          Navigator.of(context).pop();
+                        }
+                      },
+                      icon: const Icon(Icons.check_circle_outline_rounded),
+                      label: const Text('太棒了！'),
+                      style: FilledButton.styleFrom(
+                        minimumSize: const Size.fromHeight(44),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(ThemeSize.radius8),
+                        ),
+                      ),
+                    ),
+                  ),
+                ],
+              )
+            else
+              FilledButton.icon(
+                onPressed: _isSpinning ? null : _spin,
+                icon: const Icon(Icons.play_arrow_rounded),
+                label: Text(_isSpinning ? '轉動中...' : '🎲 轉動命運！'),
+                style: FilledButton.styleFrom(
+                  minimumSize: const Size.fromHeight(44),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(ThemeSize.radius8),
+                  ),
                 ),
               ),
-            ),
           ],
         ),
       ),

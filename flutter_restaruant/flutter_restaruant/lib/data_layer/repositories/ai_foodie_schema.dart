@@ -4,6 +4,10 @@ import 'package:firebase_ai/firebase_ai.dart';
 ///
 /// 保證 Gemini 輸出 100% 合法且符合 GenUI 契約規範的對話文字與元件列表，
 /// 在 Token 採樣層物理杜絕未定義的 component_type。
+///
+/// 注意：因 OpenAPI 3.0 / Vertex AI 不支援針對 component_type 進行多態鑑別聯集 (discriminated unions)，
+/// 共同承載欄位 (data, payload) 設為廣義容納，並由 Dart 實體層 (A2UIComponent.fromJson)
+/// 實施嚴格的必要欄位檢查 (items/options/chips/prompt) 與 Fallback 防禦。
 final aiFoodieResponseSchema = Schema.object(
   description: 'AI 覓食助理推薦與對話結果根物件',
   properties: {
