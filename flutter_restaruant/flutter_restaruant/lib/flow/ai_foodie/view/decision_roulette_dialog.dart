@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 
 import '../../../features/foundation/foundation_barrel.dart';
+import '../../../generated/l10n.dart';
 
 /// 命運大轉盤彈窗元件
 class DecisionRouletteDialog extends StatefulWidget {
@@ -150,7 +151,7 @@ class _DecisionRouletteDialogState extends State<DecisionRouletteDialog>
                 IconButton(
                   icon: const Icon(Icons.close),
                   onPressed: () => Navigator.of(context).pop(),
-                  tooltip: '關閉',
+                  tooltip: S.of(context).ai_foodie_close_tooltip,
                 ),
               ],
             ),
@@ -224,7 +225,7 @@ class _DecisionRouletteDialogState extends State<DecisionRouletteDialog>
                 child: Column(
                   children: [
                     Text(
-                      '🎉 命運欽點！今晚就吃：',
+                      S.of(context).ai_foodie_roulette_winner_title,
                       style: theme.textTheme.labelMedium?.copyWith(
                         color: colorScheme.onPrimaryContainer,
                       ),
@@ -243,7 +244,9 @@ class _DecisionRouletteDialogState extends State<DecisionRouletteDialog>
               )
             else
               Text(
-                _isSpinning ? '命運輪盤飛速旋轉中...' : '點擊下方按鈕，讓命運幫您決定！',
+                _isSpinning
+                    ? S.of(context).ai_foodie_roulette_spinning
+                    : S.of(context).ai_foodie_roulette_hint,
                 style: theme.textTheme.bodyMedium?.copyWith(
                   color: colorScheme.onSurfaceVariant,
                 ),
@@ -256,7 +259,7 @@ class _DecisionRouletteDialogState extends State<DecisionRouletteDialog>
                     child: OutlinedButton.icon(
                       onPressed: _isSpinning ? null : _spin,
                       icon: const Icon(Icons.refresh_rounded),
-                      label: const Text('再轉一次'),
+                      label: Text(S.of(context).ai_foodie_roulette_spin_again),
                       style: OutlinedButton.styleFrom(
                         minimumSize: const Size.fromHeight(44),
                         shape: RoundedRectangleBorder(
@@ -274,7 +277,7 @@ class _DecisionRouletteDialogState extends State<DecisionRouletteDialog>
                         }
                       },
                       icon: const Icon(Icons.check_circle_outline_rounded),
-                      label: const Text('太棒了！'),
+                      label: Text(S.of(context).ai_foodie_roulette_awesome),
                       style: FilledButton.styleFrom(
                         minimumSize: const Size.fromHeight(44),
                         shape: RoundedRectangleBorder(
@@ -289,7 +292,11 @@ class _DecisionRouletteDialogState extends State<DecisionRouletteDialog>
               FilledButton.icon(
                 onPressed: _isSpinning ? null : _spin,
                 icon: const Icon(Icons.play_arrow_rounded),
-                label: Text(_isSpinning ? '轉動中...' : '🎲 轉動命運！'),
+                label: Text(
+                  _isSpinning
+                      ? S.of(context).ai_foodie_roulette_spinning_btn
+                      : S.of(context).ai_foodie_roulette_spin_btn,
+                ),
                 style: FilledButton.styleFrom(
                   minimumSize: const Size.fromHeight(44),
                   shape: RoundedRectangleBorder(

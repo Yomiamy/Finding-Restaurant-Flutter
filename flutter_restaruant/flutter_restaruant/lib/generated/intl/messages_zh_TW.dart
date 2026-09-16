@@ -20,12 +20,50 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'zh_TW';
 
+  static String m0(winner) =>
+      "🎲 命運轉盤為您抽出了最棒的選擇：\n👉 **${winner}** 👈\n祝您今晚用餐愉快，吃得開心滿足！";
+
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
     "account_section_title": MessageLookupByLibrary.simpleMessage("帳戶"),
     "ai_foodie_assistant_tooltip": MessageLookupByLibrary.simpleMessage(
       "AI 覓食助理",
     ),
+    "ai_foodie_close_tooltip": MessageLookupByLibrary.simpleMessage("關閉"),
+    "ai_foodie_input_hint": MessageLookupByLibrary.simpleMessage(
+      "輸入情境，例如：4人想吃居酒屋聊聊天...",
+    ),
+    "ai_foodie_loading_hint": MessageLookupByLibrary.simpleMessage(
+      "AI 正在為您精挑細選並比對美食中...",
+    ),
+    "ai_foodie_reset_tooltip": MessageLookupByLibrary.simpleMessage("重新開始"),
+    "ai_foodie_roulette_awesome": MessageLookupByLibrary.simpleMessage("太棒了！"),
+    "ai_foodie_roulette_default_title": MessageLookupByLibrary.simpleMessage(
+      "今晚吃什麼？命運大轉盤",
+    ),
+    "ai_foodie_roulette_hint": MessageLookupByLibrary.simpleMessage(
+      "點擊下方按鈕，讓命運幫您決定！",
+    ),
+    "ai_foodie_roulette_result_msg": m0,
+    "ai_foodie_roulette_spin_again": MessageLookupByLibrary.simpleMessage(
+      "再轉一次",
+    ),
+    "ai_foodie_roulette_spin_btn": MessageLookupByLibrary.simpleMessage(
+      "🎲 轉動命運！",
+    ),
+    "ai_foodie_roulette_spinning": MessageLookupByLibrary.simpleMessage(
+      "命運輪盤飛速旋轉中...",
+    ),
+    "ai_foodie_roulette_spinning_btn": MessageLookupByLibrary.simpleMessage(
+      "轉動中...",
+    ),
+    "ai_foodie_roulette_winner_title": MessageLookupByLibrary.simpleMessage(
+      "🎉 命運欽點！今晚就吃：",
+    ),
+    "ai_foodie_sheet_subtitle": MessageLookupByLibrary.simpleMessage(
+      "生活化情境推薦 · 菜單對比 · 命運抽籤",
+    ),
+    "ai_foodie_sheet_title": MessageLookupByLibrary.simpleMessage("AI 智能覓食助理"),
     "apply": MessageLookupByLibrary.simpleMessage("套用"),
     "business_hour": MessageLookupByLibrary.simpleMessage("營業時間"),
     "business_status_closed": MessageLookupByLibrary.simpleMessage("已打烊"),

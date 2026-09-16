@@ -8,6 +8,7 @@ import '../../../domain/repositories/ai_foodie_repository.dart';
 import '../../../features/foundation/foundation_barrel.dart';
 import '../../restaurant/view/restaurant_detail_page.dart';
 import '../bloc/bloc_barrel.dart';
+import '../../../generated/l10n.dart';
 import 'action_chip_group_widget.dart';
 import 'comparison_matrix_card.dart';
 import 'decision_roulette_dialog.dart';
@@ -174,13 +175,13 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(
-                                  'AI 智能覓食助理',
+                                  S.of(context).ai_foodie_sheet_title,
                                   style: theme.textTheme.titleMedium?.copyWith(
                                     fontWeight: FontWeight.bold,
                                   ),
                                 ),
                                 Text(
-                                  '生活化情境推薦 · 菜單對比 · 命運抽籤',
+                                  S.of(context).ai_foodie_sheet_subtitle,
                                   style: theme.textTheme.bodySmall?.copyWith(
                                     color: colorScheme.onSurfaceVariant,
                                     fontSize: 11,
@@ -191,13 +192,13 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
                           ),
                           IconButton(
                             icon: const Icon(Icons.refresh_rounded),
-                            tooltip: '重新開始',
+                            tooltip: S.of(context).ai_foodie_reset_tooltip,
                             onPressed: () =>
                                 _bloc.add(const ResetAiFoodie()),
                           ),
                           IconButton(
                             icon: const Icon(Icons.close),
-                            tooltip: '關閉',
+                            tooltip: S.of(context).ai_foodie_close_tooltip,
                             onPressed: () => Navigator.of(context).pop(),
                           ),
                         ],
@@ -257,7 +258,7 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
                               textInputAction: TextInputAction.send,
                               onSubmitted: (_) => _sendMessage(),
                               decoration: InputDecoration(
-                                hintText: '輸入情境，例如：4人想吃居酒屋聊聊天...',
+                                hintText: S.of(context).ai_foodie_input_hint,
                                 hintStyle: theme.textTheme.bodyMedium?.copyWith(
                                   color: colorScheme.outline,
                                 ),
@@ -457,7 +458,7 @@ class _LoadingMessageBubble extends StatelessWidget {
                 ),
                 const SizedBox(width: ThemeSize.space12),
                 Text(
-                  'AI 正在為您精挑細選並比對美食中...',
+                  S.of(context).ai_foodie_loading_hint,
                   style: Theme.of(context).textTheme.bodySmall?.copyWith(
                     color: colorScheme.onSurfaceVariant,
                   ),

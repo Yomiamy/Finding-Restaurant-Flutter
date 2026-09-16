@@ -71,5 +71,20 @@
   "business_status_open": "營業中",
   "business_status_closed": "已打烊",
   "signin_header_subtitle": "您的頂級餐飲嚮導",
-  "ai_foodie_assistant_tooltip": "AI 覓食助理"
+  "ai_foodie_assistant_tooltip": "AI 覓食助理",
+  "ai_foodie_sheet_title": "AI 智能覓食助理",
+  "ai_foodie_sheet_subtitle": "生活化情境推薦 · 菜單對比 · 命運抽籤",
+  "ai_foodie_reset_tooltip": "重新開始",
+  "ai_foodie_close_tooltip": "關閉",
+  "ai_foodie_input_hint": "輸入情境，例如：4人想吃居酒屋聊聊天...",
+  "ai_foodie_loading_hint": "AI 正在為您精挑細選並比對美食中...",
+  "ai_foodie_roulette_winner_title": "🎉 命運欽點！今晚就吃：",
+  "ai_foodie_roulette_spinning": "命運輪盤飛速旋轉中...",
+  "ai_foodie_roulette_hint": "點擊下方按鈕，讓命運幫您決定！",
+  "ai_foodie_roulette_spin_again": "再轉一次",
+  "ai_foodie_roulette_awesome": "太棒了！",
+  "ai_foodie_roulette_spin_btn": "🎲 轉動命運！",
+  "ai_foodie_roulette_spinning_btn": "轉動中...",
+  "ai_foodie_roulette_default_title": "今晚吃什麼？命運大轉盤",
+  "ai_foodie_roulette_result_msg": "🎲 命運轉盤為您抽出了最棒的選擇：\n👉 **{winner}** 👈\n祝您今晚用餐愉快，吃得開心滿足！"
 }

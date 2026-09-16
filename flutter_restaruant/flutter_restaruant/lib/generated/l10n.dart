@@ -643,6 +643,156 @@ class S {
       args: [],
     );
   }
+
+  /// `AI Foodie Assistant`
+  String get ai_foodie_sheet_title {
+    return Intl.message(
+      'AI Foodie Assistant',
+      name: 'ai_foodie_sheet_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Contextual Recommendations · Menu Comparison · Decision Roulette`
+  String get ai_foodie_sheet_subtitle {
+    return Intl.message(
+      'Contextual Recommendations · Menu Comparison · Decision Roulette',
+      name: 'ai_foodie_sheet_subtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reset`
+  String get ai_foodie_reset_tooltip {
+    return Intl.message(
+      'Reset',
+      name: 'ai_foodie_reset_tooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close`
+  String get ai_foodie_close_tooltip {
+    return Intl.message(
+      'Close',
+      name: 'ai_foodie_close_tooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter scenario, e.g. 4 people wanting izakaya to chat...`
+  String get ai_foodie_input_hint {
+    return Intl.message(
+      'Enter scenario, e.g. 4 people wanting izakaya to chat...',
+      name: 'ai_foodie_input_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `AI is curating and comparing culinary gems for you...`
+  String get ai_foodie_loading_hint {
+    return Intl.message(
+      'AI is curating and comparing culinary gems for you...',
+      name: 'ai_foodie_loading_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `🎉 Destiny decided! Tonight we eat:`
+  String get ai_foodie_roulette_winner_title {
+    return Intl.message(
+      '🎉 Destiny decided! Tonight we eat:',
+      name: 'ai_foodie_roulette_winner_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The roulette wheel is spinning rapidly...`
+  String get ai_foodie_roulette_spinning {
+    return Intl.message(
+      'The roulette wheel is spinning rapidly...',
+      name: 'ai_foodie_roulette_spinning',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap the button below and let destiny choose!`
+  String get ai_foodie_roulette_hint {
+    return Intl.message(
+      'Tap the button below and let destiny choose!',
+      name: 'ai_foodie_roulette_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Spin Again`
+  String get ai_foodie_roulette_spin_again {
+    return Intl.message(
+      'Spin Again',
+      name: 'ai_foodie_roulette_spin_again',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Awesome!`
+  String get ai_foodie_roulette_awesome {
+    return Intl.message(
+      'Awesome!',
+      name: 'ai_foodie_roulette_awesome',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `🎲 Spin the Wheel!`
+  String get ai_foodie_roulette_spin_btn {
+    return Intl.message(
+      '🎲 Spin the Wheel!',
+      name: 'ai_foodie_roulette_spin_btn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Spinning...`
+  String get ai_foodie_roulette_spinning_btn {
+    return Intl.message(
+      'Spinning...',
+      name: 'ai_foodie_roulette_spinning_btn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What to eat tonight? Decision Roulette`
+  String get ai_foodie_roulette_default_title {
+    return Intl.message(
+      'What to eat tonight? Decision Roulette',
+      name: 'ai_foodie_roulette_default_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `🎲 Decision roulette selected the top choice for you:\n👉 **{winner}** 👈\nWishing you a delightful dining experience!`
+  String ai_foodie_roulette_result_msg(Object winner) {
+    return Intl.message(
+      '🎲 Decision roulette selected the top choice for you:\n👉 **$winner** 👈\nWishing you a delightful dining experience!',
+      name: 'ai_foodie_roulette_result_msg',
+      desc: '',
+      args: [winner],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
