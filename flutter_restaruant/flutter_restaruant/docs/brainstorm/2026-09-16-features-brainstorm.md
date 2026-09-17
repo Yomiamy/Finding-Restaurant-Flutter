@@ -604,7 +604,7 @@ lib/
 +-----------------------------------------------------------------------------------+
 |                           STRATEGIC PRODUCT ROADMAP                               |
 +-----------------------------------------------------------------------------------+
-| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 21/22 ✅        |
+| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 22/22 ✅        |
 |   • [x] P0 🚨 修復 AdMob 廣告刊登合規性 (防欺騙點擊/移至底部/消滅 Layout Shift) ✅ 2026-09-04 (Issue #107) |
 |   • [x] P0 自動化 CI/CD 發布流水線 (GitHub Actions) ✅ 2026-09-08 (Issue #113 / PR #114) |
 |   • [x] P-1 整合 flutter_inspector_kit ✅ 2026-08-05（量測地基就位）             |
@@ -628,6 +628,7 @@ lib/
 |   • [x] P0 修復地圖模式定位按鈕遮擋問題 (Map Locate Button Obscured Bug) ✅ 2026-09-06 (Issue #110) |
 |   • [x] P0 修復地圖底部列表 UI 溢出 (Android RenderFlex overflow) ✅ PR #73        |
 |   • [x] P0 補齊 GitHub Actions PR CI 門禁工作流 (E-8.1) ✅ 2026-09-17 (Issue #119 / PR #120) |
+|   • [x] P1 Makefile 健全化 (E-8.3) ✅ 2026-09-17 (Issue #121 / PR #122)               |
 +-----------------------------------------------------------------------------------+
                                          │
                                          ▼
@@ -1587,7 +1588,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
      ```
   4. 使用 `verify(() => mockRepo.analyzeMenu(any())).called(1)` 驗證互動。
 
-#### [E-8.3] Makefile 健全化（補齊 test/coverage，修復懸掛目標，清理殘留模板）
+#### [E-8.3] Makefile 健全化（補齊 test/coverage，修復懸掛目標，清理殘留模板） — ✅ 已完成 (Issue #121 / PR #122, 2026-09-17)
 - **優先級**：`P1`
 - **預估 Effort**：`0.2d`
 - **價值與收益**：提供本地開發與 CI 統一呼叫的乾淨契約，消滅認知負擔。
@@ -1598,6 +1599,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
   2. 補齊 `test_coverage` target: `@flutter test --coverage && lcov --summary coverage/lcov.info`。
   3. 移除 Line 1 與 Line 24 懸掛未實現的 `analyze_custom` 目標。
   4. 刪除 Line 118 複製貼上殘留的 `mason_feature: @mason make clean_architecture_feature_riverpod`。
+  5. 修正 `help` 提示與 `analyze` target 對齊。
 
 #### [UI-8.1] 移植優雅對話框佇列 (`DialogQueueManager`)
 - **優先級**：`P1`
@@ -1713,7 +1715,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 ```
 
 1. **融入 Phase 1 基礎設施剩餘收尾**：
-   - 目前 Phase 1 進度為 21/22。**E-8.1 (GitHub Actions PR CI 門禁)** 已於 2026-09-17 完成 (Issue #119 / PR #120)。**E-8.3 (Makefile 健全化)** 應直接歸入 Phase 1 基礎設施驗收，補齊 PR #114 僅完成發布 CD 的缺口。
+   - 目前 Phase 1 進度為 22/22。**E-8.1 (GitHub Actions PR CI 門禁)** (Issue #119 / PR #120) 與 **E-8.3 (Makefile 健全化)** (Issue #121 / PR #122) 已於 2026-09-17 全數完成，補齊 PR #114 僅完成發布 CD 的缺口。
    - 原規劃之 **A-8.2 (DTO 反向依賴)** 經架構審查確認為「Infra $\leftarrow$ Domain」資料驅動分層之合法構造模式，維持現狀不調整，不再作為收尾項。
 
 2. **融入 Phase 1.5 空間與視覺體驗升級**：
