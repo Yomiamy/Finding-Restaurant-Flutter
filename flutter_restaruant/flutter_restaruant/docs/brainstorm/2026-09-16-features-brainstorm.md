@@ -604,7 +604,7 @@ lib/
 +-----------------------------------------------------------------------------------+
 |                           STRATEGIC PRODUCT ROADMAP                               |
 +-----------------------------------------------------------------------------------+
-| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 20/22 ✅        |
+| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 21/22 ✅        |
 |   • [x] P0 🚨 修復 AdMob 廣告刊登合規性 (防欺騙點擊/移至底部/消滅 Layout Shift) ✅ 2026-09-04 (Issue #107) |
 |   • [x] P0 自動化 CI/CD 發布流水線 (GitHub Actions) ✅ 2026-09-08 (Issue #113 / PR #114) |
 |   • [x] P-1 整合 flutter_inspector_kit ✅ 2026-08-05（量測地基就位）             |
@@ -627,6 +627,7 @@ lib/
 |   • [x] P0 `MapWidget` 實作 `didUpdateWidget` 使 Marker 連動列表 ✅ 實查已實作    |
 |   • [x] P0 修復地圖模式定位按鈕遮擋問題 (Map Locate Button Obscured Bug) ✅ 2026-09-06 (Issue #110) |
 |   • [x] P0 修復地圖底部列表 UI 溢出 (Android RenderFlex overflow) ✅ PR #73        |
+|   • [x] P0 補齊 GitHub Actions PR CI 門禁工作流 (E-8.1) ✅ 2026-09-17 (Issue #119 / PR #120) |
 +-----------------------------------------------------------------------------------+
                                          │
                                          ▼
@@ -1548,7 +1549,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
   3. Repository 方法簽名全面改為 `Future<Result<RestaurantDetailEntity>>`。
   4. Bloc 以 `switch (result)` 精準發布載入成功或具體錯誤狀態。
 
-#### [E-8.1] 補齊 GitHub Actions PR CI 門禁工作流 (`.github/workflows/pr-check.yml`)
+#### [E-8.1] 補齊 GitHub Actions PR CI 門禁工作流 (`.github/workflows/pr-check.yml`) — ✅ 已完成 (Issue #119 / PR #120, 2026-09-17)
 - **優先級**：`P0`
 - **預估 Effort**：`0.5d`
 - **價值與收益**：彌補當前專案僅有 Tag 發布工作流的致命死角，在每次 Pull Request 到 `main` 分支時自動執行 `flutter analyze` 與 `flutter test`，嚴格捍衛主幹穩定。
@@ -1556,9 +1557,10 @@ class ComparisonMatrixComponent extends A2UIComponent {
   - 新增：`.github/workflows/pr-check.yml`
 - **具體實作建議**：
   1. 監聽 `pull_request: branches: [ main ]` 與 `push: branches: [ main ]`。
-  2. 使用 `subosito/flutter-action@v2` 配置 Flutter 環境（鎖定 channel stable）。
+  2. 使用 `subosito/flutter-action@v2` 配置 Flutter 環境（鎖定 channel stable, flutter-version 3.44.1）。
   3. 執行步驟：`flutter pub get` -> `flutter analyze .` -> `flutter test`。
-  4. 設定 `concurrency: group: ${{ github.ref }}, cancel-in-progress: true`，節省 GitHub Action runner 額度。
+  4. 設定 `concurrency: group: ${{ github.workflow }}-${{ github.ref }}, cancel-in-progress: true`，節省 GitHub Action runner 額度。
+  5. 搭配 Branch Protection Rule 的 Required Status Check（`Analyze & Test`）使 CI 門禁真正生效。
 
 #### [A-8.2] 修復 `RestaurantDetailEntity` 反向依賴 DTO 的分層邊界瑕疵 — ❌ 不需要調整 (As-Designed)
 - **優先級**：`不排程 / 維持現狀`
@@ -1711,7 +1713,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 ```
 
 1. **融入 Phase 1 基礎設施剩餘收尾**：
-   - 目前 Phase 1 進度為 20/22。**E-8.1 (GitHub Actions PR CI 門禁)** 與 **E-8.3 (Makefile 健全化)** 應直接歸入 Phase 1 基礎設施驗收，補齊 PR #114 僅完成發布 CD 的缺口。
+   - 目前 Phase 1 進度為 21/22。**E-8.1 (GitHub Actions PR CI 門禁)** 已於 2026-09-17 完成 (Issue #119 / PR #120)。**E-8.3 (Makefile 健全化)** 應直接歸入 Phase 1 基礎設施驗收，補齊 PR #114 僅完成發布 CD 的缺口。
    - 原規劃之 **A-8.2 (DTO 反向依賴)** 經架構審查確認為「Infra $\leftarrow$ Domain」資料驅動分層之合法構造模式，維持現狀不調整，不再作為收尾項。
 
 2. **融入 Phase 1.5 空間與視覺體驗升級**：
