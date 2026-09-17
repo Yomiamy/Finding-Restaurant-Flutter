@@ -53,7 +53,46 @@
 
 ---
 
-## 5. 驗證與退出標準 (Exit Criteria)
+## 5. Branch Protection Rule 設定 (Repository Configuration)
+
+Workflow YAML 本身**只負責執行檢查並回報結果**，不具備阻擋合併的能力。
+要讓 CI 門禁真正生效，必須在 GitHub Repository 設定 Branch Protection Rule。
+
+### 5.1 設定路徑
+
+**Settings → Branches → Add branch ruleset** (或 Add rule)，對 `main` 分支套用以下規則：
+
+### 5.2 建議啟用的規則
+
+| 規則 | 說明 |
+|---|---|
+| **Require a pull request before merging** | 禁止任何人直接 push `main`，強制走 PR 流程 |
+| **Require status checks to pass before merging** | CI 沒過就不能按 merge 按鈕 |
+| **Require branches to be up to date before merging**（可選） | merge 前必須 rebase/merge 最新 main，避免多 PR 同時 merge 後互相衝突 |
+| **Include administrators**（可選） | 連 repo owner / admin 也必須遵守，無人可繞過 |
+
+### 5.3 指定 Required Status Check
+
+勾選 "Require status checks to pass" 後，**必須在下方搜尋框指定具體的 check name**，否則 GitHub 不知道要等哪個 check，merge 按鈕可能直接啟用：
+
+1. 在搜尋框輸入 **`Analyze & Test`**（對應 `pr-check.yml` 中 job 的 `name` 欄位）
+2. 勾選該項目
+
+### 5.4 設定後的 PR 行為
+
+| CI 狀態 | Merge 按鈕 |
+|---|---|
+| 🟡 Running | 灰色，不可按 |
+| ❌ Failed | 灰色，不可按 |
+| ✅ Passed | 綠色，可以按 |
+
+> [!IMPORTANT]
+> 若未在 5.3 中指定 required check，即使大開關已開，GitHub 仍可能允許直接 merge。
+
+---
+
+## 6. 驗證與退出標準 (Exit Criteria)
 
 1. `.github/workflows/pr-check.yml` 檔案結構完整且符合 GitHub Actions 語法規範。
 2. 覆核本地執行分析與測試零報錯、全數通過。
+3. Repository Branch Protection Rule 已設定，PR merge 按鈕在 CI 未通過時為不可操作狀態。
