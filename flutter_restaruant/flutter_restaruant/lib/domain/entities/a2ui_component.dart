@@ -210,7 +210,7 @@ final class ActionChipGroupComponent extends A2UIComponent {
         .map(ActionChipItem.fromJson)
         .where((c) => c.isValid)
         .toList(growable: false);
-
+ 
     return ActionChipGroupComponent(chips: chips);
   }
 

@@ -35,7 +35,9 @@ final aiFoodieResponseSchema = Schema.object(
                 nullable: true,
               ),
               'items': Schema.array(
-                description: '多店橫向比對餐廳項目列表 (comparison_matrix 使用)',
+                description:
+                    '多店橫向比對餐廳項目列表 (comparison_matrix 必填，至少 2 項；'
+                    '其他元件類型不使用此欄位)',
                 nullable: true,
                 items: Schema.object(
                   description: '餐廳比對卡片詳細資料',
