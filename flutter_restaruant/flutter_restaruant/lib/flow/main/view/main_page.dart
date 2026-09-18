@@ -106,7 +106,16 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
           key: const Key('ai_foodie_button'),
           icon: const Icon(Icons.auto_awesome, color: ThemeColor.colorffffff),
           tooltip: S.current.ai_foodie_assistant_tooltip,
-          onPressed: () => AiFoodieSheet.show(context),
+          onPressed: () {
+            List<RestaurantEntity>? candidates;
+            final state = _mainBloc.state;
+            if (state is Success) {
+              candidates = state.summaryInfos;
+            } else if (state is LoadMoreInProgress) {
+              candidates = state.summaryInfos;
+            }
+            AiFoodieSheet.show(context, candidateRestaurants: candidates);
+          },
         ),
       ],
     );

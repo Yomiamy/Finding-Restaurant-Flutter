@@ -36,6 +36,7 @@ class MockAiFoodieRepository implements AiFoodieRepository {
   Future<AiFoodieMessage> askAssistant(
     String prompt, {
     List<AiFoodieMessage>? history,
+    List<RestaurantEntity>? candidateRestaurants,
   }) {
     if (shouldThrow) return Future.error(Exception('模擬對話連線失敗'));
     return Future.value(
@@ -48,8 +49,15 @@ class MockAiFoodieRepository implements AiFoodieRepository {
                 items: [
                   RestaurantComparisonItem(
                     id: 'r1',
-                    name: '測試餐廳 A',
+                    name: '測試餐廳 1',
                     rating: 4.8,
+                    highlights: ['好吃'],
+                  ),
+                  RestaurantComparisonItem(
+                    id: 'r2',
+                    name: '測試餐廳 2',
+                    rating: 4.6,
+                    highlights: ['便宜'],
                   ),
                 ],
               ),

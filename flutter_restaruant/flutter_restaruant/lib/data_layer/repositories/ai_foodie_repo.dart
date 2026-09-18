@@ -9,7 +9,11 @@ import 'ai_foodie_schema.dart';
 
 /// AI 推論執行函式簽章（便於測試與無網路/離線打樁）
 typedef AiPromptFunction =
-    Future<String> Function(String prompt, List<AiFoodieMessage>? history);
+    Future<String> Function(
+      String prompt,
+      List<AiFoodieMessage>? history, {
+      List<RestaurantEntity>? candidateRestaurants,
+    });
 
 /// AI 覓食助理 Repository 實作
 class AiFoodieRepo implements AiFoodieRepository {
@@ -28,6 +32,15 @@ class AiFoodieRepo implements AiFoodieRepository {
 1. 提供溫暖、專業且生動的自然語言推薦語 (text)。
 2. 推薦 2~3 家符合條件的餐廳進行對比分析，並封裝在 components 陣列中。
 3. 提供後續行動建議（如後續查詢標籤、轉盤抽籤）。
+
+【真實店家接地約束 (Grounding Constraint) — 關鍵原則】
+- 若使用者提示中附帶了【目前已加載的周邊真實候選餐廳名單】：
+  * 推薦與比對的店家【必須且只能】從該名單挑選！
+  * 嚴禁捏造名單以外的餐廳、嚴禁隨意編造假 ID！
+  * comparison_matrix 中的 id 必須與名單中的真實 ID 完全一致（前端需透過真實 ID 跳轉店家詳細頁）！
+  * 轉盤 options 也必須使用名單中的真實店名。
+  * 若名單中無完全符合者，可推薦最接近者並在 text 中說明；切勿捏造虛構店家。
+- 若未提供候選餐廳名單，則給予一般性餐飲建議與文字指引，不要產出 comparison_matrix。
 
 【長度與容量硬性限制 — 杜絕 Payload 超限】
 為避免傳輸負載過大 (Payload dropped: exceeded size limit)，必須嚴格控制輸出規模：
@@ -114,10 +127,15 @@ components 陣列內的每個物件必須包含 component_type 與 data：
   Future<AiFoodieMessage> askAssistant(
     String prompt, {
     List<AiFoodieMessage>? history,
+    List<RestaurantEntity>? candidateRestaurants,
   }) async {
     try {
       if (_promptExecutor != null) {
-        final rawResponse = await _promptExecutor(prompt, history);
+        final rawResponse = await _promptExecutor(
+          prompt,
+          history,
+          candidateRestaurants: candidateRestaurants,
+        );
         return _parseResponse(rawResponse);
       }
 
@@ -131,6 +149,13 @@ components 陣列內的每個物件必須包含 component_type 與 data：
         ),
       );
 
+      final candidateContext = formatCandidateRestaurants(
+        candidateRestaurants ?? const [],
+      );
+      final finalPrompt = candidateContext.isNotEmpty
+          ? '$candidateContext\n【使用者情境需求】: $prompt\n【指示】: 請依上述真實候選店家進行推薦與比對，嚴格使用其真實 ID。'
+          : prompt;
+
       final contents = <Content>[
         if (history != null)
           for (final msg in history)
@@ -138,7 +163,7 @@ components 陣列內的每個物件必須包含 component_type 與 data：
               Content.text(msg.text)
             else
               Content.model([TextPart(formatAssistantHistory(msg))]),
-        Content.text(prompt),
+        Content.text(finalPrompt),
       ];
 
       final response = await model.generateContent(contents);
@@ -151,7 +176,47 @@ components 陣列內的每個物件必須包含 component_type 與 data：
       // 網路中斷或 API 異常時優雅降級為本地智慧推薦引擎
     }
 
-    return _generateSmartFallback(prompt);
+    return _generateSmartFallback(
+      prompt,
+      candidateRestaurants: candidateRestaurants,
+    );
+  }
+
+  /// 將已載入的候選餐廳格式化為精簡接地上下文
+  @visibleForTesting
+  static String formatCandidateRestaurants(
+    List<RestaurantEntity> restaurants, {
+    int limit = 15,
+  }) {
+    if (restaurants.isEmpty) return '';
+
+    final buffer = StringBuffer(
+      '【目前已加載的周邊真實候選餐廳名單（嚴格要求：推薦與比對只能從以下名單挑選，必須使用真實對應的 ID，嚴禁捏造！）】:\n',
+    );
+    final selected = restaurants
+        .where((r) => (r.id?.isNotEmpty ?? false) && (r.name?.isNotEmpty ?? false))
+        .take(limit);
+
+    for (final res in selected) {
+      final id = res.id!;
+      final name = res.name!;
+      final rating = res.rating != null ? '${res.rating}★' : '無評分';
+      final price = res.price ?? '';
+      final category = res.categories
+              ?.map((c) => c.title)
+              .whereType<String>()
+              .where((s) => s.isNotEmpty)
+              .join('/') ??
+          '';
+      final address = res.location?.address1 ?? '';
+
+      buffer.write('- [ID: $id] 名稱: $name | 評分: $rating');
+      if (price.isNotEmpty) buffer.write(' | 價位: $price');
+      if (category.isNotEmpty) buffer.write(' | 類型: $category');
+      if (address.isNotEmpty) buffer.write(' | 地址: $address');
+      buffer.writeln();
+    }
+    return buffer.toString();
   }
 
   /// 將助理訊息及其攜帶的元件實體（如比對卡片中的餐廳 ID/名稱、轉盤候選）序列化為多輪對話上下文
@@ -198,7 +263,55 @@ components 陣列內的每個物件必須包含 component_type 與 data：
   }
 
   /// 本地確定性智慧兜底推論引擎
-  AiFoodieMessage _generateSmartFallback(String prompt) {
+  AiFoodieMessage _generateSmartFallback(
+    String prompt, {
+    List<RestaurantEntity>? candidateRestaurants,
+  }) {
+    if (candidateRestaurants != null && candidateRestaurants.isNotEmpty) {
+      final valid = candidateRestaurants
+          .where((r) => (r.id?.isNotEmpty ?? false) && (r.name?.isNotEmpty ?? false))
+          .take(3)
+          .toList(growable: false);
+
+      if (valid.length >= 2) {
+        final items = valid.map((r) {
+          final cat = r.categories?.map((c) => c.title).whereType<String>().join('/') ?? '';
+          return RestaurantComparisonItem(
+            id: r.id!,
+            name: r.name!,
+            rating: r.rating ?? 4.5,
+            price: r.price,
+            highlights: cat.isNotEmpty ? [cat, '精選推薦'] : const ['精選推薦'],
+            category: cat.isNotEmpty ? cat : null,
+            address: r.location?.address1,
+            imageUrl: r.imageUrl,
+          );
+        }).toList(growable: false);
+
+        return AiFoodieMessage.assistant(
+          text: '已為您從目前加載的周邊店家精選推薦：',
+          components: [
+            ComparisonMatrixComponent(
+              title: '周邊推薦餐廳對比',
+              items: items,
+            ),
+            ActionChipGroupComponent(
+              chips: [
+                ActionChipItem(
+                  label: '🎲 轉盤抽籤：今晚吃哪家？',
+                  action: 'open_roulette',
+                  payload: {
+                    'title': '今晚吃什麼？命運大轉盤',
+                    'options': items.map((e) => e.name).toList(growable: false),
+                  },
+                ),
+              ],
+            ),
+          ],
+        );
+      }
+    }
+
     final lower = prompt.toLowerCase();
 
     if (lower.contains('居酒屋') || lower.contains('酒') || lower.contains('串燒')) {
