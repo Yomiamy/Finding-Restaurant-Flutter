@@ -34,9 +34,8 @@ final aiFoodieResponseSchema = Schema.object(
               ),
               'items': Schema.array(
                 description:
-                    '多店橫向比對餐廳項目列表 (comparison_matrix 必填，至少 2 項；'
+                    '多店橫向比對餐廳項目列表 (當 component_type 為 comparison_matrix 時【絕對必填，嚴禁省略】，至少 2 項；'
                     '其他元件類型不使用此欄位)',
-                nullable: true,
                 items: Schema.object(
                   description: '餐廳比對卡片詳細資料',
                   properties: {
@@ -76,7 +75,6 @@ final aiFoodieResponseSchema = Schema.object(
                 description:
                     '快捷行動標籤項目列表 (action_chip_group 必填，至少 1 項；'
                     '其他元件類型不使用此欄位)',
-                nullable: true,
                 items: Schema.object(
                   description: '單一行動標籤',
                   properties: {
@@ -104,7 +102,7 @@ final aiFoodieResponseSchema = Schema.object(
                           items: Schema.string(),
                         ),
                       },
-                      optionalProperties: ['prompt', 'title', 'options'],
+                      optionalProperties: [],
                     ),
                   },
                 ),
@@ -113,15 +111,14 @@ final aiFoodieResponseSchema = Schema.object(
                 description:
                     '命運轉盤候選餐廳名稱列表 (decision_roulette 必填，至少 2 項；'
                     '其他元件類型不使用此欄位)',
-                nullable: true,
                 items: Schema.string(),
               ),
             },
-            optionalProperties: ['title', 'items', 'chips', 'options'],
+            optionalProperties: [],
           ),
         },
       ),
     ),
   },
-  optionalProperties: ['components'],
+  optionalProperties: [],
 );
