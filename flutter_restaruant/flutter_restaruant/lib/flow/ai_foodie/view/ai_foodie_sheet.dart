@@ -15,16 +15,28 @@ import 'decision_roulette_dialog.dart';
 
 /// AI 覓食助理底部對話畫布視窗
 class AiFoodieSheet extends StatefulWidget {
-  const AiFoodieSheet({super.key, this.bloc});
+  const AiFoodieSheet({
+    super.key,
+    this.bloc,
+    this.candidateRestaurants,
+  });
 
   final AiFoodieBloc? bloc;
+  final List<RestaurantEntity>? candidateRestaurants;
 
-  static Future<void> show(BuildContext context, {AiFoodieBloc? bloc}) {
+  static Future<void> show(
+    BuildContext context, {
+    AiFoodieBloc? bloc,
+    List<RestaurantEntity>? candidateRestaurants,
+  }) {
     return showModalBottomSheet<void>(
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => AiFoodieSheet(bloc: bloc),
+      builder: (context) => AiFoodieSheet(
+        bloc: bloc,
+        candidateRestaurants: candidateRestaurants,
+      ),
     );
   }
 
@@ -41,7 +53,10 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
   void initState() {
     super.initState();
     _bloc = widget.bloc ??
-        AiFoodieBloc(repository: GetIt.I<AiFoodieRepository>());
+        AiFoodieBloc(
+          repository: GetIt.I<AiFoodieRepository>(),
+          candidateRestaurants: widget.candidateRestaurants,
+        );
     _bloc.add(const LoadInitialSuggestions());
   }
 

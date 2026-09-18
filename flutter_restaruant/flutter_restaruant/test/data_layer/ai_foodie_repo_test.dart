@@ -66,7 +66,8 @@ void main() {
       });
 
       final repo = AiFoodieRepo(
-        promptExecutor: (prompt, history) async => sampleJson,
+        promptExecutor:
+            (prompt, history, {candidateRestaurants}) async => sampleJson,
       );
 
       final message = await repo.askAssistant('4人居酒屋');
@@ -135,7 +136,8 @@ void main() {
       });
 
       final repo = AiFoodieRepo(
-        promptExecutor: (prompt, history) async => incompleteJson,
+        promptExecutor:
+            (prompt, history, {candidateRestaurants}) async => incompleteJson,
       );
 
       final message = await repo.askAssistant('推薦美食');
@@ -148,9 +150,49 @@ void main() {
       expect(chipGroup.chips.first.label, '有效標籤');
     });
 
-    test('askAssistant 當推論異常時能平滑降級為本地智慧推薦，保證零崩潰', () async {
+    test('askAssistant 當推論異常且有傳入真實候選餐廳時，平滑降級為使用真實餐廳資訊產生對比與轉盤', () async {
       final repo = AiFoodieRepo(
-        promptExecutor: (prompt, history) async => throw Exception('網路連線逾時'),
+        promptExecutor:
+            (prompt, history, {candidateRestaurants}) async =>
+                throw Exception('網路連線逾時'),
+      );
+
+      final candidates = [
+        const RestaurantEntity(
+          id: 'real_yelp_101',
+          name: '老鄧擔擔麵',
+          rating: 4.8,
+          price: '\$200',
+        ),
+        const RestaurantEntity(
+          id: 'real_yelp_102',
+          name: '鼎泰豐信義店',
+          rating: 4.9,
+          price: '\$500',
+        ),
+      ];
+
+      final message = await repo.askAssistant(
+        '我想吃麵',
+        candidateRestaurants: candidates,
+      );
+      expect(message.isUser, isFalse);
+      expect(message.text, contains('周邊店家'));
+      expect(message.components.isNotEmpty, isTrue);
+
+      final matrix = message.components.first as ComparisonMatrixComponent;
+      expect(matrix.items.length, 2);
+      expect(matrix.items.first.id, 'real_yelp_101');
+      expect(matrix.items.first.name, '老鄧擔擔麵');
+      expect(matrix.items[1].id, 'real_yelp_102');
+      expect(matrix.items[1].name, '鼎泰豐信義店');
+    });
+
+    test('askAssistant 當推論異常且無候選餐廳時能平滑降級為本地靜態智慧推薦，保證零崩潰', () async {
+      final repo = AiFoodieRepo(
+        promptExecutor:
+            (prompt, history, {candidateRestaurants}) async =>
+                throw Exception('網路連線逾時'),
       );
 
       final message = await repo.askAssistant('我想找居酒屋喝一杯');
@@ -158,6 +200,24 @@ void main() {
       expect(message.text, contains('居酒屋'));
       expect(message.components.isNotEmpty, isTrue);
       expect(message.components.first, isA<ComparisonMatrixComponent>());
+    });
+
+    test('formatCandidateRestaurants 正確將真實餐廳序列化為包含真實 ID 與店名的條列上下文', () {
+      final candidates = [
+        const RestaurantEntity(
+          id: 'yelp_1',
+          name: '野武士',
+          rating: 4.5,
+          price: '\$600',
+          location: RestaurantLocationEntity(address1: '中山北路一段'),
+        ),
+      ];
+
+      final formatted = AiFoodieRepo.formatCandidateRestaurants(candidates);
+      expect(formatted, contains('[ID: yelp_1] 名稱: 野武士'));
+      expect(formatted, contains('評分: 4.5★'));
+      expect(formatted, contains('價位: \$600'));
+      expect(formatted, contains('地址: 中山北路一段'));
     });
 
     test('getInitialSuggestions 傳回預設歡迎語與互動標籤', () async {

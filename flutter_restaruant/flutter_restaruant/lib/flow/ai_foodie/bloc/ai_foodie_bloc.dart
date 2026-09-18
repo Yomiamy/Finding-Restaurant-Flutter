@@ -8,8 +8,11 @@ import 'ai_foodie_state.dart';
 
 /// AI 覓食助理狀態管理 BLoC
 class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
-  AiFoodieBloc({required AiFoodieRepository repository})
-      : _repository = repository,
+  AiFoodieBloc({
+    required AiFoodieRepository repository,
+    List<RestaurantEntity>? candidateRestaurants,
+  })  : _repository = repository,
+        _candidateRestaurants = candidateRestaurants,
         super(AiFoodieState.initial()) {
     on<LoadInitialSuggestions>(_onLoadInitialSuggestions);
     on<SendUserPrompt>(_onSendUserPrompt);
@@ -21,6 +24,7 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
   }
 
   final AiFoodieRepository _repository;
+  final List<RestaurantEntity>? _candidateRestaurants;
   int _requestToken = 0;
 
   Future<void> _onLoadInitialSuggestions(
@@ -69,6 +73,7 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
       final assistantResponse = await _repository.askAssistant(
         trimmed,
         history: priorHistory,
+        candidateRestaurants: _candidateRestaurants,
       );
 
       if (token != _requestToken) return;
