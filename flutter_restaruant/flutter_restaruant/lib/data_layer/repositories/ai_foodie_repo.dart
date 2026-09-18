@@ -71,7 +71,7 @@ class AiFoodieRepo implements AiFoodieRepository {
 【嚴格元件型別規範】
 components 陣列內的每個物件必須包含 component_type 與 data：
 - component_type 嚴格限定為下列三者之一：
-  1. "comparison_matrix": 多店橫向評分與特色對比 (data 包含 title 與 items 陣列)
+  1. "comparison_matrix": 多店橫向評分與特色對比 (data 內部【絕對必須】包含 items 陣列，嚴禁省略！)
   2. "action_chip_group": 快捷行動按鈕 (data 包含 chips 陣列，action 為 "query" 或 "open_roulette")
   3. "decision_roulette": 命運轉盤隨機抽籤 (data 包含 title 與 options 陣列)
 
