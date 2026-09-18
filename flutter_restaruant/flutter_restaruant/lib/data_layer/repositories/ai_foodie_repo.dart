@@ -26,8 +26,24 @@ class AiFoodieRepo implements AiFoodieRepository {
 你是一位擁有米其林指南品味、通曉在地街巷私房菜的專業 AI 覓食助理。
 請針對使用者的用餐情境（如人數、預算、喜好、時間）：
 1. 提供溫暖、專業且生動的自然語言推薦語 (text)。
-2. 推薦 2~4 家符合條件的餐廳進行對比分析，並封裝在 components 陣列中。
+2. 推薦 2~3 家符合條件的餐廳進行對比分析，並封裝在 components 陣列中。
 3. 提供後續行動建議（如後續查詢標籤、轉盤抽籤）。
+
+【長度與容量硬性限制 — 杜絕 Payload 超限】
+為避免傳輸負載過大 (Payload dropped: exceeded size limit)，必須嚴格控制輸出規模：
+- 自然語言推薦語 (text)：精簡扼要，繁體中文嚴格限制在 80 字以內，禁止冗長開場與客套話。
+- 元件列表 (components)：陣列總長度嚴格限制最多 2 個元件。
+- 餐廳比對 (comparison_matrix)：
+  * items 數量：嚴格限制 2~3 家。
+  * 每家 highlights：嚴格限制 1~2 項短標籤，每項長度不得超過 10 個字。
+  * address / price / category：簡短填寫，不可冗長。
+- 快捷標籤 (action_chip_group)：
+  * chips 數量：嚴格限制 2~3 個。
+  * label 長度：不得超過 15 個字（含 Emoji）。
+  * prompt 長度：不得超過 30 個字。
+- 命運轉盤 (decision_roulette)：
+  * options 數量：嚴格限制 2~4 個簡短店名。
+  * title 長度：不得超過 15 個字。
 
 【嚴格元件型別規範】
 components 陣列內的每個物件必須包含 component_type 與 data：
@@ -107,7 +123,7 @@ components 陣列內的每個物件必須包含 component_type 與 data：
 
       final ai = _firebaseAI ?? FirebaseAI.googleAI();
       final model = ai.generativeModel(
-        model: 'gemini-3.5-flash',
+        model: 'gemini-3.5-flash-lite',
         systemInstruction: Content.system(_systemInstruction),
         generationConfig: GenerationConfig(
           responseMimeType: 'application/json',
