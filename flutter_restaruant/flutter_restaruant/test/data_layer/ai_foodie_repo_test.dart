@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:firebase_ai/firebase_ai.dart';
 import 'package:flutter_restaruant/data_layer/data_layer_barrel.dart';
 import 'package:flutter_restaruant/domain/domain_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -231,14 +232,16 @@ void main() {
       expect(suggestions.first.components.first, isA<ActionChipGroupComponent>());
     });
 
-    test('多輪對話歷程中 formatAssistantHistory 正確序列化前輪元件的餐廳與轉盤實體', () async {
+    test('多輪對話歷程中 formatAssistantHistory 正確序列化為符合 Schema 之 JSON 格式並保留元件實體', () async {
       final repo = AiFoodieRepo();
 
-      // 1. 驗證空 components 不變更純文字
+      // 1. 驗證空 components 序列化為合規 JSON 且保留純文字
       final plainMsg = AiFoodieMessage.assistant(text: '你好，想吃什麼？');
-      expect(repo.formatAssistantHistory(plainMsg), '你好，想吃什麼？');
+      final plainJson = jsonDecode(repo.formatAssistantHistory(plainMsg)) as Map<String, Object?>;
+      expect(plainJson['text'], '你好，想吃什麼？');
+      expect(plainJson['components'], isEmpty);
 
-      // 2. 驗證 ComparisonMatrixComponent 包含餐廳名稱與 ID
+      // 2. 驗證 ComparisonMatrixComponent 包含餐廳名稱、ID 與詳細資料
       final matrixMsg = AiFoodieMessage.assistant(
         text: '推薦以下餐廳：',
         components: const [
@@ -263,11 +266,19 @@ void main() {
       );
 
       final formattedMatrix = repo.formatAssistantHistory(matrixMsg);
-      expect(formattedMatrix, contains('推薦以下餐廳：'));
-      expect(
-        formattedMatrix,
-        contains('[推薦餐廳: 鼎泰豐 (id: rest_101), 阜杭豆漿 (id: rest_102)]'),
-      );
+      final matrixJson = jsonDecode(formattedMatrix) as Map<String, Object?>;
+      expect(matrixJson['text'], '推薦以下餐廳：');
+      final components = matrixJson['components'] as List<Object?>;
+      expect(components.length, 1);
+      final firstComp = components.first as Map<String, Object?>;
+      expect(firstComp['component_type'], 'comparison_matrix');
+      final compData = firstComp['data'] as Map<String, Object?>;
+      final items = compData['items'] as List<Object?>;
+      expect(items.length, 2);
+      expect((items[0] as Map<String, Object?>)['id'], 'rest_101');
+      expect((items[0] as Map<String, Object?>)['name'], '鼎泰豐');
+      expect((items[1] as Map<String, Object?>)['id'], 'rest_102');
+      expect((items[1] as Map<String, Object?>)['name'], '阜杭豆漿');
 
       // 3. 驗證 DecisionRouletteComponent 包含轉盤候選選項
       final rouletteMsg = AiFoodieMessage.assistant(
@@ -281,11 +292,37 @@ void main() {
       );
 
       final formattedRoulette = repo.formatAssistantHistory(rouletteMsg);
-      expect(formattedRoulette, contains('幫您挑選出以下候選：'));
-      expect(
-        formattedRoulette,
-        contains('[轉盤選項: 野武士居酒屋, 狸御殿和食酒場]'),
+      final rouletteJson = jsonDecode(formattedRoulette) as Map<String, Object?>;
+      expect(rouletteJson['text'], '幫您挑選出以下候選：');
+      final rouletteComps = rouletteJson['components'] as List<Object?>;
+      expect(rouletteComps.length, 1);
+      final rouletteData = (rouletteComps.first as Map<String, Object?>)['data'] as Map<String, Object?>;
+      expect(rouletteData['options'], containsAll(['野武士居酒屋', '狸御殿和食酒場']));
+    });
+
+    test('buildConversationContents 自動剔除開頭無前置提問的助理歡迎語，確保對話首輪必為 user 且嚴格交替', () {
+      final welcome = AiFoodieMessage.assistant(text: '歡迎光臨');
+      final user1 = AiFoodieMessage.user('想吃火鍋');
+      final assistant1 = AiFoodieMessage.assistant(text: '推薦海底撈');
+
+      // 僅有歡迎語時，過濾後首輪即為當前 finalPrompt
+      final singleTurn = AiFoodieRepo.buildConversationContents(
+        [welcome],
+        '我想吃拉麵',
       );
+      expect(singleTurn.length, 1);
+      expect(singleTurn.first.parts.first, isA<TextPart>());
+      expect((singleTurn.first.parts.first as TextPart).text, '我想吃拉麵');
+
+      // 多輪歷程：剔除 leading welcome，形成 user -> model -> user 嚴格交替
+      final multiTurn = AiFoodieRepo.buildConversationContents(
+        [welcome, user1, assistant1],
+        '還有別的嗎？',
+      );
+      expect(multiTurn.length, 3);
+      expect((multiTurn[0].parts.first as TextPart).text, '想吃火鍋');
+      expect((multiTurn[1].parts.first as TextPart).text, contains('推薦海底撈'));
+      expect((multiTurn[2].parts.first as TextPart).text, '還有別的嗎？');
     });
   });
 

@@ -29,9 +29,9 @@ class AiFoodieRepo implements AiFoodieRepository {
   static const String _systemInstruction = '''
 你是一位擁有米其林指南品味、通曉在地街巷私房菜的專業 AI 覓食助理。
 請針對使用者的用餐情境（如人數、預算、喜好、時間）：
-1. 提供溫暖、專業且生動的自然語言推薦語 (text)。
-2. 推薦 2~3 家符合條件的餐廳進行對比分析，並封裝在 components 陣列中。
-3. 提供後續行動建議（如後續查詢標籤、轉盤抽籤）。
+1. 提供簡短溫暖的自然語言引言 (text)，字數 ≤ 80 字。所有餐廳詳細資料一律留給 components，嚴禁在 text 中條列或重複。
+2. 挑選 2~3 家符合條件的餐廳封裝在 components 陣列中 (comparison_matrix)。
+3. 提供後續行動建議（快捷標籤 action_chip_group 或轉盤抽籤 decision_roulette）。
 
 【真實店家接地約束 (Grounding Constraint) — 關鍵原則】
 - 若使用者提示中附帶了【目前已加載的周邊真實候選餐廳名單】：
@@ -41,6 +41,17 @@ class AiFoodieRepo implements AiFoodieRepository {
   * 轉盤 options 也必須使用名單中的真實店名。
   * 若名單中無完全符合者，可推薦最接近者並在 text 中說明；切勿捏造虛構店家。
 - 若未提供候選餐廳名單，則給予一般性餐飲建議與文字指引，不要產出 comparison_matrix。
+
+【職責嚴格切分與防重複約束 (Strict Role Separation & Anti-Repetition) — 杜絕自我複讀】
+- text 的單一職責：
+  * 僅能作為情境總結或推薦引言（例如：「針對您想找中山站適合聊天的居酒屋，為您精選兩家氣氛熱絡的店家：」）。
+  * 【絕對禁止】在 text 提及或條列任何餐廳細節（店名、地址、電話、評分、價格、菜色）！
+  * 所有具體的店家比對與資訊【必須且只能】封裝在 components 的 comparison_matrix 中。
+  * 【絕對禁止】自我複讀：嚴禁重複輸出相同的詞彙、句子或無意義的循環贅字。
+- components 的單一職責：
+  * comparison_matrix 內的 items 嚴禁包含重複店家。
+  * action_chip_group 的 chips 嚴禁出現重複標籤。
+  * decision_roulette 的 options 嚴禁出現重複選項。
 
 【長度與容量硬性限制 — 杜絕 Payload 超限】
 為避免傳輸負載過大 (Payload dropped: exceeded size limit)，必須嚴格控制輸出規模：
@@ -144,6 +155,7 @@ components 陣列內的每個物件必須包含 component_type 與 data：
         model: 'gemini-3.5-flash-lite',
         systemInstruction: Content.system(_systemInstruction),
         generationConfig: GenerationConfig(
+          temperature: 0.2,
           responseMimeType: 'application/json',
           responseSchema: aiFoodieResponseSchema,
         ),
@@ -153,18 +165,10 @@ components 陣列內的每個物件必須包含 component_type 與 data：
         candidateRestaurants ?? const [],
       );
       final finalPrompt = candidateContext.isNotEmpty
-          ? '$candidateContext\n【使用者情境需求】: $prompt\n【指示】: 請依上述真實候選店家進行推薦與比對，嚴格使用其真實 ID。'
+          ? '$candidateContext\n【使用者情境需求】: $prompt\n【指示】: 請依上述真實候選店家進行推薦與比對，嚴格使用其真實 ID。text 僅需 1 句簡短引言，嚴禁在 text 中條列店名與重複細節，全部交由 components 呈現。'
           : prompt;
 
-      final contents = <Content>[
-        if (history != null)
-          for (final msg in history)
-            if (msg.isUser)
-              Content.text(msg.text)
-            else
-              Content.model([TextPart(formatAssistantHistory(msg))]),
-        Content.text(finalPrompt),
-      ];
+      final contents = buildConversationContents(history, finalPrompt);
 
       final response = await model.generateContent(contents);
 
@@ -219,24 +223,50 @@ components 陣列內的每個物件必須包含 component_type 與 data：
     return buffer.toString();
   }
 
-  /// 將助理訊息及其攜帶的元件實體（如比對卡片中的餐廳 ID/名稱、轉盤候選）序列化為多輪對話上下文
+  /// 建構符合 Gemini 多輪對話規格之 Contents 列表
+  ///
+  /// 自動剔除開頭無前置使用者提問的助理問候訊息，確保對話首輪必為 user，且維持嚴格交替。
   @visibleForTesting
-  String formatAssistantHistory(AiFoodieMessage msg) {
-    if (msg.components.isEmpty) return msg.text;
+  static List<Content> buildConversationContents(
+    List<AiFoodieMessage>? history,
+    String finalPrompt,
+  ) {
+    final contents = <Content>[];
+    if (history != null && history.isNotEmpty) {
+      final sanitizedHistory = history
+          .skipWhile((m) => !m.isUser)
+          .toList(growable: false);
 
-    final buffer = StringBuffer(msg.text);
-    for (final comp in msg.components) {
-      if (comp is ComparisonMatrixComponent && comp.items.isNotEmpty) {
-        final summary = comp.items
-            .map((it) => '${it.name} (id: ${it.id})')
-            .join(', ');
-        buffer.write('\n[推薦餐廳: $summary]');
-      } else if (comp is DecisionRouletteComponent && comp.options.isNotEmpty) {
-        final summary = comp.options.join(', ');
-        buffer.write('\n[轉盤選項: $summary]');
+      for (final msg in sanitizedHistory) {
+        if (msg.isUser) {
+          contents.add(Content.text(msg.text));
+        } else {
+          contents.add(Content.model([TextPart(serializeAssistantHistory(msg))]));
+        }
       }
     }
-    return buffer.toString();
+    contents.add(Content.text(finalPrompt));
+    return contents;
+  }
+
+  /// 將助理訊息及其攜帶的元件實體序列化為符合 Schema 之 JSON 格式，維護對話歷史語意與結構一致性
+  @visibleForTesting
+  String formatAssistantHistory(AiFoodieMessage msg) =>
+      serializeAssistantHistory(msg);
+
+  /// 序列化助理訊息為符合 Schema 之 JSON 字串
+  @visibleForTesting
+  static String serializeAssistantHistory(AiFoodieMessage msg) {
+    final validComponents = msg.components
+        .where((c) => c is! FallbackMarkdownComponent)
+        .map((c) => c.toJson())
+        .toList(growable: false);
+
+    final payload = <String, Object?>{
+      'text': msg.text,
+      'components': validComponents,
+    };
+    return jsonEncode(payload);
   }
 
   AiFoodieMessage _parseResponse(String rawJson) {
