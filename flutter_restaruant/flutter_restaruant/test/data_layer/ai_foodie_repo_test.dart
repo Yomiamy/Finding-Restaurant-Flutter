@@ -88,6 +88,66 @@ void main() {
       expect(chipGroup.chips.first.action, 'open_roulette');
     });
 
+    test('askAssistant 自動過濾缺少對應 UI 資料的殘缺元件，避免畫面出現無效 Fallback 標籤', () async {
+      final incompleteJson = jsonEncode({
+        'text': '為您推薦餐廳：',
+        'components': [
+          {
+            // comparison_matrix 缺少 items
+            'component_type': 'comparison_matrix',
+            'data': {'title': '空比對清單', 'items': <Object>[]},
+          },
+          {
+            // action_chip_group 缺少有效 prompt / options
+            'component_type': 'action_chip_group',
+            'data': {
+              'chips': [
+                {
+                  'label': '無效',
+                  'action': 'query',
+                  'payload': <String, Object?>{},
+                },
+              ],
+            },
+          },
+          {
+            // decision_roulette options 少於 2
+            'component_type': 'decision_roulette',
+            'data': {
+              'title': '單選項轉盤',
+              'options': ['只有一家'],
+            },
+          },
+          {
+            // 合法有效的 action chip
+            'component_type': 'action_chip_group',
+            'data': {
+              'chips': [
+                {
+                  'label': '有效標籤',
+                  'action': 'query',
+                  'payload': {'prompt': '有效 prompt'},
+                },
+              ],
+            },
+          },
+        ],
+      });
+
+      final repo = AiFoodieRepo(
+        promptExecutor: (prompt, history) async => incompleteJson,
+      );
+
+      final message = await repo.askAssistant('推薦美食');
+      expect(message.isUser, isFalse);
+      expect(message.text, '為您推薦餐廳：');
+      // 前 3 個缺資料的無效元件應全被過濾，只留下第 4 個有效元件
+      expect(message.components.length, 1);
+      expect(message.components.first, isA<ActionChipGroupComponent>());
+      final chipGroup = message.components.first as ActionChipGroupComponent;
+      expect(chipGroup.chips.first.label, '有效標籤');
+    });
+
     test('askAssistant 當推論異常時能平滑降級為本地智慧推薦，保證零崩潰', () async {
       final repo = AiFoodieRepo(
         promptExecutor: (prompt, history) async => throw Exception('網路連線逾時'),

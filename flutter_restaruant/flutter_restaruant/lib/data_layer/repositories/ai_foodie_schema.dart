@@ -75,7 +75,9 @@ final aiFoodieResponseSchema = Schema.object(
                 ),
               ),
               'chips': Schema.array(
-                description: '快捷行動標籤項目列表 (action_chip_group 使用)',
+                description:
+                    '快捷行動標籤項目列表 (action_chip_group 必填，至少 1 項；'
+                    '其他元件類型不使用此欄位)',
                 nullable: true,
                 items: Schema.object(
                   description: '單一行動標籤',
@@ -83,21 +85,24 @@ final aiFoodieResponseSchema = Schema.object(
                     'label': Schema.string(description: '標籤顯示文字 (含 Emoji)'),
                     'action': Schema.enumString(
                       enumValues: ['query', 'open_roulette'],
-                      description: '動作類型代碼',
+                      description: '動作類型代碼: "query" 或 "open_roulette"',
                     ),
                     'payload': Schema.object(
-                      description: '動作對應承載資料',
+                      description: '動作對應承載資料 (必須包含對應 action 的必要欄位)',
                       properties: {
                         'prompt': Schema.string(
-                          description: '提問 Prompt (query 動作使用)',
+                          description:
+                              '提問 Prompt (action 為 "query" 時必填且不可為空)',
                           nullable: true,
                         ),
                         'title': Schema.string(
-                          description: '轉盤標題 (open_roulette 動作使用)',
+                          description:
+                              '轉盤標題 (action 為 "open_roulette" 時必填)',
                           nullable: true,
                         ),
                         'options': Schema.array(
-                          description: '轉盤候選餐廳名稱 (open_roulette 動作使用)',
+                          description:
+                              '轉盤候選餐廳名稱列表 (action 為 "open_roulette" 時必填，至少 2 項)',
                           nullable: true,
                           items: Schema.string(),
                         ),
@@ -108,7 +113,9 @@ final aiFoodieResponseSchema = Schema.object(
                 ),
               ),
               'options': Schema.array(
-                description: '命運轉盤候選餐廳名稱列表 (decision_roulette 使用)',
+                description:
+                    '命運轉盤候選餐廳名稱列表 (decision_roulette 必填，至少 2 項；'
+                    '其他元件類型不使用此欄位)',
                 nullable: true,
                 items: Schema.string(),
               ),
