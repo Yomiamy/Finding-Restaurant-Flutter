@@ -17,11 +17,9 @@ typedef AiPromptFunction =
 
 /// AI 覓食助理 Repository 實作
 class AiFoodieRepo implements AiFoodieRepository {
-  AiFoodieRepo({
-    FirebaseAI? firebaseAI,
-    AiPromptFunction? promptExecutor,
-  })  : _firebaseAI = firebaseAI,
-        _promptExecutor = promptExecutor;
+  AiFoodieRepo({FirebaseAI? firebaseAI, AiPromptFunction? promptExecutor})
+    : _firebaseAI = firebaseAI,
+      _promptExecutor = promptExecutor;
 
   final FirebaseAI? _firebaseAI;
   final AiPromptFunction? _promptExecutor;
@@ -58,6 +56,7 @@ class AiFoodieRepo implements AiFoodieRepository {
 - 自然語言推薦語 (text)：精簡扼要，繁體中文嚴格限制在 80 字以內，禁止冗長開場與客套話。
 - 元件列表 (components)：陣列總長度嚴格限制最多 2 個元件。
 - 餐廳比對 (comparison_matrix)：
+  * title 長度：嚴格限制在 10 個字以內（例如「精選店家對比」）。絕對禁止串接同義詞與長篇大論！
   * items 數量：嚴格限制 2~3 家。
   * 每家 highlights：嚴格限制 1~2 項短標籤，每項長度不得超過 10 個字。
   * address / price / category：簡短填寫，不可冗長。
@@ -67,7 +66,7 @@ class AiFoodieRepo implements AiFoodieRepository {
   * prompt 長度：不得超過 30 個字。
 - 命運轉盤 (decision_roulette)：
   * options 數量：嚴格限制 2~4 個簡短店名。
-  * title 長度：不得超過 15 個字。
+  * title 長度：嚴格限制在 10 個字以內。絕對禁止串接同義詞與長篇大論！
 
 【嚴格元件型別規範】
 components 陣列內的每個物件必須包含 component_type 與 data：
@@ -102,7 +101,8 @@ components 陣列內的每個物件必須包含 component_type 與 data：
   Future<List<AiFoodieMessage>> getInitialSuggestions() async {
     // 預設歡迎語與引導標籤
     final welcomeMessage = AiFoodieMessage.assistant(
-      text: '嗨！我是你的專屬 AI 覓食助手 🍽️\n不管是 4 人聚餐想找安靜包廂、深夜想來碗熱呼呼的拉麵，或是約會不想踩雷，告訴我你的情境與預算，我來幫你精挑細選！',
+      text:
+          '嗨！我是你的專屬 AI 覓食助手 🍽️\n不管是 4 人聚餐想找安靜包廂、深夜想來碗熱呼呼的拉麵，或是約會不想踩雷，告訴我你的情境與預算，我來幫你精挑細選！',
       components: [
         const ActionChipGroupComponent(
           chips: [
@@ -198,7 +198,9 @@ components 陣列內的每個物件必須包含 component_type 與 data：
       '【目前已加載的周邊真實候選餐廳名單（嚴格要求：推薦與比對只能從以下名單挑選，必須使用真實對應的 ID，嚴禁捏造！）】:\n',
     );
     final selected = restaurants
-        .where((r) => (r.id?.isNotEmpty ?? false) && (r.name?.isNotEmpty ?? false))
+        .where(
+          (r) => (r.id?.isNotEmpty ?? false) && (r.name?.isNotEmpty ?? false),
+        )
         .take(limit);
 
     for (final res in selected) {
@@ -206,7 +208,8 @@ components 陣列內的每個物件必須包含 component_type 與 data：
       final name = res.name!;
       final rating = res.rating != null ? '${res.rating}★' : '無評分';
       final price = res.price ?? '';
-      final category = res.categories
+      final category =
+          res.categories
               ?.map((c) => c.title)
               .whereType<String>()
               .where((s) => s.isNotEmpty)
@@ -241,7 +244,9 @@ components 陣列內的每個物件必須包含 component_type 與 data：
         if (msg.isUser) {
           contents.add(Content.text(msg.text));
         } else {
-          contents.add(Content.model([TextPart(serializeAssistantHistory(msg))]));
+          contents.add(
+            Content.model([TextPart(serializeAssistantHistory(msg))]),
+          );
         }
       }
     }
@@ -280,10 +285,7 @@ components 陣列內的每個物件必須包含 component_type 與 data：
           .where((comp) => comp is! FallbackMarkdownComponent)
           .toList(growable: false);
 
-      return AiFoodieMessage.assistant(
-        text: text,
-        components: components,
-      );
+      return AiFoodieMessage.assistant(text: text, components: components);
     } catch (_) {
       return AiFoodieMessage.assistant(
         text: rawJson,
@@ -299,32 +301,38 @@ components 陣列內的每個物件必須包含 component_type 與 data：
   }) {
     if (candidateRestaurants != null && candidateRestaurants.isNotEmpty) {
       final valid = candidateRestaurants
-          .where((r) => (r.id?.isNotEmpty ?? false) && (r.name?.isNotEmpty ?? false))
+          .where(
+            (r) => (r.id?.isNotEmpty ?? false) && (r.name?.isNotEmpty ?? false),
+          )
           .take(3)
           .toList(growable: false);
 
       if (valid.length >= 2) {
-        final items = valid.map((r) {
-          final cat = r.categories?.map((c) => c.title).whereType<String>().join('/') ?? '';
-          return RestaurantComparisonItem(
-            id: r.id!,
-            name: r.name!,
-            rating: r.rating ?? 4.5,
-            price: r.price,
-            highlights: cat.isNotEmpty ? [cat, '精選推薦'] : const ['精選推薦'],
-            category: cat.isNotEmpty ? cat : null,
-            address: r.location?.address1,
-            imageUrl: r.imageUrl,
-          );
-        }).toList(growable: false);
+        final items = valid
+            .map((r) {
+              final cat =
+                  r.categories
+                      ?.map((c) => c.title)
+                      .whereType<String>()
+                      .join('/') ??
+                  '';
+              return RestaurantComparisonItem(
+                id: r.id!,
+                name: r.name!,
+                rating: r.rating ?? 4.5,
+                price: r.price,
+                highlights: cat.isNotEmpty ? [cat, '精選推薦'] : const ['精選推薦'],
+                category: cat.isNotEmpty ? cat : null,
+                address: r.location?.address1,
+                imageUrl: r.imageUrl,
+              );
+            })
+            .toList(growable: false);
 
         return AiFoodieMessage.assistant(
           text: '已為您從目前加載的周邊店家精選推薦：',
           components: [
-            ComparisonMatrixComponent(
-              title: '周邊推薦餐廳對比',
-              items: items,
-            ),
+            ComparisonMatrixComponent(title: '周邊推薦餐廳對比', items: items),
             ActionChipGroupComponent(
               chips: [
                 ActionChipItem(
@@ -401,7 +409,10 @@ components 陣列內的每個物件必須包含 component_type 與 data：
       );
     }
 
-    if (lower.contains('約會') || lower.contains('浪漫') || lower.contains('義') || lower.contains('法')) {
+    if (lower.contains('約會') ||
+        lower.contains('浪漫') ||
+        lower.contains('義') ||
+        lower.contains('法')) {
       return AiFoodieMessage.assistant(
         text: '推薦 2 間燈光美、氣氛佳且口碑極高的浪漫約會餐廳：',
         components: [

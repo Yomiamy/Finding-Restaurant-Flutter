@@ -11,9 +11,7 @@ import 'package:firebase_ai/firebase_ai.dart';
 final aiFoodieResponseSchema = Schema.object(
   description: 'AI 覓食助理推薦與對話結果根物件',
   properties: {
-    'text': Schema.string(
-      description: '自然語言親切回覆、推薦理由與建議引言',
-    ),
+    'text': Schema.string(description: '自然語言親切回覆、推薦理由與建議引言'),
     'components': Schema.array(
       description: '結構化 GenUI 宣告式元件列表',
       items: Schema.object(
@@ -31,7 +29,7 @@ final aiFoodieResponseSchema = Schema.object(
             description: '元件內部專屬承載資料',
             properties: {
               'title': Schema.string(
-                description: '卡片或轉盤標題',
+                description: '卡片或轉盤標題 (嚴格限制10字以內)',
                 nullable: true,
               ),
               'items': Schema.array(
@@ -91,13 +89,12 @@ final aiFoodieResponseSchema = Schema.object(
                       description: '動作對應承載資料 (必須包含對應 action 的必要欄位)',
                       properties: {
                         'prompt': Schema.string(
-                          description:
-                              '提問 Prompt (action 為 "query" 時必填且不可為空)',
+                          description: '提問 Prompt (action 為 "query" 時必填且不可為空)',
                           nullable: true,
                         ),
                         'title': Schema.string(
                           description:
-                              '轉盤標題 (action 為 "open_roulette" 時必填)',
+                              '轉盤標題 (action 為 "open_roulette" 時必填，嚴格限制10字以內)',
                           nullable: true,
                         ),
                         'options': Schema.array(
