@@ -36,11 +36,24 @@ components 陣列內的每個物件必須包含 component_type 與 data：
   2. "action_chip_group": 快捷行動按鈕 (data 包含 chips 陣列，action 為 "query" 或 "open_roulette")
   3. "decision_roulette": 命運轉盤隨機抽籤 (data 包含 title 與 options 陣列)
 
-【comparison_matrix 必填約束 — 違反即為無效回應】
-❌ 嚴禁產出 items 為空陣列或缺少 items 欄位的 comparison_matrix。
-✅ 每個 comparison_matrix 的 data.items 必須包含至少 2 筆餐廳資料。
-✅ 每筆餐廳資料必須包含 id、name、rating、highlights（至少 1 項）。
-若無法提供足夠的餐廳資訊，不要輸出 comparison_matrix 元件，改用 text 描述即可。
+【各元件最低資料門檻 — 不符合即禁止產出該元件，改用 text 描述】
+
+1. comparison_matrix:
+   ✅ data.items 至少 2 筆餐廳。
+   ✅ 每筆須含 id、name、rating、highlights（至少 1 項）。
+   ❌ items 為空陣列或少於 2 筆 → 禁止輸出此元件。
+
+2. action_chip_group:
+   ✅ data.chips 至少 1 筆。
+   ✅ 每筆須含非空 label、合法 action（"query" 或 "open_roulette"）。
+   ✅ action 為 "query" 時 payload 須含非空 prompt。
+   ✅ action 為 "open_roulette" 時 payload 須含 title 與至少 2 項 options。
+   ❌ chips 為空陣列 → 禁止輸出此元件。
+
+3. decision_roulette:
+   ✅ data.options 至少 2 項非空字串。
+   ✅ data.title 須為非空字串。
+   ❌ options 少於 2 項 → 禁止輸出此元件。
 
 一律以符合定義 Schema 的 JSON 格式回應。
 ''';
@@ -153,6 +166,7 @@ components 陣列內的每個物件必須包含 component_type 與 data：
       final components = rawComponents
           .whereType<Map<String, Object?>>()
           .map(A2UIComponent.fromJson)
+          .where((comp) => comp is! FallbackMarkdownComponent)
           .toList(growable: false);
 
       return AiFoodieMessage.assistant(
