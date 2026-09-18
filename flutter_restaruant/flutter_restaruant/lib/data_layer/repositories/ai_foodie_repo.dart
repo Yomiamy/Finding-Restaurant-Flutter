@@ -107,7 +107,7 @@ components 陣列內的每個物件必須包含 component_type 與 data：
 
       final ai = _firebaseAI ?? FirebaseAI.googleAI();
       final model = ai.generativeModel(
-        model: 'gemini-3.8-flash',
+        model: 'gemini-3.5-flash',
         systemInstruction: Content.system(_systemInstruction),
         generationConfig: GenerationConfig(
           responseMimeType: 'application/json',
