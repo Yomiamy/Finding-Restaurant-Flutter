@@ -150,6 +150,7 @@ void main() {
       final description = switch (unpromoted) {
         DishCatalogComponent(:final dishes) => '有 ${dishes.length} 道菜',
         FallbackMarkdownComponent(:final text) => text,
+        _ => '',
       };
       expect(description, '有 0 道菜');
     });

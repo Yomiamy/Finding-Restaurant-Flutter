@@ -4,3 +4,4 @@ export 'restaurant_detail_repository.dart';
 export 'settings_repository.dart';
 export 'sign_in_repository.dart';
 export 'menu_vision_repository.dart';
+export 'ai_foodie_repository.dart';

@@ -1,6 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -631,6 +632,266 @@ class S {
       name: 'signin_header_subtitle',
       desc: '',
       args: [],
+    );
+  }
+
+  /// `AI Foodie Assistant`
+  String get ai_foodie_assistant_tooltip {
+    return Intl.message(
+      'AI Foodie Assistant',
+      name: 'ai_foodie_assistant_tooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `AI Foodie Assistant`
+  String get ai_foodie_sheet_title {
+    return Intl.message(
+      'AI Foodie Assistant',
+      name: 'ai_foodie_sheet_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Contextual Recommendations · Menu Comparison · Decision Roulette`
+  String get ai_foodie_sheet_subtitle {
+    return Intl.message(
+      'Contextual Recommendations · Menu Comparison · Decision Roulette',
+      name: 'ai_foodie_sheet_subtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Reset`
+  String get ai_foodie_reset_tooltip {
+    return Intl.message(
+      'Reset',
+      name: 'ai_foodie_reset_tooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close`
+  String get ai_foodie_close_tooltip {
+    return Intl.message(
+      'Close',
+      name: 'ai_foodie_close_tooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter scenario, e.g. 4 people wanting izakaya to chat...`
+  String get ai_foodie_input_hint {
+    return Intl.message(
+      'Enter scenario, e.g. 4 people wanting izakaya to chat...',
+      name: 'ai_foodie_input_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `AI is curating and comparing culinary gems for you...`
+  String get ai_foodie_loading_hint {
+    return Intl.message(
+      'AI is curating and comparing culinary gems for you...',
+      name: 'ai_foodie_loading_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `🎉 Destiny decided! Tonight we eat:`
+  String get ai_foodie_roulette_winner_title {
+    return Intl.message(
+      '🎉 Destiny decided! Tonight we eat:',
+      name: 'ai_foodie_roulette_winner_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `The roulette wheel is spinning rapidly...`
+  String get ai_foodie_roulette_spinning {
+    return Intl.message(
+      'The roulette wheel is spinning rapidly...',
+      name: 'ai_foodie_roulette_spinning',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Tap the button below and let destiny choose!`
+  String get ai_foodie_roulette_hint {
+    return Intl.message(
+      'Tap the button below and let destiny choose!',
+      name: 'ai_foodie_roulette_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Spin Again`
+  String get ai_foodie_roulette_spin_again {
+    return Intl.message(
+      'Spin Again',
+      name: 'ai_foodie_roulette_spin_again',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Awesome!`
+  String get ai_foodie_roulette_awesome {
+    return Intl.message(
+      'Awesome!',
+      name: 'ai_foodie_roulette_awesome',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `🎲 Spin the Wheel!`
+  String get ai_foodie_roulette_spin_btn {
+    return Intl.message(
+      '🎲 Spin the Wheel!',
+      name: 'ai_foodie_roulette_spin_btn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Spinning...`
+  String get ai_foodie_roulette_spinning_btn {
+    return Intl.message(
+      'Spinning...',
+      name: 'ai_foodie_roulette_spinning_btn',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `What to eat tonight? Decision Roulette`
+  String get ai_foodie_roulette_default_title {
+    return Intl.message(
+      'What to eat tonight? Decision Roulette',
+      name: 'ai_foodie_roulette_default_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `🎲 Decision roulette selected the top choice for you:\n👉 **{winner}** 👈\nWishing you a delightful dining experience!`
+  String ai_foodie_roulette_result_msg(Object winner) {
+    return Intl.message(
+      '🎲 Decision roulette selected the top choice for you:\n👉 **$winner** 👈\nWishing you a delightful dining experience!',
+      name: 'ai_foodie_roulette_result_msg',
+      desc: '',
+      args: [winner],
+    );
+  }
+
+  /// `Error loading suggestions: {error}`
+  String ai_foodie_error_load_suggestions(Object error) {
+    return Intl.message(
+      'Error loading suggestions: $error',
+      name: 'ai_foodie_error_load_suggestions',
+      desc: '',
+      args: [error],
+    );
+  }
+
+  /// `Error connecting to assistant: {error}`
+  String ai_foodie_error_connect_assistant(Object error) {
+    return Intl.message(
+      'Error connecting to assistant: $error',
+      name: 'ai_foodie_error_connect_assistant',
+      desc: '',
+      args: [error],
+    );
+  }
+
+  /// `Unrecognized GenUI component structure`
+  String get a2ui_error_unknown_component {
+    return Intl.message(
+      'Unrecognized GenUI component structure',
+      name: 'a2ui_error_unknown_component',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Menu data is empty`
+  String get a2ui_dish_catalog_empty {
+    return Intl.message(
+      'Menu data is empty',
+      name: 'a2ui_dish_catalog_empty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recommended Restaurant Comparison`
+  String get a2ui_comparison_matrix_title {
+    return Intl.message(
+      'Recommended Restaurant Comparison',
+      name: 'a2ui_comparison_matrix_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Selected Restaurant`
+  String get a2ui_comparison_item_name {
+    return Intl.message(
+      'Selected Restaurant',
+      name: 'a2ui_comparison_item_name',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Quick Actions`
+  String get a2ui_action_chip_group_title {
+    return Intl.message(
+      'Quick Actions',
+      name: 'a2ui_action_chip_group_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unexpected component format`
+  String get menu_vision_error_unexpected_format {
+    return Intl.message(
+      'Unexpected component format',
+      name: 'menu_vision_error_unexpected_format',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Menu recognition failed: {error}`
+  String menu_vision_error_analyze_failed(Object error) {
+    return Intl.message(
+      'Menu recognition failed: $error',
+      name: 'menu_vision_error_analyze_failed',
+      desc: '',
+      args: [error],
+    );
+  }
+
+  /// `Retry analysis failed: {error}`
+  String menu_vision_error_retry_failed(Object error) {
+    return Intl.message(
+      'Retry analysis failed: $error',
+      name: 'menu_vision_error_retry_failed',
+      desc: '',
+      args: [error],
     );
   }
 }
