@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
+import 'a2ui_fallback_strings.dart';
 import 'dish_item_entity.dart';
 
 /// GenUI (A2UI) 宣告式元件協定基類
@@ -20,7 +21,7 @@ sealed class A2UIComponent extends Equatable {
           final comp = DishCatalogComponent.fromJson(data);
           if (comp.dishes.isEmpty) {
             return FallbackMarkdownComponent(
-              text: (json['text'] as String?) ?? comp.restaurantTitle ?? '菜單資料為空',
+              text: (json['text'] as String?) ?? comp.restaurantTitle ?? A2UIFallbackStrings.dishCatalogEmpty,
             );
           }
           return comp;
@@ -38,7 +39,7 @@ sealed class A2UIComponent extends Equatable {
           final comp = ActionChipGroupComponent.fromJson(data);
           if (comp.chips.isEmpty) {
             return FallbackMarkdownComponent(
-              text: (json['text'] as String?) ?? '快捷操作選項',
+              text: (json['text'] as String?) ?? A2UIFallbackStrings.actionChipGroupTitle,
             );
           }
           return comp;
@@ -53,7 +54,7 @@ sealed class A2UIComponent extends Equatable {
           return comp;
         }(),
       _ => FallbackMarkdownComponent(
-        text: (json['text'] as String?) ?? '無法識別的 GenUI 元件結構',
+        text: (json['text'] as String?) ?? A2UIFallbackStrings.unknownComponent,
       ),
     };
   }
@@ -109,7 +110,7 @@ final class ComparisonMatrixComponent extends A2UIComponent {
   });
 
   factory ComparisonMatrixComponent.fromJson(Map<String, Object?> json) {
-    final title = json['title'] as String? ?? '推薦餐廳對比';
+    final title = json['title'] as String? ?? A2UIFallbackStrings.comparisonMatrixTitle;
     final rawItems = json['items'] as List<Object?>? ?? const [];
     final items = rawItems
         .whereType<Map<String, Object?>>()
@@ -156,7 +157,7 @@ final class RestaurantComparisonItem extends Equatable {
 
     return RestaurantComparisonItem(
       id: json['id'] as String? ?? '',
-      name: json['name'] as String? ?? '精選餐廳',
+      name: json['name'] as String? ?? A2UIFallbackStrings.comparisonItemName,
       rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
       price: json['price'] as String?,
       highlights: highlights,
@@ -279,7 +280,7 @@ final class ActionChipItem extends Equatable {
 final class DecisionRouletteComponent extends A2UIComponent {
   const DecisionRouletteComponent({
     required this.options,
-    this.title = '今晚吃什麼？命運大轉盤',
+    required this.title,
   });
 
   factory DecisionRouletteComponent.fromJson(Map<String, Object?> json) {
@@ -289,7 +290,7 @@ final class DecisionRouletteComponent extends A2UIComponent {
         .toList(growable: false);
 
     return DecisionRouletteComponent(
-      title: json['title'] as String? ?? '今晚吃什麼？命運大轉盤',
+      title: json['title'] as String? ?? A2UIFallbackStrings.decisionRouletteTitle,
       options: options,
     );
   }

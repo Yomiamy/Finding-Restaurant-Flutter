@@ -1,6 +1,7 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
 import 'intl/messages_all.dart';
 
 // **************************************************************************
@@ -791,6 +792,106 @@ class S {
       name: 'ai_foodie_roulette_result_msg',
       desc: '',
       args: [winner],
+    );
+  }
+
+  /// `Error loading suggestions: {error}`
+  String ai_foodie_error_load_suggestions(Object error) {
+    return Intl.message(
+      'Error loading suggestions: $error',
+      name: 'ai_foodie_error_load_suggestions',
+      desc: '',
+      args: [error],
+    );
+  }
+
+  /// `Error connecting to assistant: {error}`
+  String ai_foodie_error_connect_assistant(Object error) {
+    return Intl.message(
+      'Error connecting to assistant: $error',
+      name: 'ai_foodie_error_connect_assistant',
+      desc: '',
+      args: [error],
+    );
+  }
+
+  /// `Unrecognized GenUI component structure`
+  String get a2ui_error_unknown_component {
+    return Intl.message(
+      'Unrecognized GenUI component structure',
+      name: 'a2ui_error_unknown_component',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Menu data is empty`
+  String get a2ui_dish_catalog_empty {
+    return Intl.message(
+      'Menu data is empty',
+      name: 'a2ui_dish_catalog_empty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recommended Restaurant Comparison`
+  String get a2ui_comparison_matrix_title {
+    return Intl.message(
+      'Recommended Restaurant Comparison',
+      name: 'a2ui_comparison_matrix_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Selected Restaurant`
+  String get a2ui_comparison_item_name {
+    return Intl.message(
+      'Selected Restaurant',
+      name: 'a2ui_comparison_item_name',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Quick Actions`
+  String get a2ui_action_chip_group_title {
+    return Intl.message(
+      'Quick Actions',
+      name: 'a2ui_action_chip_group_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unexpected component format`
+  String get menu_vision_error_unexpected_format {
+    return Intl.message(
+      'Unexpected component format',
+      name: 'menu_vision_error_unexpected_format',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Menu recognition failed: {error}`
+  String menu_vision_error_analyze_failed(Object error) {
+    return Intl.message(
+      'Menu recognition failed: $error',
+      name: 'menu_vision_error_analyze_failed',
+      desc: '',
+      args: [error],
+    );
+  }
+
+  /// `Retry analysis failed: {error}`
+  String menu_vision_error_retry_failed(Object error) {
+    return Intl.message(
+      'Retry analysis failed: $error',
+      name: 'menu_vision_error_retry_failed',
+      desc: '',
+      args: [error],
     );
   }
 }

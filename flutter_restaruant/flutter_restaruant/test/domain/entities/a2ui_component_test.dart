@@ -106,7 +106,10 @@ void main() {
       final assistantMsg = AiFoodieMessage.assistant(
         text: '推薦這家拉麵',
         components: const [
-          DecisionRouletteComponent(options: ['一蘭', '一風堂']),
+          DecisionRouletteComponent(
+            options: ['一蘭', '一風堂'],
+            title: '今晚吃什麼？命運大轉盤',
+          ),
         ],
       );
       expect(assistantMsg.isUser, isFalse);

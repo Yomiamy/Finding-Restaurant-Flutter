@@ -20,16 +20,37 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'zh_TW';
 
-  static String m0(winner) =>
+  static String m0(error) => "連線助理時發生錯誤：${error}";
+
+  static String m1(error) => "載入建議時發生錯誤：${error}";
+
+  static String m2(winner) =>
       "🎲 命運轉盤為您抽出了最棒的選擇：\n👉 **${winner}** 👈\n祝您今晚用餐愉快，吃得開心滿足！";
+
+  static String m3(error) => "菜單辨識失敗：${error}";
+
+  static String m4(error) => "重試分析失敗：${error}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "a2ui_action_chip_group_title": MessageLookupByLibrary.simpleMessage(
+      "快捷操作選項",
+    ),
+    "a2ui_comparison_item_name": MessageLookupByLibrary.simpleMessage("精選餐廳"),
+    "a2ui_comparison_matrix_title": MessageLookupByLibrary.simpleMessage(
+      "推薦餐廳對比",
+    ),
+    "a2ui_dish_catalog_empty": MessageLookupByLibrary.simpleMessage("菜單資料為空"),
+    "a2ui_error_unknown_component": MessageLookupByLibrary.simpleMessage(
+      "無法識別的 GenUI 元件結構",
+    ),
     "account_section_title": MessageLookupByLibrary.simpleMessage("帳戶"),
     "ai_foodie_assistant_tooltip": MessageLookupByLibrary.simpleMessage(
       "AI 覓食助理",
     ),
     "ai_foodie_close_tooltip": MessageLookupByLibrary.simpleMessage("關閉"),
+    "ai_foodie_error_connect_assistant": m0,
+    "ai_foodie_error_load_suggestions": m1,
     "ai_foodie_input_hint": MessageLookupByLibrary.simpleMessage(
       "輸入情境，例如：4人想吃居酒屋聊聊天...",
     ),
@@ -44,7 +65,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "ai_foodie_roulette_hint": MessageLookupByLibrary.simpleMessage(
       "點擊下方按鈕，讓命運幫您決定！",
     ),
-    "ai_foodie_roulette_result_msg": m0,
+    "ai_foodie_roulette_result_msg": m2,
     "ai_foodie_roulette_spin_again": MessageLookupByLibrary.simpleMessage(
       "再轉一次",
     ),
@@ -119,6 +140,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "main_page_title": MessageLookupByLibrary.simpleMessage("尋找餐廳"),
     "map_mode": MessageLookupByLibrary.simpleMessage("地圖模式"),
     "map_my_loc_title": MessageLookupByLibrary.simpleMessage("我的位置"),
+    "menu_vision_error_analyze_failed": m3,
+    "menu_vision_error_retry_failed": m4,
+    "menu_vision_error_unexpected_format": MessageLookupByLibrary.simpleMessage(
+      "未預期的組件格式",
+    ),
     "navigation_choice": MessageLookupByLibrary.simpleMessage("請選擇導覽方式"),
     "passwd_invalid_hint_msg": MessageLookupByLibrary.simpleMessage("請輸入密碼"),
     "passwd_invalid_hint_title": MessageLookupByLibrary.simpleMessage("密碼"),
