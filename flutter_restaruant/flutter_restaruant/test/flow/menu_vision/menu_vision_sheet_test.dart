@@ -2,7 +2,6 @@ import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'dart:typed_data';
 
-import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/domain/domain_barrel.dart';
 import 'package:flutter_restaruant/flow/menu_vision/menu_vision_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
