@@ -7,6 +7,7 @@ import 'package:meta/meta.dart';
 
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../domain/repositories/repositories_barrel.dart';
+import '../../../generated/l10n.dart';
 
 part 'menu_vision_event.dart';
 part 'menu_vision_state.dart';
@@ -49,12 +50,12 @@ class MenuVisionBloc extends Bloc<MenuVisionEvent, MenuVisionState> {
             ));
           default:
             emit(MenuVisionFailure(
-              message: '未預期的組件格式',
+              message: S.current.menu_vision_error_unexpected_format,
               failedImageBytes: imageBytes,
             ));
         }
       } on Exception catch (e) {
-        emit(MenuVisionFailure(message: '菜單辨識失敗：$e'));
+        emit(MenuVisionFailure(message: S.current.menu_vision_error_analyze_failed(e.toString())));
       }
     });
 
@@ -77,13 +78,13 @@ class MenuVisionBloc extends Bloc<MenuVisionEvent, MenuVisionState> {
             ));
           default:
             emit(MenuVisionFailure(
-              message: '未預期的組件格式',
+              message: S.current.menu_vision_error_unexpected_format,
               failedImageBytes: event.imageBytes,
             ));
         }
       } on Exception catch (e) {
         emit(MenuVisionFailure(
-          message: '重試分析失敗：$e',
+          message: S.current.menu_vision_error_retry_failed(e.toString()),
           failedImageBytes: event.imageBytes,
         ));
       }

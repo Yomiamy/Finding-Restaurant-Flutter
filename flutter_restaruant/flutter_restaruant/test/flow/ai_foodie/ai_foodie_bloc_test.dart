@@ -1,3 +1,5 @@
+import 'package:flutter_restaruant/generated/l10n.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_restaruant/domain/repositories/ai_foodie_repository.dart';
 import 'package:flutter_restaruant/flow/ai_foodie/bloc/bloc_barrel.dart';
@@ -72,7 +74,8 @@ void main() {
     late MockAiFoodieRepository repository;
     late AiFoodieBloc bloc;
 
-    setUp(() {
+    setUp(() async {
+    await S.load(const Locale('zh', 'TW'));
       repository = MockAiFoodieRepository();
       bloc = AiFoodieBloc(repository: repository);
     });

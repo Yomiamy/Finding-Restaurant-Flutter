@@ -20,16 +20,41 @@ typedef String MessageIfAbsent(String messageStr, List<dynamic> args);
 class MessageLookup extends MessageLookupByLibrary {
   String get localeName => 'en';
 
-  static String m0(winner) =>
+  static String m0(error) => "Error connecting to assistant: ${error}";
+
+  static String m1(error) => "Error loading suggestions: ${error}";
+
+  static String m2(winner) =>
       "🎲 Decision roulette selected the top choice for you:\n👉 **${winner}** 👈\nWishing you a delightful dining experience!";
+
+  static String m3(error) => "Menu recognition failed: ${error}";
+
+  static String m4(error) => "Retry analysis failed: ${error}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
+    "a2ui_action_chip_group_title": MessageLookupByLibrary.simpleMessage(
+      "Quick Actions",
+    ),
+    "a2ui_comparison_item_name": MessageLookupByLibrary.simpleMessage(
+      "Selected Restaurant",
+    ),
+    "a2ui_comparison_matrix_title": MessageLookupByLibrary.simpleMessage(
+      "Recommended Restaurant Comparison",
+    ),
+    "a2ui_dish_catalog_empty": MessageLookupByLibrary.simpleMessage(
+      "Menu data is empty",
+    ),
+    "a2ui_error_unknown_component": MessageLookupByLibrary.simpleMessage(
+      "Unrecognized GenUI component structure",
+    ),
     "account_section_title": MessageLookupByLibrary.simpleMessage("Account"),
     "ai_foodie_assistant_tooltip": MessageLookupByLibrary.simpleMessage(
       "AI Foodie Assistant",
     ),
     "ai_foodie_close_tooltip": MessageLookupByLibrary.simpleMessage("Close"),
+    "ai_foodie_error_connect_assistant": m0,
+    "ai_foodie_error_load_suggestions": m1,
     "ai_foodie_input_hint": MessageLookupByLibrary.simpleMessage(
       "Enter scenario, e.g. 4 people wanting izakaya to chat...",
     ),
@@ -46,7 +71,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "ai_foodie_roulette_hint": MessageLookupByLibrary.simpleMessage(
       "Tap the button below and let destiny choose!",
     ),
-    "ai_foodie_roulette_result_msg": m0,
+    "ai_foodie_roulette_result_msg": m2,
     "ai_foodie_roulette_spin_again": MessageLookupByLibrary.simpleMessage(
       "Spin Again",
     ),
@@ -149,6 +174,11 @@ class MessageLookup extends MessageLookupByLibrary {
     "main_page_title": MessageLookupByLibrary.simpleMessage("FindRestaurant"),
     "map_mode": MessageLookupByLibrary.simpleMessage("Map Mode"),
     "map_my_loc_title": MessageLookupByLibrary.simpleMessage("I am here"),
+    "menu_vision_error_analyze_failed": m3,
+    "menu_vision_error_retry_failed": m4,
+    "menu_vision_error_unexpected_format": MessageLookupByLibrary.simpleMessage(
+      "Unexpected component format",
+    ),
     "navigation_choice": MessageLookupByLibrary.simpleMessage(
       "Navigation Choice",
     ),

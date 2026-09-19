@@ -46,7 +46,7 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
       if (token != _requestToken) return;
       emit(state.copyWith(
         isLoading: false,
-        errorMessage: '載入建議時發生錯誤：$e',
+        errorMessage: S.current.ai_foodie_error_load_suggestions(e.toString()),
       ));
     }
   }
@@ -87,7 +87,7 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
 
       emit(state.copyWith(
         isLoading: false,
-        errorMessage: '連線助理時發生錯誤：$e',
+        errorMessage: S.current.ai_foodie_error_connect_assistant(e.toString()),
       ));
     }
   }
