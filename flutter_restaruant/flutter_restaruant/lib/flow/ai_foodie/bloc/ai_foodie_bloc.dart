@@ -1,3 +1,5 @@
+import 'package:logger/logger.dart';
+
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/entities/entities_barrel.dart';
@@ -11,9 +13,9 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
   AiFoodieBloc({
     required AiFoodieRepository repository,
     List<RestaurantEntity>? candidateRestaurants,
-  })  : _repository = repository,
-        _candidateRestaurants = candidateRestaurants,
-        super(AiFoodieState.initial()) {
+  }) : _repository = repository,
+       _candidateRestaurants = candidateRestaurants,
+       super(AiFoodieState.initial()) {
     on<LoadInitialSuggestions>(_onLoadInitialSuggestions);
     on<SendUserPrompt>(_onSendUserPrompt);
     on<TriggerActionChip>(_onTriggerActionChip);
@@ -38,16 +40,17 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
     try {
       final initialMessages = await _repository.getInitialSuggestions();
       if (token != _requestToken) return;
-      emit(state.copyWith(
-        messages: initialMessages,
-        isLoading: false,
-      ));
+      emit(state.copyWith(messages: initialMessages, isLoading: false));
     } catch (e) {
       if (token != _requestToken) return;
-      emit(state.copyWith(
-        isLoading: false,
-        errorMessage: S.current.ai_foodie_error_load_suggestions(e.toString()),
-      ));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: S.current.ai_foodie_error_load_suggestions(
+            e.toString(),
+          ),
+        ),
+      );
     }
   }
 
@@ -63,11 +66,13 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
     final userMessage = AiFoodieMessage.user(trimmed);
     final updatedMessages = [...state.messages, userMessage];
 
-    emit(state.copyWith(
-      messages: updatedMessages,
-      isLoading: true,
-      clearError: true,
-    ));
+    emit(
+      state.copyWith(
+        messages: updatedMessages,
+        isLoading: true,
+        clearError: true,
+      ),
+    );
 
     try {
       final assistantResponse = await _repository.askAssistant(
@@ -78,17 +83,23 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
 
       if (token != _requestToken) return;
 
-      emit(state.copyWith(
-        messages: [...updatedMessages, assistantResponse],
-        isLoading: false,
-      ));
+      emit(
+        state.copyWith(
+          messages: [...updatedMessages, assistantResponse],
+          isLoading: false,
+        ),
+      );
     } catch (e) {
       if (token != _requestToken) return;
 
-      emit(state.copyWith(
-        isLoading: false,
-        errorMessage: S.current.ai_foodie_error_connect_assistant(e.toString()),
-      ));
+      emit(
+        state.copyWith(
+          isLoading: false,
+          errorMessage: S.current.ai_foodie_error_connect_assistant(
+            e.toString(),
+          ),
+        ),
+      );
     }
   }
 
@@ -124,61 +135,62 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
     }
   }
 
-  void _onOpenRoulette(
-    OpenRoulette event,
-    Emitter<AiFoodieState> emit,
-  ) {
-    emit(state.copyWith(
-      isRouletteVisible: true,
-      rouletteTitle: event.title,
-      rouletteOptions: event.options,
-      clearWinner: true,
-    ));
+  void _onOpenRoulette(OpenRoulette event, Emitter<AiFoodieState> emit) {
+    emit(
+      state.copyWith(
+        isRouletteVisible: true,
+        rouletteTitle: event.title,
+        rouletteOptions: event.options,
+        clearWinner: true,
+      ),
+    );
   }
 
   void _onSpinRouletteWinnerSelected(
     SpinRouletteWinnerSelected event,
     Emitter<AiFoodieState> emit,
   ) {
-    emit(state.copyWith(
-      selectedRouletteWinner: event.winner,
-      isRouletteVisible: false,
-      messages: [
-        ...state.messages,
-        AiFoodieMessage.assistant(
-          text: _rouletteResultMessage(event.winner),
-        ),
-      ],
-    ));
+    emit(
+      state.copyWith(
+        selectedRouletteWinner: event.winner,
+        isRouletteVisible: false,
+        messages: [
+          ...state.messages,
+          AiFoodieMessage.assistant(text: _rouletteResultMessage(event.winner)),
+        ],
+      ),
+    );
   }
 
   String _rouletteDefaultTitle() {
     try {
       return S.current.ai_foodie_roulette_default_title;
-    } catch (_) {
-      return '今晚吃什麼？命運大轉盤';
+    } catch (e) {
+      Logger().d(
+        '[Err:RouletteDefaultTitle] i18n delegate not initialized',
+        error: e,
+      );
+      return '[Err:RouletteDefaultTitle] 今晚吃什麼？命運大轉盤';
     }
   }
 
   String _rouletteResultMessage(String winner) {
     try {
       return S.current.ai_foodie_roulette_result_msg(winner);
-    } catch (_) {
-      return '🎲 命運轉盤為您抽出了最棒的選擇：\n👉 **$winner** 👈\n祝您今晚用餐愉快，吃得開心滿足！';
+    } catch (e) {
+      Logger().d(
+        '[Err:RouletteResultMsg] i18n delegate not initialized',
+        error: e,
+      );
+      return '[Err:RouletteResultMsg] 🎲 命運轉盤為您抽出了最棒的選擇：\n👉 **$winner** 👈\n祝您今晚用餐愉快，吃得開心滿足！';
     }
   }
 
-  void _onCloseRoulette(
-    CloseRoulette event,
-    Emitter<AiFoodieState> emit,
-  ) {
+  void _onCloseRoulette(CloseRoulette event, Emitter<AiFoodieState> emit) {
     emit(state.copyWith(isRouletteVisible: false));
   }
 
-  void _onResetAiFoodie(
-    ResetAiFoodie event,
-    Emitter<AiFoodieState> emit,
-  ) {
+  void _onResetAiFoodie(ResetAiFoodie event, Emitter<AiFoodieState> emit) {
     _requestToken++;
     emit(AiFoodieState.initial());
     add(const LoadInitialSuggestions());
