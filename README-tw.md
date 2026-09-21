@@ -55,7 +55,7 @@
 表現層 Presentation Layer (UI & BLoC)
        │
        ▼
-領域層 Domain Layer (Entities & Repository Interfaces) ◄── 核心業務契約 (無外部依賴)
+領域層 Domain Layer (Entities & Repository Interfaces) ◄── 核心業務契約 (僅依賴 equatable 處理值比對)
        ▲
        │
 資料層 Data Layer (Repo 實作, DTOs, Data Sources)

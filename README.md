@@ -55,7 +55,7 @@ Built with **Clean Architecture**, **BLoC (v9+)**, and **Dart 3**, the codebase 
 Presentation Layer (UI & BLoC)
        │
        ▼
-Domain Layer (Entities & Repository Interfaces) ◄── Core business contracts (zero external dependencies)
+Domain Layer (Entities & Repository Interfaces) ◄── Core business contracts (depends on equatable for value equality)
        ▲
        │
 Data Layer (Repo Implementations, DTOs, Data Sources)
