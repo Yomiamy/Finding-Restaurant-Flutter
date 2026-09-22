@@ -894,6 +894,461 @@ class S {
       args: [error],
     );
   }
+
+  /// `AI Menu Visual Translation`
+  String get menu_vision_title {
+    return Intl.message(
+      'AI Menu Visual Translation',
+      name: 'menu_vision_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Take photo`
+  String get menu_vision_tooltip_camera {
+    return Intl.message(
+      'Take photo',
+      name: 'menu_vision_tooltip_camera',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose from gallery`
+  String get menu_vision_tooltip_gallery {
+    return Intl.message(
+      'Choose from gallery',
+      name: 'menu_vision_tooltip_gallery',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Close`
+  String get menu_vision_tooltip_close {
+    return Intl.message(
+      'Close',
+      name: 'menu_vision_tooltip_close',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Snap Menu, AI Recognizes Instantly`
+  String get menu_vision_prompt_title {
+    return Intl.message(
+      'Snap Menu, AI Recognizes Instantly',
+      name: 'menu_vision_prompt_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Supports cross-border menu translation, ingredient breakdown, allergen alerts, and spiciness analysis`
+  String get menu_vision_prompt_subtitle {
+    return Intl.message(
+      'Supports cross-border menu translation, ingredient breakdown, allergen alerts, and spiciness analysis',
+      name: 'menu_vision_prompt_subtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Take Photo to Recognize`
+  String get menu_vision_btn_camera {
+    return Intl.message(
+      'Take Photo to Recognize',
+      name: 'menu_vision_btn_camera',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose from Gallery`
+  String get menu_vision_btn_gallery {
+    return Intl.message(
+      'Choose from Gallery',
+      name: 'menu_vision_btn_gallery',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Gemini is analyzing the menu...`
+  String get menu_vision_loading_title {
+    return Intl.message(
+      'Gemini is analyzing the menu...',
+      name: 'menu_vision_loading_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Translating dishes, marking allergens, and breaking down ingredients. Takes a few seconds`
+  String get menu_vision_loading_subtitle {
+    return Intl.message(
+      'Translating dishes, marking allergens, and breaking down ingredients. Takes a few seconds',
+      name: 'menu_vision_loading_subtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No dish items recognized. Please ensure photo is clear and try again`
+  String get menu_vision_empty_dishes {
+    return Intl.message(
+      'No dish items recognized. Please ensure photo is clear and try again',
+      name: 'menu_vision_empty_dishes',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All`
+  String get menu_vision_tab_all {
+    return Intl.message('All', name: 'menu_vision_tab_all', desc: '', args: []);
+  }
+
+  /// `Recognition Failed`
+  String get menu_vision_failure_title {
+    return Intl.message(
+      'Recognition Failed',
+      name: 'menu_vision_failure_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Retry this photo`
+  String get menu_vision_btn_retry_photo {
+    return Intl.message(
+      'Retry this photo',
+      name: 'menu_vision_btn_retry_photo',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Retake`
+  String get menu_vision_btn_retake {
+    return Intl.message(
+      'Retake',
+      name: 'menu_vision_btn_retake',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Choose from gallery`
+  String get menu_vision_btn_reselect_gallery {
+    return Intl.message(
+      'Choose from gallery',
+      name: 'menu_vision_btn_reselect_gallery',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Photo selection cancelled`
+  String get menu_vision_cancelled_title {
+    return Intl.message(
+      'Photo selection cancelled',
+      name: 'menu_vision_cancelled_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Whenever you are ready, click below to start`
+  String get menu_vision_cancelled_subtitle {
+    return Intl.message(
+      'Whenever you are ready, click below to start',
+      name: 'menu_vision_cancelled_subtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Camera`
+  String get menu_vision_btn_take_photo_short {
+    return Intl.message(
+      'Camera',
+      name: 'menu_vision_btn_take_photo_short',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Gallery`
+  String get menu_vision_btn_gallery_short {
+    return Intl.message(
+      'Gallery',
+      name: 'menu_vision_btn_gallery_short',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Spiciness: `
+  String get dish_card_spice_level_prefix {
+    return Intl.message(
+      'Spiciness: ',
+      name: 'dish_card_spice_level_prefix',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Main Ingredients: `
+  String get dish_card_ingredients_prefix {
+    return Intl.message(
+      'Main Ingredients: ',
+      name: 'dish_card_ingredients_prefix',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `AI Menu Vision Recognition`
+  String get restaurant_detail_menu_vision_tooltip {
+    return Intl.message(
+      'AI Menu Vision Recognition',
+      name: 'restaurant_detail_menu_vision_tooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Loading...`
+  String get loading {
+    return Intl.message('Loading...', name: 'loading', desc: '', args: []);
+  }
+
+  /// `Account not found or not registered, please try again`
+  String get auth_error_user_not_found {
+    return Intl.message(
+      'Account not found or not registered, please try again',
+      name: 'auth_error_user_not_found',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Incorrect password, please try again`
+  String get auth_error_wrong_password {
+    return Intl.message(
+      'Incorrect password, please try again',
+      name: 'auth_error_wrong_password',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Password security is low, please use another character combination`
+  String get auth_error_weak_password {
+    return Intl.message(
+      'Password security is low, please use another character combination',
+      name: 'auth_error_weak_password',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email already registered, please use another email to register`
+  String get auth_error_email_already_in_use {
+    return Intl.message(
+      'Email already registered, please use another email to register',
+      name: 'auth_error_email_already_in_use',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invalid email, please enter again`
+  String get auth_error_invalid_email {
+    return Intl.message(
+      'Invalid email, please enter again',
+      name: 'auth_error_invalid_email',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Email not verified yet. Please check your verification email before signing in`
+  String get auth_error_email_not_verified {
+    return Intl.message(
+      'Email not verified yet. Please check your verification email before signing in',
+      name: 'auth_error_email_not_verified',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `An account already exists with a different credential. Please sign in using the original provider`
+  String get auth_error_account_exists_different_credential {
+    return Intl.message(
+      'An account already exists with a different credential. Please sign in using the original provider',
+      name: 'auth_error_account_exists_different_credential',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Biometric authentication failed, please try again`
+  String get auth_error_biometric_failed {
+    return Intl.message(
+      'Biometric authentication failed, please try again',
+      name: 'auth_error_biometric_failed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sign in failed, please try again`
+  String get auth_error_sign_in_failed {
+    return Intl.message(
+      'Sign in failed, please try again',
+      name: 'auth_error_sign_in_failed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please authenticate to sign in`
+  String get biometric_prompt_reason {
+    return Intl.message(
+      'Please authenticate to sign in',
+      name: 'biometric_prompt_reason',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Appetizer`
+  String get dish_category_appetizer {
+    return Intl.message(
+      'Appetizer',
+      name: 'dish_category_appetizer',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Main`
+  String get dish_category_main {
+    return Intl.message('Main', name: 'dish_category_main', desc: '', args: []);
+  }
+
+  /// `Soup`
+  String get dish_category_soup {
+    return Intl.message('Soup', name: 'dish_category_soup', desc: '', args: []);
+  }
+
+  /// `Dessert`
+  String get dish_category_dessert {
+    return Intl.message(
+      'Dessert',
+      name: 'dish_category_dessert',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Beverage`
+  String get dish_category_beverage {
+    return Intl.message(
+      'Beverage',
+      name: 'dish_category_beverage',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Other`
+  String get dish_category_other {
+    return Intl.message(
+      'Other',
+      name: 'dish_category_other',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Contains`
+  String get allergen_risk_contains {
+    return Intl.message(
+      'Contains',
+      name: 'allergen_risk_contains',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `May Contain`
+  String get allergen_risk_may_contain {
+    return Intl.message(
+      'May Contain',
+      name: 'allergen_risk_may_contain',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Free`
+  String get allergen_risk_none {
+    return Intl.message('Free', name: 'allergen_risk_none', desc: '', args: []);
+  }
+
+  /// `Monday`
+  String get weekday_monday {
+    return Intl.message('Monday', name: 'weekday_monday', desc: '', args: []);
+  }
+
+  /// `Tuesday`
+  String get weekday_tuesday {
+    return Intl.message('Tuesday', name: 'weekday_tuesday', desc: '', args: []);
+  }
+
+  /// `Wednesday`
+  String get weekday_wednesday {
+    return Intl.message(
+      'Wednesday',
+      name: 'weekday_wednesday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Thursday`
+  String get weekday_thursday {
+    return Intl.message(
+      'Thursday',
+      name: 'weekday_thursday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Friday`
+  String get weekday_friday {
+    return Intl.message('Friday', name: 'weekday_friday', desc: '', args: []);
+  }
+
+  /// `Saturday`
+  String get weekday_saturday {
+    return Intl.message(
+      'Saturday',
+      name: 'weekday_saturday',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Sunday`
+  String get weekday_sunday {
+    return Intl.message('Sunday', name: 'weekday_sunday', desc: '', args: []);
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
