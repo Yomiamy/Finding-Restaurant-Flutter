@@ -1,3 +1,5 @@
+import 'package:flutter_restaruant/generated/l10n.dart';
+import 'package:flutter/material.dart';
 import 'dart:typed_data';
 
 import 'package:flutter_restaruant/domain/domain_barrel.dart';
@@ -74,7 +76,8 @@ void main() {
   group('MenuVisionBloc Tests', () {
     late MockMenuVisionRepository mockRepo;
 
-    setUp(() {
+    setUp(() async {
+    await S.load(const Locale('zh', 'TW'));
       mockRepo = MockMenuVisionRepository();
     });
 

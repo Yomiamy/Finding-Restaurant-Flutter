@@ -7,9 +7,14 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/component/component_barrel.dart';
+import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  setUpAll(() async {
+    await S.load(const Locale('en'));
+  });
+
   testWidgets('LoadingWidget Test', (WidgetTester tester) async {
     // Build our app and trigger a frame.
     await tester.pumpWidget(const LoadingTestApp());

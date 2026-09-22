@@ -2,6 +2,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
 import '../data_layer/dto/dto_barrel.dart';
+import '../domain/entities/entities_barrel.dart';
 import '../features/utils/utils_barrel.dart';
 
 class MailSignInUpManager {
@@ -11,7 +12,7 @@ class MailSignInUpManager {
 
   factory MailSignInUpManager() => _singleton;
 
-  Future<Tuple2<AccountDto?, String>> signUpWithMail(
+  Future<Tuple2<AccountDto?, AuthFailureReason?>> signUpWithMail(
     String mail,
     String passwd,
   ) async {
@@ -31,35 +32,26 @@ class MailSignInUpManager {
         account: userCredential.user?.email ?? '',
       );
 
-      return Tuple2(accountDto, '');
+      return Tuple2(accountDto, null);
     } on FirebaseAuthException catch (e) {
-      String errorMsg =
-          'Mail registration failed, please retry again\n${e.toString()}';
-
       // 註冊錯誤
       if (e.code == 'weak-password') {
         debugPrint('The password provided is too weak.');
-        errorMsg =
-            'Password security is low, please use another character combination';
+        return const Tuple2(null, AuthFailureReason.weakPassword);
       } else if (e.code == 'email-already-in-use') {
         debugPrint('The account already exists for that email.');
-        errorMsg =
-            'Email already registered, please use another email to register';
+        return const Tuple2(null, AuthFailureReason.emailAlreadyInUse);
       }
 
-      return Tuple2(null, errorMsg);
+      return const Tuple2(null, AuthFailureReason.signInFailed);
     } catch (e) {
-      String errorMsg =
-          'Mail registration failed, please retry again\n${e.toString()}';
-
       // 註冊錯誤
       debugPrint(e.toString());
-
-      return Tuple2(null, errorMsg);
+      return const Tuple2(null, AuthFailureReason.signInFailed);
     }
   }
 
-  Future<Tuple2<AccountDto?, String>> signInWithMail(
+  Future<Tuple2<AccountDto?, AuthFailureReason?>> signInWithMail(
     String mail,
     String passwd,
   ) async {
@@ -70,7 +62,7 @@ class MailSignInUpManager {
 
       // 傳送驗證碼
       if (user != null && !user.emailVerified) {
-        return const Tuple2(null, 'Email尚未驗證, 請使用驗證信驗證後再登入');
+        return const Tuple2(null, AuthFailureReason.emailNotVerified);
       }
 
       AccountDto accountDto = AccountDto(
@@ -79,23 +71,24 @@ class MailSignInUpManager {
         account: userCredential.user?.email ?? '',
       );
 
-      return Tuple2(accountDto, '');
+      return Tuple2(accountDto, null);
     } on FirebaseAuthException catch (e) {
       // 登入錯誤
-      String errorMsg = 'Mail登入失敗, 請再試一次\n${e.toString()}';
-
       if (e.code == 'user-not-found') {
         debugPrint('No user found for that email.');
-        errorMsg = '帳號輸入錯誤或尚未註冊, 請再試一次';
+        return const Tuple2(null, AuthFailureReason.userNotFound);
       } else if (e.code == 'invalid-email') {
         debugPrint('invalid-email.');
-        errorMsg = '無效Email, 請再輸入一次';
+        return const Tuple2(null, AuthFailureReason.invalidEmail);
       } else if (e.code == 'wrong-password') {
         debugPrint('Wrong password provided for that user.');
-        errorMsg = '密碼錯誤, 請再試一次';
+        return const Tuple2(null, AuthFailureReason.wrongPassword);
       }
 
-      return Tuple2(null, errorMsg);
+      return const Tuple2(null, AuthFailureReason.signInFailed);
+    } catch (e) {
+      debugPrint(e.toString());
+      return const Tuple2(null, AuthFailureReason.signInFailed);
     }
   }
 

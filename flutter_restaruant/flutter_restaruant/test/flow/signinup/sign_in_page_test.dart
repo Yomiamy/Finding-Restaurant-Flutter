@@ -11,13 +11,13 @@ import 'package:flutter_test/flutter_test.dart';
 
 class _FakeSignInRepository implements SignInRepository {
   @override
-  Future<Tuple2<UserEntity?, String>> signInUp({
+  Future<Tuple2<UserEntity?, AuthFailureReason?>> signInUp({
     required AccountTypeModel accountType,
     bool isSignUp = false,
     String mail = '',
     String passwd = '',
   }) async {
-    return const Tuple2(null, '');
+    return const Tuple2(null, null);
   }
 
   @override

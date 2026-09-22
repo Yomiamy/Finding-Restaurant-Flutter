@@ -2,6 +2,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../api/api_barrel.dart';
 import '../data_layer/dto/dto_barrel.dart';
+import '../domain/entities/entities_barrel.dart';
 import '../features/foundation/constants/constants_barrel.dart';
 import '../features/utils/utils_barrel.dart';
 import 'apple_sign_in_manager.dart';
@@ -58,12 +59,14 @@ class SignInManager {
   Future<void> clearGuestFlag() async =>
       await _prefs?.remove(Constants.prefKeyGuestMode);
 
-  Future<Tuple2<AccountDto?, String>> signIn(
+  Future<Tuple2<AccountDto?, AuthFailureReason?>> signIn(
     AccountType accountType, {
     String mail = '',
     String passwd = '',
+    String? localizedReason,
   }) async {
-    Tuple2<AccountDto?, String> signInResult = const Tuple2(null, '');
+    Tuple2<AccountDto?, AuthFailureReason?> signInResult =
+        const Tuple2(null, null);
 
     switch (accountType) {
       case AccountType.google:
@@ -76,7 +79,9 @@ class SignInManager {
         signInResult = await _facebookSignInManager.signInWithFB();
         break;
       case AccountType.biometric:
-        signInResult = await _biometricAuthManager.signInWithBiometric();
+        signInResult = await _biometricAuthManager.signInWithBiometric(
+          localizedReason: localizedReason,
+        );
         break;
       case AccountType.auto:
         signInResult = await _autoSignInManager.signInWithAuto();
@@ -98,12 +103,13 @@ class SignInManager {
     return signInResult;
   }
 
-  Future<Tuple2<AccountDto?, String>> signUp(
+  Future<Tuple2<AccountDto?, AuthFailureReason?>> signUp(
     AccountType accountType, {
     required String mail,
     required String passwd,
   }) async {
-    Tuple2<AccountDto?, String> signUpResult = const Tuple2(null, '');
+    Tuple2<AccountDto?, AuthFailureReason?> signUpResult =
+        const Tuple2(null, null);
 
     switch (accountType) {
       case AccountType.mail:

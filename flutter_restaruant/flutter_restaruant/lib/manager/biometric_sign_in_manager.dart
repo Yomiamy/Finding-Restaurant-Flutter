@@ -1,11 +1,14 @@
 import 'dart:convert';
 
+import 'package:intl/intl.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data_layer/dto/dto_barrel.dart';
+import '../domain/entities/entities_barrel.dart';
 import '../features/foundation/constants/constants_barrel.dart';
 import '../features/utils/utils_barrel.dart';
+import '../generated/l10n.dart';
 
 class BiometricSignInManager {
   static final BiometricSignInManager _singleton =
@@ -32,35 +35,48 @@ class BiometricSignInManager {
     isSupportFaceIdAuth = _availableBiometrics.contains(BiometricType.face);
   }
 
-  Future<Tuple2<AccountDto?, String>> signInWithBiometric() async {
+  Future<Tuple2<AccountDto?, AuthFailureReason?>> signInWithBiometric({
+    String? localizedReason,
+  }) async {
     final prefs = await SharedPreferences.getInstance();
     bool isBiometricSignInEnabled =
         prefs.getBool(Constants.prefKeyBiometricAuthSetting) ?? false;
 
     if (!isBiometricSignInEnabled) {
       // 不支援生物辨識登入
-      return const Tuple2(null, '');
+      return const Tuple2(null, null);
     }
 
+    final reason = localizedReason ?? _resolveDefaultReason();
+
     bool isSignInSuccess = await _localAuth.authenticate(
-      localizedReason: '請使用生物識別認證進行登入',
+      localizedReason: reason,
     );
 
     if (!isSignInSuccess) {
-      return const Tuple2(null, '');
+      return const Tuple2(null, AuthFailureReason.biometricFailed);
     } else {
       // 緩存登入資料代表登入過
       final prefs = await SharedPreferences.getInstance();
       final accountInfoJsonStr = prefs.getString(Constants.prefKeyAccountInfo);
 
       if (accountInfoJsonStr == null || accountInfoJsonStr.isEmpty) {
-        return const Tuple2(null, '登入失敗, 請重新登入一次');
+        return const Tuple2(null, AuthFailureReason.biometricFailed);
       }
 
       AccountDto accountDto = AccountDto.fromJson(
         jsonDecode(accountInfoJsonStr),
       );
-      return Tuple2(accountDto, '');
+      return Tuple2(accountDto, null);
+    }
+  }
+
+  String _resolveDefaultReason() {
+    try {
+      return S.current.biometric_prompt_reason;
+    } catch (_) {
+      final isZh = Intl.getCurrentLocale().startsWith('zh');
+      return isZh ? '請使用生物識別認證進行登入' : 'Please authenticate to sign in';
     }
   }
 

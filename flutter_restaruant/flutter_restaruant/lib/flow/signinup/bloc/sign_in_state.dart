@@ -4,7 +4,7 @@ abstract class SignInState extends Equatable {
   const SignInState();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class SignInInitial extends SignInState {}
@@ -35,10 +35,9 @@ class SignUpSuccess extends SignInState {
 }
 
 class Failure extends SignInState {
-  final String errorMsg;
-
-  const Failure({required this.errorMsg});
+  final AuthFailureReason reason;
+  const Failure({this.reason = AuthFailureReason.unknown});
 
   @override
-  List<Object> get props => [errorMsg];
+  List<Object?> get props => [reason];
 }

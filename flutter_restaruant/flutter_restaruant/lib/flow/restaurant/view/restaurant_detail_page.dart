@@ -84,7 +84,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
         actions: [
           IconButton(
             key: const Key('menu_vision_action_button'),
-            tooltip: 'AI 拍照辨識菜單',
+            tooltip: S.current.restaurant_detail_menu_vision_tooltip,
             icon: const Icon(
               Icons.document_scanner_outlined,
               color: ThemeColor.colorffffff,

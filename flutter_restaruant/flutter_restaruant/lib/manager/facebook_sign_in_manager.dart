@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
 import '../data_layer/dto/dto_barrel.dart';
+import '../domain/entities/entities_barrel.dart';
 import '../features/utils/utils_barrel.dart';
 
 class FacebookSignInManager {
@@ -13,16 +14,16 @@ class FacebookSignInManager {
 
   factory FacebookSignInManager() => _singleton;
 
-  Future<Tuple2<AccountDto?, String>> signInWithFB() async {
+  Future<Tuple2<AccountDto?, AuthFailureReason?>> signInWithFB() async {
     try {
       // Trigger the sign-in flow
       final LoginResult loginResult = await FacebookAuth.instance.login();
 
       if (loginResult.accessToken == null) {
         // 未登入
-        return const Tuple2<AccountDto?, String>(
+        return const Tuple2<AccountDto?, AuthFailureReason?>(
           null,
-          'Error occurred, please retry again',
+          AuthFailureReason.signInFailed,
         );
       }
 
@@ -38,21 +39,24 @@ class FacebookSignInManager {
         account: userCredential.user?.email ?? '',
       );
 
-      return Tuple2(accountDto, '');
+      return Tuple2(accountDto, null);
     } on FirebaseAuthException catch (e) {
       // 登入錯誤
       debugPrint('FacebookSignInManager, error = $e');
       if (e.code == 'account-exists-with-different-credential') {
         return const Tuple2(
           null,
-          'An account already exists with a different credential. Please sign in using the original provider.',
+          AuthFailureReason.accountExistsWithDifferentCredential,
         );
       } else {
-        return Tuple2(
+        return const Tuple2(
           null,
-          'FB sign in fail, please retry again\n${e.toString()}',
+          AuthFailureReason.signInFailed,
         );
       }
+    } catch (e) {
+      debugPrint('FacebookSignInManager, error = $e');
+      return const Tuple2(null, AuthFailureReason.signInFailed);
     }
   }
 

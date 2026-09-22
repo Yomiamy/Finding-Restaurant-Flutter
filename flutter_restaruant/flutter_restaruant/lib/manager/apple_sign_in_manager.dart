@@ -7,6 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 
 import '../data_layer/dto/dto_barrel.dart';
+import '../domain/entities/entities_barrel.dart';
 import '../features/utils/utils_barrel.dart';
 
 class AppleSignInManager {
@@ -35,7 +36,7 @@ class AppleSignInManager {
     return digest.toString();
   }
 
-  Future<Tuple2<AccountDto?, String>> signInWithApple() async {
+  Future<Tuple2<AccountDto?, AuthFailureReason?>> signInWithApple() async {
     try {
       // To prevent replay attacks with the credential returned from Apple, we
       // include a nonce in the credential request. When signing in with
@@ -55,9 +56,9 @@ class AppleSignInManager {
 
       if (appleCredential.identityToken == null) {
         // 未登入
-        return const Tuple2<AccountDto?, String>(
+        return const Tuple2<AccountDto?, AuthFailureReason?>(
           null,
-          'Error occurred, please retry again',
+          AuthFailureReason.signInFailed,
         );
       }
 
@@ -76,13 +77,13 @@ class AppleSignInManager {
         account: userCredential.user?.email ?? '',
       );
 
-      return Tuple2(accountDto, '');
+      return Tuple2(accountDto, null);
     } on Exception catch (e) {
       // 登入錯誤
       debugPrint('AppleSignInManager, error = $e');
-      return Tuple2(
+      return const Tuple2(
         null,
-        'Apple sign in fail, please retry again\n${e.toString()}',
+        AuthFailureReason.signInFailed,
       );
     }
   }

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../data_layer/dto/dto_barrel.dart';
+import '../domain/entities/entities_barrel.dart';
 import '../features/foundation/constants/constants_barrel.dart';
 import '../features/utils/utils_barrel.dart';
 
@@ -13,17 +14,17 @@ class AutoSignInManager {
 
   factory AutoSignInManager() => _singleton;
 
-  Future<Tuple2<AccountDto?, String>> signInWithAuto() async {
+  Future<Tuple2<AccountDto?, AuthFailureReason?>> signInWithAuto() async {
     final prefs = await SharedPreferences.getInstance();
     final accountInfoJsonStr = prefs.getString(Constants.prefKeyAccountInfo);
 
     if (accountInfoJsonStr == null || accountInfoJsonStr.isEmpty) {
-      return const Tuple2(null, '');
+      return const Tuple2(null, null);
     } else {
       AccountDto accountDto = AccountDto.fromJson(
         jsonDecode(accountInfoJsonStr),
       );
-      return Tuple2(accountDto, '');
+      return Tuple2(accountDto, null);
     }
   }
 }

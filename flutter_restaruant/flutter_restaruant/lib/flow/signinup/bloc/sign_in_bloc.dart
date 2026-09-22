@@ -39,7 +39,8 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         _ => (AccountTypeModel.none, false, '', ''),
       };
 
-      Tuple2<UserEntity?, String> result = await _signInRepository.signInUp(
+      Tuple2<UserEntity?, AuthFailureReason?> result =
+          await _signInRepository.signInUp(
         accountType: type,
         isSignUp: isSignUp,
         mail: mail,
@@ -58,8 +59,7 @@ class SignInBloc extends Bloc<SignInEvent, SignInState> {
         // 不視為錯誤，避免使用者一進頁面就看到錯誤提示。
         emit(SignInInitial());
       } else {
-        String errorMsg = result.item2;
-        emit(Failure(errorMsg: errorMsg));
+        emit(Failure(reason: result.item2 ?? AuthFailureReason.unknown));
       }
     });
   }

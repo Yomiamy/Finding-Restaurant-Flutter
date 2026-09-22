@@ -17,14 +17,14 @@ class SignInRepo implements SignInRepository {
   final SignInManager _signInManager = SignInManager();
 
   @override
-  Future<Tuple2<UserEntity?, String>> signInUp({
+  Future<Tuple2<UserEntity?, AuthFailureReason?>> signInUp({
     required AccountTypeModel accountType,
     bool isSignUp = false,
     String mail = '',
     String passwd = '',
   }) async {
-    Tuple2<AccountDto?, String> signInUpResult =
-        const Tuple2<AccountDto?, String>(null, '');
+    Tuple2<AccountDto?, AuthFailureReason?> signInUpResult =
+        const Tuple2<AccountDto?, AuthFailureReason?>(null, null);
 
     if (isSignUp) {
       signInUpResult = await _signInManager.signUp(
@@ -46,7 +46,10 @@ class SignInRepo implements SignInRepository {
         : null;
     await updateUserInfo(userEntity);
 
-    return Tuple2<UserEntity?, String>(userEntity, signInUpResult.item2);
+    return Tuple2<UserEntity?, AuthFailureReason?>(
+      userEntity,
+      signInUpResult.item2,
+    );
   }
 
   @override

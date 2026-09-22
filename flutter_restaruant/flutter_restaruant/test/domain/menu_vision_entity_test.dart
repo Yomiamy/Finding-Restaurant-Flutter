@@ -1,15 +1,26 @@
+import 'dart:ui';
+
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
+import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
+  setUpAll(() async {
+    await S.load(const Locale('zh', 'TW'));
+  });
+
   group('AllergenRiskLevel & AllergenInfo Tests', () {
-    test('AllergenRiskLevel parses correctly', () {
+    test('AllergenRiskLevel parses correctly and toDisplayString', () {
       expect(AllergenRiskLevel.fromString('contains'), AllergenRiskLevel.contains);
       expect(AllergenRiskLevel.fromString('CONTAINS'), AllergenRiskLevel.contains);
       expect(AllergenRiskLevel.fromString('may_contain'), AllergenRiskLevel.mayContain);
       expect(AllergenRiskLevel.fromString('maycontain'), AllergenRiskLevel.mayContain);
       expect(AllergenRiskLevel.fromString('none'), AllergenRiskLevel.none);
       expect(AllergenRiskLevel.fromString('unknown_value'), AllergenRiskLevel.none);
+
+      expect(AllergenRiskLevel.contains.toDisplayString(), '含');
+      expect(AllergenRiskLevel.mayContain.toDisplayString(), '可能含有');
+      expect(AllergenRiskLevel.none.toDisplayString(), '無');
     });
 
     test('AllergenInfo fromJson and toJson', () {
@@ -150,6 +161,7 @@ void main() {
       final description = switch (unpromoted) {
         DishCatalogComponent(:final dishes) => '有 ${dishes.length} 道菜',
         FallbackMarkdownComponent(:final text) => text,
+        _ => '',
       };
       expect(description, '有 0 道菜');
     });

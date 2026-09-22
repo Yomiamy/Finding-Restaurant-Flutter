@@ -9,6 +9,7 @@ import '../../../manager/manager_barrel.dart';
 import '../../main/view/view_barrel.dart';
 import '../../splash/view/view_barrel.dart';
 import '../bloc/bloc_barrel.dart';
+import 'auth_failure_l10n_extension.dart';
 import 'sign_in_actions_widget.dart';
 import 'sign_in_form_widget.dart';
 import 'sign_in_header_widget.dart';
@@ -68,7 +69,7 @@ class _SignInPageState extends State<SignInPage> {
             // ignore: unawaited_futures
             _goToMainPage(context);
           } else if (state is Failure) {
-            Fluttertoast.showToast(msg: state.errorMsg);
+            Fluttertoast.showToast(msg: state.reason.localizedMessage);
           }
         },
         builder: (context, state) => Stack(
