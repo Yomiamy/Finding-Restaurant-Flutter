@@ -1,5 +1,5 @@
 import '../../data_layer/dto/dto_barrel.dart';
-import '../../features/utils/utils_barrel.dart';
+import '../../generated/l10n.dart';
 
 class RestaurantBusinessTimeEntity {
   final bool? isOvernight;
@@ -33,24 +33,28 @@ class RestaurantBusinessTimeEntity {
   String get dayStr => getWeekDayStrByIndex(day ?? 0);
 
   static String getWeekDayStrByIndex(int day) {
-    bool isLocaleZh = Utils.isLocaleZh();
-
-    switch (day) {
-      case 0:
-        return isLocaleZh ? '星期一' : 'Monday';
-      case 1:
-        return isLocaleZh ? '星期二' : 'Tuesday';
-      case 2:
-        return isLocaleZh ? '星期三' : 'Wednesday';
-      case 3:
-        return isLocaleZh ? '星期四' : 'Thursday';
-      case 4:
-        return isLocaleZh ? '星期五' : 'Friday';
-      case 5:
-        return isLocaleZh ? '星期六' : 'Saturday';
-      case 6:
-        return isLocaleZh ? '星期日' : 'Sunday';
+    try {
+      return switch (day) {
+        0 => S.current.weekday_monday,
+        1 => S.current.weekday_tuesday,
+        2 => S.current.weekday_wednesday,
+        3 => S.current.weekday_thursday,
+        4 => S.current.weekday_friday,
+        5 => S.current.weekday_saturday,
+        6 => S.current.weekday_sunday,
+        _ => '',
+      };
+    } catch (_) {
+      return switch (day) {
+        0 => 'Monday',
+        1 => 'Tuesday',
+        2 => 'Wednesday',
+        3 => 'Thursday',
+        4 => 'Friday',
+        5 => 'Saturday',
+        6 => 'Sunday',
+        _ => '',
+      };
     }
-    return '';
   }
 }

@@ -1,6 +1,7 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
+import '../../generated/l10n.dart';
 import 'allergen_info.dart';
 
 /// 菜色分類
@@ -23,14 +24,27 @@ enum DishCategory {
     };
   }
 
-  String get displayName => switch (this) {
-    DishCategory.appetizer => '前菜',
-    DishCategory.main => '主食',
-    DishCategory.soup => '湯品',
-    DishCategory.dessert => '甜點',
-    DishCategory.beverage => '飲品',
-    DishCategory.other => '其他',
-  };
+  String get displayName {
+    try {
+      return switch (this) {
+        DishCategory.appetizer => S.current.dish_category_appetizer,
+        DishCategory.main => S.current.dish_category_main,
+        DishCategory.soup => S.current.dish_category_soup,
+        DishCategory.dessert => S.current.dish_category_dessert,
+        DishCategory.beverage => S.current.dish_category_beverage,
+        DishCategory.other => S.current.dish_category_other,
+      };
+    } catch (_) {
+      return switch (this) {
+        DishCategory.appetizer => '前菜',
+        DishCategory.main => '主食',
+        DishCategory.soup => '湯品',
+        DishCategory.dessert => '甜點',
+        DishCategory.beverage => '飲品',
+        DishCategory.other => '其他',
+      };
+    }
+  }
 }
 
 /// 菜色領域實體模型

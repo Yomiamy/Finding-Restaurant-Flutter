@@ -1,6 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:meta/meta.dart';
 
+import '../../generated/l10n.dart';
+
 /// 過敏原風險等級
 enum AllergenRiskLevel {
   contains,
@@ -16,11 +18,19 @@ enum AllergenRiskLevel {
   }
 
   String toDisplayString() {
-    return switch (this) {
-      AllergenRiskLevel.contains => '含',
-      AllergenRiskLevel.mayContain => '可能含有',
-      AllergenRiskLevel.none => '無',
-    };
+    try {
+      return switch (this) {
+        AllergenRiskLevel.contains => S.current.allergen_risk_contains,
+        AllergenRiskLevel.mayContain => S.current.allergen_risk_may_contain,
+        AllergenRiskLevel.none => S.current.allergen_risk_none,
+      };
+    } catch (_) {
+      return switch (this) {
+        AllergenRiskLevel.contains => '含',
+        AllergenRiskLevel.mayContain => '可能含有',
+        AllergenRiskLevel.none => '無',
+      };
+    }
   }
 }
 
