@@ -465,7 +465,7 @@ Inspector 的 pending→complete 機制靠 `options.extra` 傳遞：`onRequest` 
            │         │ 本機偵測 MIME 類型 + 壓縮
            │         ▼
            │   FirebaseAI.googleAI().generativeModel(
-           │     model: 'gemini-3.8-flash',
+           │     model: 'gemini-3.5-flash-lite',
            │     generationConfig: GenerationConfig(
            │       responseMimeType: 'application/json',
            │       responseSchema: menuAnalysisSchema,
@@ -533,7 +533,7 @@ AiFoodieBloc (BlocProvider)
    │        │         │ 2. 格式化真實候選店家 (Grounding Context)
    │        │         ▼
    │        │   FirebaseAI.googleAI().generativeModel(
-   │        │     model: 'gemini-3.8-flash',
+   │        │     model: 'gemini-3.5-flash-lite',
    │        │     generationConfig: GenerationConfig(
    │        │       temperature: 0.2,
    │        │       responseMimeType: 'application/json',
