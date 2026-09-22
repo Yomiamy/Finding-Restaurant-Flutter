@@ -75,6 +75,7 @@
 | **RatingStars 評分星等元件 (取代 11 張 PNG)** | ✅ 實查 `rating_stars.dart` 已實作並接線，PNG 與 `RatingHelper` 已移除 (PR #73 驗證) |
 | **iOS UIScene Lifecycle 支援遷移** | ✅ **已於 2026-08-23 完成**，正確掛載 `FlutterSceneDelegate` 並保留原生推播委派 |
 | **AI 多模態 Vision 菜單翻譯 (F-3.1)** | ✅ **已於 2026-09-12 完成 (Issue #115 / PR #116)**：以 `firebase_ai` + `gemini-3.5-flash-lite` 實現結構化 JSON 菜單辨識與過敏原標註，架構落地於 `lib/domain/`、`lib/data_layer/` 與 `lib/flow/menu_vision/`（34 測試全過零警告，獲 Linus 🟢 好品味與 Production-Ready 裁決；揭露 2 項架構微調 Action Items） |
+| **AI 智能覓食助理與 GenUI 決策畫布 (F-3.2 / M4)** | ✅ **已於 2026-09-22 完成 (Issue #123 / PR #124)**：以 `firebase_ai` + `gemini-3.5-flash-lite` 實現自然語言覓食對話、候選店家 Grounding、動態卡片（`comparison_matrix`、`decision_roulette`、`action_chips`）與轉盤隨機挑選抽籤，架構落地於 `lib/domain/`、`lib/data_layer/` 與 `lib/flow/ai_foodie/`；連帶重構多語系 ARB 抽取與認證錯誤解耦（`AuthFailureReason`）。 |
 
 **🔴 仍未解決與新納入阻擋項（全數為 P0 最高優先，AdMob 合規為絕對最高阻擋項）**
 
@@ -1391,7 +1392,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | **M1** | Google AI Studio 基礎設施與 A2UI Protocol 核心 | 引入 `google_generative_ai`，完成 GetIt 註冊、API Key 遠端派發與 Remote Config 接線 | 1.0 |
 | **M2** | A2UI 動態元件解析引擎 | 實作 `A2UIParser`、`A2UIWidgetRegistry` 與 5 款基礎 M3 動態卡片元件 | 1.5 |
 | **M3** | ✅ 拍菜單多模態視覺助手 (Dish Lens) — 已於 2026-09-12 完成 (PR #116) | 完成相機拍照/選圖、圖片壓縮、`gemini-3.5-flash-lite` 結構化食材/過敏原解析與互動點餐看板 UI | 2.0 |
-| **M4** | AI 智能覓食助理與 GenUI 畫布 | 完成對話式 BottomSheet、Yelp Function Calling、對比卡片與命運轉盤 | 2.0 |
+| **M4** | ✅ AI 智能覓食助理與 GenUI 畫布 — 已於 2026-09-22 完成 (PR #124) | 完成對話式 BottomSheet、真實候選店家 Grounding、`gemini-3.5-flash-lite` 推論、對比卡片與命運轉盤抽籤 | 2.0 |
 | **M5** | 評論智慧摘要與美食巡禮行程 | 完成評價情報卡、0-100% 味蕾相性雷達與最愛行程產生器 | 1.5 |
 
 ### 驗收 KPI

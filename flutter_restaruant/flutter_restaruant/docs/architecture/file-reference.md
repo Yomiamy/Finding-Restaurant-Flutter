@@ -34,9 +34,12 @@
 | [`lib/domain/repositories/sign_in_repository.dart`](../../lib/domain/repositories/sign_in_repository.dart) | `SignInRepository` | 登入／登出／帳號狀態的資料契約。 |
 | [`lib/domain/repositories/settings_repository.dart`](../../lib/domain/repositories/settings_repository.dart) | `SettingsRepository` | 設定頁的資料契約。 |
 | [`lib/domain/repositories/menu_vision_repository.dart`](../../lib/domain/repositories/menu_vision_repository.dart) | `MenuVisionRepository` | AI 多模態菜單視覺識別契約（`abstract interface class`）。 |
+| [`lib/domain/repositories/ai_foodie_repository.dart`](../../lib/domain/repositories/ai_foodie_repository.dart) | `AiFoodieRepository` | AI 智能覓食助理對話與初始建議契約（`abstract interface class`）。 |
 | [`lib/domain/entities/dish_item_entity.dart`](../../lib/domain/entities/dish_item_entity.dart) | `DishItemEntity` | 菜品項目業務模型（含中英菜名、價錢、過敏原與辣度標籤）。 |
 | [`lib/domain/entities/allergen_info.dart`](../../lib/domain/entities/allergen_info.dart) | `AllergenInfo` | 過敏原與飲食偏好實體（含標籤文字與嚴重度）。 |
-| [`lib/domain/entities/a2ui_component.dart`](../../lib/domain/entities/a2ui_component.dart) | `A2UIComponent`<br>`DishCatalogComponent`<br>`ComparisonMatrixComponent`<br>`FallbackMarkdownComponent` | GenUI / A2UI 宣告式動態元件 Sealed Class 階層。 |
+| [`lib/domain/entities/ai_foodie_message.dart`](../../lib/domain/entities/ai_foodie_message.dart) | `AiFoodieMessage` | 覓食助理訊息模型（包含使用者或助理身份、文字內容及 A2UIComponent 動態元件陣列）。 |
+| [`lib/domain/entities/auth_failure_reason.dart`](../../lib/domain/entities/auth_failure_reason.dart) | `AuthFailureReason` | 登入與認證失敗領域列舉（Domain Enum），消滅 Manager 與 Repository 硬編碼字串。 |
+| [`lib/domain/entities/a2ui_component.dart`](../../lib/domain/entities/a2ui_component.dart) | `A2UIComponent`<br>`DishCatalogComponent`<br>`ComparisonMatrixComponent`<br>`DecisionRouletteComponent`<br>`ActionChipGroupComponent`<br>`FallbackMarkdownComponent` | GenUI / A2UI 宣告式動態元件 Sealed Class 階層。 |
 | [`lib/domain/entities/restaurant_entity.dart`](../../lib/domain/entities/restaurant_entity.dart) | `RestaurantEntity` | 餐廳摘要業務模型。持有 `fromDto` 具名建構式與 `copyWith`，欄位全 nullable 以容忍 Yelp 回傳缺漏。 |
 | [`lib/domain/entities/restaurant_detail_entity.dart`](../../lib/domain/entities/restaurant_detail_entity.dart) | `RestaurantDetailEntity` | 餐廳詳情業務模型（含營業時間、座標、照片集）。 |
 | [`lib/domain/entities/review_entity.dart`](../../lib/domain/entities/review_entity.dart) | `ReviewEntity` | 評論集合業務模型。 |
@@ -61,6 +64,8 @@
 | [`lib/data_layer/repositories/settings_repo.dart`](../../lib/data_layer/repositories/settings_repo.dart) | `SettingsRepo` | `SettingsRepository` 實作（`const` 建構式，無狀態）。 |
 | [`lib/data_layer/repositories/menu_vision_repo.dart`](../../lib/data_layer/repositories/menu_vision_repo.dart) | `MenuVisionRepo` | `MenuVisionRepository` 實作。串接 `FirebaseAI` 調用 `gemini-3.5-flash-lite` 進行結構化菜單視覺辨識與過敏原解析。 |
 | [`lib/data_layer/repositories/menu_analysis_schema.dart`](../../lib/data_layer/repositories/menu_analysis_schema.dart) | `menuAnalysisSchema` | Gemini API 結構化輸出 JSON Schema 規範（定義菜品清單、價格、過敏原與辣度）。 |
+| [`lib/data_layer/repositories/ai_foodie_repo.dart`](../../lib/data_layer/repositories/ai_foodie_repo.dart) | `AiFoodieRepo` | `AiFoodieRepository` 實作。串接 `FirebaseAI` 調用 `gemini-3.5-flash-lite` 進行自然語言意圖理解、真實候選店家比對與 GenUI 元件生成。 |
+| [`lib/data_layer/repositories/ai_foodie_schema.dart`](../../lib/data_layer/repositories/ai_foodie_schema.dart) | `aiFoodieResponseSchema` | Gemini 結構化輸出 JSON Schema 規範（約束 text 及 components 格式）。 |
 | [`lib/data_layer/datasources/favor_data_source.dart`](../../lib/data_layer/datasources/favor_data_source.dart) | `FavorDataSource` | **最愛清單在 Firestore 的單一存取點**，每個最愛項目以 subcollection `favors/{uid}/items/{restaurant_id}` 結構儲存。內含空字串 uid 的 guard，避免 Firestore 拋 `ArgumentError`。 |
 | [`lib/data_layer/dto/yelp_search_dto.dart`](../../lib/data_layer/dto/yelp_search_dto.dart) | `YelpSearchDto` | Yelp 搜尋結果的線上格式鏡射（`@JsonSerializable`）。 |
 | [`lib/data_layer/dto/yelp_restaurant_summary_dto.dart`](../../lib/data_layer/dto/yelp_restaurant_summary_dto.dart) | `YelpRestaurantSummaryDto` | 餐廳摘要 Dto，對應 `RestaurantEntity`。 |
@@ -125,6 +130,11 @@
 | [`lib/flow/menu_vision/view/menu_vision_sheet.dart`](../../lib/flow/menu_vision/view/menu_vision_sheet.dart) | `MenuVisionSheet` | 底部動態彈出式菜單看板（包含拍照/選圖、類別 Tab、點餐試算與重試）。 |
 | [`lib/flow/menu_vision/view/dish_card.dart`](../../lib/flow/menu_vision/view/dish_card.dart) | `DishCard` | 單道菜色卡片元件（雙語菜名、價格格式化、點餐數量控制）。 |
 | [`lib/flow/menu_vision/view/allergen_badge.dart`](../../lib/flow/menu_vision/view/allergen_badge.dart) | `AllergenBadge` | 食材過敏原與辣度警示膠囊標籤（色彩語意化）。 |
+| [`lib/flow/ai_foodie/bloc/ai_foodie_bloc.dart`](../../lib/flow/ai_foodie/bloc/ai_foodie_bloc.dart) | `AiFoodieBloc` | AI 智能覓食助理業務邏輯（管理對話歷程、請求 Token 版本控制與樂觀更新）。 |
+| [`lib/flow/ai_foodie/view/ai_foodie_sheet.dart`](../../lib/flow/ai_foodie/view/ai_foodie_sheet.dart) | `AiFoodieSheet` | 底部對話畫布視窗（包含對話串流、GenUI 動態元件容器與輸入欄）。 |
+| [`lib/flow/ai_foodie/view/comparison_matrix_card.dart`](../../lib/flow/ai_foodie/view/comparison_matrix_card.dart) | `ComparisonMatrixCard` | 橫向滑動餐廳比對卡片（支援特色標籤、評分、價格及點擊導航至詳情頁）。 |
+| [`lib/flow/ai_foodie/view/decision_roulette_dialog.dart`](../../lib/flow/ai_foodie/view/decision_roulette_dialog.dart) | `DecisionRouletteDialog` | 轉盤隨機挑選對話框（視覺化動態指針、勝選呈現與再轉一次控制）。 |
+| [`lib/flow/signinup/view/auth_failure_l10n_extension.dart`](../../lib/flow/signinup/view/auth_failure_l10n_extension.dart) | `AuthFailureL10n` | 將 `AuthFailureReason` 領域錯誤列舉映射為本地化 Toast 錯誤文字的擴充。 |
 
 ### 6. 共用元件層 (`lib/component/`)
 
