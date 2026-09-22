@@ -465,18 +465,17 @@ Inspector 的 pending→complete 機制靠 `options.extra` 傳遞：`onRequest` 
            │         │ 本機偵測 MIME 類型 + 壓縮
            │         ▼
            │   FirebaseAI.googleAI().generativeModel(
-           │     model: 'gemini-3.5-flash-lite',
+           │     model: 'gemini-3.8-flash',
            │     generationConfig: GenerationConfig(
            │       responseMimeType: 'application/json',
            │       responseSchema: menuAnalysisSchema,
            │     ),
            │   )
            │         │
-           │         ▼
-           │   返回 Structured JSON
-           │         │ 解析映射
-           │         ▼
-           │   DishCatalogComponent / List<DishItemEntity>
+           ▼   返回 Structured JSON
+           │ 解析映射
+           ▼
+           DishCatalogComponent / List<DishItemEntity>
            │
            ├─► 成功 ──► State: MenuVisionSuccess(catalog, orderCounts, currency)
            │                 │
@@ -498,4 +497,75 @@ Inspector 的 pending→complete 機制靠 `options.extra` 傳遞：`onRequest` 
 2. **零 DTO 污染 (Pure Domain Entities)**：AI 相關業務模型（`DishItemEntity`、`AllergenInfo`、`A2UIComponent`）定義於 `lib/domain/entities/`，完全不 import `data_layer/dto`，建立 Clean Architecture 的良好示範。
 3. **貨幣符號相容性 (`formatPrice`)**：依餐廳幣別格式化價格，前綴符號（如 `$120`）與後綴／文字貨幣（如 `120 TWD`）皆能正確渲染。
 4. **App Check 整合**：`main.dart` 於 `kDebugMode` 配置 `AndroidDebugProvider` 與 `AppleDebugProvider`，Release 模式則無縫對接正式 App Attest / Play Integrity。
+
+---
+
+## 9. AI 智能覓食助理與 GenUI 畫布資料流 (AI Foodie Assistant & GenUI Canvas Data Flow)
+
+### 完整端到端流程
+
+```
+[使用者] (點擊首頁搜尋列 ✨ AI 按鈕或 Action Chip)
+   │
+   ▼
+[MainPage] ──► showModalBottomSheet ──► AiFoodieSheet
+   │
+   ▼
+AiFoodieBloc (BlocProvider)
+   │
+   ├─► Event: LoadInitialSuggestions
+   │        │
+   │        ▼
+   │   AiFoodieRepository.getInitialSuggestions()
+   │        │
+   │        ▼
+   │   State: AiFoodieSuccess(messages: [welcomeMessage + ActionChipGroup])
+   │
+   ├─► Event: SendUserPrompt(prompt, candidateRestaurants)
+   │        │
+   │        ├─► State: AiFoodieSending(optimistic update with user message)
+   │        │
+   │        ├─► AiFoodieRepository.askAssistant(prompt, history, candidateRestaurants)
+   │        │         │
+   │        │         ▼
+   │        │   [AiFoodieRepo]
+   │        │         │ 1. 注入歷史對話 Content
+   │        │         │ 2. 格式化真實候選店家 (Grounding Context)
+   │        │         ▼
+   │        │   FirebaseAI.googleAI().generativeModel(
+   │        │     model: 'gemini-3.8-flash',
+   │        │     generationConfig: GenerationConfig(
+   │        │       temperature: 0.2,
+   │        │       responseMimeType: 'application/json',
+   │        │       responseSchema: aiFoodieResponseSchema,
+   │        │     ),
+   │        │   )
+   │        │         │
+   │        │         ▼
+   │        │   返回 Structured JSON
+   │        │         │ 解析至 AiFoodieMessage & A2UIComponent
+   │        │         ▼
+   │        │   AiFoodieMessage.assistant(text, components: [
+   │        │     ComparisonMatrixComponent,
+   │        │     DecisionRouletteComponent,
+   │        │     ActionChipGroupComponent,
+   │        │   ])
+   │        │
+   │        ├─► 成功 ──► State: AiFoodieSuccess(messages: [...history, newAssistantMessage])
+   │        │                 │
+   │        │                 ▼
+   │        │           AiFoodieSheet (動態畫布渲染)
+   │        │             ├─ 對話氣泡 (User / Assistant)
+   │        │             ├─ ComparisonMatrixCard (橫向滾動餐廳比較卡)
+   │        │             │    └─ 點擊跳轉至 RestaurantDetailPage
+   │        │             ├─ DecisionRouletteCard / Dialog (命運轉盤隨機挑選)
+   │        │             └─ ActionChipGroup (點擊快捷發送 query)
+   │        │
+   │        └─► 失敗 ──► State: AiFoodieFailure(error)
+   │                          │
+   │                          ▼
+   │                    優雅錯誤氣泡 + 重試引導
+   │
+   └─► Event: ResetAiFoodie ──► 重置版本 Token + 重新載入 Initial Suggestions
+```
 
