@@ -10,10 +10,10 @@ class MockSignInRepository implements SignInRepository {
   String? lastMail;
   String? lastPasswd;
   UserEntity? returnAccountInfo;
-  String returnErrorMessage = '';
+  AuthFailureReason? returnFailureReason;
 
   @override
-  Future<Tuple2<UserEntity?, String>> signInUp({
+  Future<Tuple2<UserEntity?, AuthFailureReason?>> signInUp({
     required AccountTypeModel accountType,
     bool isSignUp = false,
     String mail = '',
@@ -23,7 +23,7 @@ class MockSignInRepository implements SignInRepository {
     lastIsSignUp = isSignUp;
     lastMail = mail;
     lastPasswd = passwd;
-    return Tuple2(returnAccountInfo, returnErrorMessage);
+    return Tuple2(returnAccountInfo, returnFailureReason);
   }
 
   @override
@@ -84,7 +84,7 @@ void main() {
 
     test('AutoSignInEvent failure emits SignInInitial, not Failure', () async {
       mockRepo.returnAccountInfo = null;
-      mockRepo.returnErrorMessage = 'No cached credential';
+      mockRepo.returnFailureReason = null;
 
       bloc.add(AutoSignInEvent());
 
@@ -96,7 +96,7 @@ void main() {
 
     test('SignIn failure emits Failure state', () async {
       mockRepo.returnAccountInfo = null;
-      mockRepo.returnErrorMessage = 'Auth failed';
+      mockRepo.returnFailureReason = AuthFailureReason.signInFailed;
 
       bloc.add(GoogleSignInEvent());
 
@@ -104,7 +104,22 @@ void main() {
         bloc.stream,
         emitsInOrder([
           const InProgress(),
-          const Failure(errorMsg: 'Auth failed'),
+          const Failure(reason: AuthFailureReason.signInFailed),
+        ]),
+      );
+    });
+
+    test('MailSignIn wrong password emits Failure with wrongPassword reason', () async {
+      mockRepo.returnAccountInfo = null;
+      mockRepo.returnFailureReason = AuthFailureReason.wrongPassword;
+
+      bloc.add(const MailSignInEvent(mail: 'user@example.com', passwd: 'bad'));
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder([
+          const InProgress(),
+          const Failure(reason: AuthFailureReason.wrongPassword),
         ]),
       );
     });

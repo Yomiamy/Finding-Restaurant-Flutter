@@ -3,6 +3,7 @@ import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 import '../data_layer/dto/dto_barrel.dart';
+import '../domain/entities/entities_barrel.dart';
 import '../features/utils/utils_barrel.dart';
 
 class GoogleSignInManager {
@@ -12,7 +13,7 @@ class GoogleSignInManager {
 
   factory GoogleSignInManager() => _singleton;
 
-  Future<Tuple2<AccountDto?, String>> signInWithGoogle() async {
+  Future<Tuple2<AccountDto?, AuthFailureReason?>> signInWithGoogle() async {
     try {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -23,9 +24,9 @@ class GoogleSignInManager {
 
       if (googleAuth?.accessToken == null && googleAuth?.idToken == null) {
         // 未登入
-        return const Tuple2<AccountDto?, String>(
+        return const Tuple2<AccountDto?, AuthFailureReason?>(
           null,
-          'Error occurred, please retry again',
+          AuthFailureReason.signInFailed,
         );
       }
 
@@ -44,14 +45,11 @@ class GoogleSignInManager {
         account: userCredential.user?.email ?? '',
       );
 
-      return Tuple2(accountDto, '');
+      return Tuple2(accountDto, null);
     } on Exception catch (e) {
       // 登入錯誤
       debugPrint('GoogleSignInManager, error = $e');
-      return Tuple2(
-        null,
-        'Google sign in fail, please retry again\n${e.toString()}',
-      );
+      return const Tuple2(null, AuthFailureReason.signInFailed);
     }
   }
 
