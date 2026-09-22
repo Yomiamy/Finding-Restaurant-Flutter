@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 
 import '../../../domain/entities/entities_barrel.dart';
+import '../../../generated/l10n.dart';
 import 'allergen_badge.dart';
 
 /// 菜色卡片元件
@@ -105,7 +107,7 @@ class DishCard extends StatelessWidget {
               Row(
                 children: [
                   Text(
-                    '辣度：',
+                    S.current.dish_card_spice_level_prefix,
                     style: theme.textTheme.bodySmall?.copyWith(
                       fontWeight: FontWeight.w600,
                     ),
@@ -120,7 +122,7 @@ class DishCard extends StatelessWidget {
             if (dish.ingredients.isNotEmpty) ...[
               const SizedBox(height: 8),
               Text(
-                '主要食材：${dish.ingredients.join('、')}',
+                '${S.current.dish_card_ingredients_prefix}${dish.ingredients.join(Intl.getCurrentLocale().startsWith('zh') ? '、' : ', ')}',
                 style: theme.textTheme.bodySmall?.copyWith(
                   color: theme.colorScheme.onSurfaceVariant,
                 ),

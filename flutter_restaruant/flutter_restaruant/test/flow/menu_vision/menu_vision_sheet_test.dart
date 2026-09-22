@@ -51,6 +51,10 @@ class MockMenuVisionRepository implements MenuVisionRepository {
 }
 
 void main() {
+  setUpAll(() async {
+    await S.load(const Locale('zh', 'TW'));
+  });
+
   final sampleDish = DishItemEntity.fromJson({
     'id': 'dish-101',
     'name': '特製豚骨拉麵',

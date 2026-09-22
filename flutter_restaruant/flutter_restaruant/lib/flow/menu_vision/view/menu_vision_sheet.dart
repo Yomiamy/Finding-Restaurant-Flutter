@@ -4,6 +4,7 @@ import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../domain/domain_barrel.dart';
+import '../../../generated/l10n.dart';
 import '../bloc/menu_vision_bloc.dart';
 import 'dish_card.dart';
 
@@ -198,7 +199,7 @@ class _SheetHeader extends StatelessWidget {
               mainAxisSize: MainAxisSize.min,
               children: [
                 Text(
-                  'AI 菜單視覺翻譯',
+                  S.current.menu_vision_title,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.bold,
                   ),
@@ -216,17 +217,17 @@ class _SheetHeader extends StatelessWidget {
             ),
           ),
           IconButton(
-            tooltip: '拍照辨識',
+            tooltip: S.current.menu_vision_tooltip_camera,
             icon: const Icon(Icons.camera_alt_outlined),
             onPressed: onCameraPressed,
           ),
           IconButton(
-            tooltip: '從相簿選取',
+            tooltip: S.current.menu_vision_tooltip_gallery,
             icon: const Icon(Icons.photo_library_outlined),
             onPressed: onGalleryPressed,
           ),
           IconButton(
-            tooltip: '關閉',
+            tooltip: S.current.menu_vision_tooltip_close,
             icon: const Icon(Icons.close),
             onPressed: () => Navigator.of(context).pop(),
           ),
@@ -262,14 +263,14 @@ class _InitialPromptView extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              '拍下菜單，AI 立即辨識',
+              S.current.menu_vision_prompt_title,
               style: theme.textTheme.titleLarge?.copyWith(
-                fontWeight: FontWeight.bold,
+                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              '支援跨國菜單翻譯、食材拆解、過敏原警示與辣度分析',
+              S.current.menu_vision_prompt_subtitle,
               textAlign: TextAlign.center,
               style: theme.textTheme.bodyMedium?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
@@ -280,7 +281,7 @@ class _InitialPromptView extends StatelessWidget {
               key: const Key('take_photo_button'),
               onPressed: onCamera,
               icon: const Icon(Icons.camera_alt),
-              label: const Text('拍照辨識菜單'),
+              label: Text(S.current.menu_vision_btn_camera),
               style: FilledButton.styleFrom(
                 minimumSize: const Size(220, 48),
               ),
@@ -290,7 +291,7 @@ class _InitialPromptView extends StatelessWidget {
               key: const Key('gallery_pick_button'),
               onPressed: onGallery,
               icon: const Icon(Icons.photo_library),
-              label: const Text('從相簿選擇照片'),
+              label: Text(S.current.menu_vision_btn_gallery),
               style: OutlinedButton.styleFrom(
                 minimumSize: const Size(220, 48),
               ),
@@ -318,14 +319,14 @@ class _LoadingProgressView extends StatelessWidget {
             const CircularProgressIndicator(),
             const SizedBox(height: 24),
             Text(
-              'Gemini 正在分析菜單...',
+              S.current.menu_vision_loading_title,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              '翻譯菜名、標註過敏原與食材拆解中，約需數秒',
+              S.current.menu_vision_loading_subtitle,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -351,7 +352,7 @@ class _CatalogContentView extends StatelessWidget {
     if (dishes.isEmpty) {
       return Center(
         child: Text(
-          '未能成功辨識出菜色項目，請確認照片清晰後重試',
+          S.current.menu_vision_empty_dishes,
           style: theme.textTheme.bodyMedium?.copyWith(
             color: theme.colorScheme.onSurfaceVariant,
           ),
@@ -375,7 +376,7 @@ class _CatalogContentView extends StatelessWidget {
             tabAlignment: TabAlignment.start,
             tabs: tabCategories.map((cat) {
               if (cat == null) {
-                return Tab(text: '全部 (${dishes.length})');
+                return Tab(text: '${S.current.menu_vision_tab_all} (${dishes.length})');
               }
               final count = dishes.where((d) => d.category == cat).length;
               return Tab(text: '${cat.displayName} ($count)');
@@ -439,7 +440,7 @@ class _FailureRetryView extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              '辨識未能完成',
+              S.current.menu_vision_failure_title,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
@@ -458,7 +459,7 @@ class _FailureRetryView extends StatelessWidget {
                 key: const Key('retry_photo_button'),
                 onPressed: onRetryPhoto,
                 icon: const Icon(Icons.refresh),
-                label: const Text('重試此照片'),
+                label: Text(S.current.menu_vision_btn_retry_photo),
                 style: FilledButton.styleFrom(
                   minimumSize: const Size(220, 44),
                 ),
@@ -471,13 +472,13 @@ class _FailureRetryView extends StatelessWidget {
                 OutlinedButton.icon(
                   onPressed: onRetryCamera,
                   icon: const Icon(Icons.camera_alt),
-                  label: const Text('重新拍攝'),
+                  label: Text(S.current.menu_vision_btn_retake),
                 ),
                 const SizedBox(width: 12),
                 OutlinedButton.icon(
                   onPressed: onRetryGallery,
                   icon: const Icon(Icons.photo_library),
-                  label: const Text('相簿重選'),
+                  label: Text(S.current.menu_vision_btn_reselect_gallery),
                 ),
               ],
             ),
@@ -514,14 +515,14 @@ class _CancelledView extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             Text(
-              '已取消選取照片',
+              S.current.menu_vision_cancelled_title,
               style: theme.textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
             Text(
-              '準備好時，可隨時點擊下方按鈕開始',
+              S.current.menu_vision_cancelled_subtitle,
               style: theme.textTheme.bodySmall?.copyWith(
                 color: theme.colorScheme.onSurfaceVariant,
               ),
@@ -533,13 +534,13 @@ class _CancelledView extends StatelessWidget {
                 FilledButton.icon(
                   onPressed: onCamera,
                   icon: const Icon(Icons.camera_alt),
-                  label: const Text('拍照'),
+                  label: Text(S.current.menu_vision_btn_take_photo_short),
                 ),
                 const SizedBox(width: 12),
                 OutlinedButton.icon(
                   onPressed: onGallery,
                   icon: const Icon(Icons.photo_library),
-                  label: const Text('相簿'),
+                  label: Text(S.current.menu_vision_btn_gallery_short),
                 ),
               ],
             ),

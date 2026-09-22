@@ -2,6 +2,8 @@ import 'dart:core';
 
 import 'package:intl/intl.dart';
 
+import '../generated/l10n.dart';
+
 enum FilterConfigType { price, openAt, sortingRule }
 
 enum SortBy {
@@ -97,13 +99,13 @@ class FilterConfigs {
   String getSortingRuleDispStr(String sortBy) {
     switch (sortBy) {
       case 'best_match':
-        return 'BestMatch';
+        return S.current.filter_sorting_rule_best_match;
       case 'distance':
-        return 'Distance';
+        return S.current.filter_sorting_rule_distance;
       case 'review_count':
-        return 'ReviewCount';
+        return S.current.filter_sorting_review_count;
       case 'rating':
-        return 'Rating';
+        return S.current.filter_sorting_rating;
       default:
         return '';
     }
