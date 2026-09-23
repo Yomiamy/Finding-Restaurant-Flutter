@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../../../domain/entities/entities_barrel.dart';
+import '../model/ai_foodie_model.dart';
 
 /// AI 覓食助理 BLoC 事件基類
 sealed class AiFoodieEvent extends Equatable {
@@ -28,7 +28,7 @@ final class SendUserPrompt extends AiFoodieEvent {
 final class TriggerActionChip extends AiFoodieEvent {
   const TriggerActionChip(this.chip);
 
-  final ActionChipItem chip;
+  final ActionChipModel chip;
 
   @override
   List<Object?> get props => [chip];
@@ -36,10 +36,7 @@ final class TriggerActionChip extends AiFoodieEvent {
 
 /// 開啟命運轉盤彈窗
 final class OpenRoulette extends AiFoodieEvent {
-  const OpenRoulette({
-    required this.title,
-    required this.options,
-  });
+  const OpenRoulette({required this.title, required this.options});
 
   final String title;
   final List<String> options;

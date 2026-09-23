@@ -3,12 +3,14 @@ import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_restaruant/domain/repositories/ai_foodie_repository.dart';
 import 'package:flutter_restaruant/flow/ai_foodie/bloc/bloc_barrel.dart';
+import 'package:flutter_restaruant/flow/ai_foodie/model/ai_foodie_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 class MockAiFoodieRepository implements AiFoodieRepository {
   List<AiFoodieMessage>? initialSuggestionsResult;
   AiFoodieMessage? askAssistantResult;
   bool shouldThrow = false;
+  List<AiFoodieMessage>? lastHistory;
 
   @override
   Future<List<AiFoodieMessage>> getInitialSuggestions() {
@@ -40,6 +42,7 @@ class MockAiFoodieRepository implements AiFoodieRepository {
     List<AiFoodieMessage>? history,
     List<RestaurantEntity>? candidateRestaurants,
   }) {
+    lastHistory = history;
     if (shouldThrow) return Future.error(Exception('模擬對話連線失敗'));
     return Future.value(
       askAssistantResult ??
@@ -75,7 +78,7 @@ void main() {
     late AiFoodieBloc bloc;
 
     setUp(() async {
-    await S.load(const Locale('zh', 'TW'));
+      await S.load(const Locale('zh', 'TW'));
       repository = MockAiFoodieRepository();
       bloc = AiFoodieBloc(repository: repository);
     });
@@ -128,7 +131,7 @@ void main() {
     });
 
     test('TriggerActionChip query 動作正確觸發送出 Prompt', () async {
-      const chip = ActionChipItem(
+      const chip = ActionChipModel(
         label: '約會餐廳',
         action: 'query',
         payload: {'prompt': '推薦浪漫約會小館'},
@@ -142,10 +145,7 @@ void main() {
     });
 
     test('OpenRoulette 與 SpinRouletteWinnerSelected 狀態流轉正確', () async {
-      bloc.add(const OpenRoulette(
-        title: '轉盤抽籤',
-        options: ['餐廳 A', '餐廳 B'],
-      ));
+      bloc.add(const OpenRoulette(title: '轉盤抽籤', options: ['餐廳 A', '餐廳 B']));
       await pumpEventQueue();
 
       expect(bloc.state.isRouletteVisible, isTrue);
@@ -181,6 +181,27 @@ void main() {
       expect(bloc.state.messages.length, 1);
       expect(bloc.state.messages.first.text, contains('歡迎使用'));
       expect(bloc.state.isLoading, isFalse);
+    });
+
+    test('messageModels 與 messages 同步', () async {
+      bloc.add(const LoadInitialSuggestions());
+      await pumpEventQueue();
+
+      expect(
+        bloc.state.messageModels.single.text,
+        bloc.state.messages.single.text,
+      );
+    });
+
+    test('history 是送出前的 state.messages（entity）', () async {
+      bloc.add(const SendUserPrompt('第一句'));
+      await pumpEventQueue();
+      final priorMessages = bloc.state.messages;
+
+      bloc.add(const SendUserPrompt('第二句'));
+      await pumpEventQueue();
+
+      expect(repository.lastHistory, priorMessages);
     });
   });
 }

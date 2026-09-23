@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/entities/entities_barrel.dart';
 import '../../../features/foundation/foundation_barrel.dart';
+import '../model/ai_foodie_model.dart';
 
 /// GenUI 多店對比卡片橫向輪播元件
 class ComparisonMatrixCard extends StatelessWidget {
@@ -11,8 +11,8 @@ class ComparisonMatrixCard extends StatelessWidget {
     this.onRestaurantTap,
   });
 
-  final ComparisonMatrixComponent component;
-  final void Function(RestaurantComparisonItem item)? onRestaurantTap;
+  final ComparisonMatrixModel component;
+  final void Function(ComparisonItemModel item)? onRestaurantTap;
 
   @override
   Widget build(BuildContext context) {
@@ -71,12 +71,9 @@ class ComparisonMatrixCard extends StatelessWidget {
 }
 
 class _ComparisonItemCard extends StatelessWidget {
-  const _ComparisonItemCard({
-    required this.item,
-    required this.onTap,
-  });
+  const _ComparisonItemCard({required this.item, required this.onTap});
 
-  final RestaurantComparisonItem item;
+  final ComparisonItemModel item;
   final VoidCallback onTap;
 
   @override
@@ -141,18 +138,18 @@ class _ComparisonItemCard extends StatelessWidget {
                     const SizedBox(height: ThemeSize.space4),
                     Row(
                       children: [
-                        if (item.category != null) ...[
+                        if (item.category case final category?) ...[
                           Text(
-                            item.category!,
+                            category,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                             ),
                           ),
                           const SizedBox(width: ThemeSize.space8),
                         ],
-                        if (item.price != null)
+                        if (item.price case final price?)
                           Text(
-                            item.price!,
+                            price,
                             style: theme.textTheme.bodySmall?.copyWith(
                               fontWeight: FontWeight.w600,
                               color: colorScheme.primary,
@@ -164,34 +161,37 @@ class _ComparisonItemCard extends StatelessWidget {
                     Wrap(
                       spacing: ThemeSize.space4,
                       runSpacing: ThemeSize.space4,
-                      children: item.highlights.take(2).map((highlight) {
-                        return Container(
-                          padding: const EdgeInsets.symmetric(
-                            horizontal: 6,
-                            vertical: 2,
-                          ),
-                          decoration: BoxDecoration(
-                            color: colorScheme.primaryContainer.withValues(
-                              alpha: 0.4,
-                            ),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
-                          child: Text(
-                            highlight,
-                            style: theme.textTheme.labelSmall?.copyWith(
-                              color: colorScheme.onPrimaryContainer,
-                            ),
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                          ),
-                        );
-                      }).toList(growable: false),
+                      children: item.highlights
+                          .take(2)
+                          .map((highlight) {
+                            return Container(
+                              padding: const EdgeInsets.symmetric(
+                                horizontal: 6,
+                                vertical: 2,
+                              ),
+                              decoration: BoxDecoration(
+                                color: colorScheme.primaryContainer.withValues(
+                                  alpha: 0.4,
+                                ),
+                                borderRadius: BorderRadius.circular(4),
+                              ),
+                              child: Text(
+                                highlight,
+                                style: theme.textTheme.labelSmall?.copyWith(
+                                  color: colorScheme.onPrimaryContainer,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            );
+                          })
+                          .toList(growable: false),
                     ),
                   ],
                 ),
-                if (item.address != null)
+                if (item.address case final address?)
                   Text(
-                    item.address!,
+                    address,
                     style: theme.textTheme.bodySmall?.copyWith(
                       color: colorScheme.outline,
                       fontSize: 10,

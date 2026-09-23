@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/entities/entities_barrel.dart';
 import '../../../features/foundation/foundation_barrel.dart';
+import '../model/ai_foodie_model.dart';
 
 /// GenUI 行動按鈕群組渲染元件
 class ActionChipGroupWidget extends StatelessWidget {
@@ -11,8 +11,8 @@ class ActionChipGroupWidget extends StatelessWidget {
     required this.onChipTap,
   });
 
-  final ActionChipGroupComponent component;
-  final void Function(ActionChipItem chip) onChipTap;
+  final ActionChipGroupModel component;
+  final void Function(ActionChipModel chip) onChipTap;
 
   @override
   Widget build(BuildContext context) {
@@ -27,34 +27,38 @@ class ActionChipGroupWidget extends StatelessWidget {
       child: Wrap(
         spacing: ThemeSize.space8,
         runSpacing: ThemeSize.space8,
-        children: chips.map((chip) {
-          final isRoulette = chip.action == 'open_roulette';
+        children: chips
+            .map((chip) {
+              final isRoulette = chip.action == 'open_roulette';
 
-          return ActionChip(
-            avatar: isRoulette
-                ? const Icon(Icons.casino_outlined, size: 16)
-                : null,
-            label: Text(chip.label),
-            labelStyle: theme.textTheme.labelMedium?.copyWith(
-              fontWeight: isRoulette ? FontWeight.bold : FontWeight.normal,
-              color: isRoulette
-                  ? colorScheme.primary
-                  : colorScheme.onSurfaceVariant,
-            ),
-            backgroundColor: isRoulette
-                ? colorScheme.primaryContainer.withValues(alpha: 0.5)
-                : colorScheme.surfaceContainerHighest.withValues(alpha: 0.6),
-            side: BorderSide(
-              color: isRoulette
-                  ? colorScheme.primary.withValues(alpha: 0.3)
-                  : colorScheme.outlineVariant,
-            ),
-            shape: RoundedRectangleBorder(
-              borderRadius: BorderRadius.circular(ThemeSize.radiusTag),
-            ),
-            onPressed: () => onChipTap(chip),
-          );
-        }).toList(growable: false),
+              return ActionChip(
+                avatar: isRoulette
+                    ? const Icon(Icons.casino_outlined, size: 16)
+                    : null,
+                label: Text(chip.label),
+                labelStyle: theme.textTheme.labelMedium?.copyWith(
+                  fontWeight: isRoulette ? FontWeight.bold : FontWeight.normal,
+                  color: isRoulette
+                      ? colorScheme.primary
+                      : colorScheme.onSurfaceVariant,
+                ),
+                backgroundColor: isRoulette
+                    ? colorScheme.primaryContainer.withValues(alpha: 0.5)
+                    : colorScheme.surfaceContainerHighest.withValues(
+                        alpha: 0.6,
+                      ),
+                side: BorderSide(
+                  color: isRoulette
+                      ? colorScheme.primary.withValues(alpha: 0.3)
+                      : colorScheme.outlineVariant,
+                ),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(ThemeSize.radiusTag),
+                ),
+                onPressed: () => onChipTap(chip),
+              );
+            })
+            .toList(growable: false),
       ),
     );
   }
