@@ -235,12 +235,12 @@ components 陣列內的每個物件必須包含 component_type 與 data：
     final contents = <Content>[];
     if (history != null && history.isNotEmpty) {
       final sanitizedHistory = history
-          .skipWhile((m) => !m.isUser)
+          .skipWhile((m) => m.isUser != true)
           .toList(growable: false);
 
       for (final msg in sanitizedHistory) {
-        if (msg.isUser) {
-          contents.add(Content.text(msg.text));
+        if (msg.isUser == true) {
+          contents.add(Content.text(msg.text ?? ''));
         } else {
           contents.add(
             Content.model([TextPart(serializeAssistantHistory(msg))]),
@@ -260,13 +260,13 @@ components 陣列內的每個物件必須包含 component_type 與 data：
   /// 序列化助理訊息為符合 Schema 之 JSON 字串
   @visibleForTesting
   static String serializeAssistantHistory(AiFoodieMessage msg) {
-    final validComponents = msg.components
+    final validComponents = (msg.components ?? const [])
         .where((c) => c is! FallbackMarkdownComponent)
         .map((c) => c.toJson())
         .toList(growable: false);
 
     final payload = <String, Object?>{
-      'text': msg.text,
+      'text': msg.text ?? '',
       'components': validComponents,
     };
     return jsonEncode(payload);

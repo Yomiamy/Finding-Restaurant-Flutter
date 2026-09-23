@@ -77,16 +77,16 @@ void main() {
       final message = await repo.askAssistant('4人居酒屋');
       expect(message.isUser, isFalse);
       expect(message.text, '已為您找到 2 間優質聚餐推薦：');
-      expect(message.components.length, 2);
+      expect(message.components, hasLength(2));
 
-      final comp1 = message.components[0];
+      final comp1 = message.components?[0];
       expect(comp1, isA<ComparisonMatrixComponent>());
       final matrix = comp1 as ComparisonMatrixComponent;
       expect(matrix.title, '精選對比');
       expect(matrix.items, hasLength(1));
       expect(matrix.items?.first.name, '頂級居酒屋');
 
-      final comp2 = message.components[1];
+      final comp2 = message.components?[1];
       expect(comp2, isA<ActionChipGroupComponent>());
       final chipGroup = comp2 as ActionChipGroupComponent;
       expect(chipGroup.chips, hasLength(1));
@@ -148,9 +148,9 @@ void main() {
       expect(message.isUser, isFalse);
       expect(message.text, '為您推薦餐廳：');
       // 前 3 個缺資料的無效元件應全被過濾，只留下第 4 個有效元件
-      expect(message.components.length, 1);
-      expect(message.components.first, isA<ActionChipGroupComponent>());
-      final chipGroup = message.components.first as ActionChipGroupComponent;
+      expect(message.components, hasLength(1));
+      expect(message.components?.first, isA<ActionChipGroupComponent>());
+      final chipGroup = message.components?.first as ActionChipGroupComponent;
       expect(chipGroup.chips?.first.label, '有效標籤');
     });
 
@@ -181,9 +181,9 @@ void main() {
       );
       expect(message.isUser, isFalse);
       expect(message.text, contains('周邊店家'));
-      expect(message.components.isNotEmpty, isTrue);
+      expect(message.components, isNotEmpty);
 
-      final matrix = message.components.first as ComparisonMatrixComponent;
+      final matrix = message.components?.first as ComparisonMatrixComponent;
       expect(matrix.items, hasLength(2));
       expect(matrix.items?.first.id, 'real_yelp_101');
       expect(matrix.items?.first.name, '老鄧擔擔麵');
@@ -200,8 +200,8 @@ void main() {
       final message = await repo.askAssistant('我想找居酒屋喝一杯');
       expect(message.isUser, isFalse);
       expect(message.text, contains('居酒屋'));
-      expect(message.components.isNotEmpty, isTrue);
-      expect(message.components.first, isA<ComparisonMatrixComponent>());
+      expect(message.components, isNotEmpty);
+      expect(message.components?.first, isA<ComparisonMatrixComponent>());
     });
 
     test('formatCandidateRestaurants 正確將真實餐廳序列化為包含真實 ID 與店名的條列上下文', () {
@@ -229,9 +229,9 @@ void main() {
       expect(suggestions.length, 1);
       expect(suggestions.first.isUser, isFalse);
       expect(suggestions.first.text, contains('AI 覓食助手'));
-      expect(suggestions.first.components.length, 1);
+      expect(suggestions.first.components, hasLength(1));
       expect(
-        suggestions.first.components.first,
+        suggestions.first.components?.first,
         isA<ActionChipGroupComponent>(),
       );
     });
@@ -335,6 +335,17 @@ void main() {
       expect((multiTurn[0].parts.first as TextPart).text, '想吃火鍋');
       expect((multiTurn[1].parts.first as TextPart).text, contains('推薦海底撈'));
       expect((multiTurn[2].parts.first as TextPart).text, '還有別的嗎？');
+    });
+
+    test('history 元素欄位為 null 時不拋例外，isUser == null 視為助理訊息', () {
+      final contents = AiFoodieRepo.buildConversationContents([
+        AiFoodieMessage.fromJson({'text': 'u', 'is_user': true}),
+        AiFoodieMessage.fromJson(const {}),
+      ], 'p');
+      expect(contents.length, 3);
+      expect((contents[0].parts.first as TextPart).text, 'u');
+      expect(contents[1].role, 'model');
+      expect((contents[2].parts.first as TextPart).text, 'p');
     });
   });
 

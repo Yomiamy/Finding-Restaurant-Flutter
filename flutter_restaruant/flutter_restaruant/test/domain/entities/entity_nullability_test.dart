@@ -162,5 +162,57 @@ void main() {
         const DishCatalogModel(currency: 'TWD', dishes: []),
       );
     });
+
+    test('AiFoodieMessage', () {
+      expect(
+        AiFoodieMessageModel.fromEntity(AiFoodieMessage.fromJson(const {})),
+        const AiFoodieMessageModel(isUser: false, text: '', components: []),
+      );
+    });
+  });
+
+  group('AiFoodieMessage', () {
+    test('缺值 → 欄位為 null（含 List）', () {
+      final m = AiFoodieMessage.fromJson(const {});
+      expect([
+        m.id,
+        m.isUser,
+        m.text,
+        m.components,
+        m.createdAt,
+      ], everyElement(isNull));
+    });
+
+    test('created_at 非法字串 → null（不拋例外）', () {
+      expect(
+        AiFoodieMessage.fromJson(const {'created_at': 'not-a-date'}).createdAt,
+        isNull,
+      );
+    });
+
+    test('toJson 省略 null key，且不含 is_assistant/props', () {
+      expect(const AiFoodieMessage(text: 'x').toJson(), {'text': 'x'});
+    });
+
+    test('toJson key 順序 id/is_user/text/components/created_at', () {
+      final json = AiFoodieMessage(
+        id: 'm1',
+        isUser: true,
+        text: 't',
+        components: const [],
+        createdAt: DateTime.utc(2026, 9, 24, 12),
+      ).toJson();
+      expect(json.keys.toList(), [
+        'id',
+        'is_user',
+        'text',
+        'components',
+        'created_at',
+      ]);
+    });
+
+    test('.user() factory 明確給 components: []', () {
+      expect(AiFoodieMessage.user('hi').components, isEmpty);
+    });
   });
 }

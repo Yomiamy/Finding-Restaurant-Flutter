@@ -1,17 +1,26 @@
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 
 import 'a2ui_component.dart';
+import 'entity_json_converters.dart';
+
+part 'ai_foodie_message.g.dart';
 
 /// AI 覓食助理對話訊息實體
 @immutable
+@JsonSerializable(
+  fieldRename: FieldRename.snake,
+  includeIfNull: false,
+  explicitToJson: true,
+)
 final class AiFoodieMessage extends Equatable {
   const AiFoodieMessage({
-    required this.id,
-    required this.isUser,
-    required this.text,
-    this.components = const [],
-    required this.createdAt,
+    this.id,
+    this.isUser,
+    this.text,
+    this.components,
+    this.createdAt,
   });
 
   factory AiFoodieMessage.user(String text) {
@@ -19,6 +28,7 @@ final class AiFoodieMessage extends Equatable {
       id: 'msg_${DateTime.now().microsecondsSinceEpoch}',
       isUser: true,
       text: text,
+      components: const [],
       createdAt: DateTime.now(),
     );
   }
@@ -36,38 +46,28 @@ final class AiFoodieMessage extends Equatable {
     );
   }
 
-  factory AiFoodieMessage.fromJson(Map<String, Object?> json) {
-    final rawComponents = json['components'] as List<Object?>? ?? const [];
-    final components = rawComponents
-        .whereType<Map<String, Object?>>()
-        .map(A2UIComponent.fromJson)
-        .toList(growable: false);
+  factory AiFoodieMessage.fromJson(Map<String, Object?> json) =>
+      _$AiFoodieMessageFromJson(json);
 
-    return AiFoodieMessage(
-      id: json['id'] as String? ?? '',
-      isUser: json['is_user'] as bool? ?? false,
-      text: json['text'] as String? ?? '',
-      components: components,
-      createdAt: DateTime.tryParse(json['created_at'] as String? ?? '') ??
-          DateTime.now(),
-    );
-  }
+  final String? id;
+  final bool? isUser;
+  @JsonKey(includeFromJson: false, includeToJson: false)
+  bool get isAssistant => isUser != true;
+  final String? text;
+  @JsonKey(fromJson: _componentsFromJson)
+  final List<A2UIComponent>? components;
+  @JsonKey(fromJson: _createdAtFromJson)
+  final DateTime? createdAt;
 
-  final String id;
-  final bool isUser;
-  bool get isAssistant => !isUser;
-  final String text;
-  final List<A2UIComponent> components;
-  final DateTime createdAt;
-
-  Map<String, Object?> toJson() => {
-    'id': id,
-    'is_user': isUser,
-    'text': text,
-    'components': components.map((c) => c.toJson()).toList(growable: false),
-    'created_at': createdAt.toIso8601String(),
-  };
+  Map<String, Object?> toJson() => _$AiFoodieMessageToJson(this);
 
   @override
   List<Object?> get props => [id, isUser, text, components, createdAt];
 }
+
+List<A2UIComponent>? _componentsFromJson(List<Object?>? raw) =>
+    mapListFromJson(raw, A2UIComponent.fromJson);
+
+/// 參數型別 `String?`：非字串仍拋 TypeError（現行行為）；字串解析失敗回傳 null。
+DateTime? _createdAtFromJson(String? value) =>
+    value == null ? null : DateTime.tryParse(value);

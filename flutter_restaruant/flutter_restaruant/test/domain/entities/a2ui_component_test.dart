@@ -113,13 +113,13 @@ void main() {
         ],
       );
       expect(assistantMsg.isUser, isFalse);
-      expect(assistantMsg.components.length, 1);
+      expect(assistantMsg.components, hasLength(1));
 
       final json = assistantMsg.toJson();
       final restored = AiFoodieMessage.fromJson(json);
       expect(restored.text, assistantMsg.text);
-      expect(restored.components.length, 1);
-      expect(restored.components.first, isA<DecisionRouletteComponent>());
+      expect(restored.components, hasLength(1));
+      expect(restored.components?.first, isA<DecisionRouletteComponent>());
     });
   });
 }

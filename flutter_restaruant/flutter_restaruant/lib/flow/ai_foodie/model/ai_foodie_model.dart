@@ -13,9 +13,9 @@ class AiFoodieMessageModel extends Equatable {
 
   factory AiFoodieMessageModel.fromEntity(AiFoodieMessage entity) {
     return AiFoodieMessageModel(
-      isUser: entity.isUser,
-      text: entity.text,
-      components: entity.components
+      isUser: entity.isUser ?? false,
+      text: entity.text ?? '',
+      components: (entity.components ?? const [])
           .map(A2UIComponentModel.fromEntity)
           .nonNulls
           .toList(growable: false),
