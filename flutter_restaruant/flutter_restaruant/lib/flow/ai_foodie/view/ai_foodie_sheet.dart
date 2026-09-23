@@ -128,6 +128,7 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
           }
         },
         builder: (context, state) {
+          final messageModels = state.messageModels;
           return DraggableScrollableSheet(
             initialChildSize: 0.88,
             minChildSize: 0.5,
@@ -224,13 +225,12 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
                           vertical: ThemeSize.space12,
                         ),
                         itemCount:
-                            state.messageModels.length +
-                            (state.isLoading ? 1 : 0),
+                            messageModels.length + (state.isLoading ? 1 : 0),
                         itemBuilder: (context, index) {
-                          if (index == state.messageModels.length) {
+                          if (index == messageModels.length) {
                             return const _LoadingMessageBubble();
                           }
-                          final msg = state.messageModels[index];
+                          final msg = messageModels[index];
                           return _MessageItem(
                             message: msg,
                             onChipTap: (chip) {

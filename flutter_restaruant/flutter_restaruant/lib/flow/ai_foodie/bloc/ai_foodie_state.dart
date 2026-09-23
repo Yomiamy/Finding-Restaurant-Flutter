@@ -6,7 +6,6 @@ import '../model/ai_foodie_model.dart';
 final class AiFoodieState extends Equatable {
   const AiFoodieState({
     this.messages = const [],
-    this.messageModels = const [],
     this.isLoading = false,
     this.errorMessage,
     this.isRouletteVisible = false,
@@ -20,14 +19,17 @@ final class AiFoodieState extends Equatable {
   /// LLM 對話歷史的唯一來源（`repo.askAssistant(history:)` 需要 entity 才能 `toJson`）
   final List<AiFoodieMessage> messages;
 
-  /// View 顯示用的 UI model，隨 [messages] 由 [copyWith] 同步衍生，不可單獨設定
-  final List<AiFoodieMessageModel> messageModels;
   final bool isLoading;
   final String? errorMessage;
   final bool isRouletteVisible;
   final String? rouletteTitle;
   final List<String> rouletteOptions;
   final String? selectedRouletteWinner;
+
+  /// View 顯示用的 UI model，每次由 [messages] 衍生，不存第二份所以不可能不同步。
+  // ponytail: 每次存取都重新轉換，對話量大到有感時再改為 BLoC 端快取
+  List<AiFoodieMessageModel> get messageModels =>
+      messages.map(AiFoodieMessageModel.fromEntity).toList(growable: false);
 
   AiFoodieState copyWith({
     List<AiFoodieMessage>? messages,
@@ -42,11 +44,6 @@ final class AiFoodieState extends Equatable {
   }) {
     return AiFoodieState(
       messages: messages ?? this.messages,
-      messageModels: messages == null
-          ? messageModels
-          : messages
-                .map(AiFoodieMessageModel.fromEntity)
-                .toList(growable: false),
       isLoading: isLoading ?? this.isLoading,
       errorMessage: clearError ? null : (errorMessage ?? this.errorMessage),
       isRouletteVisible: isRouletteVisible ?? this.isRouletteVisible,
@@ -61,7 +58,6 @@ final class AiFoodieState extends Equatable {
   @override
   List<Object?> get props => [
     messages,
-    messageModels,
     isLoading,
     errorMessage,
     isRouletteVisible,

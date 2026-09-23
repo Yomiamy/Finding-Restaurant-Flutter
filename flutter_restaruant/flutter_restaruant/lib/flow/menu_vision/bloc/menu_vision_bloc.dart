@@ -49,7 +49,7 @@ class MenuVisionBloc extends Bloc<MenuVisionEvent, MenuVisionState> {
           case FallbackMarkdownComponent():
             emit(
               MenuVisionFailure(
-                message: result.text,
+                message: result.text ?? '',
                 failedImageBytes: imageBytes,
               ),
             );
@@ -87,7 +87,7 @@ class MenuVisionBloc extends Bloc<MenuVisionEvent, MenuVisionState> {
           case FallbackMarkdownComponent():
             emit(
               MenuVisionFailure(
-                message: result.text,
+                message: result.text ?? '',
                 failedImageBytes: event.imageBytes,
               ),
             );

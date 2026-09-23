@@ -13,8 +13,10 @@ class DishCatalogModel extends Equatable {
 
   factory DishCatalogModel.fromEntity(DishCatalogComponent entity) {
     return DishCatalogModel(
-      currency: entity.currency,
-      dishes: entity.dishes.map(DishModel.fromEntity).toList(growable: false),
+      currency: entity.currency ?? 'TWD',
+      dishes: (entity.dishes ?? const [])
+          .map(DishModel.fromEntity)
+          .toList(growable: false),
     );
   }
 

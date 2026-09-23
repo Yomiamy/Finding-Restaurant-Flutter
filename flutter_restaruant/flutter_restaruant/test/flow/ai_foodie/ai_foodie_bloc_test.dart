@@ -193,6 +193,11 @@ void main() {
       );
     });
 
+    test('messageModels 由建構式傳入的 messages 衍生', () {
+      final state = AiFoodieState(messages: [AiFoodieMessage.user('hi')]);
+      expect(state.messageModels.single.text, 'hi');
+    });
+
     test('history 是送出前的 state.messages（entity）', () async {
       bloc.add(const SendUserPrompt('第一句'));
       await pumpEventQueue();

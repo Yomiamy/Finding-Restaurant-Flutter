@@ -204,8 +204,6 @@ components 陣列內的每個物件必須包含 component_type 與 data：
         .take(limit);
 
     for (final res in selected) {
-      final id = res.id!;
-      final name = res.name!;
       final rating = res.rating != null ? '${res.rating}★' : '無評分';
       final price = res.price ?? '';
       final category =
@@ -217,7 +215,7 @@ components 陣列內的每個物件必須包含 component_type 與 data：
           '';
       final address = res.location?.address1 ?? '';
 
-      buffer.write('- [ID: $id] 名稱: $name | 評分: $rating');
+      buffer.write('- [ID: ${res.id}] 名稱: ${res.name} | 評分: $rating');
       if (price.isNotEmpty) buffer.write(' | 價位: $price');
       if (category.isNotEmpty) buffer.write(' | 類型: $category');
       if (address.isNotEmpty) buffer.write(' | 地址: $address');
@@ -317,8 +315,8 @@ components 陣列內的每個物件必須包含 component_type 與 data：
                       .join('/') ??
                   '';
               return RestaurantComparisonItem(
-                id: r.id!,
-                name: r.name!,
+                id: r.id,
+                name: r.name,
                 rating: r.rating ?? 4.5,
                 price: r.price,
                 highlights: cat.isNotEmpty ? [cat, '精選推薦'] : const ['精選推薦'],
@@ -340,7 +338,10 @@ components 陣列內的每個物件必須包含 component_type 與 data：
                   action: 'open_roulette',
                   payload: {
                     'title': '今晚吃什麼？命運大轉盤',
-                    'options': items.map((e) => e.name).toList(growable: false),
+                    'options': items
+                        .map((e) => e.name)
+                        .nonNulls
+                        .toList(growable: false),
                   },
                 ),
               ],

@@ -1,6 +1,9 @@
 import 'dart:convert';
 
+import 'package:flutter_restaruant/domain/entities/a2ui_fallback_strings.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
+import 'package:flutter_restaruant/flow/ai_foodie/model/ai_foodie_model.dart';
+import 'package:flutter_restaruant/flow/menu_vision/model/menu_vision_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// 驗證 entity 改用 `@JsonSerializable` 後：缺欄位為 null、`toJson` 省略 null key。
@@ -28,6 +31,136 @@ void main() {
       expect(const AllergenInfo(name: '蛋').toJson(), {'name': '蛋'});
       expect(const DishItemEntity(name: 'A').toJson(), {'name': 'A'});
       expect(jsonEncode(const DishItemEntity().toJson()), '{}');
+    });
+  });
+
+  group('A2UI 元件', () {
+    test('缺值 → 欄位為 null（直接呼叫元件 fromJson，不經分派器）', () {
+      final catalog = DishCatalogComponent.fromJson(const {});
+      final matrix = ComparisonMatrixComponent.fromJson(const {});
+      final item = RestaurantComparisonItem.fromJson(const {});
+      final chip = ActionChipItem.fromJson(const {});
+      final roulette = DecisionRouletteComponent.fromJson(const {});
+      expect([
+        catalog.restaurantTitle,
+        catalog.currency,
+        catalog.dishes,
+        matrix.title,
+        matrix.items,
+        item.id,
+        item.name,
+        item.rating,
+        item.price,
+        item.highlights,
+        item.address,
+        item.category,
+        item.imageUrl,
+        ActionChipGroupComponent.fromJson(const {}).chips,
+        chip.label,
+        chip.action,
+        chip.payload,
+        roulette.title,
+        roulette.options,
+        const FallbackMarkdownComponent().text,
+      ], everyElement(isNull));
+    });
+
+    test('toJson 省略 null key，且不含 isValid/props', () {
+      expect(const DecisionRouletteComponent(options: ['A', 'B']).toJson(), {
+        'component_type': 'decision_roulette',
+        'data': {
+          'options': ['A', 'B'],
+        },
+      });
+      expect(const ActionChipItem(label: 'L').toJson(), {'label': 'L'});
+      expect(const RestaurantComparisonItem(name: 'N').toJson(), {'name': 'N'});
+      expect(const FallbackMarkdownComponent().toJson(), {
+        'component_type': 'fallback_markdown',
+      });
+      expect(const FallbackMarkdownComponent(text: 't').toJson(), {
+        'component_type': 'fallback_markdown',
+        'text': 't',
+      });
+    });
+
+    test('ActionChipGroupComponent.fromJson 不過濾，過濾只在分派器', () {
+      final json = {
+        'chips': [
+          {'label': 'L', 'action': 'query'},
+        ],
+      };
+      expect(ActionChipGroupComponent.fromJson(json).chips, hasLength(1));
+      expect(
+        A2UIComponent.fromJson({
+          'component_type': 'action_chip_group',
+          'data': json,
+        }),
+        isA<FallbackMarkdownComponent>(),
+      );
+    });
+
+    test('isValid 接受 null 欄位且不拋例外', () {
+      expect(const ActionChipItem(action: 'query').isValid, isFalse);
+      expect(const ActionChipItem(label: 'L').isValid, isFalse);
+      expect(
+        const ActionChipItem(label: 'L', action: 'query').isValid,
+        isFalse,
+      );
+      expect(
+        const ActionChipItem(label: 'L', action: 'open_roulette').isValid,
+        isFalse,
+      );
+      expect(
+        const ActionChipItem(label: 'L', action: 'custom').isValid,
+        isTrue,
+      );
+    });
+  });
+
+  group('UI model 預設值（entity 全 null）', () {
+    test('AI 覓食元件', () {
+      expect(
+        ComparisonMatrixModel.fromEntity(const ComparisonMatrixComponent()),
+        ComparisonMatrixModel(
+          title: A2UIFallbackStrings.comparisonMatrixTitle,
+          items: const [],
+        ),
+      );
+      expect(
+        ComparisonItemModel.fromEntity(const RestaurantComparisonItem()),
+        ComparisonItemModel(
+          id: '',
+          name: A2UIFallbackStrings.comparisonItemName,
+          rating: 0.0,
+          highlights: const [],
+        ),
+      );
+      expect(
+        ActionChipGroupModel.fromEntity(const ActionChipGroupComponent()),
+        const ActionChipGroupModel(chips: []),
+      );
+      expect(
+        ActionChipModel.fromEntity(const ActionChipItem()),
+        const ActionChipModel(label: '', action: '', payload: {}),
+      );
+      expect(
+        DecisionRouletteModel.fromEntity(const DecisionRouletteComponent()),
+        DecisionRouletteModel(
+          title: A2UIFallbackStrings.decisionRouletteTitle,
+          options: const [],
+        ),
+      );
+      expect(
+        A2UIComponentModel.fromEntity(const FallbackMarkdownComponent()),
+        const FallbackTextModel(text: ''),
+      );
+    });
+
+    test('Menu Vision catalog', () {
+      expect(
+        DishCatalogModel.fromEntity(const DishCatalogComponent()),
+        const DishCatalogModel(currency: 'TWD', dishes: []),
+      );
     });
   });
 }

@@ -27,10 +27,10 @@ void main() {
 
       final matrix = comp as ComparisonMatrixComponent;
       expect(matrix.title, '居酒屋對比');
-      expect(matrix.items.length, 1);
-      expect(matrix.items.first.name, '野武士居酒屋');
-      expect(matrix.items.first.rating, 4.7);
-      expect(matrix.items.first.highlights, contains('串燒極香'));
+      expect(matrix.items, hasLength(1));
+      expect(matrix.items?.first.name, '野武士居酒屋');
+      expect(matrix.items?.first.rating, 4.7);
+      expect(matrix.items?.first.highlights, contains('串燒極香'));
 
       final encoded = matrix.toJson();
       expect(encoded['component_type'], 'comparison_matrix');
@@ -61,10 +61,10 @@ void main() {
       expect(comp, isA<ActionChipGroupComponent>());
 
       final chipGroup = comp as ActionChipGroupComponent;
-      expect(chipGroup.chips.length, 2);
-      expect(chipGroup.chips.first.label, '📍 在地圖上查看');
-      expect(chipGroup.chips.first.action, 'show_on_map');
-      expect(chipGroup.chips[1].action, 'open_roulette');
+      expect(chipGroup.chips, hasLength(2));
+      expect(chipGroup.chips?.first.label, '📍 在地圖上查看');
+      expect(chipGroup.chips?.first.action, 'show_on_map');
+      expect(chipGroup.chips?[1].action, 'open_roulette');
     });
 
     test('DecisionRouletteComponent 正確序列化與反序列化', () {

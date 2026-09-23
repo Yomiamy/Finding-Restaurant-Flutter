@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 
+import '../../../domain/entities/a2ui_fallback_strings.dart';
 import '../../../domain/entities/entities_barrel.dart';
 
 /// AI 覓食對話訊息 UI model（欄位 non-null，預設值集中於 [fromEntity]）
@@ -39,7 +40,7 @@ sealed class A2UIComponentModel extends Equatable {
       ComparisonMatrixComponent() => ComparisonMatrixModel.fromEntity(entity),
       ActionChipGroupComponent() => ActionChipGroupModel.fromEntity(entity),
       DecisionRouletteComponent() => DecisionRouletteModel.fromEntity(entity),
-      FallbackMarkdownComponent() => FallbackTextModel(text: entity.text),
+      FallbackMarkdownComponent() => FallbackTextModel(text: entity.text ?? ''),
       DishCatalogComponent() => null,
     };
   }
@@ -51,8 +52,8 @@ final class ComparisonMatrixModel extends A2UIComponentModel {
 
   factory ComparisonMatrixModel.fromEntity(ComparisonMatrixComponent entity) {
     return ComparisonMatrixModel(
-      title: entity.title,
-      items: entity.items
+      title: entity.title ?? A2UIFallbackStrings.comparisonMatrixTitle,
+      items: (entity.items ?? const [])
           .map(ComparisonItemModel.fromEntity)
           .toList(growable: false),
     );
@@ -71,7 +72,7 @@ final class ActionChipGroupModel extends A2UIComponentModel {
 
   factory ActionChipGroupModel.fromEntity(ActionChipGroupComponent entity) {
     return ActionChipGroupModel(
-      chips: entity.chips
+      chips: (entity.chips ?? const [])
           .map(ActionChipModel.fromEntity)
           .toList(growable: false),
     );
@@ -88,7 +89,10 @@ final class DecisionRouletteModel extends A2UIComponentModel {
   const DecisionRouletteModel({required this.title, required this.options});
 
   factory DecisionRouletteModel.fromEntity(DecisionRouletteComponent entity) {
-    return DecisionRouletteModel(title: entity.title, options: entity.options);
+    return DecisionRouletteModel(
+      title: entity.title ?? A2UIFallbackStrings.decisionRouletteTitle,
+      options: entity.options ?? const [],
+    );
   }
 
   final String title;
@@ -126,11 +130,11 @@ class ComparisonItemModel extends Equatable {
 
   factory ComparisonItemModel.fromEntity(RestaurantComparisonItem entity) {
     return ComparisonItemModel(
-      id: entity.id,
-      name: entity.name,
-      rating: entity.rating,
+      id: entity.id ?? '',
+      name: entity.name ?? A2UIFallbackStrings.comparisonItemName,
+      rating: entity.rating ?? 0.0,
       price: entity.price,
-      highlights: entity.highlights,
+      highlights: entity.highlights ?? const [],
       address: entity.address,
       category: entity.category,
       imageUrl: entity.imageUrl,
@@ -169,9 +173,9 @@ class ActionChipModel extends Equatable {
 
   factory ActionChipModel.fromEntity(ActionChipItem entity) {
     return ActionChipModel(
-      label: entity.label,
-      action: entity.action,
-      payload: entity.payload,
+      label: entity.label ?? '',
+      action: entity.action ?? '',
+      payload: entity.payload ?? const {},
     );
   }
 

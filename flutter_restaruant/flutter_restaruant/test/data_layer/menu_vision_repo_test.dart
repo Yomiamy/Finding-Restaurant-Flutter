@@ -68,16 +68,16 @@ void main() {
         final catalog = result as DishCatalogComponent;
         expect(catalog.restaurantTitle, '居酒屋 一休');
         expect(catalog.currency, 'JPY');
-        expect(catalog.dishes.length, 1);
+        expect(catalog.dishes, hasLength(1));
 
-        final dish = catalog.dishes.first;
-        expect(dish.id, 'dish-1');
-        expect(dish.name, '烤飯糰');
-        expect(dish.originalName, '焼きおにぎり');
-        expect(dish.category, DishCategory.main);
-        expect(dish.price, 350.0);
-        expect(dish.allergens, hasLength(1));
-        expect(dish.allergens?.first.riskLevel, AllergenRiskLevel.contains);
+        final dish = catalog.dishes?.first;
+        expect(dish?.id, 'dish-1');
+        expect(dish?.name, '烤飯糰');
+        expect(dish?.originalName, '焼きおにぎり');
+        expect(dish?.category, DishCategory.main);
+        expect(dish?.price, 350.0);
+        expect(dish?.allergens, hasLength(1));
+        expect(dish?.allergens?.first.riskLevel, AllergenRiskLevel.contains);
       },
     );
 
@@ -190,7 +190,7 @@ void main() {
 
       final result = await repo.captureAndAnalyzeMenu();
       expect(result, isA<DishCatalogComponent>());
-      expect((result as DishCatalogComponent).dishes.first.name, '烤飯糰');
+      expect((result as DishCatalogComponent).dishes?.first.name, '烤飯糰');
     });
 
     test(

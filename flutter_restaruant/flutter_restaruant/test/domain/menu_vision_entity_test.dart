@@ -162,15 +162,15 @@ void main() {
         final catalog = component as DishCatalogComponent;
         expect(catalog.restaurantTitle, '野武士居酒屋');
         expect(catalog.currency, 'JPY');
-        expect(catalog.dishes.length, 1);
-        expect(catalog.dishes.first.name, '特選生魚片拼盤');
+        expect(catalog.dishes, hasLength(1));
+        expect(catalog.dishes?.first.name, '特選生魚片拼盤');
 
         const A2UIComponent unpromoted = DishCatalogComponent(
           restaurantTitle: 'Test',
           dishes: [],
         );
         final description = switch (unpromoted) {
-          DishCatalogComponent(:final dishes) => '有 ${dishes.length} 道菜',
+          DishCatalogComponent(:final dishes) => '有 ${dishes?.length} 道菜',
           FallbackMarkdownComponent(:final text) => text,
           _ => '',
         };
