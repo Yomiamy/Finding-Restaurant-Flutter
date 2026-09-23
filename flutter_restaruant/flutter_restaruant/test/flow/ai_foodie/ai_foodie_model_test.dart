@@ -132,4 +132,51 @@ void main() {
       expect(m.options, ['A', 'B']);
     });
   });
+
+  group('UI model 預設值（entity 全 null）', () {
+    test('AI 覓食元件', () {
+      expect(
+        ComparisonMatrixModel.fromEntity(const ComparisonMatrixComponent()),
+        ComparisonMatrixModel(
+          title: A2UIFallbackStrings.comparisonMatrixTitle,
+          items: const [],
+        ),
+      );
+      expect(
+        ComparisonItemModel.fromEntity(const RestaurantComparisonItem()),
+        ComparisonItemModel(
+          id: '',
+          name: A2UIFallbackStrings.comparisonItemName,
+          rating: 0.0,
+          highlights: const [],
+        ),
+      );
+      expect(
+        ActionChipGroupModel.fromEntity(const ActionChipGroupComponent()),
+        const ActionChipGroupModel(chips: []),
+      );
+      expect(
+        ActionChipModel.fromEntity(const ActionChipItem()),
+        const ActionChipModel(label: '', action: '', payload: {}),
+      );
+      expect(
+        DecisionRouletteModel.fromEntity(const DecisionRouletteComponent()),
+        DecisionRouletteModel(
+          title: A2UIFallbackStrings.decisionRouletteTitle,
+          options: const [],
+        ),
+      );
+      expect(
+        A2UIComponentModel.fromEntity(const FallbackMarkdownComponent()),
+        const FallbackTextModel(text: ''),
+      );
+    });
+
+    test('AiFoodieMessage', () {
+      expect(
+        AiFoodieMessageModel.fromEntity(AiFoodieMessage.fromJson(const {})),
+        const AiFoodieMessageModel(isUser: false, text: '', components: []),
+      );
+    });
+  });
 }

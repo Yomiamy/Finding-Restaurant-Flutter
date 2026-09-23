@@ -85,4 +85,11 @@ void main() {
     expect(catalogModel.dishes, hasLength(1));
     expect(catalogModel.dishes.single.name, '豚骨拉麵');
   });
+
+  test('fromEntity：entity 全 null（非缺欄位建構）→ UI 預設值', () {
+    expect(
+      DishCatalogModel.fromEntity(const DishCatalogComponent()),
+      const DishCatalogModel(currency: 'TWD', dishes: []),
+    );
+  });
 }

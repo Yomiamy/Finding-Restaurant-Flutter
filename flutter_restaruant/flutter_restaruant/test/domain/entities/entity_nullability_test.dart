@@ -1,9 +1,6 @@
 import 'dart:convert';
 
-import 'package:flutter_restaruant/domain/entities/a2ui_fallback_strings.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
-import 'package:flutter_restaruant/flow/ai_foodie/model/ai_foodie_model.dart';
-import 'package:flutter_restaruant/flow/menu_vision/model/menu_vision_model.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 /// 驗證 entity 改用 `@JsonSerializable` 後：缺欄位為 null、`toJson` 省略 null key。
@@ -113,60 +110,6 @@ void main() {
       expect(
         const ActionChipItem(label: 'L', action: 'custom').isValid,
         isTrue,
-      );
-    });
-  });
-
-  group('UI model 預設值（entity 全 null）', () {
-    test('AI 覓食元件', () {
-      expect(
-        ComparisonMatrixModel.fromEntity(const ComparisonMatrixComponent()),
-        ComparisonMatrixModel(
-          title: A2UIFallbackStrings.comparisonMatrixTitle,
-          items: const [],
-        ),
-      );
-      expect(
-        ComparisonItemModel.fromEntity(const RestaurantComparisonItem()),
-        ComparisonItemModel(
-          id: '',
-          name: A2UIFallbackStrings.comparisonItemName,
-          rating: 0.0,
-          highlights: const [],
-        ),
-      );
-      expect(
-        ActionChipGroupModel.fromEntity(const ActionChipGroupComponent()),
-        const ActionChipGroupModel(chips: []),
-      );
-      expect(
-        ActionChipModel.fromEntity(const ActionChipItem()),
-        const ActionChipModel(label: '', action: '', payload: {}),
-      );
-      expect(
-        DecisionRouletteModel.fromEntity(const DecisionRouletteComponent()),
-        DecisionRouletteModel(
-          title: A2UIFallbackStrings.decisionRouletteTitle,
-          options: const [],
-        ),
-      );
-      expect(
-        A2UIComponentModel.fromEntity(const FallbackMarkdownComponent()),
-        const FallbackTextModel(text: ''),
-      );
-    });
-
-    test('Menu Vision catalog', () {
-      expect(
-        DishCatalogModel.fromEntity(const DishCatalogComponent()),
-        const DishCatalogModel(currency: 'TWD', dishes: []),
-      );
-    });
-
-    test('AiFoodieMessage', () {
-      expect(
-        AiFoodieMessageModel.fromEntity(AiFoodieMessage.fromJson(const {})),
-        const AiFoodieMessageModel(isUser: false, text: '', components: []),
       );
     });
   });
