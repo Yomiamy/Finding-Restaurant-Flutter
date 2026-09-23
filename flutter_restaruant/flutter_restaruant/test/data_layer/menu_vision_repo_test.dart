@@ -55,101 +55,128 @@ void main() {
   });
 
   group('MenuVisionRepo Unit Tests', () {
-    test('analyzeMenuImageBytes parses valid JSON to DishCatalogComponent', () async {
-      final repo = MenuVisionRepo(
-        analyzer: (bytes) async => sampleValidJson,
-      );
+    test(
+      'analyzeMenuImageBytes parses valid JSON to DishCatalogComponent',
+      () async {
+        final repo = MenuVisionRepo(analyzer: (bytes) async => sampleValidJson);
 
-      final result = await repo.analyzeMenuImageBytes(Uint8List.fromList([1, 2, 3]));
-      expect(result, isA<DishCatalogComponent>());
+        final result = await repo.analyzeMenuImageBytes(
+          Uint8List.fromList([1, 2, 3]),
+        );
+        expect(result, isA<DishCatalogComponent>());
 
-      final catalog = result as DishCatalogComponent;
-      expect(catalog.restaurantTitle, '居酒屋 一休');
-      expect(catalog.currency, 'JPY');
-      expect(catalog.dishes.length, 1);
+        final catalog = result as DishCatalogComponent;
+        expect(catalog.restaurantTitle, '居酒屋 一休');
+        expect(catalog.currency, 'JPY');
+        expect(catalog.dishes.length, 1);
 
-      final dish = catalog.dishes.first;
-      expect(dish.id, 'dish-1');
-      expect(dish.name, '烤飯糰');
-      expect(dish.originalName, '焼きおにぎり');
-      expect(dish.category, DishCategory.main);
-      expect(dish.price, 350.0);
-      expect(dish.allergens.length, 1);
-      expect(dish.allergens.first.riskLevel, AllergenRiskLevel.contains);
-    });
+        final dish = catalog.dishes.first;
+        expect(dish.id, 'dish-1');
+        expect(dish.name, '烤飯糰');
+        expect(dish.originalName, '焼きおにぎり');
+        expect(dish.category, DishCategory.main);
+        expect(dish.price, 350.0);
+        expect(dish.allergens, hasLength(1));
+        expect(dish.allergens?.first.riskLevel, AllergenRiskLevel.contains);
+      },
+    );
 
-    test('analyzeMenuImageBytes falls back to FallbackMarkdownComponent on empty response', () async {
-      final repo = MenuVisionRepo(
-        analyzer: (bytes) async => '',
-      );
+    test(
+      'analyzeMenuImageBytes falls back to FallbackMarkdownComponent on empty response',
+      () async {
+        final repo = MenuVisionRepo(analyzer: (bytes) async => '');
 
-      final result = await repo.analyzeMenuImageBytes(Uint8List.fromList([1, 2, 3]));
-      expect(result, isA<FallbackMarkdownComponent>());
-      expect((result as FallbackMarkdownComponent).text, contains('未能取得'));
-    });
+        final result = await repo.analyzeMenuImageBytes(
+          Uint8List.fromList([1, 2, 3]),
+        );
+        expect(result, isA<FallbackMarkdownComponent>());
+        expect((result as FallbackMarkdownComponent).text, contains('未能取得'));
+      },
+    );
 
-    test('analyzeMenuImageBytes falls back on Exception during analyzer', () async {
-      final repo = MenuVisionRepo(
-        analyzer: (bytes) async => throw Exception('網路連線逾時 (HTTP 429)'),
-      );
+    test(
+      'analyzeMenuImageBytes falls back on Exception during analyzer',
+      () async {
+        final repo = MenuVisionRepo(
+          analyzer: (bytes) async => throw Exception('網路連線逾時 (HTTP 429)'),
+        );
 
-      final result = await repo.analyzeMenuImageBytes(Uint8List.fromList([1, 2, 3]));
-      expect(result, isA<FallbackMarkdownComponent>());
-      expect((result as FallbackMarkdownComponent).text, contains('菜單辨識異常'));
-    });
+        final result = await repo.analyzeMenuImageBytes(
+          Uint8List.fromList([1, 2, 3]),
+        );
+        expect(result, isA<FallbackMarkdownComponent>());
+        expect((result as FallbackMarkdownComponent).text, contains('菜單辨識異常'));
+      },
+    );
 
-    test('analyzeMenuImageBytes falls back to FallbackMarkdownComponent on non-map JSON', () async {
-      final repo = MenuVisionRepo(
-        analyzer: (bytes) async => jsonEncode(['not', 'a', 'map']),
-      );
+    test(
+      'analyzeMenuImageBytes falls back to FallbackMarkdownComponent on non-map JSON',
+      () async {
+        final repo = MenuVisionRepo(
+          analyzer: (bytes) async => jsonEncode(['not', 'a', 'map']),
+        );
 
-      final result = await repo.analyzeMenuImageBytes(Uint8List.fromList([1, 2, 3]));
-      expect(result, isA<FallbackMarkdownComponent>());
-      expect((result as FallbackMarkdownComponent).text, contains('非預期物件'));
-    });
+        final result = await repo.analyzeMenuImageBytes(
+          Uint8List.fromList([1, 2, 3]),
+        );
+        expect(result, isA<FallbackMarkdownComponent>());
+        expect((result as FallbackMarkdownComponent).text, contains('非預期物件'));
+      },
+    );
 
-    test('analyzeMenuImageBytes falls back on TypeError during field extraction', () async {
-      final repo = MenuVisionRepo(
-        analyzer: (bytes) async => jsonEncode({
-          'restaurant_title': 12345, // Not a string!
-          'dishes': 'not a list',
-        }),
-      );
+    test(
+      'analyzeMenuImageBytes falls back on TypeError during field extraction',
+      () async {
+        final repo = MenuVisionRepo(
+          analyzer: (bytes) async => jsonEncode({
+            'restaurant_title': 12345, // Not a string!
+            'dishes': 'not a list',
+          }),
+        );
 
-      final result = await repo.analyzeMenuImageBytes(Uint8List.fromList([1, 2, 3]));
-      expect(result, isA<FallbackMarkdownComponent>());
-      expect((result as FallbackMarkdownComponent).text, contains('欄位型別異常'));
-    });
+        final result = await repo.analyzeMenuImageBytes(
+          Uint8List.fromList([1, 2, 3]),
+        );
+        expect(result, isA<FallbackMarkdownComponent>());
+        expect((result as FallbackMarkdownComponent).text, contains('欄位型別異常'));
+      },
+    );
 
-    test('captureImage and pickImageFromGallery return bytes correctly', () async {
-      final dummyBytes = Uint8List.fromList([1, 2, 3]);
-      final dummyFile = XFile.fromData(dummyBytes, name: 'test.jpg');
-      final picker = FakeImagePicker(fileToReturn: dummyFile);
+    test(
+      'captureImage and pickImageFromGallery return bytes correctly',
+      () async {
+        final dummyBytes = Uint8List.fromList([1, 2, 3]);
+        final dummyFile = XFile.fromData(dummyBytes, name: 'test.jpg');
+        final picker = FakeImagePicker(fileToReturn: dummyFile);
 
-      final repo = MenuVisionRepo(picker: picker);
-      final captured = await repo.captureImage();
-      expect(captured, equals(dummyBytes));
-      expect(picker.lastSource, ImageSource.camera);
+        final repo = MenuVisionRepo(picker: picker);
+        final captured = await repo.captureImage();
+        expect(captured, equals(dummyBytes));
+        expect(picker.lastSource, ImageSource.camera);
 
-      final picked = await repo.pickImageFromGallery();
-      expect(picked, equals(dummyBytes));
-      expect(picker.lastSource, ImageSource.gallery);
-    });
+        final picked = await repo.pickImageFromGallery();
+        expect(picked, equals(dummyBytes));
+        expect(picker.lastSource, ImageSource.gallery);
+      },
+    );
 
-    test('captureAndAnalyzeMenu returns null when user cancels camera', () async {
-      final picker = FakeImagePicker(fileToReturn: null);
-      final repo = MenuVisionRepo(
-        picker: picker,
-        analyzer: (bytes) async => sampleValidJson,
-      );
+    test(
+      'captureAndAnalyzeMenu returns null when user cancels camera',
+      () async {
+        final picker = FakeImagePicker(fileToReturn: null);
+        final repo = MenuVisionRepo(
+          picker: picker,
+          analyzer: (bytes) async => sampleValidJson,
+        );
 
-      final result = await repo.captureAndAnalyzeMenu();
-      expect(result, isNull);
-      expect(picker.lastSource, ImageSource.camera);
-      expect(picker.lastMaxWidth, 1500);
-      expect(picker.lastMaxHeight, 1500);
-      expect(picker.lastImageQuality, 85);
-    });
+        final result = await repo.captureAndAnalyzeMenu();
+        expect(result, isNull);
+        expect(picker.lastSource, ImageSource.camera);
+        expect(picker.lastMaxWidth, 1500);
+        expect(picker.lastMaxHeight, 1500);
+        expect(picker.lastImageQuality, 85);
+      },
+    );
 
     test('captureAndAnalyzeMenu succeeds with photo', () async {
       final dummyBytes = Uint8List.fromList([10, 20, 30]);
@@ -166,17 +193,20 @@ void main() {
       expect((result as DishCatalogComponent).dishes.first.name, '烤飯糰');
     });
 
-    test('pickFromGalleryAndAnalyzeMenu returns null when user cancels gallery', () async {
-      final picker = FakeImagePicker(fileToReturn: null);
-      final repo = MenuVisionRepo(
-        picker: picker,
-        analyzer: (bytes) async => sampleValidJson,
-      );
+    test(
+      'pickFromGalleryAndAnalyzeMenu returns null when user cancels gallery',
+      () async {
+        final picker = FakeImagePicker(fileToReturn: null);
+        final repo = MenuVisionRepo(
+          picker: picker,
+          analyzer: (bytes) async => sampleValidJson,
+        );
 
-      final result = await repo.pickFromGalleryAndAnalyzeMenu();
-      expect(result, isNull);
-      expect(picker.lastSource, ImageSource.gallery);
-    });
+        final result = await repo.pickFromGalleryAndAnalyzeMenu();
+        expect(result, isNull);
+        expect(picker.lastSource, ImageSource.gallery);
+      },
+    );
 
     test('pickFromGalleryAndAnalyzeMenu succeeds with gallery image', () async {
       final dummyBytes = Uint8List.fromList([40, 50, 60]);

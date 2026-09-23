@@ -40,16 +40,16 @@ class DishModel extends Equatable {
 
   factory DishModel.fromEntity(DishItemEntity entity) {
     return DishModel(
-      name: entity.name,
-      originalName: entity.originalName,
-      price: entity.price,
-      category: entity.category,
-      allergens: entity.allergens
+      name: entity.name ?? '',
+      originalName: entity.originalName ?? '',
+      price: entity.price ?? 0.0,
+      category: entity.category ?? DishCategory.other,
+      allergens: (entity.allergens ?? const [])
           .map(AllergenModel.fromEntity)
           .toList(growable: false),
-      dietaryTags: entity.dietaryTags,
-      spiceLevel: entity.spiceLevel,
-      ingredients: entity.ingredients,
+      dietaryTags: entity.dietaryTags ?? const [],
+      spiceLevel: entity.spiceLevel ?? 0,
+      ingredients: entity.ingredients ?? const [],
     );
   }
 
@@ -80,7 +80,10 @@ class AllergenModel extends Equatable {
   const AllergenModel({required this.name, required this.riskLevel});
 
   factory AllergenModel.fromEntity(AllergenInfo entity) {
-    return AllergenModel(name: entity.name, riskLevel: entity.riskLevel);
+    return AllergenModel(
+      name: entity.name ?? '',
+      riskLevel: entity.riskLevel ?? AllergenRiskLevel.none,
+    );
   }
 
   final String name;
