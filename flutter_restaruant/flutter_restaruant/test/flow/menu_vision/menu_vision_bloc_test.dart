@@ -77,7 +77,7 @@ void main() {
     late MockMenuVisionRepository mockRepo;
 
     setUp(() async {
-    await S.load(const Locale('zh', 'TW'));
+      await S.load(const Locale('zh', 'TW'));
       mockRepo = MockMenuVisionRepository();
     });
 
@@ -90,7 +90,7 @@ void main() {
       act: (bloc) => bloc.add(const CaptureAndAnalyzeMenu()),
       expect: () => [
         const MenuVisionLoading(),
-        MenuVisionSuccess(catalog: sampleCatalog),
+        MenuVisionSuccess(catalog: DishCatalogModel.fromEntity(sampleCatalog)),
       ],
       verify: (_) => expect(mockRepo.captureCalled, isTrue),
     );
@@ -102,18 +102,13 @@ void main() {
         return MenuVisionBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const CaptureAndAnalyzeMenu()),
-      expect: () => [
-        const MenuVisionLoading(),
-        const MenuVisionCancelled(),
-      ],
+      expect: () => [const MenuVisionLoading(), const MenuVisionCancelled()],
     );
 
     blocTest<MenuVisionBloc, MenuVisionState>(
       'emits [Loading, Failure] when camera capture returns FallbackMarkdown',
       build: () {
-        mockRepo.captureResult = const FallbackMarkdownComponent(
-          text: '辨識失敗',
-        );
+        mockRepo.captureResult = const FallbackMarkdownComponent(text: '辨識失敗');
         return MenuVisionBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const CaptureAndAnalyzeMenu()),
@@ -133,10 +128,7 @@ void main() {
         return MenuVisionBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const CaptureAndAnalyzeMenu()),
-      expect: () => [
-        const MenuVisionLoading(),
-        isA<MenuVisionFailure>(),
-      ],
+      expect: () => [const MenuVisionLoading(), isA<MenuVisionFailure>()],
     );
 
     blocTest<MenuVisionBloc, MenuVisionState>(
@@ -145,12 +137,11 @@ void main() {
         mockRepo.galleryResult = sampleCatalog;
         return MenuVisionBloc(repository: mockRepo);
       },
-      act: (bloc) => bloc.add(
-        const CaptureAndAnalyzeMenu(source: ImageSource.gallery),
-      ),
+      act: (bloc) =>
+          bloc.add(const CaptureAndAnalyzeMenu(source: ImageSource.gallery)),
       expect: () => [
         const MenuVisionLoading(),
-        MenuVisionSuccess(catalog: sampleCatalog),
+        MenuVisionSuccess(catalog: DishCatalogModel.fromEntity(sampleCatalog)),
       ],
       verify: (_) => expect(mockRepo.galleryCalled, isTrue),
     );
@@ -166,14 +157,16 @@ void main() {
       ),
       expect: () => [
         const MenuVisionLoading(),
-        MenuVisionSuccess(catalog: sampleCatalog),
+        MenuVisionSuccess(catalog: DishCatalogModel.fromEntity(sampleCatalog)),
       ],
     );
 
     blocTest<MenuVisionBloc, MenuVisionState>(
       'emits [Initial] on ResetMenuVision',
       build: () => MenuVisionBloc(repository: mockRepo),
-      seed: () => MenuVisionSuccess(catalog: sampleCatalog),
+      seed: () => MenuVisionSuccess(
+        catalog: DishCatalogModel.fromEntity(sampleCatalog),
+      ),
       act: (bloc) => bloc.add(const ResetMenuVision()),
       expect: () => [const MenuVisionInitial()],
     );

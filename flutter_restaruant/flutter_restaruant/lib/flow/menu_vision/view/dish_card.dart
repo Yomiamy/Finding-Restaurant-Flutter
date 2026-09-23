@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
-import '../../../domain/entities/entities_barrel.dart';
 import '../../../generated/l10n.dart';
+import '../model/menu_vision_model.dart';
 import 'allergen_badge.dart';
 
 /// 菜色卡片元件
 class DishCard extends StatelessWidget {
-  final DishItemEntity dish;
+  final DishModel dish;
   final String currency;
 
-  const DishCard({
-    super.key,
-    required this.dish,
-    this.currency = 'TWD',
-  });
+  const DishCard({super.key, required this.dish, this.currency = 'TWD'});
 
   /// 依幣別代碼格式化價格標記
   static String formatPrice(double price, String currency) {
@@ -143,14 +139,16 @@ class DishCard extends StatelessWidget {
               Wrap(
                 spacing: 6,
                 runSpacing: 4,
-                children: dish.dietaryTags.map((tag) {
-                  return Chip(
-                    label: Text(tag, style: const TextStyle(fontSize: 11)),
-                    padding: EdgeInsets.zero,
-                    materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                    visualDensity: VisualDensity.compact,
-                  );
-                }).toList(growable: false),
+                children: dish.dietaryTags
+                    .map((tag) {
+                      return Chip(
+                        label: Text(tag, style: const TextStyle(fontSize: 11)),
+                        padding: EdgeInsets.zero,
+                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                        visualDensity: VisualDensity.compact,
+                      );
+                    })
+                    .toList(growable: false),
               ),
             ],
           ],

@@ -18,9 +18,9 @@ class MenuVisionLoading extends MenuVisionState {
   const MenuVisionLoading();
 }
 
-/// 分析成功（持 DishCatalogComponent 供 UI 渲染）
+/// 分析成功（持 DishCatalogModel 供 UI 渲染）
 class MenuVisionSuccess extends MenuVisionState {
-  final DishCatalogComponent catalog;
+  final DishCatalogModel catalog;
 
   const MenuVisionSuccess({required this.catalog});
 
@@ -33,10 +33,7 @@ class MenuVisionFailure extends MenuVisionState {
   final String message;
   final Uint8List? failedImageBytes;
 
-  const MenuVisionFailure({
-    required this.message,
-    this.failedImageBytes,
-  });
+  const MenuVisionFailure({required this.message, this.failedImageBytes});
 
   @override
   List<Object?> get props => [message, failedImageBytes];
