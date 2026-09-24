@@ -29,8 +29,8 @@
 
 | 呼叫端 | 資料來源 | 對異常輸入的處理 |
 |--------|----------|------------------|
-| `ai_foodie_repo.dart::_parseResponse` → `A2UIComponent.fromJson` | **LLM 輸出（不可信）** | 外層 `catch (_)` 降級成 `FallbackMarkdownComponent` |
-| `menu_vision_repo.dart` → `A2UIComponent.fromJson({'component_type':'dish_catalog', ...})` | **LLM 視覺辨識輸出（不可信）** | `on FormatException`／`TypeError`／`Exception` 降級成文字卡 |
+| `ai_foodie_repo.dart::_parseResponse` → `A2UIComponent.fromJson` | **LLM 輸出（不可信）** | 外層 `on Exception catch` 降級成 `FallbackMarkdownComponent` |
+| `menu_vision_repo.dart` → `A2UIComponent.fromJson({'component_type':'dish_catalog', ...})` | **LLM 視覺辨識輸出（不可信）** | `on FormatException`／`CheckedFromJsonException`／`Exception` 降級成文字卡 |
 | `ai_foodie_repo.dart::serializeAssistantHistory` → `component.toJson()` → `jsonEncode` | 本地 entity | **當成多輪對話歷史回送 LLM** |
 | `AiFoodieBloc` → `state.messages` 當 `history` 傳給 repo | 本地 entity | history 必須是 entity（要能 `toJson`），不能只剩 UI model |
 
@@ -40,7 +40,7 @@
 3. **null 省略**：`restaurantTitle`、`price`、`address`、`category`、`imageUrl` 為 null 時不輸出 key。
 4. **信封格式**：元件 `toJson` 輸出 `{'component_type', 'data': {...}}`，`fromJson` 只收 `data`。`FallbackMarkdownComponent` 是扁平的 `{'component_type', 'text'}`。
 5. **分派器是元件 `fromJson` 的唯一呼叫端**（`a2ui_component.dart:21,30,39,48`），`isValid` 只在 `:212` 使用。
-6. **型別錯誤會 throw**：`json['x'] as String?` 型別不符就丟 `TypeError`，由 repo 層接住。產生碼行為相同。
+6. **型別錯誤會 throw**：`json['x'] as String?` 型別不符就丟 `TypeError`，由 repo 層接住。**v5.2 起改為 `checked: true`，產生碼改丟 `CheckedFromJsonException`；分派器的 `_optString` 與 `data` 型別檢查改丟 `FormatException`，見 §7。**
 
 ---
 
@@ -67,7 +67,7 @@
 - 不是建構式參數的 getter（`isAssistant`、`isValid`）明確標註 `@JsonKey(includeFromJson: false, includeToJson: false)`。
 - 元件的 `toJson` 保留一行手寫信封，例如 `{'component_type': 'dish_catalog', 'data': _$DishCatalogComponentToJson(this)}`。`FallbackMarkdownComponent` 維持扁平：`{'component_type': 'fallback_markdown', ..._$FallbackMarkdownComponentToJson(this)}`。
 - **`FallbackMarkdownComponent` 維持預設的 `createFactory: true`，但 class 裡不宣告 `fromJson` factory。** v3 原本寫 `createFactory: false`，那是錯的：json_serializable 6.14.1 在 `createFactory: false` 時，不會把 `toJson` 限縮到建構式有用到的欄位（`generator_helper.dart:87-109`），Equatable 的 `props`、`stringify`、`hashCode` 會被寫進 `toJson`。維持預設後，`.g.dart` 會多一個沒人用的私有函式，但 `.g.dart` 已被排除在 analyzer 之外，不會有警告。
-- 型別不符（例如 `name: 123`）仍然拋 `TypeError`，行為和現在相同。
+- 型別不符（例如 `name: 123`）**v5.2 起改拋 `CheckedFromJsonException`**（`checked: true`；見 §7），不再是 `TypeError`。
 
 ### 3.3 分派器與 domain 內部邏輯改為接受 null
 
@@ -115,7 +115,7 @@
    - **分派器**：chips 部分不合法時只保留合法的，全部不合法時降級；dishes／items／chips 是 null 或空時降級；options 是 null 或少於 2 個時降級；未知 type 降級。
    - **enum**：`risk_level` 輸入 `"CONTAINS"`、`"may_contain"`、`"maycontain"`、`"MayContain"`、`"unknown"` 時，對應結果不變；缺值時 entity 為 `null`，UI model 為 `none`。`category` 同理，UI model 預設 `other`。
    - **數值**：`price`／`rating`／`chef_recommendation_score` 給 `int` 能正確轉成 double；`spice_level` 給 `2.7` 得到 `2`。
-   - **純量型別錯誤**（例如 `name: 123`）維持拋 `TypeError`，由 repo 層接住後降級。
+   - **純量型別錯誤**（例如 `name: 123`）**v5.2 起改拋 `CheckedFromJsonException`／`FormatException`**（見 §7），由 repo 層接住後降級。
 2. **Entity 如實反映缺值**：缺欄位時，entity 對應欄位為 `null`（包含 List 與 enum）。
 3. **toJson**：
    - 所有欄位都有值的實例：`jsonEncode(entity.toJson())` 的字串和改動前**逐字相同**（key 順序、enum 字串、信封格式都不變）。
@@ -170,3 +170,4 @@
 - **v3**：為了一致性，納入 `FallbackMarkdownComponent`。當時寫的 `createFactory: false` 在 v5 更正。
 - **v4**：納入 `AiFoodieMessage`；預設值從 `@JsonKey(defaultValue:)` 改為寫在建構式。
 - **v5**：使用者要求 entity 如實反映 server 資料：欄位全部 nullable、不帶預設值，預設值由 BLoC 轉成 UI model 時提供；`toJson` 省略 null；`isAssistant` 等 getter 明確標註不序列化；更正 v3 的 `createFactory: false`。
+- **v5.2**（PR #127 review 過程追加，違反 flutter-styles §6.1「不捕捉 Error」）：`@JsonSerializable` 加上 `checked: true`，型別不符時產生碼改拋 `CheckedFromJsonException`（`implements Exception`）取代 `TypeError`；分派器 `_optString` 與 `data` 型別檢查改拋 `FormatException`。`menu_vision_repo.dart` 的 `on TypeError` 改為 `on CheckedFromJsonException`。`test/domain/entities/a2ui_characterization_test.dart` 的「純量型別錯誤」一組 8 個 case 期望值同步從 `TypeError` 改為對應的 `Exception` 子類（輸入不變）；本檔與計畫文件相應章節的 `TypeError` 敘述一併更新。

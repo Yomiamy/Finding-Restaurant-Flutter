@@ -13,7 +13,7 @@
 |------|------|--------------|
 | `int` 欄位產生 `(json['x'] as num?)?.toInt()`；`double` 產生 `(… as num?)?.toDouble()` | `json_serializable-6.14.1/lib/src/utils.dart:267,271` | `spice_level: 2.7 → 2`、`price: 280 → 280.0` 不需轉換器 |
 | `toJson` 的 key 順序＝**欄位宣告順序** | `field_helpers.dart:39 _sortByLocation` | 欄位宣告順序一律不動；現行手寫 `toJson` 的 key 順序剛好與欄位宣告順序一致 |
-| `@JsonKey(fromJson: f)` 會先把輸入 cast 成 `f` 的參數型別（`List<Object?>?` → `as List?`，`String?` → `as String?`） | `lambda_result.dart::_cast` | 轉換器參數寫成 `String?`／`List<Object?>?`，型別不符仍拋 `TypeError`（行為不變） |
+| `@JsonKey(fromJson: f)` 會先把輸入 cast 成 `f` 的參數型別（`List<Object?>?` → `as List?`，`String?` → `as String?`） | `lambda_result.dart::_cast` | 轉換器參數寫成 `String?`／`List<Object?>?`，型別不符仍會 throw；**v5.2 起 `checked: true` 把這個 cast 包進 try/catch，改拋 `CheckedFromJsonException`（不再是 `TypeError`），見規格 §7** |
 | 無 `defaultValue` 時使用建構式預設值；`createFactory: false` 會把 Equatable getter 寫進 `toJson` | 規格 §3.2 | entity 建構式不放預設值；`FallbackMarkdownComponent` 維持預設 `createFactory` 但不宣告 `fromJson` |
 | `analysis_options.yaml` 排除 `**/*.g.dart` | repo | 產生碼裡未使用的 `_$FallbackMarkdownComponentFromJson` 不會觸發警告 |
 
@@ -264,6 +264,8 @@ flutter test
 ```
 
 #### T1-1 `test/domain/entities/a2ui_characterization_test.dart`
+
+> **v5.2 追記**：下方程式碼是 T1 當時（`checked: true` 尚未導入）的原始版本，保留供對照。§3「鐵律」1 原則上禁止 T2 之後修改此檔；PR #127 review 過程中導入 `checked: true`（見規格 §7 v5.2）是刻意的例外——`純量型別錯誤拋 TypeError` 群組的期望值改為 `CheckedFromJsonException`／`FormatException`（`isA<Exception>()` 系列），輸入不變，測試名稱同步改為「純量型別錯誤拋 Exception（不拋 TypeError）」。實際最終內容以 `test/domain/entities/a2ui_characterization_test.dart` 為準。
 
 ```dart
 import 'dart:convert';
@@ -1300,7 +1302,7 @@ T1 三個檔、`menu_vision_model_test.dart`、`ai_foodie_model_test.dart` 必�
    List<A2UIComponent>? _componentsFromJson(List<Object?>? raw) =>
        mapListFromJson(raw, A2UIComponent.fromJson);
 
-   /// 參數型別 `String?`：非字串仍拋 TypeError（現行行為）；字串解析失敗回傳 null。
+   /// 參數型別 `String?`：非字串仍會 throw（v5.2 起 `checked: true` 包成 CheckedFromJsonException，見規格 §7）；字串解析失敗回傳 null。
    DateTime? _createdAtFromJson(String? value) =>
        value == null ? null : DateTime.tryParse(value);
    ```
@@ -1375,6 +1377,7 @@ rtk proxy grep -rn "fromJson\|toJson" lib/domain/entities/{allergen_info,dish_it
 4. **enum 仍在 domain**：`AllergenRiskLevel`、`DishCategory`（含多語系顯示）由 `menu_vision_model.dart` 以 `export … show` 轉出，View 經 model 檔取得，不直接 import domain。
 5. **`DishCatalogComponent` 在 AI 覓食畫布**：現行渲染為 `SizedBox.shrink()`；UI model 轉換時直接略過（`fromEntity` 回傳 `null`），View 的 `switch` 因此可窮盡且移除 `_ =>`。畫面高度皆為 0，不影響顯示。
 6. **`AiFoodieMessage.user()` 明確給 `components: const []`**：建構式移除預設值後，若不補，user 訊息的 `components` 會變 `null`，既有測試 `expect(userMsg.components, isEmpty)` 會失敗。`assistant()` factory 的參數預設 `const []` 保留（本地建立的訊息，不屬於「server 資料」）。
-7. **分派器的 `json['text']` 必須惰性讀取**：現行只有降級時才 cast `json['text']`；若重構時提前讀，合法元件遇到非字串 `text` 會開始拋 `TypeError`。T1 已加測試攔截。
+7. **分派器的 `json['text']` 必須惰性讀取**：現行只有降級時才經 `_optString` 讀 `json['text']`；若重構時提前讀，合法元件遇到非字串 `text` 會開始拋 `FormatException`（v5.2 前為 `TypeError`）。T1 已加測試攔截。
 8. **規格 §6 的任務順序被調換**（先 UI model 後 entity），理由見 §1。
 9. **`serializeAssistantHistory` 是手組 payload**：`text` 以 `msg.text ?? ''` 保持 key 永遠存在，與「entity `toJson` 省略 null」是兩件事；不改其格式。
+10. **v5.2（PR #127 review 追加）：T1 檔案例外修改**——review 過程發現手寫 `fromJson` 把 `TypeError` 吞掉違反 flutter-styles §6.1「不捕捉 Error」，改為 `@JsonSerializable(checked: true)` 讓型別錯誤改拋 `CheckedFromJsonException`／`FormatException`。這個修正必須更動 T1 產出的 `test/domain/entities/a2ui_characterization_test.dart`（「純量型別錯誤」一組 8 個 case 的期望型別），違反 §3「鐵律」1「T2 之後禁止修改 T1 三個檔」。判定為刻意例外：只動期望的例外型別、不動輸入與其餘斷言，且是本計畫成立時未預見的既有 bug 修正，不代表原有特性測試失去回歸網的效力。細節見規格 §7 v5.2。
