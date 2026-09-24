@@ -230,15 +230,13 @@ final class ActionChipItem extends Equatable {
     if ((label?.trim() ?? '').isEmpty || (action?.trim() ?? '').isEmpty) {
       return false;
     }
-    return switch (action) {
-      'query' => (payload?['prompt'] as String?)?.trim().isNotEmpty ?? false,
-      'open_roulette' =>
-        ((payload?['options'] as List<Object?>?)
-                    ?.whereType<String>()
-                    .where((s) => s.trim().isNotEmpty)
-                    .length ??
-                0) >=
-            2,
+    // payload 來自不可信 JSON：型別不符即不合法，交由分派器過濾。
+    return switch ((action, payload?['prompt'], payload?['options'])) {
+      ('query', final String p, _) => p.trim().isNotEmpty,
+      ('query', _, _) => false,
+      ('open_roulette', _, final List<Object?> o) =>
+        o.whereType<String>().where((s) => s.trim().isNotEmpty).length >= 2,
+      ('open_roulette', _, _) => false,
       _ => true, // 保留對未知或未來自訂動作的向後相容性
     };
   }

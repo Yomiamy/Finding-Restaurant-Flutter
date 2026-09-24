@@ -135,5 +135,53 @@ void main() {
         throwsA(isA<FormatException>()),
       );
     });
+
+    test('isValid：payload 欄位型別錯誤視為不合法且不拋', () {
+      const badQuery = ActionChipItem(
+        label: 'q',
+        action: 'query',
+        payload: {'prompt': 1},
+      );
+      const badRoulette = ActionChipItem(
+        label: 'r',
+        action: 'open_roulette',
+        payload: {'options': 'x'},
+      );
+      expect(badQuery.isValid, isFalse);
+      expect(badRoulette.isValid, isFalse);
+    });
+
+    test('分派器：payload 型別錯誤的 chip 被過濾，全部不合法則降級', () {
+      Map<String, Object?> group(List<Object?> chips) => {
+        'component_type': 'action_chip_group',
+        'data': {'chips': chips},
+      };
+      const good = {
+        'label': 'ok',
+        'action': 'query',
+        'payload': {'prompt': '吃什麼'},
+      };
+      const bad = {
+        'label': 'bad',
+        'action': 'query',
+        'payload': {'prompt': 1},
+      };
+      const badRoulette = {
+        'label': 'r',
+        'action': 'open_roulette',
+        'payload': {'options': 'x'},
+      };
+
+      final kept = A2UIComponent.fromJson(group([good, bad, badRoulette]));
+      expect(kept, isA<ActionChipGroupComponent>());
+      expect((kept as ActionChipGroupComponent).chips?.map((c) => c.label), [
+        'ok',
+      ]);
+
+      expect(
+        A2UIComponent.fromJson(group([bad, badRoulette])),
+        isA<FallbackMarkdownComponent>(),
+      );
+    });
   });
 }

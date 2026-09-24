@@ -41,7 +41,7 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
       final initialMessages = await _repository.getInitialSuggestions();
       if (token != _requestToken) return;
       emit(state.copyWith(messages: initialMessages, isLoading: false));
-    } catch (e) {
+    } on Exception catch (e) {
       if (token != _requestToken) return;
       emit(
         state.copyWith(
@@ -89,7 +89,7 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
           isLoading: false,
         ),
       );
-    } catch (e) {
+    } on Exception catch (e) {
       if (token != _requestToken) return;
 
       emit(

@@ -121,6 +121,15 @@ void main() {
       expect(bloc.state.isLoading, isFalse);
     });
 
+    test('LoadInitialSuggestions 錯誤時更新 errorMessage', () async {
+      repository.shouldThrow = true;
+      bloc.add(const LoadInitialSuggestions());
+      await pumpEventQueue();
+
+      expect(bloc.state.isLoading, isFalse);
+      expect(bloc.state.errorMessage, contains('模擬建議取得失敗'));
+    });
+
     test('SendUserPrompt 錯誤時更新 errorMessage', () async {
       repository.shouldThrow = true;
       bloc.add(const SendUserPrompt('4人聚餐'));

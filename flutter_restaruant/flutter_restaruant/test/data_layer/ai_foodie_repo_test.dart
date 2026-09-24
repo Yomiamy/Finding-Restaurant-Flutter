@@ -204,6 +204,32 @@ void main() {
       expect(message.components?.first, isA<ComparisonMatrixComponent>());
     });
 
+    test('askAssistant 回應 JSON 結構型別不符時降級為原文且不拋', () async {
+      for (final raw in [
+        '[1, 2]',
+        '{"text": 1}',
+        '{"text": "hi", "components": "x"}',
+      ]) {
+        final repo = AiFoodieRepo(
+          promptExecutor: (prompt, history, {candidateRestaurants}) async =>
+              raw,
+        );
+
+        final message = await repo.askAssistant('任意');
+        expect(message.text, raw);
+        expect(message.components, [FallbackMarkdownComponent(text: raw)]);
+      }
+    });
+
+    test('askAssistant 推論拋出 Error 時不再吞掉', () async {
+      final repo = AiFoodieRepo(
+        promptExecutor: (prompt, history, {candidateRestaurants}) async =>
+            throw StateError('bug'),
+      );
+
+      await expectLater(repo.askAssistant('任意'), throwsA(isA<StateError>()));
+    });
+
     test('formatCandidateRestaurants 正確將真實餐廳序列化為包含真實 ID 與店名的條列上下文', () {
       final candidates = [
         const RestaurantEntity(
