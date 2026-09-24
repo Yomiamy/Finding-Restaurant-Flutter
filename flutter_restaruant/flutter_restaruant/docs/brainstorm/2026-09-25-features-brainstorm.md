@@ -1712,7 +1712,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
   1. 讓相關測試在 `setUp` 載入 `S`（`await S.load(const Locale('en'))`），確保 `S.current` 永遠可用。
   2. 確認測試都已載入 `S` 後，移除 8 處 i18n fallback 的裸 `catch`，直接讀 `S.current`。
   3. 在兩個 BLoC 測試各補一個案例：repo 拋出 `Error`（例如 `StateError`）時，事件處理會往外拋出，而不是 emit 失敗狀態。
-  4. `menu_vision_repo.dart` 的 `FormatException`／`CheckedFromJsonException`／`Exception` 三個分支都補上 `Logger().e(..., error: e, stackTrace: st)`，與 `ai_foodie_repo.dart` 一致。
+  4. `menu_vision_repo.dart` 的 `FormatException`／`CheckedFromJsonException`／`Exception` 三個分支都改為 `catch (e, st)` 同時綁定 stack trace，再補上 `Logger().e(..., error: e, stackTrace: st)`，與 `ai_foodie_repo.dart` 一致。
 
 ---
 
