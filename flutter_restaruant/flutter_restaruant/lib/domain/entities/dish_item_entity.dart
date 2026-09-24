@@ -54,6 +54,7 @@ enum DishCategory {
 /// 菜色領域實體模型
 @immutable
 @JsonSerializable(
+  checked: true,
   fieldRename: FieldRename.snake,
   includeIfNull: false,
   explicitToJson: true,

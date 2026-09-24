@@ -7,18 +7,48 @@ part of 'dish_item_entity.dart';
 // **************************************************************************
 
 DishItemEntity _$DishItemEntityFromJson(Map<String, dynamic> json) =>
-    DishItemEntity(
-      id: json['id'] as String?,
-      name: json['name'] as String?,
-      originalName: json['original_name'] as String?,
-      price: (json['price'] as num?)?.toDouble(),
-      category: _categoryFromJson(json['category'] as String?),
-      allergens: _allergensFromJson(json['allergens'] as List?),
-      dietaryTags: stringListFromJson(json['dietary_tags'] as List?),
-      spiceLevel: (json['spice_level'] as num?)?.toInt(),
-      ingredients: stringListFromJson(json['ingredients'] as List?),
-      chefRecommendationScore: (json['chef_recommendation_score'] as num?)
-          ?.toDouble(),
+    $checkedCreate(
+      'DishItemEntity',
+      json,
+      ($checkedConvert) {
+        final val = DishItemEntity(
+          id: $checkedConvert('id', (v) => v as String?),
+          name: $checkedConvert('name', (v) => v as String?),
+          originalName: $checkedConvert('original_name', (v) => v as String?),
+          price: $checkedConvert('price', (v) => (v as num?)?.toDouble()),
+          category: $checkedConvert(
+            'category',
+            (v) => _categoryFromJson(v as String?),
+          ),
+          allergens: $checkedConvert(
+            'allergens',
+            (v) => _allergensFromJson(v as List?),
+          ),
+          dietaryTags: $checkedConvert(
+            'dietary_tags',
+            (v) => stringListFromJson(v as List?),
+          ),
+          spiceLevel: $checkedConvert(
+            'spice_level',
+            (v) => (v as num?)?.toInt(),
+          ),
+          ingredients: $checkedConvert(
+            'ingredients',
+            (v) => stringListFromJson(v as List?),
+          ),
+          chefRecommendationScore: $checkedConvert(
+            'chef_recommendation_score',
+            (v) => (v as num?)?.toDouble(),
+          ),
+        );
+        return val;
+      },
+      fieldKeyMap: const {
+        'originalName': 'original_name',
+        'dietaryTags': 'dietary_tags',
+        'spiceLevel': 'spice_level',
+        'chefRecommendationScore': 'chef_recommendation_score',
+      },
     );
 
 Map<String, dynamic> _$DishItemEntityToJson(DishItemEntity instance) =>

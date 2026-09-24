@@ -4,6 +4,7 @@ import 'package:flutter_restaruant/data_layer/repositories/ai_foodie_repo.dart';
 import 'package:flutter_restaruant/domain/entities/a2ui_fallback_strings.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 /// 特性測試：固定 entity 與分派器的現行可觀察行為。
 /// T2 之後禁止修改本檔；任何失敗都代表行為改變。
@@ -242,19 +243,21 @@ void main() {
     });
   });
 
-  group('純量型別錯誤拋 TypeError', () {
-    final cases = <String, void Function()>{
-      'dish.name': () => DishItemEntity.fromJson({'name': 123}),
-      'allergen.risk_level': () => AllergenInfo.fromJson({'risk_level': 1}),
-      'catalog.restaurant_title': () => parse({'component_type': 'dish_catalog', 'data': {'restaurant_title': 1}}),
-      'catalog.dishes 非 List': () => parse({'component_type': 'dish_catalog', 'data': {'dishes': 'x'}}),
-      'item.name': () => parse({'component_type': 'comparison_matrix', 'data': {'items': [{'name': 1}]}}),
-      'chip.label': () => parse({'component_type': 'action_chip_group', 'data': {'chips': [{'label': 1}]}}),
-      'data 非 Map': () => parse({'component_type': 'dish_catalog', 'data': 'x'}),
-      'message.created_at': () => AiFoodieMessage.fromJson({'created_at': 5}),
+  group('純量型別錯誤拋 Exception（不拋 TypeError）', () {
+    final checked = isA<CheckedFromJsonException>();
+    final cases = <String, (void Function(), Matcher)>{
+      'dish.name': (() => DishItemEntity.fromJson({'name': 123}), checked),
+      'allergen.risk_level': (() => AllergenInfo.fromJson({'risk_level': 1}), checked),
+      'catalog.restaurant_title': (() => parse({'component_type': 'dish_catalog', 'data': {'restaurant_title': 1}}), checked),
+      'catalog.dishes 非 List': (() => parse({'component_type': 'dish_catalog', 'data': {'dishes': 'x'}}), checked),
+      'item.name': (() => parse({'component_type': 'comparison_matrix', 'data': {'items': [{'name': 1}]}}), checked),
+      'chip.label': (() => parse({'component_type': 'action_chip_group', 'data': {'chips': [{'label': 1}]}}), checked),
+      'data 非 Map': (() => parse({'component_type': 'dish_catalog', 'data': 'x'}), isA<FormatException>()),
+      'message.created_at': (() => AiFoodieMessage.fromJson({'created_at': 5}), checked),
     };
-    cases.forEach((name, body) {
-      test(name, () => expect(body, throwsA(isA<TypeError>())));
+    cases.forEach((name, c) {
+      final (body, matcher) = c;
+      test(name, () => expect(body, throwsA(allOf(isA<Exception>(), matcher))));
     });
   });
 }

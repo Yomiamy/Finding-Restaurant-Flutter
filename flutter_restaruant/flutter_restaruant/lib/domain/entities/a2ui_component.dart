@@ -16,9 +16,12 @@ sealed class A2UIComponent extends Equatable {
   const A2UIComponent();
 
   factory A2UIComponent.fromJson(Map<String, Object?> json) {
-    final componentType = json['component_type'] as String? ?? '';
-    final data =
-        (json['data'] as Map<String, Object?>?) ?? const <String, Object?>{};
+    final componentType = _optString(json, 'component_type') ?? '';
+    final data = switch (json['data']) {
+      null => const <String, Object?>{},
+      final Map<String, Object?> m => m,
+      final v => throw FormatException('data 應為物件', v),
+    };
 
     // json['text'] 只在降級分支讀取：合法元件遇到非字串 text 不可拋例外。
     return switch (componentType) {
@@ -26,7 +29,7 @@ sealed class A2UIComponent extends Equatable {
         final c when c.dishes?.isNotEmpty ?? false => c,
         final c => FallbackMarkdownComponent(
           text:
-              (json['text'] as String?) ??
+              _optString(json, 'text') ??
               c.restaurantTitle ??
               A2UIFallbackStrings.dishCatalogEmpty,
         ),
@@ -35,7 +38,7 @@ sealed class A2UIComponent extends Equatable {
         final c when c.items?.isNotEmpty ?? false => c,
         final c => FallbackMarkdownComponent(
           text:
-              (json['text'] as String?) ??
+              _optString(json, 'text') ??
               c.title ??
               A2UIFallbackStrings.comparisonMatrixTitle,
         ),
@@ -48,7 +51,7 @@ sealed class A2UIComponent extends Equatable {
         ),
         _ => FallbackMarkdownComponent(
           text:
-              (json['text'] as String?) ??
+              _optString(json, 'text') ??
               A2UIFallbackStrings.actionChipGroupTitle,
         ),
       },
@@ -56,13 +59,13 @@ sealed class A2UIComponent extends Equatable {
         final c when (c.options?.length ?? 0) >= 2 => c,
         final c => FallbackMarkdownComponent(
           text:
-              (json['text'] as String?) ??
+              _optString(json, 'text') ??
               c.title ??
               A2UIFallbackStrings.decisionRouletteTitle,
         ),
       },
       _ => FallbackMarkdownComponent(
-        text: (json['text'] as String?) ?? A2UIFallbackStrings.unknownComponent,
+        text: _optString(json, 'text') ?? A2UIFallbackStrings.unknownComponent,
       ),
     };
   }
@@ -72,6 +75,7 @@ sealed class A2UIComponent extends Equatable {
 
 /// 互動式菜單看板元件 (Dish Catalog Component)
 @JsonSerializable(
+  checked: true,
   fieldRename: FieldRename.snake,
   includeIfNull: false,
   explicitToJson: true,
@@ -103,6 +107,7 @@ final class DishCatalogComponent extends A2UIComponent {
 
 /// 多店對比矩陣元件 (Comparison Matrix Component)
 @JsonSerializable(
+  checked: true,
   fieldRename: FieldRename.snake,
   includeIfNull: false,
   explicitToJson: true,
@@ -129,6 +134,7 @@ final class ComparisonMatrixComponent extends A2UIComponent {
 
 /// 餐廳對比卡片項目
 @JsonSerializable(
+  checked: true,
   fieldRename: FieldRename.snake,
   includeIfNull: false,
   explicitToJson: true,
@@ -177,6 +183,7 @@ final class RestaurantComparisonItem extends Equatable {
 ///
 /// `isValid` 過濾由 [A2UIComponent.fromJson] 分派器負責，此處如實保留。
 @JsonSerializable(
+  checked: true,
   fieldRename: FieldRename.snake,
   includeIfNull: false,
   explicitToJson: true,
@@ -202,6 +209,7 @@ final class ActionChipGroupComponent extends A2UIComponent {
 
 /// 行動標籤項目
 @JsonSerializable(
+  checked: true,
   fieldRename: FieldRename.snake,
   includeIfNull: false,
   explicitToJson: true,
@@ -243,6 +251,7 @@ final class ActionChipItem extends Equatable {
 
 /// 命運轉盤元件 (Decision Roulette Component)
 @JsonSerializable(
+  checked: true,
   fieldRename: FieldRename.snake,
   includeIfNull: false,
   explicitToJson: true,
@@ -272,7 +281,7 @@ final class DecisionRouletteComponent extends A2UIComponent {
 /// 當模型輸出結構異常、部分破損或非預期元件時安全降級，保證絕不崩潰。
 /// 維持預設 `createFactory`（`false` 會把 Equatable getter 寫進 toJson），但不宣告 fromJson：
 /// 它只由分派器建立，輸出維持扁平格式。
-@JsonSerializable(includeIfNull: false)
+@JsonSerializable(checked: true, includeIfNull: false)
 final class FallbackMarkdownComponent extends A2UIComponent {
   const FallbackMarkdownComponent({this.text});
 
@@ -296,3 +305,10 @@ List<RestaurantComparisonItem>? _itemsFromJson(List<Object?>? raw) =>
 
 List<ActionChipItem>? _chipsFromJson(List<Object?>? raw) =>
     mapListFromJson(raw, ActionChipItem.fromJson);
+
+/// 不可信 JSON 的字串欄位：null 照舊回傳 null，非字串拋 [FormatException]（不拋 TypeError）。
+String? _optString(Map<String, Object?> json, String key) =>
+    switch (json[key]) {
+      final String? v => v,
+      final v => throw FormatException('$key 應為字串', v),
+    };

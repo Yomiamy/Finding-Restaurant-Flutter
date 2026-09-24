@@ -10,6 +10,7 @@ part 'ai_foodie_message.g.dart';
 /// AI 覓食助理對話訊息實體
 @immutable
 @JsonSerializable(
+  checked: true,
   fieldRename: FieldRename.snake,
   includeIfNull: false,
   explicitToJson: true,
@@ -68,6 +69,6 @@ final class AiFoodieMessage extends Equatable {
 List<A2UIComponent>? _componentsFromJson(List<Object?>? raw) =>
     mapListFromJson(raw, A2UIComponent.fromJson);
 
-/// 參數型別 `String?`：非字串仍拋 TypeError（現行行為）；字串解析失敗回傳 null。
+/// 參數型別 `String?`：非字串由 checked 產生碼包成 CheckedFromJsonException；字串解析失敗回傳 null。
 DateTime? _createdAtFromJson(String? value) =>
     value == null ? null : DateTime.tryParse(value);

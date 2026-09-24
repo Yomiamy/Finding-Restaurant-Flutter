@@ -6,11 +6,18 @@ part of 'allergen_info.dart';
 // JsonSerializableGenerator
 // **************************************************************************
 
-AllergenInfo _$AllergenInfoFromJson(Map<String, dynamic> json) => AllergenInfo(
-  name: json['name'] as String?,
-  riskLevel: _riskLevelFromJson(json['risk_level'] as String?),
-  note: json['note'] as String?,
-);
+AllergenInfo _$AllergenInfoFromJson(Map<String, dynamic> json) =>
+    $checkedCreate('AllergenInfo', json, ($checkedConvert) {
+      final val = AllergenInfo(
+        name: $checkedConvert('name', (v) => v as String?),
+        riskLevel: $checkedConvert(
+          'risk_level',
+          (v) => _riskLevelFromJson(v as String?),
+        ),
+        note: $checkedConvert('note', (v) => v as String?),
+      );
+      return val;
+    }, fieldKeyMap: const {'riskLevel': 'risk_level'});
 
 Map<String, dynamic> _$AllergenInfoToJson(AllergenInfo instance) =>
     <String, dynamic>{

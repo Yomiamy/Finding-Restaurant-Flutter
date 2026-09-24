@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 import '../../domain/entities/entities_barrel.dart';
 import '../../domain/repositories/menu_vision_repository.dart';
@@ -17,9 +18,9 @@ class MenuVisionRepo implements MenuVisionRepository {
     ImagePicker? picker,
     FirebaseAI? firebaseAI,
     MenuAnalyzerFunction? analyzer,
-  })  : _picker = picker ?? ImagePicker(),
-        _firebaseAI = firebaseAI,
-        _analyzer = analyzer;
+  }) : _picker = picker ?? ImagePicker(),
+       _firebaseAI = firebaseAI,
+       _analyzer = analyzer;
 
   final ImagePicker _picker;
   final FirebaseAI? _firebaseAI;
@@ -130,17 +131,11 @@ class MenuVisionRepo implements MenuVisionRepository {
         'data': decoded,
       });
     } on FormatException catch (e) {
-      return FallbackMarkdownComponent(
-        text: 'JSON 解析失敗，請確認照片清晰度後重試 ($e)',
-      );
-    } on TypeError catch (e) {
-      return FallbackMarkdownComponent(
-        text: '菜單資料欄位型別異常，請確認照片清晰度後重試 ($e)',
-      );
+      return FallbackMarkdownComponent(text: 'JSON 解析失敗，請確認照片清晰度後重試 ($e)');
+    } on CheckedFromJsonException catch (e) {
+      return FallbackMarkdownComponent(text: '菜單資料欄位型別異常，請確認照片清晰度後重試 ($e)');
     } on Exception catch (e) {
-      return FallbackMarkdownComponent(
-        text: '菜單辨識異常，請確認照片清晰度後重試 ($e)',
-      );
+      return FallbackMarkdownComponent(text: '菜單辨識異常，請確認照片清晰度後重試 ($e)');
     }
   }
 }

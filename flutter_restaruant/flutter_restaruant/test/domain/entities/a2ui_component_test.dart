@@ -121,5 +121,19 @@ void main() {
       expect(restored.components, hasLength(1));
       expect(restored.components?.first, isA<DecisionRouletteComponent>());
     });
+
+    test('分派器：component_type 非字串拋 FormatException', () {
+      expect(
+        () => A2UIComponent.fromJson({'component_type': 1}),
+        throwsA(isA<FormatException>()),
+      );
+    });
+
+    test('分派器：降級分支 text 非字串拋 FormatException', () {
+      expect(
+        () => A2UIComponent.fromJson({'component_type': 'x', 'text': 1}),
+        throwsA(isA<FormatException>()),
+      );
+    });
   });
 }

@@ -125,12 +125,31 @@ void main() {
     );
 
     test(
-      'analyzeMenuImageBytes falls back on TypeError during field extraction',
+      'analyzeMenuImageBytes falls back on CheckedFromJsonException during field extraction',
       () async {
         final repo = MenuVisionRepo(
           analyzer: (bytes) async => jsonEncode({
             'restaurant_title': 12345, // Not a string!
             'dishes': 'not a list',
+          }),
+        );
+
+        final result = await repo.analyzeMenuImageBytes(
+          Uint8List.fromList([1, 2, 3]),
+        );
+        expect(result, isA<FallbackMarkdownComponent>());
+        expect((result as FallbackMarkdownComponent).text, contains('欄位型別異常'));
+      },
+    );
+
+    test(
+      'analyzeMenuImageBytes falls back on nested dish field type error',
+      () async {
+        final repo = MenuVisionRepo(
+          analyzer: (bytes) async => jsonEncode({
+            'dishes': [
+              {'name': 1},
+            ],
           }),
         );
 

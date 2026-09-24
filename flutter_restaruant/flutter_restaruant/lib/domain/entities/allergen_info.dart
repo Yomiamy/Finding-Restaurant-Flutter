@@ -39,7 +39,11 @@ enum AllergenRiskLevel {
 
 /// 食品過敏原模型
 @immutable
-@JsonSerializable(fieldRename: FieldRename.snake, includeIfNull: false)
+@JsonSerializable(
+  checked: true,
+  fieldRename: FieldRename.snake,
+  includeIfNull: false,
+)
 class AllergenInfo extends Equatable {
   const AllergenInfo({this.name, this.riskLevel, this.note});
 
