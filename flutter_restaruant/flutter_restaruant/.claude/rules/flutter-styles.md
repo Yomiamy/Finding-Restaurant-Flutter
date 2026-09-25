@@ -632,6 +632,7 @@ abstract class UserApi {
 - 大多數情境建議透過 `fromJson` / `toJson` 完成轉換以減少程式碼（接受 type safety 的取捨）。
 - 僅在需要複雜轉換或更高效能時，才直接在建構函式中映射欄位。
 - **API、request/response、data layer 的 data model（DTO）與 entity 一律實作 `@JsonSerializable` 及 `Equatable`**：`fromJson`／`toJson` 由 `json_serializable` 產生，禁止手寫；相等性由 `Equatable` 的 `props` 提供。
+  - 多型協定外殼（如 A2UI 的 `{component_type, data}`）不屬於欄位序列化：由 sealed 基底類別手寫一對方法處理（拆殼的 factory 分派器、包殼的 `toEnvelopeJson`），子類別的 `fromJson`／`toJson` 仍只用產生碼。
 
 ## Y. 其他 (Miscellaneous)
 
