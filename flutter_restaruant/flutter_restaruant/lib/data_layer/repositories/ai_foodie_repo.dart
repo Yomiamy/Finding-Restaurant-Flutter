@@ -179,7 +179,11 @@ components 陣列內的每個物件必須包含 component_type 與 data：
       }
     } on Exception catch (e, st) {
       // 網路中斷或 API 異常時優雅降級為本地智慧推薦引擎；Error（程式 bug）不攔截。
-      Logger().e('AI 助理呼叫失敗，改用本地推薦', error: e, stackTrace: st);
+      Logger().e(
+        'AI assistant request failed, falling back to local recommendations',
+        error: e,
+        stackTrace: st,
+      );
     }
 
     return _generateSmartFallback(
@@ -278,17 +282,17 @@ components 陣列內的每個物件必須包含 component_type 與 data：
     try {
       final decoded = switch (jsonDecode(rawJson)) {
         final Map<String, Object?> m => m,
-        final v => throw FormatException('回應應為物件', v),
+        final v => throw FormatException('response must be an object', v),
       };
       final text = switch (decoded['text']) {
         null => '為您整理出以下推薦：',
         final String s => s,
-        final v => throw FormatException('text 應為字串', v),
+        final v => throw FormatException('text must be a string', v),
       };
       final rawComponents = switch (decoded['components']) {
         null => const <Object?>[],
         final List<Object?> l => l,
-        final v => throw FormatException('components 應為陣列', v),
+        final v => throw FormatException('components must be an array', v),
       };
       final components = rawComponents
           .whereType<Map<String, Object?>>()
@@ -298,7 +302,11 @@ components 陣列內的每個物件必須包含 component_type 與 data：
 
       return AiFoodieMessage.assistant(text: text, components: components);
     } on Exception catch (e, st) {
-      Logger().e('AI 回應解析失敗，降級為原文', error: e, stackTrace: st);
+      Logger().e(
+        'Failed to parse AI response, falling back to raw text',
+        error: e,
+        stackTrace: st,
+      );
       return AiFoodieMessage.assistant(
         text: rawJson,
         components: [FallbackMarkdownComponent(text: rawJson)],

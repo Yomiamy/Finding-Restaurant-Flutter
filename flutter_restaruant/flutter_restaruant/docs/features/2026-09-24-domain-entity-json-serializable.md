@@ -30,7 +30,7 @@
 | 呼叫端 | 資料來源 | 對異常輸入的處理 |
 |--------|----------|------------------|
 | `ai_foodie_repo.dart::_parseResponse` → `A2UIComponent.fromJson` | **LLM 輸出（不可信）** | 外層 `on Exception catch` 降級成 `FallbackMarkdownComponent` |
-| `menu_vision_repo.dart` → `A2UIComponent.fromJson({'component_type':'dish_catalog', ...})` | **LLM 視覺辨識輸出（不可信）** | `on FormatException`／`CheckedFromJsonException`／`Exception` 降級成文字卡 |
+| `menu_vision_repo.dart` → `A2UIComponent.fromJson({'component_type':'dish_catalog', ...})` | **LLM 視覺辨識輸出（不可信）** | v5.3 起不再捕捉：`FormatException`／`CheckedFromJsonException`／其他 `Exception` 直接拋給 `MenuVisionBloc`，由其 `on Exception catch` 顯示多語系錯誤訊息 |
 | `ai_foodie_repo.dart::serializeAssistantHistory` → `component.toJson()` → `jsonEncode` | 本地 entity | **當成多輪對話歷史回送 LLM** |
 | `AiFoodieBloc` → `state.messages` 當 `history` 傳給 repo | 本地 entity | history 必須是 entity（要能 `toJson`），不能只剩 UI model |
 
@@ -171,3 +171,4 @@
 - **v4**：納入 `AiFoodieMessage`；預設值從 `@JsonKey(defaultValue:)` 改為寫在建構式。
 - **v5**：使用者要求 entity 如實反映 server 資料：欄位全部 nullable、不帶預設值，預設值由 BLoC 轉成 UI model 時提供；`toJson` 省略 null；`isAssistant` 等 getter 明確標註不序列化；更正 v3 的 `createFactory: false`。
 - **v5.2**（PR #127 review 過程追加，違反 flutter-styles §6.1「不捕捉 Error」）：`@JsonSerializable` 加上 `checked: true`，型別不符時產生碼改拋 `CheckedFromJsonException`（`implements Exception`）取代 `TypeError`；分派器 `_optString` 與 `data` 型別檢查改拋 `FormatException`。`menu_vision_repo.dart` 的 `on TypeError` 改為 `on CheckedFromJsonException`。`test/domain/entities/a2ui_characterization_test.dart` 的「純量型別錯誤」一組 8 個 case 期望值同步從 `TypeError` 改為對應的 `Exception` 子類（輸入不變）；本檔與計畫文件相應章節的 `TypeError` 敘述一併更新。
+- **v5.3**（PR #127 review 過程追加，對應 flutter-styles §Y.4「錯誤／`Exception` 說明一律英文、BLoC 與 Presentation 文字一律多語系」）：`FormatException` 說明與 `Logger` 訊息改為英文；`menu_vision_repo.dart::analyzeMenuImageBytes` 不再把錯誤包成寫死中文的 `FallbackMarkdownComponent`，空回應與非物件 JSON 改拋 `FormatException`，其餘例外原樣上拋，由 `MenuVisionBloc` 既有的 `on Exception catch` 以 `menu_vision_error_analyze_failed`／`menu_vision_error_retry_failed` 顯示。分派器產生的「無菜色」降級文字維持原樣。

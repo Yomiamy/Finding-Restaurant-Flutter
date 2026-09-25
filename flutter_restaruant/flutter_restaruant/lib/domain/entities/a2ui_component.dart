@@ -20,7 +20,7 @@ sealed class A2UIComponent extends Equatable {
     final data = switch (json['data']) {
       null => const <String, Object?>{},
       final Map<String, Object?> m => m,
-      final v => throw FormatException('data 應為物件', v),
+      final v => throw FormatException('data must be an object', v),
     };
 
     // json['text'] 只在降級分支讀取：合法元件遇到非字串 text 不可拋例外。
@@ -308,5 +308,5 @@ List<ActionChipItem>? _chipsFromJson(List<Object?>? raw) =>
 String? _optString(Map<String, Object?> json, String key) =>
     switch (json[key]) {
       final String? v => v,
-      final v => throw FormatException('$key 應為字串', v),
+      final v => throw FormatException('$key must be a string', v),
     };

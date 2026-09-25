@@ -3,7 +3,6 @@ import 'dart:typed_data';
 
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:json_annotation/json_annotation.dart';
 
 import '../../domain/entities/entities_barrel.dart';
 import '../../domain/repositories/menu_vision_repository.dart';
@@ -96,46 +95,34 @@ class MenuVisionRepo implements MenuVisionRepository {
 
   @override
   Future<A2UIComponent> analyzeMenuImageBytes(Uint8List imageBytes) async {
-    try {
-      final String? rawJson;
-      if (_analyzer != null) {
-        rawJson = await _analyzer(imageBytes);
-      } else {
-        final model = _getModel();
-        final mimeType = _detectMimeType(imageBytes);
-        final prompt = [
-          Content.multi([
-            const TextPart('請完整拆解這張菜單的菜色、價格與過敏原資訊。'),
-            InlineDataPart(mimeType, imageBytes),
-          ]),
-        ];
-
-        final response = await model.generateContent(prompt);
-        rawJson = response.text;
-      }
-
-      if (rawJson == null || rawJson.trim().isEmpty) {
-        return const FallbackMarkdownComponent(text: '未能取得菜單辨識結果，請重試。');
-      }
-
-      final Object? rawDecoded = jsonDecode(rawJson);
-      if (rawDecoded is! Map) {
-        return const FallbackMarkdownComponent(
-          text: '菜單辨識回傳格式非預期物件，請確認照片清晰度後重試。',
-        );
-      }
-
-      final decoded = Map<String, Object?>.from(rawDecoded);
-      return A2UIComponent.fromJson({
-        'component_type': 'dish_catalog',
-        'data': decoded,
-      });
-    } on FormatException catch (e) {
-      return FallbackMarkdownComponent(text: 'JSON 解析失敗，請確認照片清晰度後重試 ($e)');
-    } on CheckedFromJsonException catch (e) {
-      return FallbackMarkdownComponent(text: '菜單資料欄位型別異常，請確認照片清晰度後重試 ($e)');
-    } on Exception catch (e) {
-      return FallbackMarkdownComponent(text: '菜單辨識異常，請確認照片清晰度後重試 ($e)');
+    final rawJson = await _analyze(imageBytes);
+    if (rawJson == null || rawJson.trim().isEmpty) {
+      throw const FormatException('Empty menu analysis response');
     }
+
+    final decoded = switch (jsonDecode(rawJson)) {
+      final Map<String, Object?> m => m,
+      final v => throw FormatException(
+        'Menu analysis response is not a JSON object',
+        v,
+      ),
+    };
+    return A2UIComponent.fromJson({
+      'component_type': 'dish_catalog',
+      'data': decoded,
+    });
+  }
+
+  Future<String?> _analyze(Uint8List imageBytes) async {
+    if (_analyzer != null) return _analyzer(imageBytes);
+
+    final prompt = [
+      Content.multi([
+        const TextPart('請完整拆解這張菜單的菜色、價格與過敏原資訊。'),
+        InlineDataPart(_detectMimeType(imageBytes), imageBytes),
+      ]),
+    ];
+    final response = await _getModel().generateContent(prompt);
+    return response.text;
   }
 }

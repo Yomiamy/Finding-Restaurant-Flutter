@@ -5,6 +5,7 @@ import 'package:flutter_restaruant/data_layer/data_layer_barrel.dart';
 import 'package:flutter_restaruant/domain/domain_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:json_annotation/json_annotation.dart';
 
 class FakeImagePicker extends ImagePicker {
   FakeImagePicker({this.fileToReturn});
@@ -82,50 +83,44 @@ void main() {
     );
 
     test(
-      'analyzeMenuImageBytes falls back to FallbackMarkdownComponent on empty response',
+      'analyzeMenuImageBytes throws FormatException on empty response',
       () async {
         final repo = MenuVisionRepo(analyzer: (bytes) async => '');
 
-        final result = await repo.analyzeMenuImageBytes(
-          Uint8List.fromList([1, 2, 3]),
+        await expectLater(
+          repo.analyzeMenuImageBytes(Uint8List.fromList([1, 2, 3])),
+          throwsA(isA<FormatException>()),
         );
-        expect(result, isA<FallbackMarkdownComponent>());
-        expect((result as FallbackMarkdownComponent).text, contains('未能取得'));
       },
     );
 
-    test(
-      'analyzeMenuImageBytes falls back on Exception during analyzer',
-      () async {
-        final repo = MenuVisionRepo(
-          analyzer: (bytes) async => throw Exception('網路連線逾時 (HTTP 429)'),
-        );
+    test('analyzeMenuImageBytes propagates analyzer Exception', () async {
+      final repo = MenuVisionRepo(
+        analyzer: (bytes) async => throw Exception('網路連線逾時 (HTTP 429)'),
+      );
 
-        final result = await repo.analyzeMenuImageBytes(
-          Uint8List.fromList([1, 2, 3]),
-        );
-        expect(result, isA<FallbackMarkdownComponent>());
-        expect((result as FallbackMarkdownComponent).text, contains('菜單辨識異常'));
-      },
-    );
+      await expectLater(
+        repo.analyzeMenuImageBytes(Uint8List.fromList([1, 2, 3])),
+        throwsA(isA<Exception>()),
+      );
+    });
 
     test(
-      'analyzeMenuImageBytes falls back to FallbackMarkdownComponent on non-map JSON',
+      'analyzeMenuImageBytes throws FormatException on non-map JSON',
       () async {
         final repo = MenuVisionRepo(
           analyzer: (bytes) async => jsonEncode(['not', 'a', 'map']),
         );
 
-        final result = await repo.analyzeMenuImageBytes(
-          Uint8List.fromList([1, 2, 3]),
+        await expectLater(
+          repo.analyzeMenuImageBytes(Uint8List.fromList([1, 2, 3])),
+          throwsA(isA<FormatException>()),
         );
-        expect(result, isA<FallbackMarkdownComponent>());
-        expect((result as FallbackMarkdownComponent).text, contains('非預期物件'));
       },
     );
 
     test(
-      'analyzeMenuImageBytes falls back on CheckedFromJsonException during field extraction',
+      'analyzeMenuImageBytes throws CheckedFromJsonException on field type error',
       () async {
         final repo = MenuVisionRepo(
           analyzer: (bytes) async => jsonEncode({
@@ -134,16 +129,15 @@ void main() {
           }),
         );
 
-        final result = await repo.analyzeMenuImageBytes(
-          Uint8List.fromList([1, 2, 3]),
+        await expectLater(
+          repo.analyzeMenuImageBytes(Uint8List.fromList([1, 2, 3])),
+          throwsA(isA<CheckedFromJsonException>()),
         );
-        expect(result, isA<FallbackMarkdownComponent>());
-        expect((result as FallbackMarkdownComponent).text, contains('欄位型別異常'));
       },
     );
 
     test(
-      'analyzeMenuImageBytes falls back on nested dish field type error',
+      'analyzeMenuImageBytes throws CheckedFromJsonException on nested dish field type error',
       () async {
         final repo = MenuVisionRepo(
           analyzer: (bytes) async => jsonEncode({
@@ -153,11 +147,10 @@ void main() {
           }),
         );
 
-        final result = await repo.analyzeMenuImageBytes(
-          Uint8List.fromList([1, 2, 3]),
+        await expectLater(
+          repo.analyzeMenuImageBytes(Uint8List.fromList([1, 2, 3])),
+          throwsA(isA<CheckedFromJsonException>()),
         );
-        expect(result, isA<FallbackMarkdownComponent>());
-        expect((result as FallbackMarkdownComponent).text, contains('欄位型別異常'));
       },
     );
 
