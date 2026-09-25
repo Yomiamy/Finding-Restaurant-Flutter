@@ -6,36 +6,44 @@ import 'package:flutter_restaruant/domain/entities/a2ui_fallback_strings.dart';
 import 'package:flutter_restaruant/flow/menu_vision/menu_vision_barrel.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
 /// 特性測試：Menu Vision 畫面在「全缺值／全有值」下的顯示。T2 之後禁止修改。
-class _FakeRepo implements MenuVisionRepository {
-  _FakeRepo(this.data);
-  final Map<String, Object?> data;
+class _MockRepo extends Mock implements MenuVisionRepository {}
 
-  @override
-  Future<Uint8List?> captureImage() async => Uint8List.fromList([1]);
-  @override
-  Future<Uint8List?> pickImageFromGallery() async => Uint8List.fromList([1]);
-  @override
-  Future<A2UIComponent?> captureAndAnalyzeMenu() async => null;
-  @override
-  Future<A2UIComponent?> pickFromGalleryAndAnalyzeMenu() async => null;
-  @override
-  Future<A2UIComponent> analyzeMenuImageBytes(Uint8List imageBytes) async =>
-      A2UIComponent.fromJson({'component_type': 'dish_catalog', 'data': data});
-}
-
-Future<void> _pumpCatalog(WidgetTester tester, Map<String, Object?> data) async {
-  final bloc = MenuVisionBloc(repository: _FakeRepo(data));
+Future<void> _pumpCatalog(
+  WidgetTester tester,
+  Map<String, Object?> data,
+) async {
+  final repo = _MockRepo();
+  when(
+    () => repo.captureImage(),
+  ).thenAnswer((_) async => Uint8List.fromList([1]));
+  when(() => repo.analyzeMenuImageBytes(any())).thenAnswer(
+    (_) async => A2UIComponent.fromJson({
+      'component_type': 'dish_catalog',
+      'data': data,
+    }),
+  );
+  final bloc = MenuVisionBloc(repository: repo);
   addTearDown(bloc.close);
-  await tester.pumpWidget(MaterialApp(home: Scaffold(body: MenuVisionSheet(bloc: bloc))));
+  await tester.pumpWidget(
+    MaterialApp(
+      home: Scaffold(body: MenuVisionSheet(bloc: bloc)),
+    ),
+  );
   await tester.tap(find.byKey(const Key('take_photo_button')));
-  await tester.runAsync(() => Future<void>.delayed(const Duration(milliseconds: 50)));
+  await tester.runAsync(
+    () => Future<void>.delayed(const Duration(milliseconds: 50)),
+  );
   await tester.pump();
 }
 
 void main() {
-  setUpAll(() async => S.load(const Locale('zh', 'TW')));
+  setUpAll(() async {
+    await S.load(const Locale('zh', 'TW'));
+    registerFallbackValue(Uint8List(0));
+  });
 
   testWidgets('全欄位有值', (tester) async {
     await _pumpCatalog(tester, {
@@ -81,7 +89,10 @@ void main() {
     expect(find.text('其他 (1)'), findsOneWidget);
     expect(find.textContaining('NT\$'), findsNothing);
     expect(find.text(S.current.dish_card_spice_level_prefix), findsNothing);
-    expect(find.textContaining(S.current.dish_card_ingredients_prefix), findsNothing);
+    expect(
+      find.textContaining(S.current.dish_card_ingredients_prefix),
+      findsNothing,
+    );
     expect(find.byType(Chip), findsNothing);
     expect(find.byIcon(Icons.warning_amber_rounded), findsNothing);
     expect(find.byIcon(Icons.help_outline_rounded), findsNothing);
