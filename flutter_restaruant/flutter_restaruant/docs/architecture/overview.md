@@ -4,7 +4,7 @@
 
 `flutter_restaruant` 是一個餐廳探索與收藏的 Flutter App。資料來源為 **Yelp Fusion API**（搜尋、詳情、評論）與 **Cloud Firestore**（使用者最愛清單），並整合多種第三方登入、FCM 推播與 AdMob 廣告。
 
-本專案採 **Clean Architecture 三層分離** + **BLoC 單向資料流** + **GetIt 依賴注入**，並以 `PlatformWidget` 抽象處理 iOS／Android 的原生外觀分歧。
+本專案採 **Clean Architecture 三層分離** + **BLoC 單向資料流** + **GetIt 依賴注入**。
 
 ---
 
@@ -17,7 +17,7 @@
   │                 表現層 (Presentation Layer)                │
   │  lib/flow/<feature>/view/  ── Page + Widget                │
   │  lib/flow/<feature>/bloc/  ── Bloc / Event / State         │
-  │  lib/component/  [PlatformWidget] [Cell] [Ad] [Loading]    │
+  │  lib/component/  [Cell] [Ad] [Loading]                     │
   │  lib/features/foundation/style/  ── Design Tokens          │
   └─────────────────────────────┬──────────────────────────────┘
                                 │ 發送 Event / 監聽 State
@@ -94,7 +94,6 @@ YelpRestaurantSummaryDto get toDto => ...
 
 - **Feature-First 目錄**：`lib/flow/<feature>/` 下再分 `bloc/` 與 `view/`，每個 feature 自成一個垂直切片（main、restaurant、favor、signinup、settings、splash、filter、photo_viewer、menu_vision）。
 - **BLoC 單向資料流**：`Bloc<Event, State>` + `Equatable`。State 以**具名子類別**表達（`MainInitial` / `InProgress` / `Success` / `Failure` / `LoadMoreSuccess` / `ToggleFavorSuccess`；MenuVision 則採 `sealed class MenuVisionState` 搭配 Pattern Matching），而非單一 class 塞 `isLoading` 布林旗標——狀態互斥性由型別系統保證。Menu Vision 與 AI 覓食由 BLoC 將 nullable entity 轉為欄位 non-null 的 UI model（`lib/flow/<feature>/model/`），呈現用預設值集中於轉換處，View 只讀 UI model。
-- **`PlatformWidget<I, A>`**：泛型抽象類別，以 `Platform.isAndroid` / `Platform.isIOS` 分派到 `createAndroidWidget` / `createIosWidget`。子類別必須同時提供兩個平台的實作，**分歧在編譯期就被強制處理**。
 - **Design Tokens**：`lib/features/foundation/style/` 下的 `AppThemeData`、`ThemeColor`、`ThemeSize`、`ThemeFontSize`、`ThemeTextStyle`。
 
 ### 4. 跨層設施 (Cross-cutting)
@@ -153,26 +152,13 @@ Dio 的 request 攔截器**依註冊順序正向執行**（0→1→2），respon
 >
 > **建議修法**：`isLogEnabled` 預設改為 `kDebugMode`，並將其註冊順序移到 auth 之後。
 
-### 4. 平台分歧在編譯期強制處理，而非執行期猜測
-
-`PlatformWidget<I extends Widget, A extends Widget>` 用泛型參數分別約束 iOS 與 Android 的回傳型別，兩個抽象方法都是 `required`：
-
-```dart
-I createIosWidget(BuildContext context);
-A createAndroidWidget(BuildContext context);
-```
-
-繼承它就**必須**寫兩個平台的實作，漏掉一個編譯不過。這比在 build 裡散落 `if (Platform.isIOS)` 判斷更能消滅「某個平台忘了處理」這類特殊情況。
-
-> ⚠️ **已知邊界**：`PlatformWidget` 走 `dart:io` 的 `Platform`，因此**不支援 Web**（Web 會拋出）。目前專案定位為 iOS／Android 雙平台，這是實用主義下的合理取捨，而非疏漏。
-
-### 5. Theme 必須繞過 `PlatformApp` 的 Cupertino 分支
+### 4. Theme 必須繞過 `PlatformApp` 的 Cupertino 分支
 
 iOS 走 `CupertinoApp` 分支時 `material:` 的設定**根本不會被呼叫**，Material widget 會退回 Flutter 預設色票。因此 `main.dart` 額外用 `builder:` 包一層 `Theme`，讓兩個平台都吃得到 `AppThemeData.materialLight`。
 
 `AppThemeData` 的色票只做 `ColorScheme.fromSeed`，**零 `copyWith` 覆寫**——種子色決定整組色階，不手動微調個別顏色，避免色票之間互相矛盾。
 
-### 6. Debug 工具絕不進 production build
+### 5. Debug 工具絕不進 production build
 
 `lib/di/inspector.dart` 以三元運算在**編譯期**決定：
 
