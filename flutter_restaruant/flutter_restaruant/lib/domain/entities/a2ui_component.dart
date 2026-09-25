@@ -28,19 +28,19 @@ sealed class A2UIComponent extends Equatable {
       'dish_catalog' => switch (DishCatalogComponent.fromJson(data)) {
         final c when c.dishes?.isNotEmpty ?? false => c,
         final c => FallbackMarkdownComponent(
-          text:
-              _optString(json, 'text') ??
-              c.restaurantTitle ??
-              A2UIFallbackStrings.dishCatalogEmpty,
+          text: _firstText([
+            _optString(json, 'text'),
+            c.restaurantTitle,
+          ], A2UIFallbackStrings.dishCatalogEmpty),
         ),
       },
       'comparison_matrix' => switch (ComparisonMatrixComponent.fromJson(data)) {
         final c when c.items?.isNotEmpty ?? false => c,
         final c => FallbackMarkdownComponent(
-          text:
-              _optString(json, 'text') ??
-              c.title ??
-              A2UIFallbackStrings.comparisonMatrixTitle,
+          text: _firstText([
+            _optString(json, 'text'),
+            c.title,
+          ], A2UIFallbackStrings.comparisonMatrixTitle),
         ),
       },
       'action_chip_group' => switch (ActionChipGroupComponent.fromJson(
@@ -50,22 +50,24 @@ sealed class A2UIComponent extends Equatable {
           chips: chips,
         ),
         _ => FallbackMarkdownComponent(
-          text:
-              _optString(json, 'text') ??
-              A2UIFallbackStrings.actionChipGroupTitle,
+          text: _firstText([
+            _optString(json, 'text'),
+          ], A2UIFallbackStrings.actionChipGroupTitle),
         ),
       },
       'decision_roulette' => switch (DecisionRouletteComponent.fromJson(data)) {
         final c when (c.options?.length ?? 0) >= 2 => c,
         final c => FallbackMarkdownComponent(
-          text:
-              _optString(json, 'text') ??
-              c.title ??
-              A2UIFallbackStrings.decisionRouletteTitle,
+          text: _firstText([
+            _optString(json, 'text'),
+            c.title,
+          ], A2UIFallbackStrings.decisionRouletteTitle),
         ),
       },
       _ => FallbackMarkdownComponent(
-        text: _optString(json, 'text') ?? A2UIFallbackStrings.unknownComponent,
+        text: _firstText([
+          _optString(json, 'text'),
+        ], A2UIFallbackStrings.unknownComponent),
       ),
     };
   }
@@ -303,6 +305,14 @@ List<RestaurantComparisonItem>? _itemsFromJson(List<Object?>? raw) =>
 
 List<ActionChipItem>? _chipsFromJson(List<Object?>? raw) =>
     mapListFromJson(raw, ActionChipItem.fromJson);
+
+/// 降級文字：取第一個非空白的候選，全部為 null 或空白時用 [fallback]。
+String _firstText(List<String?> candidates, String fallback) {
+  for (final s in candidates) {
+    if (s != null && s.trim().isNotEmpty) return s;
+  }
+  return fallback;
+}
 
 /// 不可信 JSON 的字串欄位：null 照舊回傳 null，非字串拋 [FormatException]（不拋 TypeError）。
 String? _optString(Map<String, Object?> json, String key) =>

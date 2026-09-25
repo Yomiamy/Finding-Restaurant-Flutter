@@ -1,3 +1,4 @@
+import 'package:flutter_restaruant/domain/entities/a2ui_fallback_strings.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -95,6 +96,19 @@ void main() {
 
       final fallback = comp as FallbackMarkdownComponent;
       expect(fallback.text, '未知的新版元件內容');
+    });
+
+    test('降級文字遇到空白字串時改用預設文字', () {
+      final comp = A2UIComponent.fromJson({
+        'component_type': 'dish_catalog',
+        'text': ' ',
+        'data': {'restaurant_title': '', 'dishes': <Object?>[]},
+      });
+
+      expect(
+        (comp as FallbackMarkdownComponent).text,
+        A2UIFallbackStrings.dishCatalogEmpty,
+      );
     });
 
     test('AiFoodieMessage factory 與 JSON 轉換正確', () {
