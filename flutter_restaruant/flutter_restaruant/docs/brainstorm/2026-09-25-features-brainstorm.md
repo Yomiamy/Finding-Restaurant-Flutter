@@ -158,6 +158,8 @@ lib/
 #### 7 大致命程式碼缺陷詳解 (Detailed Code Defects)
 
 > **⚠️ 修復進度更新 (2026-07-30 覆核)**：下列缺陷經 07-27～07-30 重構後，**5 項已修復、2 項仍存在**。各項狀態已於標題標註，內文保留原始稽核紀錄以供追溯。覆核方式為直接檢視當前程式碼，非依賴 commit 訊息。
+>
+> **🔄 2026-09-25 覆核**：缺陷 5（假延遲）與缺陷 7（Marker 連動）已修復（見「進度覆核摘要」），**目前僅剩缺陷 2（硬編碼 API Key）未修**。
 
 1. **✅ 已修復 — `build()` 方法中發動 Event / 非同步側邊效應 (Anti-pattern: Side-effects in build)**
    * **現況**：`sign_in_page.dart:37`、`main_page.dart:49-50`、`favor_page.dart:32`、`settings_page.dart:33` 的初始化 Event 皆已移入 `initState()`；`restaurant_detail_page.dart:38` 移入 `BlocListener` 回呼。原始缺陷紀錄如下：
@@ -179,13 +181,15 @@ lib/
 4. **✅ 已修復 — Firestore 最愛店家單一 Document Map 覆寫 (Database Architecture Defect)**
    * **現況（2026-08-19 覆核）**：已重構為 Subcollection 結構（`favors/{uid}/items/{restaurant_id}`）。不再依賴全量下載與上傳，1MB 上限與併發寫入覆蓋風險已解除，並包含無痛向後相容遷移機制。
 
-5. **🔴 仍未修復 — 硬編碼人工假延遲 (Hardcoded Fake Delays)**
-   * **現況（2026-08-05 複測，仍未修）**：三處延遲全數保留 —— `main_bloc.dart:56` 過濾 2 秒、`fcm_manager.dart:51`（行號更正，原記 `:53`）推播導航 8 秒、`splash_page.dart:22` 啟動頁 3 秒。啟動頁延遲屬品牌曝光的合理設計，但過濾與推播導航的延遲純屬無謂等待，應移除。
+5. **✅ 已修復 — 硬編碼人工假延遲 (Hardcoded Fake Delays)**
+   * **現況（2026-09-25 覆核）**：過濾 2 秒與推播導航 8 秒已清除，僅保留啟動頁 3 秒（品牌曝光的合理設計）。以下為 2026-08-05 的歷史紀錄。
+   * **歷史（2026-08-05 複測，當時仍未修）**：三處延遲全數保留 —— `main_bloc.dart:56` 過濾 2 秒、`fcm_manager.dart:51`（行號更正，原記 `:53`）推播導航 8 秒、`splash_page.dart:22` 啟動頁 3 秒。啟動頁延遲屬品牌曝光的合理設計，但過濾與推播導航的延遲純屬無謂等待，應移除。
 
 6. **✅ 已修復 — `FilterPage` UI 狀態被覆蓋重置 Bug (State Reset Bug)**
    * **現況**：`lib/flow/filter/view/filter_page.dart:27-36` 已改為在 `didChangeDependencies()` 搭配 `_isInit` 旗標僅初始化一次，`build()` 回歸純淨。使用者調整條件不再被舊參數覆寫。
 
-7. **🟡 部分修復 — `MapWidget` 標記未連動與常數品質 (Map & Code Quality Defects)**
+7. **✅ 已修復 — `MapWidget` 標記未連動與常數品質 (Map & Code Quality Defects)**
+   * **✅ Marker 連動已修（2026-09-25 覆核）**：`map_widget.dart` 已實作 `didUpdateWidget()`。下方「🔴 Marker 未連動」為歷史紀錄。
    * **✅ 常數錯字已修**：`CONNECTION_TIEMOUT` / `RECEIVE_TIEMOUT` / `EMAIL_SUBJEC` 已更正並改為 `connectionTimeout` / `receiveTimeout` / `emailSubject`。
    * **✅ 風險 `operator ==` 已移除**：`YelpRestaurantSummaryInfo` 已由 `RestaurantEntity` 取代，`id!.compareTo()` 的 null crash 風險消失。
    * **🔴 Marker 未連動仍存在**：`lib/flow/main/view/map_widget.dart` 至今未實作 `didUpdateWidget()`，Marker 僅於 `initState()`（`:22-35`）建立。搜尋或過濾更新列表時，地圖標記仍停留在初始狀態。
@@ -576,10 +580,10 @@ lib/
 | ✅ **iOS UIScene Lifecycle 支援遷移 (強制性相容)** | 平台遷移 | 10 | 3.0 | 100% | 1.0 | **30.0** | 27.0 | - | **已完成**（2026-08-23） |
 | ✅ **iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (混合模式)** | 平台遷移 | 10 | 2.5 | 90% | 1.5 | **15.0** | 19.12 | - | **已完成**（2026-08-24，以混合模式完工） |
 | ✅ **Android Built-in Kotlin 遷移 (移除顯式 KGP)** | 平台遷移 | 10 | 2.5 | 100% | 0.5 | **50.0** | 23.75 | - | **已完成**（2026-09-13, PR #118） |
-| ✅ **Flutter SDK 版本遷移 (≥ 3.44.1)** | 基礎設施 | 10 | 2.5 | 100% | 1.0 | **25.0** | 22.5 | - | **P0（基礎設施升級）** |
+| ✅ **Flutter SDK 版本遷移 (≥ 3.44.1)** | 基礎設施 | 10 | 2.5 | 100% | 1.0 | **25.0** | 22.5 | - | **已完成**（2026-08-26） |
 | ✅ **移除無謂假延遲 (過濾 2s / 推播 8s)** | 既有修復 | 9 | 1.5 | 100% | 0.5 | **27.0** | 14.25 | - | **已完成** |
 | ✅ **`MapWidget` 實作 `didUpdateWidget` 連動 Marker** | 既有修復 | 8 | 2.0 | 100% | 0.5 | **32.0** | 19.0 | - | **已完成** |
-| 🔴 **修復地圖模式定位按鈕遮擋問題** | 既有修復 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | - | **P0** |
+| ✅ **修復地圖模式定位按鈕遮擋問題** | 既有修復 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | - | **已完成**（2026-09-06, Issue #110 / PR #111） |
 | ✅ **修復地圖底部列表 UI 溢出 (RenderFlex overflow)** | 既有修復 | 10 | 1.5 | 100% | 0.5 | **30.0** | 14.25 | - | **已完成**（PR #73） |
 | ❌ **地圖與 BottomSheet 雙向連動 Carousel (已放棄)** | 空間 UX | 9 | 3.0 | 90% | 1.5 | **16.2** | 22.95 | 6 | **放棄 (無實質效益)** |
 | ✅ **調整側選單功能項目順序** | UX 優化 | 10 | 1.0 | 100% | 0.5 | **20.0** | 10.0 | - | **已完成** |
@@ -592,7 +596,7 @@ lib/
 | **線上候位與動態隊列 FCM 追蹤** | 商業轉化 | 5 | 2.5 | 80% | 2.5 | **4.0** | 10.0 | 13 | **P2** |
 | ✅ **AI 多模態 Vision 菜單翻譯 (F-3.1)** | AI 創新 | 6 | 2.5 | 80% | 2.5 | **4.8** | 12.0 | 14 | **已完成 (2026-09-12)** |
 | **個人味蕾配對度 (0-100% Match)** | AI 創新 | 7 | 2.0 | 70% | 2.5 | **3.92** | 9.8 | 15 | **P2** |
-| **自然語言選店助手與命運轉盤** | AI 創新 | 6 | 2.0 | 70% | 2.0 | **4.2** | 11.2 | 16 | **P2** |
+| ✅ **自然語言選店助手與命運轉盤** | AI 創新 | 6 | 2.0 | 70% | 2.0 | **4.2** | 11.2 | 16 | **已完成**（2026-09-22, Issue #123 / PR #124，即 M4 AI 智能覓食助理） |
 | **雙排瀑布流 UGC 食記與短影片** | 內容生態 | 5 | 2.0 | 70% | 3.0 | **2.33** | 9.8 | 17 | **P2** |
 
 ---
@@ -657,7 +661,7 @@ lib/
 | Phase 3: AI 差異化壁壘與白地探索 (AI Differentiators & White Space)                |
 |   • [x] AI 多模態 Vision 菜單翻譯與食材過敏原拆解 ✅ 2026-09-12 (Issue #115 / PR #116) |
 |   • 個人味蕾配對度 (0-100% Match Score & 味覺雷達)                                  |
-|   • 自然語言選店對話助手與命運轉盤                                                  |
+|   • [x] 自然語言選店對話助手與命運轉盤 ✅ 2026-09-22 (Issue #123 / PR #124)          |
 |   • 雙排瀑布流 UGC 食記與 15 秒探店短影片                                           |
 +-----------------------------------------------------------------------------------+
 ```
@@ -1027,7 +1031,7 @@ lib/features/foundation/style/
 | 階段 | 內容 | 依賴 | 使用者可感知度 | 狀態 |
 | :--- | :--- | :--- | :---: | :---: |
 | **S1 地基** | `lib/features/foundation/style/` 建立、`PlatformApp` 掛 `material:`／`cupertino:`／`builder:`、token 定義 | 無 | 低（僅 FilterChip 藍→橘） | ✅ **已完成 (2026-08-03)** |
-| **S2 共用元件** | ItemCell、RatingStars(✅)、Skeleton(✅)、EmptyDataWidget | S1 | **高**（列表與最愛同時改觀） | 🟡 **部分完成**（`RatingStars` 與 `Skeleton` 已完成，剩餘 `ItemCell`、`EmptyDataWidget` 與 Token 覆寫） |
+| **S2 共用元件** | ItemCell、RatingStars(✅)、Skeleton(✅)、EmptyDataWidget | S1 | **高**（列表與最愛同時改觀） | ✅ **已完成**（`RatingStars`、`Skeleton`、`ItemCell`（`c9adeb9`）、`EmptyDataWidget`（`d4ba8a9`）皆已落地；殘留的 `primary` Token 覆寫移交 [UI-8.4]，見 T-9） |
 | **S3 頁面改造** | 詳情頁、登入頁、列表頁（實際另含設定頁、Splash 頁） | S2 | **高** | ✅ **已完成 (2026-08-29, PR #94)** |
 | **S4 收尾** | 篩選頁、Splash、移除假延遲、清理舊常數 | S3 | 中 | ✅ **已完成 (2026-09-03, PR #106)** |
 
@@ -1039,7 +1043,7 @@ lib/features/foundation/style/
 | T-2 | ~~裸 `Colors.xxx` **25 處／16 檔**~~ | ✅ **已於 S4 (PR #106) 清理歸零**（全專案改用 `ThemeColor.color[hex]` 常數） |
 | T-3 | 10 個 `@Deprecated` 字級常數、29 處使用、14 個檔案待遷移 | ✅ **已於 S1 (PR #66) 移除並由 ThemeFontSize 替換** |
 | T-6 | ~~奶油白 `surface` (`#FFFBF7`) 覆寫~~ | ✅ **已於 S2 (PR #105) 定義 `ThemeColor.colorfffbf7` 並於 S4 全面落地** |
-| **T-9（新增）** | ~~`colorScheme.primary` = `#8F4B38` ≠ 品牌色 `#D84A20`~~ | ✅ **已於 S2/S4 解決**：建立 `ThemeColor.colord84a20` 編譯期常數，全專案呼叫端全面替換並徹底移除 `appPrimary` 別名，消滅 `fromSeed` 色偏與 context 查表 |
+| **T-9（新增）** | `colorScheme.primary` = `#8F4B38` ≠ 品牌色 `#D84A20` | 🟡 **部分解決**：S2/S4 建立 `ThemeColor.colord84a20` 編譯期常數，呼叫端全面替換並移除 `appPrimary` 別名。**但 `theme_data.dart:19` 仍是純 `fromSeed`、未覆寫 `primary`**（`:13` 註解仍記「S2 待處理」），依賴 `colorScheme.primary` 的 M3 預設元件仍是濁橘 `#8F4B38`。殘留移交 [UI-8.4]（2026-09-25 實查） |
 
 > **順序理由**：S2 完成後列表與最愛兩畫面同時改觀，是最快看到成果的切點。S1 單獨看幾乎無變化，但為 S2/S3 的前提。
 
@@ -1068,7 +1072,7 @@ lib/features/foundation/style/
 | 1 | 骨架屏自繪 vs `shimmer` 套件 | 先自繪；超過 40 行改用套件 | ✅ **已於 S2 引入 `shimmer` 套件並完成 `Skeleton`** |
 | 2 | 舊 `UIConstants` 字級常數何時刪 | S4 標 `@Deprecated`；全數遷移後另開獨立 PR 移除 | ✅ **已於 S1 移除**（10 個常數全數移除並替換為 ThemeFontSize，PR #66 完成） |
 | 3 | `Colors.grey` 全域掃除 | 各階段順手改；S4 做最後一次 grep 確認歸零 | ✅ **已於 S4 (PR #106) 全面替換為 ThemeColor.color9e9e9e** |
-| **4（新增）** | `colorScheme.primary` 是否 `copyWith` 鎖回 `#D84A20` | 見 T-9。與 T-6 的 `surface` 覆寫一併決定，共用 D-4 的 3 個額度 | ✅ **已於 S2/S4 解決**：改為在 `ThemeColor` 定義編譯期常數 `colord84a20`，全專案呼叫端直連，不經 context 查表 |
+| **4（新增）** | `colorScheme.primary` 是否 `copyWith` 鎖回 `#D84A20` | 見 T-9。與 T-6 的 `surface` 覆寫一併決定，共用 D-4 的 3 個額度 | 🟡 **部分解決**：呼叫端改直連 `ThemeColor.colord84a20` 常數，不經 context 查表；但 `ColorScheme` 本身未 `copyWith` 鎖回 `#D84A20`，殘留移交 [UI-8.4]（見 T-9） |
 
 ---
 
@@ -1372,9 +1376,9 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 ## 7.5 安全性、效能防護與成本治理 (Security, Quota & Resilience)
 
-1. **Firebase App Check 嚴格保護**
+1. **Firebase App Check 嚴格保護** — ✅ 已接線（2026-09-25 實查：`lib/main.dart:45,50` 依 `kDebugMode` 分別啟用 Debug Provider 與 DeviceCheck／Play Integrity）
    - 透過 App Check (iOS DeviceCheck / App Attest; Android Play Integrity) 鎖定 API 請求來源，杜絕未經授權的惡意客戶端盜刷 Gemini 配額。
-2. **Firebase Remote Config 動態模型控制**
+2. **Firebase Remote Config 動態模型控制** — ⬜ 未導入（2026-09-25 實查：`pubspec.yaml` 無 `firebase_remote_config`）
    - 模型名稱（如 `gemini-3.5-flash-lite`）、Temperature、System Instructions 與 Prompt 模板全數由 Remote Config 遠端控制，無需發布新版本即可調整。
 3. **優雅降級 (Graceful Fallback Policy)**
    - 當遇 HTTP 429 (Rate Limit)、網路離線或 JSON 語法破損時：
@@ -1538,7 +1542,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 #### [A-8.1] 引入 Dart 3 `sealed class Result<T>` 與 `AppException` 階層
 - **優先級**：`P0`
 - **預估 Effort**：`1.0d`
-- **價值與收益**：徹底根除 `restaurant_detail_bloc.dart:42` 等處的 `emit(const Failure())` 錯誤黑洞，超越對照組 `(null, null)` 缺陷，實現強型別錯誤傳播與編譯期窮盡檢查。
+- **價值與收益**：徹底根除 `restaurant_detail_bloc.dart:43,57` 等處的 `emit(const Failure())` 錯誤黑洞，超越對照組 `(null, null)` 缺陷，實現強型別錯誤傳播與編譯期窮盡檢查。
 - **影響檔案路徑**：
   - 新增：`lib/features/foundation/result/result.dart`
   - 新增：`lib/features/foundation/errors/app_exception.dart`
@@ -1628,7 +1632,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 - **影響檔案路徑**：
   - 新增：`lib/api/interceptors/token_refresh_interceptor.dart`
   - 新增：`lib/api/interceptors/error_handling_interceptor.dart`
-  - 修改：`lib/api/dio_client.dart`
+  - 修改：`lib/api/dio/dio_client.dart`
 - **具體實作建議**：
   1. 實作 `TokenRefreshInterceptor`：攔截 401 響應，暫停請求隊列，向 Auth 服務換取新 Token 後自動重放原始請求。
   2. 實作 `ErrorHandlingInterceptor`：將 `DioExceptionType.connectionTimeout`, `badResponse` 對應為具體的 `AppException`。
@@ -1692,8 +1696,8 @@ class ComparisonMatrixComponent extends A2UIComponent {
 - **預估 Effort**：`0.2d`
 - **價值與收益**：將無障礙守衛寫入專案規範，並為無文字 Icon 按鈕（星星評分、關閉按鈕）補齊語義標籤。
 - **影響檔案路徑**：
-  - 專案規則：`.agents/rules/flutter-styles.md`
-  - 元件：`lib/component/rating_stars.dart`, `lib/flow/main/view/restaurant_item_cell.dart`
+  - 專案規則：`.claude/rules/flutter-styles.md`
+  - 元件：`lib/component/rating_stars.dart`, `lib/component/cell/main_page/restaurant_item_cell.dart`
 
 #### [E-8.5] AI 路徑錯誤處理收尾：移除 i18n fallback 的 `Error` 捕捉、補 `Error` 外拋測試與 repo Logger
 - **優先級**：`P2`
