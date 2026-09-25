@@ -10,9 +10,8 @@ import 'package:mocktail/mocktail.dart';
 class MockMenuVisionRepository extends Mock implements MenuVisionRepository {}
 
 void main() {
-  setUpAll(() => registerFallbackValue(Uint8List(0)));
-
   setUpAll(() async {
+    registerFallbackValue(Uint8List(0));
     await S.load(const Locale('zh', 'TW'));
   });
 

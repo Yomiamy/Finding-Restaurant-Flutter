@@ -141,10 +141,7 @@ class _Data {
 }
 
 void main() {
-  setUpAll(() async {
-    await S.load(const Locale('zh', 'TW'));
-    registerFallbackValue(<AiFoodieMessage>[]);
-  });
+  setUpAll(() async => S.load(const Locale('zh', 'TW')));
 
   group('全欄位有值', () {
     testWidgets('顯示', (tester) async {
