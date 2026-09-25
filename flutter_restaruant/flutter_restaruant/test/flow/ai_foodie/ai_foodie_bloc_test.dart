@@ -1,3 +1,4 @@
+import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_restaruant/domain/repositories/ai_foodie_repository.dart';
@@ -205,6 +206,25 @@ void main() {
       final state = AiFoodieState(messages: [AiFoodieMessage.user('hi')]);
       expect(state.messageModels.single.text, 'hi');
     });
+
+    blocTest<AiFoodieBloc, AiFoodieState>(
+      'SendUserPrompt 遇到 Error 往外拋出，不 emit errorMessage',
+      build: () {
+        when(
+          () => repository.askAssistant(
+            any(),
+            history: any(named: 'history'),
+            candidateRestaurants: any(named: 'candidateRestaurants'),
+          ),
+        ).thenAnswer((_) async => throw StateError('bug'));
+        return AiFoodieBloc(repository: repository);
+      },
+      act: (bloc) => bloc.add(const SendUserPrompt('4人聚餐')),
+      expect: () => [
+        isA<AiFoodieState>().having((s) => s.isLoading, 'isLoading', isTrue),
+      ],
+      errors: () => [isA<StateError>()],
+    );
 
     test('history 是送出前的 state.messages（entity）', () async {
       bloc.add(const SendUserPrompt('第一句'));
