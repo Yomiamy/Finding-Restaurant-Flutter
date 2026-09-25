@@ -26,8 +26,8 @@ class MenuVisionBloc extends Bloc<MenuVisionEvent, MenuVisionState> {
       if (state is MenuVisionLoading) return;
       emit(const MenuVisionLoading());
 
+      Uint8List? imageBytes;
       try {
-        final Uint8List? imageBytes;
         if (event.source == ImageSource.camera) {
           imageBytes = await _repository.captureImage();
         } else {
@@ -65,6 +65,7 @@ class MenuVisionBloc extends Bloc<MenuVisionEvent, MenuVisionState> {
         emit(
           MenuVisionFailure(
             message: S.current.menu_vision_error_analyze_failed(e.toString()),
+            failedImageBytes: imageBytes,
           ),
         );
       }

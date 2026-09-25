@@ -14,6 +14,7 @@ class MockMenuVisionRepository implements MenuVisionRepository {
   A2UIComponent? analyzeResult;
   final sampleBytes = Uint8List.fromList([1, 2, 3, 4]);
   bool shouldThrow = false;
+  bool analyzeShouldThrow = false;
   bool captureCalled = false;
   bool galleryCalled = false;
 
@@ -49,7 +50,9 @@ class MockMenuVisionRepository implements MenuVisionRepository {
 
   @override
   Future<A2UIComponent> analyzeMenuImageBytes(Uint8List imageBytes) async {
-    if (shouldThrow) throw Exception('模擬重試錯誤');
+    if (shouldThrow || analyzeShouldThrow) {
+      throw const FormatException('Empty menu analysis response');
+    }
     return analyzeResult ??
         captureResult ??
         galleryResult ??
@@ -129,6 +132,25 @@ void main() {
       },
       act: (bloc) => bloc.add(const CaptureAndAnalyzeMenu()),
       expect: () => [const MenuVisionLoading(), isA<MenuVisionFailure>()],
+    );
+
+    blocTest<MenuVisionBloc, MenuVisionState>(
+      'keeps failedImageBytes for retry when analysis throws after capture',
+      build: () {
+        mockRepo
+          ..captureResult = sampleCatalog
+          ..analyzeShouldThrow = true;
+        return MenuVisionBloc(repository: mockRepo);
+      },
+      act: (bloc) => bloc.add(const CaptureAndAnalyzeMenu()),
+      expect: () => [
+        const MenuVisionLoading(),
+        isA<MenuVisionFailure>().having(
+          (s) => s.failedImageBytes,
+          'failedImageBytes',
+          mockRepo.sampleBytes,
+        ),
+      ],
     );
 
     blocTest<MenuVisionBloc, MenuVisionState>(
