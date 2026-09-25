@@ -8,7 +8,8 @@ import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-/// 特性測試：Menu Vision 畫面在「全缺值／全有值」下的顯示。T2 之後禁止修改。
+/// 特性測試：Menu Vision 畫面在「全缺值／全有值」下的顯示。
+/// 修改斷言的期望值＝行為改變，必須在 PR 中說明；替換測試替身或排版不受限制。
 class _MockRepo extends Mock implements MenuVisionRepository {}
 
 Future<void> _pumpCatalog(

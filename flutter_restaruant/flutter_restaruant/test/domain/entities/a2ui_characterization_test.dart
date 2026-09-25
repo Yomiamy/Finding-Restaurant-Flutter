@@ -7,7 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:json_annotation/json_annotation.dart';
 
 /// 特性測試：固定 entity 與分派器的現行可觀察行為。
-/// T2 之後禁止修改本檔；任何失敗都代表行為改變。
+/// 修改斷言的期望值＝行為改變，必須在 PR 中說明；替換測試替身或排版不受限制。
 void main() {
   A2UIComponent parse(Map<String, Object?> json) => A2UIComponent.fromJson(json);
   Object? fallbackText(A2UIComponent c) => (c as FallbackMarkdownComponent).text;
