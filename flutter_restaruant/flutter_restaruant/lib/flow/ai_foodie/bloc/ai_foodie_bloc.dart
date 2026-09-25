@@ -1,5 +1,3 @@
-import 'package:logger/logger.dart';
-
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/entities/entities_barrel.dart';
@@ -121,7 +119,7 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
     if (action == 'open_roulette') {
       final title = payload['title'] is String
           ? payload['title'] as String
-          : _rouletteDefaultTitle();
+          : S.current.ai_foodie_roulette_default_title;
       final rawOptions = payload['options'];
       if (rawOptions is! List) return;
       final options = rawOptions
@@ -156,34 +154,12 @@ class AiFoodieBloc extends Bloc<AiFoodieEvent, AiFoodieState> {
         isRouletteVisible: false,
         messages: [
           ...state.messages,
-          AiFoodieMessage.assistant(text: _rouletteResultMessage(event.winner)),
+          AiFoodieMessage.assistant(
+            text: S.current.ai_foodie_roulette_result_msg(event.winner),
+          ),
         ],
       ),
     );
-  }
-
-  String _rouletteDefaultTitle() {
-    try {
-      return S.current.ai_foodie_roulette_default_title;
-    } catch (e) {
-      Logger().d(
-        '[Err:RouletteDefaultTitle] i18n delegate not initialized',
-        error: e,
-      );
-      return '[Err:RouletteDefaultTitle] 今晚吃什麼？命運大轉盤';
-    }
-  }
-
-  String _rouletteResultMessage(String winner) {
-    try {
-      return S.current.ai_foodie_roulette_result_msg(winner);
-    } catch (e) {
-      Logger().d(
-        '[Err:RouletteResultMsg] i18n delegate not initialized',
-        error: e,
-      );
-      return '[Err:RouletteResultMsg] 🎲 命運轉盤為您抽出了最棒的選擇：\n👉 **$winner** 👈\n祝您今晚用餐愉快，吃得開心滿足！';
-    }
   }
 
   void _onCloseRoulette(CloseRoulette event, Emitter<AiFoodieState> emit) {
