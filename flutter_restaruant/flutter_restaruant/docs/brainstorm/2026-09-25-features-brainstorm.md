@@ -96,7 +96,7 @@
 
 | 項目 | 優先級 | 現況與調整目標 | 風險 / 影響 |
 | :--- | :---: | :--- | :--- |
-| **消除例外偽裝，回歸 Sealed Result** | **P1** | `MenuVisionRepo` 將底層解析/網路例外偽裝為 `FallbackMarkdownComponent`，BLoC 再解開強轉為 `MenuVisionFailure`（概念偷渡 Error Smuggling）。目標：重構為 Dart 3 `sealed class MenuVisionResult`（`MenuVisionSuccessResult` / `MenuVisionFailureResult`）或拋出語意化自訂例外。 | **代碼品味與健壯性**：杜絕概念偷渡，避免未來 LLM 合法回傳 Markdown 遭誤殺為失敗。 |
+| ✅ **消除例外偽裝，回歸 Sealed Result** — **已於 2026-09-25 完成 (Issue #126 / PR #127)** | **P1** | `MenuVisionRepo` 將底層解析/網路例外偽裝為 `FallbackMarkdownComponent`，BLoC 再解開強轉為 `MenuVisionFailure`（概念偷渡 Error Smuggling）。目標：重構為 Dart 3 `sealed class MenuVisionResult`（`MenuVisionSuccessResult` / `MenuVisionFailureResult`）或拋出語意化自訂例外。**落地**：採「拋出例外由 BLoC 收斂」—— Repo 不再包裝錯誤，空回應／非物件 JSON 拋 `FormatException`、欄位型別錯誤拋 `CheckedFromJsonException`，`MenuVisionBloc` 以 `on Exception catch` 轉為多語系 `MenuVisionFailure` 並保留 `failedImageBytes`；未引入自訂 `MenuVisionResult` 型別或自訂例外。 | **代碼品味與健壯性**：杜絕概念偷渡，避免未來 LLM 合法回傳 Markdown 遭誤殺為失敗。 |
 | **抽離硬體 `MediaPickerService`** | **P2** | `MenuVisionRepo` 同時混雜 `ImagePicker` 硬體 I/O 與多模態推論。目標：抽離為獨立 Service 介面，依賴注入進 Repo 或 BLoC。 | **關注點分離**：資料層不再依賴硬體選圖細節，提升可測試性。 |
 | **堅守 YAGNI（UseCase 邊界守衛）** | **架構守衛** | 在無跨多 Repo 業務編排（如使用者配額扣除 `QuotaRepo`）前，嚴禁引入純單行轉發的 `AnalyzeMenuUseCase`，維持 BLoC 直連 Repository 介面契約。 | **防範過度工程**：杜絕對照組的形式主義與無效轉發「儀式稅」。 |
 
@@ -366,7 +366,7 @@ lib/
 * **跨專案架構審查評級 (2026-09-12 對標對照組大型專案)**:
   - **Linus 品味裁決**: 🟢 **好品味 (Good Taste)** / **Production-Ready**。全套 34 個單元與 Widget 測試在 3 秒內全數通過，靜態分析零警告。相較於對照組的偽善架構（DIP 破裂、三重模型重複反序列化、Single State 防禦性判空地獄），本分支以 Dart 3 Sealed Class 達成「非法狀態在編譯期無法表達」，並在失敗時攜帶 `failedImageBytes` 提供免重拍重試體驗。
 * **後續架構微調 Action Items (依據架構審查報告)**:
-  1. **[P1] 消除例外偽裝，回歸 Dart 3 Sealed Result**: 目前 Repository 將底層 `FormatException`、`TypeError` 與網路異常就地包裝為 `FallbackMarkdownComponent`，BLoC 再解開強轉為 `MenuVisionFailure`。此舉構成概念偷渡 (Error Smuggling)，且若未來 LLM 正常輸出純 Markdown 會被誤殺為失敗。後續應重構為 `sealed class MenuVisionResult`（`MenuVisionSuccessResult` 與 `MenuVisionFailureResult`），或拋出自訂語意化例外由 BLoC 收斂。
+  1. **[P1] 消除例外偽裝，回歸 Dart 3 Sealed Result**: 目前 Repository 將底層 `FormatException`、`TypeError` 與網路異常就地包裝為 `FallbackMarkdownComponent`，BLoC 再解開強轉為 `MenuVisionFailure`。此舉構成概念偷渡 (Error Smuggling)，且若未來 LLM 正常輸出純 Markdown 會被誤殺為失敗。後續應重構為 `sealed class MenuVisionResult`（`MenuVisionSuccessResult` 與 `MenuVisionFailureResult`），或拋出自訂語意化例外由 BLoC 收斂。— ✅ **已於 2026-09-25 完成 (Issue #126 / PR #127)**：採拋出例外方案（標準 `FormatException`／`CheckedFromJsonException`，非自訂語意化例外），由 `MenuVisionBloc` 收斂。
   2. **[P2] 職責分離：抽離硬體 MediaPicker**: 目前 `MenuVisionRepo` 混雜了 `ImagePicker`（相機/相簿硬體 I/O）與多模態推論。應將圖片選取抽離為獨立的 `MediaPickerService`，使 Repository 純粹聚焦於資料與推論。
   3. **[架構守衛] 堅守 YAGNI，維持 BLoC 直連 Repository**: 拒絕為了「形式上的 Clean Architecture」而加入純單行轉發的 `AnalyzeMenuUseCase`。保持精簡直接，待未來引入跨 Repository 業務編排（如使用者辨識額度扣除 `QuotaRepo`）時再提煉 UseCase。
 

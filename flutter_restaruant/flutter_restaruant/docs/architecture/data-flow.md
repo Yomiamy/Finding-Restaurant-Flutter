@@ -477,7 +477,7 @@ Inspector 的 pending→complete 機制靠 `options.extra` 傳遞：`onRequest` 
            ▼
            DishCatalogComponent / List<DishItemEntity>
            │
-           ├─► 成功 ──► State: MenuVisionSuccess(catalog, orderCounts, currency)
+           ├─► 成功 ──► State: MenuVisionSuccess(catalog: DishCatalogModel.fromEntity(...))
            │                 │
            │                 ▼
            │           MenuVisionSheet (DraggableScrollableSheet)
@@ -494,7 +494,7 @@ Inspector 的 pending→complete 機制靠 `options.extra` 傳遞：`onRequest` 
 ### 關鍵設計細節
 
 1. **結構化輸出 (Structured Output)**：透過 `menu_analysis_schema.dart` 嚴格約束 Gemini 輸出為 JSON Schema，杜絕正則或 Markdown 字串修剪之脆弱性。
-2. **零 DTO 污染 (Pure Domain Entities)**：AI 相關業務模型（`DishItemEntity`、`AllergenInfo`、`A2UIComponent`）定義於 `lib/domain/entities/`，完全不 import `data_layer/dto`，建立 Clean Architecture 的良好示範。
+2. **零 DTO 污染 (Pure Domain Entities)**：AI 相關業務模型（`DishItemEntity`、`AllergenInfo`、`A2UIComponent`）定義於 `lib/domain/entities/`，完全不 import `data_layer/dto`，建立 Clean Architecture 的良好示範。Entity 欄位全 nullable（`@JsonSerializable(checked: true)` 產生碼），由 BLoC 轉為 UI model（`DishCatalogModel` 等）時補上呈現預設值；解析失敗時 `MenuVisionRepo` 直接拋出 `FormatException`／`CheckedFromJsonException`，由 BLoC 轉為 `MenuVisionFailure`。
 3. **貨幣符號相容性 (`formatPrice`)**：依餐廳幣別格式化價格，前綴符號（如 `$120`）與後綴／文字貨幣（如 `120 TWD`）皆能正確渲染。
 4. **App Check 整合**：`main.dart` 於 `kDebugMode` 配置 `AndroidDebugProvider` 與 `AppleDebugProvider`，Release 模式則無縫對接正式 App Attest / Play Integrity。
 

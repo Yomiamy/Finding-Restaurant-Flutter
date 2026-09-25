@@ -60,7 +60,7 @@
 
 - **不依賴 I/O 技術**：`lib/domain/` 全目錄**沒有** import `dio`、`cloud_firestore`、`shared_preferences`、`retrofit`。業務契約確實獨立於任何網路／資料庫技術。
 - **`abstract interface class` 契約**：六個 Repository 介面（`MainRepository`、`RestaurantDetailRepository`、`FavorRepository`、`SignInRepository`、`SettingsRepository`、`MenuVisionRepository`）以 Dart 3 的 `abstract interface class` 宣告，明確表達「只能被 implement，不能被 extend」。**這 6 個介面檔案全數乾淨**，不 import 任何 data_layer 內容。
-- **Entity 為業務模型**：除既有 Yelp 相關的 11 個模型（`RestaurantEntity`、`RestaurantDetailEntity`、`UserEntity`、`ReviewEntity` 等）外，包含 AI 視覺菜單領域的 `DishItemEntity`、`AllergenInfo` 與 `A2UIComponent` sealed 階層。新加入的 AI 領域模型實現了無 DTO 污染的高品味架構。
+- **Entity 為業務模型**：除既有 Yelp 相關的 11 個模型（`RestaurantEntity`、`RestaurantDetailEntity`、`UserEntity`、`ReviewEntity` 等）外，包含 AI 視覺菜單領域的 `DishItemEntity`、`AllergenInfo` 與 `A2UIComponent` sealed 階層。新加入的 AI 領域模型實現了無 DTO 污染的高品味架構。AI 領域 entity（`A2UIComponent` 階層、`AiFoodieMessage`、`DishItemEntity`、`AllergenInfo`）以 `@JsonSerializable(checked: true)` 產生 `fromJson`／`toJson`，欄位全 nullable、如實反映 LLM 回傳；A2UI 協定外殼 `{component_type, data}` 由 sealed 基底類別的分派器 `A2UIComponent.fromJson` 與 `toEnvelopeJson()` 成對處理。
 
 #### 📌 分層邊界說明：Entity 與 DTO 的關係（資料驅動分層架構 As-Designed）
 
@@ -93,7 +93,7 @@ YelpRestaurantSummaryDto get toDto => ...
 ### 3. 表現層 (Presentation Layer)
 
 - **Feature-First 目錄**：`lib/flow/<feature>/` 下再分 `bloc/` 與 `view/`，每個 feature 自成一個垂直切片（main、restaurant、favor、signinup、settings、splash、filter、photo_viewer、menu_vision）。
-- **BLoC 單向資料流**：`Bloc<Event, State>` + `Equatable`。State 以**具名子類別**表達（`MainInitial` / `InProgress` / `Success` / `Failure` / `LoadMoreSuccess` / `ToggleFavorSuccess`；MenuVision 則採 `sealed class MenuVisionState` 搭配 Pattern Matching），而非單一 class 塞 `isLoading` 布林旗標——狀態互斥性由型別系統保證。
+- **BLoC 單向資料流**：`Bloc<Event, State>` + `Equatable`。State 以**具名子類別**表達（`MainInitial` / `InProgress` / `Success` / `Failure` / `LoadMoreSuccess` / `ToggleFavorSuccess`；MenuVision 則採 `sealed class MenuVisionState` 搭配 Pattern Matching），而非單一 class 塞 `isLoading` 布林旗標——狀態互斥性由型別系統保證。Menu Vision 與 AI 覓食由 BLoC 將 nullable entity 轉為欄位 non-null 的 UI model（`lib/flow/<feature>/model/`），呈現用預設值集中於轉換處，View 只讀 UI model。
 - **`PlatformWidget<I, A>`**：泛型抽象類別，以 `Platform.isAndroid` / `Platform.isIOS` 分派到 `createAndroidWidget` / `createIosWidget`。子類別必須同時提供兩個平台的實作，**分歧在編譯期就被強制處理**。
 - **Design Tokens**：`lib/features/foundation/style/` 下的 `AppThemeData`、`ThemeColor`、`ThemeSize`、`ThemeFontSize`、`ThemeTextStyle`。
 
