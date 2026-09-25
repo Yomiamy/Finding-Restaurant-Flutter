@@ -8,29 +8,27 @@ import 'package:flutter_restaruant/flow/signinup/bloc/bloc_barrel.dart';
 import 'package:flutter_restaruant/flow/signinup/view/sign_in_page.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
-class _FakeSignInRepository implements SignInRepository {
-  @override
-  Future<Tuple2<UserEntity?, AuthFailureReason?>> signInUp({
-    required AccountTypeModel accountType,
-    bool isSignUp = false,
-    String mail = '',
-    String passwd = '',
-  }) async {
-    return const Tuple2(null, null);
-  }
-
-  @override
-  Future<void> updateUserInfo(UserEntity? userEntity) async {}
-}
+class _MockSignInRepository extends Mock implements SignInRepository {}
 
 void main() {
+  setUpAll(() => registerFallbackValue(AccountTypeModel.none));
+
   group('SignInPage Widget Tests', () {
-    late _FakeSignInRepository fakeRepo;
+    late _MockSignInRepository fakeRepo;
     late SignInBloc bloc;
 
     setUp(() {
-      fakeRepo = _FakeSignInRepository();
+      fakeRepo = _MockSignInRepository();
+      when(
+        () => fakeRepo.signInUp(
+          accountType: any(named: 'accountType'),
+          isSignUp: any(named: 'isSignUp'),
+          mail: any(named: 'mail'),
+          passwd: any(named: 'passwd'),
+        ),
+      ).thenAnswer((_) async => const Tuple2(null, null));
       bloc = SignInBloc(repository: fakeRepo);
     });
 
