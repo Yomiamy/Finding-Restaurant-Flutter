@@ -631,6 +631,8 @@ abstract class UserApi {
 
 - 大多數情境建議透過 `fromJson` / `toJson` 完成轉換以減少程式碼（接受 type safety 的取捨）。
 - 僅在需要複雜轉換或更高效能時，才直接在建構函式中映射欄位。
+- **API、request/response、data layer 的 data model（DTO）與 entity 一律實作 `@JsonSerializable` 及 `Equatable`**：`fromJson`／`toJson` 由 `json_serializable` 產生，禁止手寫；相等性由 `Equatable` 的 `props` 提供。
+  - 多型協定外殼（如 A2UI 的 `{component_type, data}`）不屬於欄位序列化：由 sealed 基底類別手寫一對方法處理（拆殼的 factory 分派器、包殼的 `toEnvelopeJson`），子類別的 `fromJson`／`toJson` 仍只用產生碼。
 
 ## Y. 其他 (Miscellaneous)
 
@@ -656,11 +658,26 @@ const double kDefaultPadding = 8.0;
 import 'package:flutter/foundation.dart';
 
 if (kDebugMode) {
-  Logger().d('診斷資訊只在 debug 輸出');
+  Logger().d('Diagnostics are logged in debug mode only');
 }
 ```
 
 > 若不引入 `logger` 套件，Flutter 內建替代方案為 `debugPrint()`（避免 Android 因量大截斷 log）或 `dart:developer` 的 `log()`；一律**禁止 `print()`**。
+
+### Y.4. 文字常數與多語系 (Strings & Localization)
+
+- **BLoC 與 Presentation layer 的文字常數一律使用多語系**（`S.current.xxx` / `S.of(context).xxx`），禁止寫死字串。
+- **錯誤、`Exception` 說明等提示字串一律以英文表示**。
+
+```dart
+// Good
+emit(MenuVisionFailure(message: S.current.menu_vision_error_unexpected_format));
+throw FormatException('data must be an object', v);
+
+// Bad
+emit(const MenuVisionFailure(message: '未預期的組件格式'));
+throw FormatException('data 應為物件', v);
+```
 
 ---
 

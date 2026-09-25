@@ -14,6 +14,7 @@ class MockMenuVisionRepository implements MenuVisionRepository {
   A2UIComponent? analyzeResult;
   final sampleBytes = Uint8List.fromList([1, 2, 3, 4]);
   bool shouldThrow = false;
+  bool analyzeShouldThrow = false;
   bool captureCalled = false;
   bool galleryCalled = false;
 
@@ -49,7 +50,9 @@ class MockMenuVisionRepository implements MenuVisionRepository {
 
   @override
   Future<A2UIComponent> analyzeMenuImageBytes(Uint8List imageBytes) async {
-    if (shouldThrow) throw Exception('模擬重試錯誤');
+    if (shouldThrow || analyzeShouldThrow) {
+      throw const FormatException('Empty menu analysis response');
+    }
     return analyzeResult ??
         captureResult ??
         galleryResult ??
@@ -77,7 +80,7 @@ void main() {
     late MockMenuVisionRepository mockRepo;
 
     setUp(() async {
-    await S.load(const Locale('zh', 'TW'));
+      await S.load(const Locale('zh', 'TW'));
       mockRepo = MockMenuVisionRepository();
     });
 
@@ -90,7 +93,7 @@ void main() {
       act: (bloc) => bloc.add(const CaptureAndAnalyzeMenu()),
       expect: () => [
         const MenuVisionLoading(),
-        MenuVisionSuccess(catalog: sampleCatalog),
+        MenuVisionSuccess(catalog: DishCatalogModel.fromEntity(sampleCatalog)),
       ],
       verify: (_) => expect(mockRepo.captureCalled, isTrue),
     );
@@ -102,18 +105,13 @@ void main() {
         return MenuVisionBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const CaptureAndAnalyzeMenu()),
-      expect: () => [
-        const MenuVisionLoading(),
-        const MenuVisionCancelled(),
-      ],
+      expect: () => [const MenuVisionLoading(), const MenuVisionCancelled()],
     );
 
     blocTest<MenuVisionBloc, MenuVisionState>(
       'emits [Loading, Failure] when camera capture returns FallbackMarkdown',
       build: () {
-        mockRepo.captureResult = const FallbackMarkdownComponent(
-          text: '辨識失敗',
-        );
+        mockRepo.captureResult = const FallbackMarkdownComponent(text: '辨識失敗');
         return MenuVisionBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const CaptureAndAnalyzeMenu()),
@@ -133,9 +131,25 @@ void main() {
         return MenuVisionBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const CaptureAndAnalyzeMenu()),
+      expect: () => [const MenuVisionLoading(), isA<MenuVisionFailure>()],
+    );
+
+    blocTest<MenuVisionBloc, MenuVisionState>(
+      'keeps failedImageBytes for retry when analysis throws after capture',
+      build: () {
+        mockRepo
+          ..captureResult = sampleCatalog
+          ..analyzeShouldThrow = true;
+        return MenuVisionBloc(repository: mockRepo);
+      },
+      act: (bloc) => bloc.add(const CaptureAndAnalyzeMenu()),
       expect: () => [
         const MenuVisionLoading(),
-        isA<MenuVisionFailure>(),
+        isA<MenuVisionFailure>().having(
+          (s) => s.failedImageBytes,
+          'failedImageBytes',
+          mockRepo.sampleBytes,
+        ),
       ],
     );
 
@@ -145,12 +159,11 @@ void main() {
         mockRepo.galleryResult = sampleCatalog;
         return MenuVisionBloc(repository: mockRepo);
       },
-      act: (bloc) => bloc.add(
-        const CaptureAndAnalyzeMenu(source: ImageSource.gallery),
-      ),
+      act: (bloc) =>
+          bloc.add(const CaptureAndAnalyzeMenu(source: ImageSource.gallery)),
       expect: () => [
         const MenuVisionLoading(),
-        MenuVisionSuccess(catalog: sampleCatalog),
+        MenuVisionSuccess(catalog: DishCatalogModel.fromEntity(sampleCatalog)),
       ],
       verify: (_) => expect(mockRepo.galleryCalled, isTrue),
     );
@@ -166,14 +179,16 @@ void main() {
       ),
       expect: () => [
         const MenuVisionLoading(),
-        MenuVisionSuccess(catalog: sampleCatalog),
+        MenuVisionSuccess(catalog: DishCatalogModel.fromEntity(sampleCatalog)),
       ],
     );
 
     blocTest<MenuVisionBloc, MenuVisionState>(
       'emits [Initial] on ResetMenuVision',
       build: () => MenuVisionBloc(repository: mockRepo),
-      seed: () => MenuVisionSuccess(catalog: sampleCatalog),
+      seed: () => MenuVisionSuccess(
+        catalog: DishCatalogModel.fromEntity(sampleCatalog),
+      ),
       act: (bloc) => bloc.add(const ResetMenuVision()),
       expect: () => [const MenuVisionInitial()],
     );

@@ -1,8 +1,12 @@
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 
 import 'a2ui_fallback_strings.dart';
 import 'dish_item_entity.dart';
+import 'entity_json_converters.dart';
+
+part 'a2ui_component.g.dart';
 
 /// GenUI (A2UI) 宣告式元件協定基類
 ///
@@ -11,181 +15,181 @@ import 'dish_item_entity.dart';
 sealed class A2UIComponent extends Equatable {
   const A2UIComponent();
 
+  /// 解析 A2UI 協定外殼 `{component_type, data}`，分派給對應子類別的產生碼 `fromJson`。
+  ///
+  /// 讀的是外殼格式，對應的寫出是 [toEnvelopeJson]，不是 [toJson]。
   factory A2UIComponent.fromJson(Map<String, Object?> json) {
-    final componentType = json['component_type'] as String? ?? '';
-    final data =
-        (json['data'] as Map<String, Object?>?) ?? const <String, Object?>{};
+    final componentType = _optString(json, 'component_type') ?? '';
+    final data = switch (json['data']) {
+      null => const <String, Object?>{},
+      final Map<String, Object?> m => m,
+      final v => throw FormatException('data must be an object', v),
+    };
 
+    // json['text'] 只在降級分支讀取：合法元件遇到非字串 text 不可拋例外。
     return switch (componentType) {
-      'dish_catalog' => () {
-          final comp = DishCatalogComponent.fromJson(data);
-          if (comp.dishes.isEmpty) {
-            return FallbackMarkdownComponent(
-              text: (json['text'] as String?) ?? comp.restaurantTitle ?? A2UIFallbackStrings.dishCatalogEmpty,
-            );
-          }
-          return comp;
-        }(),
-      'comparison_matrix' => () {
-          final comp = ComparisonMatrixComponent.fromJson(data);
-          if (comp.items.isEmpty) {
-            return FallbackMarkdownComponent(
-              text: (json['text'] as String?) ?? comp.title,
-            );
-          }
-          return comp;
-        }(),
-      'action_chip_group' => () {
-          final comp = ActionChipGroupComponent.fromJson(data);
-          if (comp.chips.isEmpty) {
-            return FallbackMarkdownComponent(
-              text: (json['text'] as String?) ?? A2UIFallbackStrings.actionChipGroupTitle,
-            );
-          }
-          return comp;
-        }(),
-      'decision_roulette' => () {
-          final comp = DecisionRouletteComponent.fromJson(data);
-          if (comp.options.length < 2) {
-            return FallbackMarkdownComponent(
-              text: (json['text'] as String?) ?? comp.title,
-            );
-          }
-          return comp;
-        }(),
+      'dish_catalog' => switch (DishCatalogComponent.fromJson(data)) {
+        final c when c.dishes?.isNotEmpty ?? false => c,
+        final c => FallbackMarkdownComponent(
+          text: _firstText([
+            _optString(json, 'text'),
+            c.restaurantTitle,
+          ], A2UIFallbackStrings.dishCatalogEmpty),
+        ),
+      },
+      'comparison_matrix' => switch (ComparisonMatrixComponent.fromJson(data)) {
+        final c when c.items?.isNotEmpty ?? false => c,
+        final c => FallbackMarkdownComponent(
+          text: _firstText([
+            _optString(json, 'text'),
+            c.title,
+          ], A2UIFallbackStrings.comparisonMatrixTitle),
+        ),
+      },
+      'action_chip_group' => switch (ActionChipGroupComponent.fromJson(
+        data,
+      ).chips?.where((c) => c.isValid).toList(growable: false)) {
+        final chips? when chips.isNotEmpty => ActionChipGroupComponent(
+          chips: chips,
+        ),
+        _ => FallbackMarkdownComponent(
+          text: _firstText([
+            _optString(json, 'text'),
+          ], A2UIFallbackStrings.actionChipGroupTitle),
+        ),
+      },
+      'decision_roulette' => switch (DecisionRouletteComponent.fromJson(data)) {
+        final c when (c.options?.length ?? 0) >= 2 => c,
+        final c => FallbackMarkdownComponent(
+          text: _firstText([
+            _optString(json, 'text'),
+            c.title,
+          ], A2UIFallbackStrings.decisionRouletteTitle),
+        ),
+      },
       _ => FallbackMarkdownComponent(
-        text: (json['text'] as String?) ?? A2UIFallbackStrings.unknownComponent,
+        text: _firstText([
+          _optString(json, 'text'),
+        ], A2UIFallbackStrings.unknownComponent),
       ),
     };
   }
 
+  /// 元件自身欄位（產生碼），不含協定外殼。
   Map<String, Object?> toJson();
+
+  /// 包上 A2UI 協定外殼，為 [A2UIComponent.fromJson] 的反向。
+  Map<String, Object?> toEnvelopeJson() => switch (this) {
+    DishCatalogComponent() => {
+      'component_type': 'dish_catalog',
+      'data': toJson(),
+    },
+    ComparisonMatrixComponent() => {
+      'component_type': 'comparison_matrix',
+      'data': toJson(),
+    },
+    ActionChipGroupComponent() => {
+      'component_type': 'action_chip_group',
+      'data': toJson(),
+    },
+    DecisionRouletteComponent() => {
+      'component_type': 'decision_roulette',
+      'data': toJson(),
+    },
+    // 降級元件的 text 位於外殼最外層（分派器從 json['text'] 讀取）。
+    FallbackMarkdownComponent() => {
+      'component_type': 'fallback_markdown',
+      ...toJson(),
+    },
+  };
 }
 
 /// 互動式菜單看板元件 (Dish Catalog Component)
+@JsonSerializable(
+  checked: true,
+  fieldRename: FieldRename.snake,
+  includeIfNull: false,
+  explicitToJson: true,
+)
 final class DishCatalogComponent extends A2UIComponent {
   const DishCatalogComponent({
-    required this.dishes,
     this.restaurantTitle,
-    this.currency = 'TWD',
+    this.currency,
+    this.dishes,
   });
 
-  factory DishCatalogComponent.fromJson(Map<String, Object?> json) {
-    final rawDishes = json['dishes'] as List<Object?>? ?? const [];
-    final dishes = rawDishes
-        .whereType<Map<String, Object?>>()
-        .map(DishItemEntity.fromJson)
-        .toList(growable: false);
-
-    return DishCatalogComponent(
-      restaurantTitle: json['restaurant_title'] as String?,
-      currency: json['currency'] as String? ?? 'TWD',
-      dishes: dishes,
-    );
-  }
+  factory DishCatalogComponent.fromJson(Map<String, Object?> json) =>
+      _$DishCatalogComponentFromJson(json);
 
   final String? restaurantTitle;
-  final String currency;
-  final List<DishItemEntity> dishes;
+  final String? currency;
+  @JsonKey(fromJson: _dishesFromJson)
+  final List<DishItemEntity>? dishes;
 
   @override
-  Map<String, Object?> toJson() => {
-    'component_type': 'dish_catalog',
-    'data': {
-      if (restaurantTitle != null) 'restaurant_title': restaurantTitle,
-      'currency': currency,
-      'dishes': dishes.map((d) => d.toJson()).toList(growable: false),
-    },
-  };
+  Map<String, Object?> toJson() => _$DishCatalogComponentToJson(this);
 
   @override
   List<Object?> get props => [restaurantTitle, currency, dishes];
 }
 
 /// 多店對比矩陣元件 (Comparison Matrix Component)
+@JsonSerializable(
+  checked: true,
+  fieldRename: FieldRename.snake,
+  includeIfNull: false,
+  explicitToJson: true,
+)
 final class ComparisonMatrixComponent extends A2UIComponent {
-  const ComparisonMatrixComponent({
-    required this.title,
-    required this.items,
-  });
+  const ComparisonMatrixComponent({this.title, this.items});
 
-  factory ComparisonMatrixComponent.fromJson(Map<String, Object?> json) {
-    final title = json['title'] as String? ?? A2UIFallbackStrings.comparisonMatrixTitle;
-    final rawItems = json['items'] as List<Object?>? ?? const [];
-    final items = rawItems
-        .whereType<Map<String, Object?>>()
-        .map(RestaurantComparisonItem.fromJson)
-        .toList(growable: false);
+  factory ComparisonMatrixComponent.fromJson(Map<String, Object?> json) =>
+      _$ComparisonMatrixComponentFromJson(json);
 
-    return ComparisonMatrixComponent(title: title, items: items);
-  }
-
-  final String title;
-  final List<RestaurantComparisonItem> items;
+  final String? title;
+  @JsonKey(fromJson: _itemsFromJson)
+  final List<RestaurantComparisonItem>? items;
 
   @override
-  Map<String, Object?> toJson() => {
-    'component_type': 'comparison_matrix',
-    'data': {
-      'title': title,
-      'items': items.map((e) => e.toJson()).toList(growable: false),
-    },
-  };
+  Map<String, Object?> toJson() => _$ComparisonMatrixComponentToJson(this);
 
   @override
   List<Object?> get props => [title, items];
 }
 
 /// 餐廳對比卡片項目
+@JsonSerializable(
+  checked: true,
+  fieldRename: FieldRename.snake,
+  includeIfNull: false,
+  explicitToJson: true,
+)
 final class RestaurantComparisonItem extends Equatable {
   const RestaurantComparisonItem({
-    required this.id,
-    required this.name,
-    required this.rating,
+    this.id,
+    this.name,
+    this.rating,
     this.price,
-    this.highlights = const [],
+    this.highlights,
     this.address,
     this.category,
     this.imageUrl,
   });
 
-  factory RestaurantComparisonItem.fromJson(Map<String, Object?> json) {
-    final rawHighlights = json['highlights'] as List<Object?>? ?? const [];
-    final highlights = rawHighlights
-        .whereType<String>()
-        .toList(growable: false);
+  factory RestaurantComparisonItem.fromJson(Map<String, Object?> json) =>
+      _$RestaurantComparisonItemFromJson(json);
 
-    return RestaurantComparisonItem(
-      id: json['id'] as String? ?? '',
-      name: json['name'] as String? ?? A2UIFallbackStrings.comparisonItemName,
-      rating: (json['rating'] as num?)?.toDouble() ?? 0.0,
-      price: json['price'] as String?,
-      highlights: highlights,
-      address: json['address'] as String?,
-      category: json['category'] as String?,
-      imageUrl: json['image_url'] as String?,
-    );
-  }
-
-  final String id;
-  final String name;
-  final double rating;
+  final String? id;
+  final String? name;
+  final double? rating;
   final String? price;
-  final List<String> highlights;
+  @JsonKey(fromJson: stringListFromJson)
+  final List<String>? highlights;
   final String? address;
   final String? category;
   final String? imageUrl;
 
-  Map<String, Object?> toJson() => {
-    'id': id,
-    'name': name,
-    'rating': rating,
-    if (price != null) 'price': price,
-    'highlights': highlights,
-    if (address != null) 'address': address,
-    if (category != null) 'category': category,
-    if (imageUrl != null) 'image_url': imageUrl,
-  };
+  Map<String, Object?> toJson() => _$RestaurantComparisonItemToJson(this);
 
   @override
   List<Object?> get props => [
@@ -201,111 +205,89 @@ final class RestaurantComparisonItem extends Equatable {
 }
 
 /// 行動標籤群組元件 (Action Chip Group Component)
+///
+/// `isValid` 過濾由 [A2UIComponent.fromJson] 分派器負責，此處如實保留。
+@JsonSerializable(
+  checked: true,
+  fieldRename: FieldRename.snake,
+  includeIfNull: false,
+  explicitToJson: true,
+)
 final class ActionChipGroupComponent extends A2UIComponent {
-  const ActionChipGroupComponent({required this.chips});
+  const ActionChipGroupComponent({this.chips});
 
-  factory ActionChipGroupComponent.fromJson(Map<String, Object?> json) {
-    final rawChips = json['chips'] as List<Object?>? ?? const [];
-    final chips = rawChips
-        .whereType<Map<String, Object?>>()
-        .map(ActionChipItem.fromJson)
-        .where((c) => c.isValid)
-        .toList(growable: false);
- 
-    return ActionChipGroupComponent(chips: chips);
-  }
+  factory ActionChipGroupComponent.fromJson(Map<String, Object?> json) =>
+      _$ActionChipGroupComponentFromJson(json);
 
-  final List<ActionChipItem> chips;
+  @JsonKey(fromJson: _chipsFromJson)
+  final List<ActionChipItem>? chips;
 
   @override
-  Map<String, Object?> toJson() => {
-    'component_type': 'action_chip_group',
-    'data': {
-      'chips': chips.map((c) => c.toJson()).toList(growable: false),
-    },
-  };
+  Map<String, Object?> toJson() => _$ActionChipGroupComponentToJson(this);
 
   @override
   List<Object?> get props => [chips];
 }
 
 /// 行動標籤項目
+@JsonSerializable(
+  checked: true,
+  fieldRename: FieldRename.snake,
+  includeIfNull: false,
+  explicitToJson: true,
+)
 final class ActionChipItem extends Equatable {
-  const ActionChipItem({
-    required this.label,
-    required this.action,
-    this.payload = const {},
-  });
+  const ActionChipItem({this.label, this.action, this.payload});
 
-  factory ActionChipItem.fromJson(Map<String, Object?> json) {
-    return ActionChipItem(
-      label: json['label'] as String? ?? '',
-      action: json['action'] as String? ?? '',
-      payload: (json['payload'] as Map<String, Object?>?) ?? const {},
-    );
-  }
+  factory ActionChipItem.fromJson(Map<String, Object?> json) =>
+      _$ActionChipItemFromJson(json);
 
-  final String label;
-  final String action;
-  final Map<String, Object?> payload;
+  final String? label;
+  final String? action;
+  final Map<String, Object?>? payload;
 
   /// 檢查此行動標籤是否具備合法的必要欄位與載荷
+  @JsonKey(includeFromJson: false, includeToJson: false)
   bool get isValid {
-    if (label.trim().isEmpty || action.trim().isEmpty) return false;
-    return switch (action) {
-      'query' => (payload['prompt'] as String?)?.trim().isNotEmpty ?? false,
-      'open_roulette' => () {
-        final options = payload['options'] as List<Object?>?;
-        return options != null &&
-            options
-                .whereType<String>()
-                .where((s) => s.trim().isNotEmpty)
-                .length >= 2;
-      }(),
+    if ((label?.trim() ?? '').isEmpty || (action?.trim() ?? '').isEmpty) {
+      return false;
+    }
+    // payload 來自不可信 JSON：型別不符即不合法，交由分派器過濾。
+    return switch ((action, payload?['prompt'], payload?['options'])) {
+      ('query', final String p, _) => p.trim().isNotEmpty,
+      ('query', _, _) => false,
+      ('open_roulette', _, final List<Object?> o) =>
+        o.whereType<String>().where((s) => s.trim().isNotEmpty).length >= 2,
+      ('open_roulette', _, _) => false,
       _ => true, // 保留對未知或未來自訂動作的向後相容性
     };
   }
 
-  Map<String, Object?> toJson() => {
-    'label': label,
-    'action': action,
-    'payload': payload,
-  };
+  Map<String, Object?> toJson() => _$ActionChipItemToJson(this);
 
   @override
   List<Object?> get props => [label, action, payload];
 }
 
 /// 命運轉盤元件 (Decision Roulette Component)
+@JsonSerializable(
+  checked: true,
+  fieldRename: FieldRename.snake,
+  includeIfNull: false,
+  explicitToJson: true,
+)
 final class DecisionRouletteComponent extends A2UIComponent {
-  const DecisionRouletteComponent({
-    required this.options,
-    required this.title,
-  });
+  const DecisionRouletteComponent({this.title, this.options});
 
-  factory DecisionRouletteComponent.fromJson(Map<String, Object?> json) {
-    final rawOptions = json['options'] as List<Object?>? ?? const [];
-    final options = rawOptions
-        .whereType<String>()
-        .toList(growable: false);
+  factory DecisionRouletteComponent.fromJson(Map<String, Object?> json) =>
+      _$DecisionRouletteComponentFromJson(json);
 
-    return DecisionRouletteComponent(
-      title: json['title'] as String? ?? A2UIFallbackStrings.decisionRouletteTitle,
-      options: options,
-    );
-  }
-
-  final String title;
-  final List<String> options;
+  final String? title;
+  @JsonKey(fromJson: stringListFromJson)
+  final List<String>? options;
 
   @override
-  Map<String, Object?> toJson() => {
-    'component_type': 'decision_roulette',
-    'data': {
-      'title': title,
-      'options': options,
-    },
-  };
+  Map<String, Object?> toJson() => _$DecisionRouletteComponentToJson(this);
 
   @override
   List<Object?> get props => [title, options];
@@ -314,17 +296,41 @@ final class DecisionRouletteComponent extends A2UIComponent {
 /// 安全降級文字卡片 (Fallback Markdown Component)
 ///
 /// 當模型輸出結構異常、部分破損或非預期元件時安全降級，保證絕不崩潰。
+/// 維持預設 `createFactory`（`false` 會把 Equatable getter 寫進 toJson），但不宣告 fromJson：
+/// 它只由分派器建立，輸出維持扁平格式。
+@JsonSerializable(checked: true, includeIfNull: false)
 final class FallbackMarkdownComponent extends A2UIComponent {
-  const FallbackMarkdownComponent({required this.text});
+  const FallbackMarkdownComponent({this.text});
 
-  final String text;
+  final String? text;
 
   @override
-  Map<String, Object?> toJson() => {
-    'component_type': 'fallback_markdown',
-    'text': text,
-  };
+  Map<String, Object?> toJson() => _$FallbackMarkdownComponentToJson(this);
 
   @override
   List<Object?> get props => [text];
 }
+
+List<DishItemEntity>? _dishesFromJson(List<Object?>? raw) =>
+    mapListFromJson(raw, DishItemEntity.fromJson);
+
+List<RestaurantComparisonItem>? _itemsFromJson(List<Object?>? raw) =>
+    mapListFromJson(raw, RestaurantComparisonItem.fromJson);
+
+List<ActionChipItem>? _chipsFromJson(List<Object?>? raw) =>
+    mapListFromJson(raw, ActionChipItem.fromJson);
+
+/// 降級文字：取第一個非空白的候選，全部為 null 或空白時用 [fallback]。
+String _firstText(List<String?> candidates, String fallback) {
+  for (final s in candidates) {
+    if (s != null && s.trim().isNotEmpty) return s;
+  }
+  return fallback;
+}
+
+/// 不可信 JSON 的字串欄位：null 照舊回傳 null，非字串拋 [FormatException]（不拋 TypeError）。
+String? _optString(Map<String, Object?> json, String key) =>
+    switch (json[key]) {
+      final String? v => v,
+      final v => throw FormatException('$key must be a string', v),
+    };

@@ -87,17 +87,17 @@ void main() {
   );
 
   group('AllergenBadge Widget Tests', () {
-    testWidgets('renders allergen badge with risk level contains', (tester) async {
-      const allergen = AllergenInfo(
+    testWidgets('renders allergen badge with risk level contains', (
+      tester,
+    ) async {
+      const allergen = AllergenModel(
         name: '海鮮',
         riskLevel: AllergenRiskLevel.contains,
       );
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: AllergenBadge(allergen: allergen),
-          ),
+          home: Scaffold(body: AllergenBadge(allergen: allergen)),
         ),
       );
 
@@ -105,17 +105,17 @@ void main() {
       expect(find.byIcon(Icons.warning_amber_rounded), findsOneWidget);
     });
 
-    testWidgets('renders allergen badge with risk level mayContain', (tester) async {
-      const allergen = AllergenInfo(
+    testWidgets('renders allergen badge with risk level mayContain', (
+      tester,
+    ) async {
+      const allergen = AllergenModel(
         name: '花生',
         riskLevel: AllergenRiskLevel.mayContain,
       );
 
       await tester.pumpWidget(
         const MaterialApp(
-          home: Scaffold(
-            body: AllergenBadge(allergen: allergen),
-          ),
+          home: Scaffold(body: AllergenBadge(allergen: allergen)),
         ),
       );
 
@@ -129,7 +129,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: DishCard(dish: sampleDish, currency: 'JPY'),
+            body: DishCard(
+              dish: DishModel.fromEntity(sampleDish),
+              currency: 'JPY',
+            ),
           ),
         ),
       );
@@ -148,7 +151,10 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: DishCard(dish: sampleDish, currency: 'TWD'),
+            body: DishCard(
+              dish: DishModel.fromEntity(sampleDish),
+              currency: 'TWD',
+            ),
           ),
         ),
       );
@@ -162,7 +168,7 @@ void main() {
     late MenuVisionBloc bloc;
 
     setUp(() async {
-    await S.load(const Locale('zh', 'TW'));
+      await S.load(const Locale('zh', 'TW'));
       mockRepo = MockMenuVisionRepository();
       bloc = MenuVisionBloc(repository: mockRepo);
     });
@@ -171,15 +177,13 @@ void main() {
       bloc.close();
     });
 
-    testWidgets('renders initial prompt with take photo and gallery buttons',
-        (tester) async {
+    testWidgets('renders initial prompt with take photo and gallery buttons', (
+      tester,
+    ) async {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: MenuVisionSheet(
-              restaurantTitle: '一風堂',
-              bloc: bloc,
-            ),
+            body: MenuVisionSheet(restaurantTitle: '一風堂', bloc: bloc),
           ),
         ),
       );
@@ -191,32 +195,31 @@ void main() {
       expect(find.byKey(const Key('gallery_pick_button')), findsOneWidget);
     });
 
-    testWidgets('tapping take photo triggers capture and transitions to success',
-        (tester) async {
-      mockRepo.captureResult = sampleCatalog;
+    testWidgets(
+      'tapping take photo triggers capture and transitions to success',
+      (tester) async {
+        mockRepo.captureResult = sampleCatalog;
 
-      await tester.pumpWidget(
-        MaterialApp(
-          home: Scaffold(
-            body: MenuVisionSheet(
-              restaurantTitle: '一風堂',
-              bloc: bloc,
+        await tester.pumpWidget(
+          MaterialApp(
+            home: Scaffold(
+              body: MenuVisionSheet(restaurantTitle: '一風堂', bloc: bloc),
             ),
           ),
-        ),
-      );
+        );
 
-      await tester.tap(find.byKey(const Key('take_photo_button')));
-      await tester.runAsync(() async {
-        await Future<void>.delayed(const Duration(milliseconds: 50));
-      });
-      await tester.pump();
+        await tester.tap(find.byKey(const Key('take_photo_button')));
+        await tester.runAsync(() async {
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+        });
+        await tester.pump();
 
-      expect(find.text('全部 (2)'), findsOneWidget);
-      expect(find.text('主食 (1)'), findsOneWidget);
-      expect(find.text('前菜 (1)'), findsOneWidget);
-      expect(find.text('特製豚骨拉麵'), findsOneWidget);
-    });
+        expect(find.text('全部 (2)'), findsOneWidget);
+        expect(find.text('主食 (1)'), findsOneWidget);
+        expect(find.text('前菜 (1)'), findsOneWidget);
+        expect(find.text('特製豚骨拉麵'), findsOneWidget);
+      },
+    );
 
     testWidgets('displays error and retry when capture fails', (tester) async {
       mockRepo.shouldThrow = true;
@@ -224,10 +227,7 @@ void main() {
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: MenuVisionSheet(
-              restaurantTitle: '一風堂',
-              bloc: bloc,
-            ),
+            body: MenuVisionSheet(restaurantTitle: '一風堂', bloc: bloc),
           ),
         ),
       );
@@ -243,16 +243,15 @@ void main() {
       expect(find.text('相簿重選'), findsOneWidget);
     });
 
-    testWidgets('displays cancelled view when user cancels camera', (tester) async {
+    testWidgets('displays cancelled view when user cancels camera', (
+      tester,
+    ) async {
       mockRepo.captureResult = null;
 
       await tester.pumpWidget(
         MaterialApp(
           home: Scaffold(
-            body: MenuVisionSheet(
-              restaurantTitle: '一風堂',
-              bloc: bloc,
-            ),
+            body: MenuVisionSheet(restaurantTitle: '一風堂', bloc: bloc),
           ),
         ),
       );

@@ -3,11 +3,13 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import '../../../features/utils/utils_barrel.dart';
 
-import '../../../domain/entities/entities_barrel.dart';
+import '../../../domain/entities/entities_barrel.dart'
+    show RestaurantEntity, RestaurantLocationEntity;
 import '../../../domain/repositories/ai_foodie_repository.dart';
 import '../../../features/foundation/foundation_barrel.dart';
 import '../../restaurant/view/restaurant_detail_page.dart';
 import '../bloc/bloc_barrel.dart';
+import '../model/ai_foodie_model.dart';
 import '../../../generated/l10n.dart';
 import 'action_chip_group_widget.dart';
 import 'comparison_matrix_card.dart';
@@ -15,11 +17,7 @@ import 'decision_roulette_dialog.dart';
 
 /// AI 覓食助理底部對話畫布視窗
 class AiFoodieSheet extends StatefulWidget {
-  const AiFoodieSheet({
-    super.key,
-    this.bloc,
-    this.candidateRestaurants,
-  });
+  const AiFoodieSheet({super.key, this.bloc, this.candidateRestaurants});
 
   final AiFoodieBloc? bloc;
   final List<RestaurantEntity>? candidateRestaurants;
@@ -33,10 +31,8 @@ class AiFoodieSheet extends StatefulWidget {
       context: context,
       isScrollControlled: true,
       backgroundColor: Colors.transparent,
-      builder: (context) => AiFoodieSheet(
-        bloc: bloc,
-        candidateRestaurants: candidateRestaurants,
-      ),
+      builder: (context) =>
+          AiFoodieSheet(bloc: bloc, candidateRestaurants: candidateRestaurants),
     );
   }
 
@@ -52,7 +48,8 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
   @override
   void initState() {
     super.initState();
-    _bloc = widget.bloc ??
+    _bloc =
+        widget.bloc ??
         AiFoodieBloc(
           repository: GetIt.I<AiFoodieRepository>(),
           candidateRestaurants: widget.candidateRestaurants,
@@ -82,7 +79,7 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
     });
   }
 
-  void _navigateToRestaurantDetail(RestaurantComparisonItem item) {
+  void _navigateToRestaurantDetail(ComparisonItemModel item) {
     final entity = RestaurantEntity(
       id: item.id,
       name: item.name,
@@ -94,10 +91,9 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
           : null,
     );
     final arguments = Tuple2<RestaurantEntity, dynamic>(entity, null);
-    Navigator.of(context).pushNamed(
-      RestaurantDetailPage.routeName,
-      arguments: arguments,
-    );
+    Navigator.of(
+      context,
+    ).pushNamed(RestaurantDetailPage.routeName, arguments: arguments);
   }
 
   void _sendMessage() {
@@ -132,6 +128,7 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
           }
         },
         builder: (context, state) {
+          final messageModels = state.messageModels;
           return DraggableScrollableSheet(
             initialChildSize: 0.88,
             minChildSize: 0.5,
@@ -208,8 +205,7 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
                           IconButton(
                             icon: const Icon(Icons.refresh_rounded),
                             tooltip: S.of(context).ai_foodie_reset_tooltip,
-                            onPressed: () =>
-                                _bloc.add(const ResetAiFoodie()),
+                            onPressed: () => _bloc.add(const ResetAiFoodie()),
                           ),
                           IconButton(
                             icon: const Icon(Icons.close),
@@ -228,13 +224,13 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
                           horizontal: ThemeSize.space16,
                           vertical: ThemeSize.space12,
                         ),
-                        itemCount: state.messages.length +
-                            (state.isLoading ? 1 : 0),
+                        itemCount:
+                            messageModels.length + (state.isLoading ? 1 : 0),
                         itemBuilder: (context, index) {
-                          if (index == state.messages.length) {
+                          if (index == messageModels.length) {
                             return const _LoadingMessageBubble();
                           }
-                          final msg = state.messages[index];
+                          final msg = messageModels[index];
                           return _MessageItem(
                             message: msg,
                             onChipTap: (chip) {
@@ -252,7 +248,8 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
                         left: ThemeSize.space16,
                         right: ThemeSize.space8,
                         top: ThemeSize.space8,
-                        bottom: MediaQuery.of(context).viewInsets.bottom +
+                        bottom:
+                            MediaQuery.of(context).viewInsets.bottom +
                             ThemeSize.space12,
                       ),
                       decoration: BoxDecoration(
@@ -319,9 +316,9 @@ class _MessageItem extends StatelessWidget {
     this.onRestaurantTap,
   });
 
-  final AiFoodieMessage message;
-  final void Function(ActionChipItem chip) onChipTap;
-  final void Function(RestaurantComparisonItem item)? onRestaurantTap;
+  final AiFoodieMessageModel message;
+  final void Function(ActionChipModel chip) onChipTap;
+  final void Function(ComparisonItemModel item)? onRestaurantTap;
 
   @override
   Widget build(BuildContext context) {
@@ -332,12 +329,14 @@ class _MessageItem extends StatelessWidget {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: ThemeSize.space8),
       child: Column(
-        crossAxisAlignment:
-            isUser ? CrossAxisAlignment.end : CrossAxisAlignment.start,
+        crossAxisAlignment: isUser
+            ? CrossAxisAlignment.end
+            : CrossAxisAlignment.start,
         children: [
           Row(
-            mainAxisAlignment:
-                isUser ? MainAxisAlignment.end : MainAxisAlignment.start,
+            mainAxisAlignment: isUser
+                ? MainAxisAlignment.end
+                : MainAxisAlignment.start,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               if (!isUser) ...[
@@ -379,49 +378,50 @@ class _MessageItem extends StatelessWidget {
               padding: const EdgeInsets.only(left: 36),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
-                children: message.components.map((comp) {
-                  return switch (comp) {
-                    ComparisonMatrixComponent() => ComparisonMatrixCard(
-                        component: comp,
-                        onRestaurantTap: onRestaurantTap,
-                      ),
-                    ActionChipGroupComponent() => ActionChipGroupWidget(
-                        component: comp,
-                        onChipTap: onChipTap,
-                      ),
-                    DecisionRouletteComponent() => Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: ThemeSize.space8,
+                children: message.components
+                    .map((comp) {
+                      return switch (comp) {
+                        ComparisonMatrixModel() => ComparisonMatrixCard(
+                          component: comp,
+                          onRestaurantTap: onRestaurantTap,
                         ),
-                        child: OutlinedButton.icon(
-                          icon: const Icon(Icons.casino_rounded),
-                          label: Text(comp.title),
-                          onPressed: () {
-                            onChipTap(
-                              ActionChipItem(
-                                label: comp.title,
-                                action: 'open_roulette',
-                                payload: {
-                                  'title': comp.title,
-                                  'options': comp.options,
-                                },
-                              ),
-                            );
-                          },
+                        ActionChipGroupModel() => ActionChipGroupWidget(
+                          component: comp,
+                          onChipTap: onChipTap,
                         ),
-                      ),
-                    FallbackMarkdownComponent(:final text) => Padding(
-                        padding: const EdgeInsets.all(ThemeSize.space8),
-                        child: Text(
-                          text,
-                          style: theme.textTheme.bodySmall?.copyWith(
-                            color: colorScheme.error,
+                        DecisionRouletteModel() => Padding(
+                          padding: const EdgeInsets.symmetric(
+                            vertical: ThemeSize.space8,
+                          ),
+                          child: OutlinedButton.icon(
+                            icon: const Icon(Icons.casino_rounded),
+                            label: Text(comp.title),
+                            onPressed: () {
+                              onChipTap(
+                                ActionChipModel(
+                                  label: comp.title,
+                                  action: 'open_roulette',
+                                  payload: {
+                                    'title': comp.title,
+                                    'options': comp.options,
+                                  },
+                                ),
+                              );
+                            },
                           ),
                         ),
-                      ),
-                    _ => const SizedBox.shrink(),
-                  };
-                }).toList(growable: false),
+                        FallbackTextModel(:final text) => Padding(
+                          padding: const EdgeInsets.all(ThemeSize.space8),
+                          child: Text(
+                            text,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              color: colorScheme.error,
+                            ),
+                          ),
+                        ),
+                      };
+                    })
+                    .toList(growable: false),
               ),
             ),
         ],

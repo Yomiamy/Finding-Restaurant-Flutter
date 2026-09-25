@@ -1695,6 +1695,25 @@ class ComparisonMatrixComponent extends A2UIComponent {
   - 專案規則：`.agents/rules/flutter-styles.md`
   - 元件：`lib/component/rating_stars.dart`, `lib/flow/main/view/restaurant_item_cell.dart`
 
+#### [E-8.5] AI 路徑錯誤處理收尾：移除 i18n fallback 的 `Error` 捕捉、補 `Error` 外拋測試與 repo Logger
+- **優先級**：`P2`
+- **預估 Effort**：`0.5d`
+- **來源**：Issue #126 / PR #127（domain entity 改用 `@JsonSerializable`）審查時刻意留下的後續事項。
+- **價值與收益**：PR #127 已讓 JSON 解析與 AI 呼叫路徑不再吞掉 `Error`，但還有三處沒收：
+  - i18n fallback 仍用裸 `catch` 接住 `S.current` 未載入時的 `AssertionError`，違反 flutter-styles §6.1「不捕捉 `Error`」。
+  - BLoC 層沒有測試鎖住「`Error` 會往外拋出」，之後改回裸 `catch` 不會被發現。
+  - Menu Vision 辨識失敗時沒有留下 log，排查困難（PR #127 起 `menu_vision_repo` 不再捕捉例外，改由 `MenuVisionBloc` 接住）。
+- **影響檔案路徑**：
+  - 修改：`lib/flow/ai_foodie/bloc/ai_foodie_bloc.dart`（L168、L180 共 2 處 i18n fallback 裸 `catch`）
+  - 修改：`lib/domain/entities/a2ui_fallback_strings.dart`（6 處 i18n fallback 裸 `catch`）
+  - 修改：`lib/flow/menu_vision/bloc/menu_vision_bloc.dart`（2 處 `on Exception catch`）
+  - 修改：`test/flow/ai_foodie/ai_foodie_bloc_test.dart`、`test/flow/menu_vision/menu_vision_bloc_test.dart`
+- **具體實作建議**：
+  1. 讓相關測試在 `setUp` 載入 `S`（`await S.load(const Locale('en'))`），確保 `S.current` 永遠可用。
+  2. 確認測試都已載入 `S` 後，移除 8 處 i18n fallback 的裸 `catch`，直接讀 `S.current`。
+  3. 在兩個 BLoC 測試各補一個案例：repo 拋出 `Error`（例如 `StateError`）時，事件處理會往外拋出，而不是 emit 失敗狀態。
+  4. `menu_vision_bloc.dart` 的 2 處 `on Exception catch (e)` 改為 `catch (e, st)` 同時綁定 stack trace，再補上 `Logger().e(..., error: e, stackTrace: st)`，與 `ai_foodie_repo.dart` 一致。
+
 ---
 
 ## 8.4 與既有 Roadmap 的對齊建議 (Alignment with Existing Roadmap)

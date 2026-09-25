@@ -8,6 +8,7 @@ import 'package:meta/meta.dart';
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../domain/repositories/repositories_barrel.dart';
 import '../../../generated/l10n.dart';
+import '../model/menu_vision_model.dart';
 
 part 'menu_vision_event.dart';
 part 'menu_vision_state.dart';
@@ -25,8 +26,8 @@ class MenuVisionBloc extends Bloc<MenuVisionEvent, MenuVisionState> {
       if (state is MenuVisionLoading) return;
       emit(const MenuVisionLoading());
 
+      Uint8List? imageBytes;
       try {
-        final Uint8List? imageBytes;
         if (event.source == ImageSource.camera) {
           imageBytes = await _repository.captureImage();
         } else {
@@ -42,20 +43,31 @@ class MenuVisionBloc extends Bloc<MenuVisionEvent, MenuVisionState> {
 
         switch (result) {
           case DishCatalogComponent():
-            emit(MenuVisionSuccess(catalog: result));
+            emit(
+              MenuVisionSuccess(catalog: DishCatalogModel.fromEntity(result)),
+            );
           case FallbackMarkdownComponent():
-            emit(MenuVisionFailure(
-              message: result.text,
-              failedImageBytes: imageBytes,
-            ));
+            emit(
+              MenuVisionFailure(
+                message: result.text ?? '',
+                failedImageBytes: imageBytes,
+              ),
+            );
           default:
-            emit(MenuVisionFailure(
-              message: S.current.menu_vision_error_unexpected_format,
-              failedImageBytes: imageBytes,
-            ));
+            emit(
+              MenuVisionFailure(
+                message: S.current.menu_vision_error_unexpected_format,
+                failedImageBytes: imageBytes,
+              ),
+            );
         }
       } on Exception catch (e) {
-        emit(MenuVisionFailure(message: S.current.menu_vision_error_analyze_failed(e.toString())));
+        emit(
+          MenuVisionFailure(
+            message: S.current.menu_vision_error_analyze_failed(e.toString()),
+            failedImageBytes: imageBytes,
+          ),
+        );
       }
     });
 
@@ -70,23 +82,31 @@ class MenuVisionBloc extends Bloc<MenuVisionEvent, MenuVisionState> {
 
         switch (result) {
           case DishCatalogComponent():
-            emit(MenuVisionSuccess(catalog: result));
+            emit(
+              MenuVisionSuccess(catalog: DishCatalogModel.fromEntity(result)),
+            );
           case FallbackMarkdownComponent():
-            emit(MenuVisionFailure(
-              message: result.text,
-              failedImageBytes: event.imageBytes,
-            ));
+            emit(
+              MenuVisionFailure(
+                message: result.text ?? '',
+                failedImageBytes: event.imageBytes,
+              ),
+            );
           default:
-            emit(MenuVisionFailure(
-              message: S.current.menu_vision_error_unexpected_format,
-              failedImageBytes: event.imageBytes,
-            ));
+            emit(
+              MenuVisionFailure(
+                message: S.current.menu_vision_error_unexpected_format,
+                failedImageBytes: event.imageBytes,
+              ),
+            );
         }
       } on Exception catch (e) {
-        emit(MenuVisionFailure(
-          message: S.current.menu_vision_error_retry_failed(e.toString()),
-          failedImageBytes: event.imageBytes,
-        ));
+        emit(
+          MenuVisionFailure(
+            message: S.current.menu_vision_error_retry_failed(e.toString()),
+            failedImageBytes: event.imageBytes,
+          ),
+        );
       }
     });
 

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 
 import '../../domain/entities/entities_barrel.dart';
@@ -176,8 +177,13 @@ components 陣列內的每個物件必須包含 component_type 與 data：
       if (text != null && text.isNotEmpty) {
         return _parseResponse(text);
       }
-    } catch (_) {
-      // 網路中斷或 API 異常時優雅降級為本地智慧推薦引擎
+    } on Exception catch (e, st) {
+      // 網路中斷或 API 異常時優雅降級為本地智慧推薦引擎；Error（程式 bug）不攔截。
+      Logger().e(
+        'AI assistant request failed, falling back to local recommendations',
+        error: e,
+        stackTrace: st,
+      );
     }
 
     return _generateSmartFallback(
@@ -204,8 +210,6 @@ components 陣列內的每個物件必須包含 component_type 與 data：
         .take(limit);
 
     for (final res in selected) {
-      final id = res.id!;
-      final name = res.name!;
       final rating = res.rating != null ? '${res.rating}★' : '無評分';
       final price = res.price ?? '';
       final category =
@@ -217,7 +221,7 @@ components 陣列內的每個物件必須包含 component_type 與 data：
           '';
       final address = res.location?.address1 ?? '';
 
-      buffer.write('- [ID: $id] 名稱: $name | 評分: $rating');
+      buffer.write('- [ID: ${res.id}] 名稱: ${res.name} | 評分: $rating');
       if (price.isNotEmpty) buffer.write(' | 價位: $price');
       if (category.isNotEmpty) buffer.write(' | 類型: $category');
       if (address.isNotEmpty) buffer.write(' | 地址: $address');
@@ -237,12 +241,12 @@ components 陣列內的每個物件必須包含 component_type 與 data：
     final contents = <Content>[];
     if (history != null && history.isNotEmpty) {
       final sanitizedHistory = history
-          .skipWhile((m) => !m.isUser)
+          .skipWhile((m) => m.isUser != true)
           .toList(growable: false);
 
       for (final msg in sanitizedHistory) {
-        if (msg.isUser) {
-          contents.add(Content.text(msg.text));
+        if (msg.isUser == true) {
+          contents.add(Content.text(msg.text ?? ''));
         } else {
           contents.add(
             Content.model([TextPart(serializeAssistantHistory(msg))]),
@@ -262,13 +266,13 @@ components 陣列內的每個物件必須包含 component_type 與 data：
   /// 序列化助理訊息為符合 Schema 之 JSON 字串
   @visibleForTesting
   static String serializeAssistantHistory(AiFoodieMessage msg) {
-    final validComponents = msg.components
+    final validComponents = (msg.components ?? const [])
         .where((c) => c is! FallbackMarkdownComponent)
-        .map((c) => c.toJson())
+        .map((c) => c.toEnvelopeJson())
         .toList(growable: false);
 
     final payload = <String, Object?>{
-      'text': msg.text,
+      'text': msg.text ?? '',
       'components': validComponents,
     };
     return jsonEncode(payload);
@@ -276,9 +280,20 @@ components 陣列內的每個物件必須包含 component_type 與 data：
 
   AiFoodieMessage _parseResponse(String rawJson) {
     try {
-      final decoded = jsonDecode(rawJson) as Map<String, Object?>;
-      final text = decoded['text'] as String? ?? '為您整理出以下推薦：';
-      final rawComponents = decoded['components'] as List<Object?>? ?? const [];
+      final decoded = switch (jsonDecode(rawJson)) {
+        final Map<String, Object?> m => m,
+        final v => throw FormatException('response must be an object', v),
+      };
+      final text = switch (decoded['text']) {
+        null => '為您整理出以下推薦：',
+        final String s => s,
+        final v => throw FormatException('text must be a string', v),
+      };
+      final rawComponents = switch (decoded['components']) {
+        null => const <Object?>[],
+        final List<Object?> l => l,
+        final v => throw FormatException('components must be an array', v),
+      };
       final components = rawComponents
           .whereType<Map<String, Object?>>()
           .map(A2UIComponent.fromJson)
@@ -286,7 +301,12 @@ components 陣列內的每個物件必須包含 component_type 與 data：
           .toList(growable: false);
 
       return AiFoodieMessage.assistant(text: text, components: components);
-    } catch (_) {
+    } on Exception catch (e, st) {
+      Logger().e(
+        'Failed to parse AI response, falling back to raw text',
+        error: e,
+        stackTrace: st,
+      );
       return AiFoodieMessage.assistant(
         text: rawJson,
         components: [FallbackMarkdownComponent(text: rawJson)],
@@ -317,8 +337,8 @@ components 陣列內的每個物件必須包含 component_type 與 data：
                       .join('/') ??
                   '';
               return RestaurantComparisonItem(
-                id: r.id!,
-                name: r.name!,
+                id: r.id,
+                name: r.name,
                 rating: r.rating ?? 4.5,
                 price: r.price,
                 highlights: cat.isNotEmpty ? [cat, '精選推薦'] : const ['精選推薦'],
@@ -340,7 +360,10 @@ components 陣列內的每個物件必須包含 component_type 與 data：
                   action: 'open_roulette',
                   payload: {
                     'title': '今晚吃什麼？命運大轉盤',
-                    'options': items.map((e) => e.name).toList(growable: false),
+                    'options': items
+                        .map((e) => e.name)
+                        .nonNulls
+                        .toList(growable: false),
                   },
                 ),
               ],

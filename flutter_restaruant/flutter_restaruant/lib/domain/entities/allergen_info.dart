@@ -1,7 +1,10 @@
 import 'package:equatable/equatable.dart';
+import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 
 import '../../generated/l10n.dart';
+
+part 'allergen_info.g.dart';
 
 /// 過敏原風險等級
 enum AllergenRiskLevel {
@@ -36,35 +39,27 @@ enum AllergenRiskLevel {
 
 /// 食品過敏原模型
 @immutable
+@JsonSerializable(
+  checked: true,
+  fieldRename: FieldRename.snake,
+  includeIfNull: false,
+)
 class AllergenInfo extends Equatable {
-  const AllergenInfo({
-    required this.name,
-    required this.riskLevel,
-    this.note = '',
-  });
+  const AllergenInfo({this.name, this.riskLevel, this.note});
 
-  factory AllergenInfo.fromJson(Map<String, Object?> json) {
-    final rawName = json['name'] as String? ?? '';
-    final rawRisk = json['risk_level'] as String? ?? 'none';
-    final rawNote = json['note'] as String? ?? '';
+  factory AllergenInfo.fromJson(Map<String, Object?> json) =>
+      _$AllergenInfoFromJson(json);
 
-    return AllergenInfo(
-      name: rawName,
-      riskLevel: AllergenRiskLevel.fromString(rawRisk),
-      note: rawNote,
-    );
-  }
+  final String? name;
+  @JsonKey(fromJson: _riskLevelFromJson)
+  final AllergenRiskLevel? riskLevel;
+  final String? note;
 
-  final String name;
-  final AllergenRiskLevel riskLevel;
-  final String note;
-
-  Map<String, Object?> toJson() => {
-    'name': name,
-    'risk_level': riskLevel.name,
-    'note': note,
-  };
+  Map<String, Object?> toJson() => _$AllergenInfoToJson(this);
 
   @override
   List<Object?> get props => [name, riskLevel, note];
 }
+
+AllergenRiskLevel? _riskLevelFromJson(String? value) =>
+    value == null ? null : AllergenRiskLevel.fromString(value);

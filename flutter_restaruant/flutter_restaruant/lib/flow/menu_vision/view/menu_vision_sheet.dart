@@ -3,9 +3,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 
-import '../../../domain/domain_barrel.dart';
+import '../../../domain/repositories/menu_vision_repository.dart';
 import '../../../generated/l10n.dart';
 import '../bloc/menu_vision_bloc.dart';
+import '../model/menu_vision_model.dart';
 import 'dish_card.dart';
 
 /// AI 拍菜單翻譯與過敏原拆解 Sheet
@@ -58,9 +59,7 @@ class _MenuVisionSheetState extends State<MenuVisionSheet> {
       _bloc = widget.bloc!;
       _isLocalBloc = false;
     } else {
-      _bloc = MenuVisionBloc(
-        repository: GetIt.I<MenuVisionRepository>(),
-      );
+      _bloc = MenuVisionBloc(repository: GetIt.I<MenuVisionRepository>());
       _isLocalBloc = true;
     }
 
@@ -103,29 +102,29 @@ class _MenuVisionSheetState extends State<MenuVisionSheet> {
                 builder: (context, state) {
                   return switch (state) {
                     MenuVisionInitial() => _InitialPromptView(
-                        onCamera: () => _bloc.add(
-                          const CaptureAndAnalyzeMenu(
-                            source: ImageSource.camera,
-                          ),
-                        ),
-                        onGallery: () => _bloc.add(
-                          const CaptureAndAnalyzeMenu(
-                            source: ImageSource.gallery,
-                          ),
+                      onCamera: () => _bloc.add(
+                        const CaptureAndAnalyzeMenu(source: ImageSource.camera),
+                      ),
+                      onGallery: () => _bloc.add(
+                        const CaptureAndAnalyzeMenu(
+                          source: ImageSource.gallery,
                         ),
                       ),
+                    ),
                     MenuVisionLoading() => const _LoadingProgressView(),
-                    MenuVisionSuccess(:final catalog) =>
-                      _CatalogContentView(catalog: catalog),
-                    MenuVisionFailure(:final message, :final failedImageBytes) =>
+                    MenuVisionSuccess(:final catalog) => _CatalogContentView(
+                      catalog: catalog,
+                    ),
+                    MenuVisionFailure(
+                      :final message,
+                      :final failedImageBytes,
+                    ) =>
                       _FailureRetryView(
                         message: message,
                         onRetryPhoto: failedImageBytes != null
                             ? () => _bloc.add(
-                                  RetryMenuAnalysis(
-                                    imageBytes: failedImageBytes,
-                                  ),
-                                )
+                                RetryMenuAnalysis(imageBytes: failedImageBytes),
+                              )
                             : null,
                         onRetryCamera: () => _bloc.add(
                           const CaptureAndAnalyzeMenu(
@@ -139,17 +138,15 @@ class _MenuVisionSheetState extends State<MenuVisionSheet> {
                         ),
                       ),
                     MenuVisionCancelled() => _CancelledView(
-                        onCamera: () => _bloc.add(
-                          const CaptureAndAnalyzeMenu(
-                            source: ImageSource.camera,
-                          ),
-                        ),
-                        onGallery: () => _bloc.add(
-                          const CaptureAndAnalyzeMenu(
-                            source: ImageSource.gallery,
-                          ),
+                      onCamera: () => _bloc.add(
+                        const CaptureAndAnalyzeMenu(source: ImageSource.camera),
+                      ),
+                      onGallery: () => _bloc.add(
+                        const CaptureAndAnalyzeMenu(
+                          source: ImageSource.gallery,
                         ),
                       ),
+                    ),
                   };
                 },
               ),
@@ -241,10 +238,7 @@ class _InitialPromptView extends StatelessWidget {
   final VoidCallback onCamera;
   final VoidCallback onGallery;
 
-  const _InitialPromptView({
-    required this.onCamera,
-    required this.onGallery,
-  });
+  const _InitialPromptView({required this.onCamera, required this.onGallery});
 
   @override
   Widget build(BuildContext context) {
@@ -265,7 +259,7 @@ class _InitialPromptView extends StatelessWidget {
             Text(
               S.current.menu_vision_prompt_title,
               style: theme.textTheme.titleLarge?.copyWith(
-                 fontWeight: FontWeight.bold,
+                fontWeight: FontWeight.bold,
               ),
             ),
             const SizedBox(height: 8),
@@ -282,9 +276,7 @@ class _InitialPromptView extends StatelessWidget {
               onPressed: onCamera,
               icon: const Icon(Icons.camera_alt),
               label: Text(S.current.menu_vision_btn_camera),
-              style: FilledButton.styleFrom(
-                minimumSize: const Size(220, 48),
-              ),
+              style: FilledButton.styleFrom(minimumSize: const Size(220, 48)),
             ),
             const SizedBox(height: 12),
             OutlinedButton.icon(
@@ -292,9 +284,7 @@ class _InitialPromptView extends StatelessWidget {
               onPressed: onGallery,
               icon: const Icon(Icons.photo_library),
               label: Text(S.current.menu_vision_btn_gallery),
-              style: OutlinedButton.styleFrom(
-                minimumSize: const Size(220, 48),
-              ),
+              style: OutlinedButton.styleFrom(minimumSize: const Size(220, 48)),
             ),
           ],
         ),
@@ -340,7 +330,7 @@ class _LoadingProgressView extends StatelessWidget {
 }
 
 class _CatalogContentView extends StatelessWidget {
-  final DishCatalogComponent catalog;
+  final DishCatalogModel catalog;
 
   const _CatalogContentView({required this.catalog});
 
@@ -374,34 +364,41 @@ class _CatalogContentView extends StatelessWidget {
           TabBar(
             isScrollable: true,
             tabAlignment: TabAlignment.start,
-            tabs: tabCategories.map((cat) {
-              if (cat == null) {
-                return Tab(text: '${S.current.menu_vision_tab_all} (${dishes.length})');
-              }
-              final count = dishes.where((d) => d.category == cat).length;
-              return Tab(text: '${cat.displayName} ($count)');
-            }).toList(growable: false),
+            tabs: tabCategories
+                .map((cat) {
+                  if (cat == null) {
+                    return Tab(
+                      text:
+                          '${S.current.menu_vision_tab_all} (${dishes.length})',
+                    );
+                  }
+                  final count = dishes.where((d) => d.category == cat).length;
+                  return Tab(text: '${cat.displayName} ($count)');
+                })
+                .toList(growable: false),
           ),
           Expanded(
             child: TabBarView(
-              children: tabCategories.map((cat) {
-                final filteredDishes = cat == null
-                    ? dishes
-                    : dishes.where((d) => d.category == cat).toList(
-                          growable: false,
-                        );
+              children: tabCategories
+                  .map((cat) {
+                    final filteredDishes = cat == null
+                        ? dishes
+                        : dishes
+                              .where((d) => d.category == cat)
+                              .toList(growable: false);
 
-                return ListView.builder(
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  itemCount: filteredDishes.length,
-                  itemBuilder: (context, index) {
-                    return DishCard(
-                      dish: filteredDishes[index],
-                      currency: catalog.currency,
+                    return ListView.builder(
+                      padding: const EdgeInsets.symmetric(vertical: 8),
+                      itemCount: filteredDishes.length,
+                      itemBuilder: (context, index) {
+                        return DishCard(
+                          dish: filteredDishes[index],
+                          currency: catalog.currency,
+                        );
+                      },
                     );
-                  },
-                );
-              }).toList(growable: false),
+                  })
+                  .toList(growable: false),
             ),
           ),
         ],
@@ -433,11 +430,7 @@ class _FailureRetryView extends StatelessWidget {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Icon(
-              Icons.error_outline,
-              size: 56,
-              color: theme.colorScheme.error,
-            ),
+            Icon(Icons.error_outline, size: 56, color: theme.colorScheme.error),
             const SizedBox(height: 16),
             Text(
               S.current.menu_vision_failure_title,
@@ -460,9 +453,7 @@ class _FailureRetryView extends StatelessWidget {
                 onPressed: onRetryPhoto,
                 icon: const Icon(Icons.refresh),
                 label: Text(S.current.menu_vision_btn_retry_photo),
-                style: FilledButton.styleFrom(
-                  minimumSize: const Size(220, 44),
-                ),
+                style: FilledButton.styleFrom(minimumSize: const Size(220, 44)),
               ),
               const SizedBox(height: 12),
             ],
@@ -493,10 +484,7 @@ class _CancelledView extends StatelessWidget {
   final VoidCallback onCamera;
   final VoidCallback onGallery;
 
-  const _CancelledView({
-    required this.onCamera,
-    required this.onGallery,
-  });
+  const _CancelledView({required this.onCamera, required this.onGallery});
 
   @override
   Widget build(BuildContext context) {
