@@ -15,6 +15,9 @@ part 'a2ui_component.g.dart';
 sealed class A2UIComponent extends Equatable {
   const A2UIComponent();
 
+  /// 解析 A2UI 協定外殼 `{component_type, data}`，分派給對應子類別的產生碼 `fromJson`。
+  ///
+  /// 讀的是外殼格式，對應的寫出是 [toEnvelopeJson]，不是 [toJson]。
   factory A2UIComponent.fromJson(Map<String, Object?> json) {
     final componentType = _optString(json, 'component_type') ?? '';
     final data = switch (json['data']) {
@@ -72,7 +75,33 @@ sealed class A2UIComponent extends Equatable {
     };
   }
 
+  /// 元件自身欄位（產生碼），不含協定外殼。
   Map<String, Object?> toJson();
+
+  /// 包上 A2UI 協定外殼，為 [A2UIComponent.fromJson] 的反向。
+  Map<String, Object?> toEnvelopeJson() => switch (this) {
+    DishCatalogComponent() => {
+      'component_type': 'dish_catalog',
+      'data': toJson(),
+    },
+    ComparisonMatrixComponent() => {
+      'component_type': 'comparison_matrix',
+      'data': toJson(),
+    },
+    ActionChipGroupComponent() => {
+      'component_type': 'action_chip_group',
+      'data': toJson(),
+    },
+    DecisionRouletteComponent() => {
+      'component_type': 'decision_roulette',
+      'data': toJson(),
+    },
+    // 降級元件的 text 位於外殼最外層（分派器從 json['text'] 讀取）。
+    FallbackMarkdownComponent() => {
+      'component_type': 'fallback_markdown',
+      ...toJson(),
+    },
+  };
 }
 
 /// 互動式菜單看板元件 (Dish Catalog Component)
@@ -98,10 +127,7 @@ final class DishCatalogComponent extends A2UIComponent {
   final List<DishItemEntity>? dishes;
 
   @override
-  Map<String, Object?> toJson() => {
-    'component_type': 'dish_catalog',
-    'data': _$DishCatalogComponentToJson(this),
-  };
+  Map<String, Object?> toJson() => _$DishCatalogComponentToJson(this);
 
   @override
   List<Object?> get props => [restaurantTitle, currency, dishes];
@@ -125,10 +151,7 @@ final class ComparisonMatrixComponent extends A2UIComponent {
   final List<RestaurantComparisonItem>? items;
 
   @override
-  Map<String, Object?> toJson() => {
-    'component_type': 'comparison_matrix',
-    'data': _$ComparisonMatrixComponentToJson(this),
-  };
+  Map<String, Object?> toJson() => _$ComparisonMatrixComponentToJson(this);
 
   @override
   List<Object?> get props => [title, items];
@@ -200,10 +223,7 @@ final class ActionChipGroupComponent extends A2UIComponent {
   final List<ActionChipItem>? chips;
 
   @override
-  Map<String, Object?> toJson() => {
-    'component_type': 'action_chip_group',
-    'data': _$ActionChipGroupComponentToJson(this),
-  };
+  Map<String, Object?> toJson() => _$ActionChipGroupComponentToJson(this);
 
   @override
   List<Object?> get props => [chips];
@@ -267,10 +287,7 @@ final class DecisionRouletteComponent extends A2UIComponent {
   final List<String>? options;
 
   @override
-  Map<String, Object?> toJson() => {
-    'component_type': 'decision_roulette',
-    'data': _$DecisionRouletteComponentToJson(this),
-  };
+  Map<String, Object?> toJson() => _$DecisionRouletteComponentToJson(this);
 
   @override
   List<Object?> get props => [title, options];
@@ -288,10 +305,7 @@ final class FallbackMarkdownComponent extends A2UIComponent {
   final String? text;
 
   @override
-  Map<String, Object?> toJson() => {
-    'component_type': 'fallback_markdown',
-    ..._$FallbackMarkdownComponentToJson(this),
-  };
+  Map<String, Object?> toJson() => _$FallbackMarkdownComponentToJson(this);
 
   @override
   List<Object?> get props => [text];

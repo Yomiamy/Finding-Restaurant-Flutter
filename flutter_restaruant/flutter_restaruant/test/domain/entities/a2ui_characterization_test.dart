@@ -20,20 +20,20 @@ void main() {
       expect(jsonEncode(DishItemEntity.fromJson(_Data.dish).toJson()), _Data.dishJson);
     });
     test('DishCatalogComponent', () {
-      expect(jsonEncode(parse(_Data.catalog).toJson()), _Data.catalogJson);
+      expect(jsonEncode(parse(_Data.catalog).toEnvelopeJson()), _Data.catalogJson);
     });
     test('ComparisonMatrixComponent + RestaurantComparisonItem', () {
-      expect(jsonEncode(parse(_Data.matrix).toJson()), _Data.matrixJson);
+      expect(jsonEncode(parse(_Data.matrix).toEnvelopeJson()), _Data.matrixJson);
     });
     test('ActionChipGroupComponent + ActionChipItem', () {
-      expect(jsonEncode(parse(_Data.chips).toJson()), _Data.chipsJson);
+      expect(jsonEncode(parse(_Data.chips).toEnvelopeJson()), _Data.chipsJson);
     });
     test('DecisionRouletteComponent', () {
-      expect(jsonEncode(parse(_Data.roulette).toJson()), _Data.rouletteJson);
+      expect(jsonEncode(parse(_Data.roulette).toEnvelopeJson()), _Data.rouletteJson);
     });
     test('FallbackMarkdownComponent 扁平格式且 component_type 在第一個', () {
       expect(
-        jsonEncode(parse({'component_type': 'mystery', 'text': '降級'}).toJson()),
+        jsonEncode(parse({'component_type': 'mystery', 'text': '降級'}).toEnvelopeJson()),
         '{"component_type":"fallback_markdown","text":"降級"}',
       );
     });
@@ -50,12 +50,12 @@ void main() {
     for (final json in [_Data.catalog, _Data.matrix, _Data.chips, _Data.roulette]) {
       test('${json['component_type']}', () {
         final c = parse(json);
-        expect(parse(c.toJson()), c);
+        expect(parse(c.toEnvelopeJson()), c);
       });
     }
     test('FallbackMarkdownComponent', () {
       const c = FallbackMarkdownComponent(text: '降級');
-      expect(parse(c.toJson()), c);
+      expect(parse(c.toEnvelopeJson()), c);
     });
     test('AiFoodieMessage', () {
       final m = AiFoodieMessage.fromJson(_Data.message);

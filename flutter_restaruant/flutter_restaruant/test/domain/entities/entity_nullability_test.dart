@@ -63,18 +63,28 @@ void main() {
     });
 
     test('toJson 省略 null key，且不含 isValid/props', () {
-      expect(const DecisionRouletteComponent(options: ['A', 'B']).toJson(), {
-        'component_type': 'decision_roulette',
-        'data': {
-          'options': ['A', 'B'],
+      expect(
+        const DecisionRouletteComponent(options: ['A', 'B']).toEnvelopeJson(),
+        {
+          'component_type': 'decision_roulette',
+          'data': {
+            'options': ['A', 'B'],
+          },
         },
+      );
+      // toJson 只輸出欄位（產生碼），協定外殼由 toEnvelopeJson 負責。
+      expect(const DecisionRouletteComponent(options: ['A', 'B']).toJson(), {
+        'options': ['A', 'B'],
+      });
+      expect(const FallbackMarkdownComponent(text: 't').toJson(), {
+        'text': 't',
       });
       expect(const ActionChipItem(label: 'L').toJson(), {'label': 'L'});
       expect(const RestaurantComparisonItem(name: 'N').toJson(), {'name': 'N'});
-      expect(const FallbackMarkdownComponent().toJson(), {
+      expect(const FallbackMarkdownComponent().toEnvelopeJson(), {
         'component_type': 'fallback_markdown',
       });
-      expect(const FallbackMarkdownComponent(text: 't').toJson(), {
+      expect(const FallbackMarkdownComponent(text: 't').toEnvelopeJson(), {
         'component_type': 'fallback_markdown',
         'text': 't',
       });

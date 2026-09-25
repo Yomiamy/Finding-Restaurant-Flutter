@@ -55,7 +55,7 @@ final class AiFoodieMessage extends Equatable {
   @JsonKey(includeFromJson: false, includeToJson: false)
   bool get isAssistant => isUser != true;
   final String? text;
-  @JsonKey(fromJson: _componentsFromJson)
+  @JsonKey(fromJson: _componentsFromJson, toJson: _componentsToJson)
   final List<A2UIComponent>? components;
   @JsonKey(fromJson: _createdAtFromJson)
   final DateTime? createdAt;
@@ -68,6 +68,10 @@ final class AiFoodieMessage extends Equatable {
 
 List<A2UIComponent>? _componentsFromJson(List<Object?>? raw) =>
     mapListFromJson(raw, A2UIComponent.fromJson);
+
+List<Map<String, Object?>>? _componentsToJson(
+  List<A2UIComponent>? components,
+) => components?.map((c) => c.toEnvelopeJson()).toList();
 
 /// 參數型別 `String?`：非字串由 checked 產生碼包成 CheckedFromJsonException；字串解析失敗回傳 null。
 DateTime? _createdAtFromJson(String? value) =>

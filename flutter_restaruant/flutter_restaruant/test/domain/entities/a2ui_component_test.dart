@@ -33,7 +33,7 @@ void main() {
       expect(matrix.items?.first.rating, 4.7);
       expect(matrix.items?.first.highlights, contains('串燒極香'));
 
-      final encoded = matrix.toJson();
+      final encoded = matrix.toEnvelopeJson();
       expect(encoded['component_type'], 'comparison_matrix');
     });
 

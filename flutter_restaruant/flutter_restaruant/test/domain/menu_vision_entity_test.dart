@@ -191,7 +191,7 @@ void main() {
 
         final fallback = component as FallbackMarkdownComponent;
         expect(fallback.text, '未知元件降級文字');
-        expect(fallback.toJson(), {
+        expect(fallback.toEnvelopeJson(), {
           'component_type': 'fallback_markdown',
           'text': '未知元件降級文字',
         });
@@ -216,7 +216,7 @@ void main() {
         ],
       );
 
-      final json = catalog.toJson();
+      final json = catalog.toEnvelopeJson();
       final restored = A2UIComponent.fromJson(json);
       expect(restored, equals(catalog));
     });

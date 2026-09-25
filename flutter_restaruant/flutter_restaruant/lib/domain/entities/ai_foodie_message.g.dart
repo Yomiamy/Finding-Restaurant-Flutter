@@ -29,6 +29,6 @@ Map<String, dynamic> _$AiFoodieMessageToJson(AiFoodieMessage instance) =>
       'id': ?instance.id,
       'is_user': ?instance.isUser,
       'text': ?instance.text,
-      'components': ?instance.components?.map((e) => e.toJson()).toList(),
+      'components': ?_componentsToJson(instance.components),
       'created_at': ?instance.createdAt?.toIso8601String(),
     };

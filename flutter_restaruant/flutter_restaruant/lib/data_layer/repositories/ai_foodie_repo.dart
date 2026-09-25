@@ -268,7 +268,7 @@ components 陣列內的每個物件必須包含 component_type 與 data：
   static String serializeAssistantHistory(AiFoodieMessage msg) {
     final validComponents = (msg.components ?? const [])
         .where((c) => c is! FallbackMarkdownComponent)
-        .map((c) => c.toJson())
+        .map((c) => c.toEnvelopeJson())
         .toList(growable: false);
 
     final payload = <String, Object?>{
