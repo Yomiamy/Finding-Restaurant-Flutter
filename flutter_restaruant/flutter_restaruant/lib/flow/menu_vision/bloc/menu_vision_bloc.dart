@@ -3,6 +3,7 @@ import 'dart:typed_data';
 import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:logger/logger.dart';
 import 'package:meta/meta.dart';
 
 import '../../../domain/entities/entities_barrel.dart';
@@ -61,7 +62,8 @@ class MenuVisionBloc extends Bloc<MenuVisionEvent, MenuVisionState> {
               ),
             );
         }
-      } on Exception catch (e) {
+      } on Exception catch (e, st) {
+        Logger().e('Menu vision analyze failed', error: e, stackTrace: st);
         emit(
           MenuVisionFailure(
             message: S.current.menu_vision_error_analyze_failed(e.toString()),
@@ -100,7 +102,8 @@ class MenuVisionBloc extends Bloc<MenuVisionEvent, MenuVisionState> {
               ),
             );
         }
-      } on Exception catch (e) {
+      } on Exception catch (e, st) {
+        Logger().e('Menu vision retry failed', error: e, stackTrace: st);
         emit(
           MenuVisionFailure(
             message: S.current.menu_vision_error_retry_failed(e.toString()),
