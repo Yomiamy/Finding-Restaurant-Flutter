@@ -143,7 +143,6 @@
 
 | 檔案路徑 | 關鍵類別 | 單一職責 (Single Responsibility) |
 | :--- | :--- | :--- |
-| [`lib/component/platform_widget.dart`](../../lib/component/platform_widget.dart) | `PlatformWidget<I, A>` | **iOS/Android 外觀分歧的抽象基底**。泛型約束兩平台的回傳型別，子類別必須同時實作 `createIosWidget` 與 `createAndroidWidget`，漏寫則編譯失敗。 |
 | [`lib/component/loading_widget.dart`](../../lib/component/loading_widget.dart) | `LoadingWidget` | 統一的載入中指示器。 |
 | [`lib/component/empty_data_widget.dart`](../../lib/component/empty_data_widget.dart) | `EmptyDataWidget` | 統一的空資料狀態呈現。 |
 | [`lib/component/rating_stars.dart`](../../lib/component/rating_stars.dart) | `RatingStars` | 星等評分繪製元件（以 Flutter 內建 Icon 取代舊版 11 張 PNG）。 |
