@@ -1,4 +1,4 @@
-import 'package:flutter_restaruant/domain/entities/a2ui_fallback_strings.dart';
+import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -107,7 +107,7 @@ void main() {
 
       expect(
         (comp as FallbackMarkdownComponent).text,
-        A2UIFallbackStrings.dishCatalogEmpty,
+        S.current.a2ui_dish_catalog_empty,
       );
     });
 

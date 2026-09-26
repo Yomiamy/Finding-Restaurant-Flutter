@@ -2,7 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:json_annotation/json_annotation.dart';
 import 'package:meta/meta.dart';
 
-import 'a2ui_fallback_strings.dart';
+import '../../generated/l10n.dart';
 import 'dish_item_entity.dart';
 import 'entity_json_converters.dart';
 
@@ -34,7 +34,7 @@ sealed class A2UIComponent extends Equatable {
           text: _firstText([
             _optString(json, 'text'),
             c.restaurantTitle,
-          ], A2UIFallbackStrings.dishCatalogEmpty),
+          ], S.current.a2ui_dish_catalog_empty),
         ),
       },
       'comparison_matrix' => switch (ComparisonMatrixComponent.fromJson(data)) {
@@ -43,7 +43,7 @@ sealed class A2UIComponent extends Equatable {
           text: _firstText([
             _optString(json, 'text'),
             c.title,
-          ], A2UIFallbackStrings.comparisonMatrixTitle),
+          ], S.current.a2ui_comparison_matrix_title),
         ),
       },
       'action_chip_group' => switch (ActionChipGroupComponent.fromJson(
@@ -55,7 +55,7 @@ sealed class A2UIComponent extends Equatable {
         _ => FallbackMarkdownComponent(
           text: _firstText([
             _optString(json, 'text'),
-          ], A2UIFallbackStrings.actionChipGroupTitle),
+          ], S.current.a2ui_action_chip_group_title),
         ),
       },
       'decision_roulette' => switch (DecisionRouletteComponent.fromJson(data)) {
@@ -64,13 +64,13 @@ sealed class A2UIComponent extends Equatable {
           text: _firstText([
             _optString(json, 'text'),
             c.title,
-          ], A2UIFallbackStrings.decisionRouletteTitle),
+          ], S.current.ai_foodie_roulette_default_title),
         ),
       },
       _ => FallbackMarkdownComponent(
         text: _firstText([
           _optString(json, 'text'),
-        ], A2UIFallbackStrings.unknownComponent),
+        ], S.current.a2ui_error_unknown_component),
       ),
     };
   }

@@ -1,4 +1,4 @@
-import 'package:flutter_restaruant/domain/entities/a2ui_fallback_strings.dart';
+import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_restaruant/flow/ai_foodie/model/ai_foodie_model.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -45,11 +45,11 @@ void main() {
   group('ComparisonMatrixModel.fromEntity', () {
     test('全缺值 → UI 預設值', () {
       final entity = ComparisonMatrixComponent(
-        title: A2UIFallbackStrings.comparisonMatrixTitle,
+        title: S.current.a2ui_comparison_matrix_title,
         items: const [],
       );
       final m = ComparisonMatrixModel.fromEntity(entity);
-      expect(m.title, A2UIFallbackStrings.comparisonMatrixTitle);
+      expect(m.title, S.current.a2ui_comparison_matrix_title);
       expect(m.items, isEmpty);
     });
 
@@ -114,11 +114,11 @@ void main() {
   group('DecisionRouletteModel.fromEntity', () {
     test('全缺值 → UI 預設值', () {
       final entity = DecisionRouletteComponent(
-        title: A2UIFallbackStrings.decisionRouletteTitle,
+        title: S.current.ai_foodie_roulette_default_title,
         options: const [],
       );
       final m = DecisionRouletteModel.fromEntity(entity);
-      expect(m.title, A2UIFallbackStrings.decisionRouletteTitle);
+      expect(m.title, S.current.ai_foodie_roulette_default_title);
       expect(m.options, isEmpty);
     });
 
@@ -138,7 +138,7 @@ void main() {
       expect(
         ComparisonMatrixModel.fromEntity(const ComparisonMatrixComponent()),
         ComparisonMatrixModel(
-          title: A2UIFallbackStrings.comparisonMatrixTitle,
+          title: S.current.a2ui_comparison_matrix_title,
           items: const [],
         ),
       );
@@ -146,7 +146,7 @@ void main() {
         ComparisonItemModel.fromEntity(const RestaurantComparisonItem()),
         ComparisonItemModel(
           id: '',
-          name: A2UIFallbackStrings.comparisonItemName,
+          name: S.current.a2ui_comparison_item_name,
           rating: 0.0,
           highlights: const [],
         ),
@@ -162,7 +162,7 @@ void main() {
       expect(
         DecisionRouletteModel.fromEntity(const DecisionRouletteComponent()),
         DecisionRouletteModel(
-          title: A2UIFallbackStrings.decisionRouletteTitle,
+          title: S.current.ai_foodie_roulette_default_title,
           options: const [],
         ),
       );

@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 
-import '../../../domain/entities/a2ui_fallback_strings.dart';
+import '../../../generated/l10n.dart';
 import '../../../domain/entities/entities_barrel.dart';
 
 /// AI 覓食對話訊息 UI model（欄位 non-null，預設值集中於 [fromEntity]）
@@ -52,7 +52,7 @@ final class ComparisonMatrixModel extends A2UIComponentModel {
 
   factory ComparisonMatrixModel.fromEntity(ComparisonMatrixComponent entity) {
     return ComparisonMatrixModel(
-      title: entity.title ?? A2UIFallbackStrings.comparisonMatrixTitle,
+      title: entity.title ?? S.current.a2ui_comparison_matrix_title,
       items: (entity.items ?? const [])
           .map(ComparisonItemModel.fromEntity)
           .toList(growable: false),
@@ -90,7 +90,7 @@ final class DecisionRouletteModel extends A2UIComponentModel {
 
   factory DecisionRouletteModel.fromEntity(DecisionRouletteComponent entity) {
     return DecisionRouletteModel(
-      title: entity.title ?? A2UIFallbackStrings.decisionRouletteTitle,
+      title: entity.title ?? S.current.ai_foodie_roulette_default_title,
       options: entity.options ?? const [],
     );
   }
@@ -131,7 +131,7 @@ class ComparisonItemModel extends Equatable {
   factory ComparisonItemModel.fromEntity(RestaurantComparisonItem entity) {
     return ComparisonItemModel(
       id: entity.id ?? '',
-      name: entity.name ?? A2UIFallbackStrings.comparisonItemName,
+      name: entity.name ?? S.current.a2ui_comparison_item_name,
       rating: entity.rating ?? 0.0,
       price: entity.price,
       highlights: entity.highlights ?? const [],

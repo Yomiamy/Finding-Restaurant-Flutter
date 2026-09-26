@@ -1,7 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter_restaruant/data_layer/repositories/ai_foodie_repo.dart';
-import 'package:flutter_restaruant/domain/entities/a2ui_fallback_strings.dart';
+import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:json_annotation/json_annotation.dart';
@@ -136,7 +136,7 @@ void main() {
 
   group('分派器降級', () {
     test('dish_catalog：data 缺值 → dishCatalogEmpty', () {
-      expect(fallbackText(parse({'component_type': 'dish_catalog'})), A2UIFallbackStrings.dishCatalogEmpty);
+      expect(fallbackText(parse({'component_type': 'dish_catalog'})), S.current.a2ui_dish_catalog_empty);
     });
     test('dish_catalog：dishes 空 → restaurant_title', () {
       final c = parse({'component_type': 'dish_catalog', 'data': {'restaurant_title': '店', 'dishes': <Object?>[]}});
@@ -151,14 +151,14 @@ void main() {
       expect(c, isA<FallbackMarkdownComponent>());
     });
     test('comparison_matrix：items 與 title 皆缺 → comparisonMatrixTitle', () {
-      expect(fallbackText(parse({'component_type': 'comparison_matrix'})), A2UIFallbackStrings.comparisonMatrixTitle);
+      expect(fallbackText(parse({'component_type': 'comparison_matrix'})), S.current.a2ui_comparison_matrix_title);
     });
     test('comparison_matrix：items 空 → title', () {
       final c = parse({'component_type': 'comparison_matrix', 'data': {'title': 'X', 'items': <Object?>[]}});
       expect(fallbackText(c), 'X');
     });
     test('action_chip_group：chips 缺值 → actionChipGroupTitle', () {
-      expect(fallbackText(parse({'component_type': 'action_chip_group'})), A2UIFallbackStrings.actionChipGroupTitle);
+      expect(fallbackText(parse({'component_type': 'action_chip_group'})), S.current.a2ui_action_chip_group_title);
     });
     test('action_chip_group：chips 全不合法 → 降級', () {
       final c = parse({
@@ -197,16 +197,16 @@ void main() {
       expect(c, isA<ActionChipGroupComponent>());
     });
     test('decision_roulette：options 缺值 → decisionRouletteTitle', () {
-      expect(fallbackText(parse({'component_type': 'decision_roulette'})), A2UIFallbackStrings.decisionRouletteTitle);
+      expect(fallbackText(parse({'component_type': 'decision_roulette'})), S.current.ai_foodie_roulette_default_title);
     });
     test('decision_roulette：options 少於 2 → title', () {
       final c = parse({'component_type': 'decision_roulette', 'data': {'title': 'T', 'options': ['A']}});
       expect(fallbackText(c), 'T');
     });
     test('未知 type → unknownComponent；有 text 用 text；缺 component_type 亦降級', () {
-      expect(fallbackText(parse({'component_type': 'zzz'})), A2UIFallbackStrings.unknownComponent);
+      expect(fallbackText(parse({'component_type': 'zzz'})), S.current.a2ui_error_unknown_component);
       expect(fallbackText(parse({'component_type': 'zzz', 'text': 'T'})), 'T');
-      expect(fallbackText(parse(const {})), A2UIFallbackStrings.unknownComponent);
+      expect(fallbackText(parse(const {})), S.current.a2ui_error_unknown_component);
     });
     test('合法元件不讀 text：text 型別錯誤也不拋', () {
       final c = parse({'component_type': 'decision_roulette', 'text': 123, 'data': {'options': ['A', 'B']}});
