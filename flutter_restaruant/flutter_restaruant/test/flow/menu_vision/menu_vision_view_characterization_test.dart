@@ -2,7 +2,6 @@ import 'dart:typed_data';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/domain/domain_barrel.dart';
-import 'package:flutter_restaruant/domain/entities/a2ui_fallback_strings.dart';
 import 'package:flutter_restaruant/flow/menu_vision/menu_vision_barrel.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -139,6 +138,6 @@ void main() {
   testWidgets('dishes 缺值 → 失敗畫面顯示降級文字', (tester) async {
     await _pumpCatalog(tester, const {});
     expect(find.text(S.current.menu_vision_failure_title), findsOneWidget);
-    expect(find.text(A2UIFallbackStrings.dishCatalogEmpty), findsOneWidget);
+    expect(find.text(S.current.a2ui_dish_catalog_empty), findsOneWidget);
   });
 }

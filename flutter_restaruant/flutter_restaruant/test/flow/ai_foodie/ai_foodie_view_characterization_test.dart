@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_restaruant/domain/domain_barrel.dart';
-import 'package:flutter_restaruant/domain/entities/a2ui_fallback_strings.dart';
 import 'package:flutter_restaruant/features/utils/utils_barrel.dart';
 import 'package:flutter_restaruant/flow/ai_foodie/ai_foodie_barrel.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
@@ -204,29 +203,26 @@ void main() {
   group('全欄位缺值', () {
     testWidgets('顯示', (tester) async {
       await _pump(tester, _Data.missing);
-      expect(
-        find.text(A2UIFallbackStrings.comparisonMatrixTitle),
-        findsOneWidget,
-      );
-      expect(find.text(A2UIFallbackStrings.comparisonItemName), findsOneWidget);
+      expect(find.text(S.current.a2ui_comparison_matrix_title), findsOneWidget);
+      expect(find.text(S.current.a2ui_comparison_item_name), findsOneWidget);
       expect(find.text('0.0'), findsOneWidget);
       expect(find.text('只有標籤'), findsOneWidget);
       expect(
-        find.text(A2UIFallbackStrings.decisionRouletteTitle),
+        find.text(S.current.ai_foodie_roulette_default_title),
         findsOneWidget,
       );
-      expect(find.text(A2UIFallbackStrings.unknownComponent), findsOneWidget);
+      expect(find.text(S.current.a2ui_error_unknown_component), findsOneWidget);
       // 缺 is_user → 助理訊息：header 與訊息頭像各一個 auto_awesome
       expect(find.byIcon(Icons.auto_awesome), findsNWidgets(2));
     });
 
     testWidgets('點比較卡片 → 導航參數', (tester) async {
       final h = await _pump(tester, _Data.missing);
-      await tester.tap(find.text(A2UIFallbackStrings.comparisonItemName));
+      await tester.tap(find.text(S.current.a2ui_comparison_item_name));
       await tester.pump();
       final e = _navigated(h);
       expect(e.id, '');
-      expect(e.name, A2UIFallbackStrings.comparisonItemName);
+      expect(e.name, S.current.a2ui_comparison_item_name);
       expect(e.rating, 0.0);
       expect(e.price, isNull);
       expect(e.imageUrl, isNull);
@@ -235,11 +231,11 @@ void main() {
 
     testWidgets('點轉盤按鈕 → 轉盤標題為預設', (tester) async {
       await _pump(tester, _Data.missing);
-      await tester.tap(find.text(A2UIFallbackStrings.decisionRouletteTitle));
+      await tester.tap(find.text(S.current.ai_foodie_roulette_default_title));
       await tester.pump();
       await tester.pump();
       expect(
-        find.text(A2UIFallbackStrings.decisionRouletteTitle),
+        find.text(S.current.ai_foodie_roulette_default_title),
         findsNWidgets(2),
       );
     });

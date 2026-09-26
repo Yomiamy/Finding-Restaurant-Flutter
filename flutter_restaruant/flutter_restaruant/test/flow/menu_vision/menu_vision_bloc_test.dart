@@ -158,6 +158,21 @@ void main() {
     );
 
     blocTest<MenuVisionBloc, MenuVisionState>(
+      'Error from repository propagates instead of emitting Failure',
+      build: () {
+        when(
+          () => mockRepo.analyzeMenuImageBytes(any()),
+        ).thenThrow(StateError('bug'));
+        return MenuVisionBloc(repository: mockRepo);
+      },
+      act: (bloc) => bloc.add(
+        RetryMenuAnalysis(imageBytes: Uint8List.fromList([1, 2, 3])),
+      ),
+      expect: () => [const MenuVisionLoading()],
+      errors: () => [isA<StateError>()],
+    );
+
+    blocTest<MenuVisionBloc, MenuVisionState>(
       'emits [Initial] on ResetMenuVision',
       build: () => MenuVisionBloc(repository: mockRepo),
       seed: () => MenuVisionSuccess(
