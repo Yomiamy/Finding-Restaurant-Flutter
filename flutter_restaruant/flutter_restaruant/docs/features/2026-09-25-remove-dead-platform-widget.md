@@ -3,7 +3,7 @@
 > 項目編號：**UI-8.2**  
 > 優先級別：**P1（技術債清理）**，effort 0.1d  
 > 建立日期：2026-09-25  
-> 參考文檔：`docs/brainstorm/2026-09-26-features-brainstorm.md` §8.3.2 [UI-8.2]  
+> 參考文檔：`docs/brainstorm/2026-09-27-features-brainstorm.md` §8.3.2 [UI-8.2]  
 > 狀態：草稿（待確認）
 
 ---

@@ -1701,7 +1701,8 @@ class ComparisonMatrixComponent extends A2UIComponent {
   - 專案規則：`.claude/rules/flutter-styles.md`
   - 元件：`lib/component/rating_stars.dart`, `lib/component/cell/main_page/restaurant_item_cell.dart`
 
-#### [E-8.5] AI 路徑錯誤處理收尾：移除 i18n fallback 的 `Error` 捕捉、補 `Error` 外拋測試與 repo Logger
+#### [E-8.5] AI 路徑錯誤處理收尾：移除 i18n fallback 的 `Error` 捕捉、補 `Error` 外拋測試與 repo Logger — ✅ 已完成 (Issue #132 / PR #133, 2026-09-27)
+- **落地**：`S` 改由新增的 `test/flutter_test_config.dart` 於所有測試前統一載入（`zh_TW`），取代逐檔 `setUp` 載入。8 處裸 `catch` 全數移除，`A2UIFallbackStrings` 失去存在理由而整個刪除，呼叫點直接讀 `S.current`。`MenuVisionBloc` 保留 `on Exception` 並改為 `catch (e, st)` 補上 `Logger().e`，未依建議 4 放寬成裸 `catch`，以符合 §6.1「不捕捉 `Error`」。兩個 BLoC 測試已補 `StateError` 外拋案例。
 - **優先級**：`P2`
 - **預估 Effort**：`0.5d`
 - **來源**：Issue #126 / PR #127（domain entity 改用 `@JsonSerializable`）審查時刻意留下的後續事項。
