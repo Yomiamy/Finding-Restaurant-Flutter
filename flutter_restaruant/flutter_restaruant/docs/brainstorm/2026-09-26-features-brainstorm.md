@@ -1618,12 +1618,13 @@ class ComparisonMatrixComponent extends A2UIComponent {
   2. 實作 `DialogIdentity` 去重機制：若佇列中已有相同標識的彈窗則自動短路忽略。
   3. 透過 `unawaited(_processQueue())` 循序顯示，前一個關閉才彈出下一個。
 
-#### [UI-8.2] 刪除 0 處調用的幽靈死代碼 `lib/component/platform_widget.dart`
+#### [UI-8.2] 刪除 0 處調用的幽靈死代碼 `lib/component/platform_widget.dart` — ✅ 已完成 (Issue #128 / PR #129, 2026-09-26)
 - **優先級**：`P1`
 - **預估 Effort**：`0.1d`
 - **價值與收益**：拔除 0 處引用的假跨平台抽象層，維護程式碼庫純淨度，遵循 YAGNI 原則。
 - **影響檔案路徑**：
   - 刪除：`lib/component/platform_widget.dart`
+- **落地**：除刪檔外，一併移除 `component_barrel.dart` 的匯出，以及 `docs/architecture/overview.md`、`file-reference.md`、`README-tw.md` 中對 `PlatformWidget` 的描述；`flutter_platform_widgets` 套件（`PlatformApp`）仍在使用，不受影響。
 
 #### [A-8.3] 健全 Dio 攔截器體系 (401 自動刷新、逾時重試、錯誤對應)
 - **優先級**：`P1`
@@ -1745,7 +1746,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 2. **融入 Phase 1.5 空間與視覺體驗升級**：
    - 伴隨目前正在進行的離線快取與標籤過濾開發，同步落地 **A-8.1 (Dart 3 Sealed Result 體系)**，徹底終結網路層錯誤黑洞。
    - **UI-8.1 (DialogQueueManager)** 融入通知與網路異常彈窗機制，杜絕快速連點重疊。
-   - **UI-8.2 (刪除 PlatformWidget 死代碼)** 隨即執行，保持 codebase 斯巴達式簡潔。
+   - **UI-8.2 (刪除 PlatformWidget 死代碼)** 已於 2026-09-26 完成 (Issue #128 / PR #129)，保持 codebase 斯巴達式簡潔。
 
 3. **融入 Phase 2 社群生態與轉化閉環**：
    - 微訂位與候位排隊涉及敏感的使用者認證，此時引入 **A-8.3 (健全 Dio 攔截器體系：401 自動換約)** 能直接保障交易 session 的穩定。
