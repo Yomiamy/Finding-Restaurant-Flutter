@@ -1577,7 +1577,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 ### 8.3.2 P1 核心改進 (Core Architecture & Testing Upgrades)
 
-#### [E-8.2] 引入 `mocktail: ^1.0.4` 淘汰手寫 Fake Repository
+#### [E-8.2] 引入 `mocktail: ^1.0.4` 淘汰手寫 Fake Repository — ✅ 已完成 (Issue #130 / PR #131, 2026-09-27)
 - **優先級**：`P1`
 - **預估 Effort**：`0.5d`
 - **價值與收益**：消滅 `menu_vision_bloc_test.dart:9-56` 手寫 47 行且充滿布林旗標的脆弱技術債，使後續新增 Repository 方法時測試不中斷。
@@ -1592,6 +1592,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
      when(() => mockRepo.analyzeMenu(any())).thenAnswer((_) async => mockComponent);
      ```
   4. 使用 `verify(() => mockRepo.analyzeMenu(any())).called(1)` 驗證互動。
+- **落地**：實際範圍擴大為 9 個測試檔的手寫 Repository 替身（不只 `menu_vision_bloc_test.dart`），`mocktail` 由 `bloc_test` 帶入的 transitive 依賴升為 direct dev（`^1.0.5`，版本不變）。刻意不建共用 `test/mock/` 檔；`_FakeMainBloc`（改 `MockBloc` 屬另一種遷移）與 `FakeImagePicker`（平台邊界替身）列為非目標。後續待辦見 E-8.6、E-8.7。
 
 #### [E-8.3] Makefile 健全化（補齊 test/coverage，修復懸掛目標，清理殘留模板） — ✅ 已完成 (Issue #121 / PR #122, 2026-09-17)
 - **優先級**：`P1`
@@ -1719,6 +1720,35 @@ class ComparisonMatrixComponent extends A2UIComponent {
   3. 在兩個 BLoC 測試各補一個案例：repo 拋出 `Error`（例如 `StateError`）時，事件處理會往外拋出，而不是 emit 失敗狀態。
   4. `menu_vision_bloc.dart` 的 2 處 `on Exception catch (e)` 改為 `catch (e, st)` 同時綁定 stack trace，再補上 `Logger().e(..., error: e, stackTrace: st)`，與 `ai_foodie_repo.dart` 一致。
 
+#### [E-8.6] BLoC 測試統一改用 `blocTest`
+- **優先級**：`P2`
+- **預估 Effort**：`0.5d`
+- **來源**：E-8.2（Issue #130 / PR #131）合併前對照誠品 monorepo 測試寫法時發現的落差。
+- **價值與收益**：flutter-styles §7.3.3 要求 BLoC 測試使用 `bloc_test`，對照組 98 個 bloc 測試檔中 93 個使用 `blocTest`；本專案 4 個 BLoC 測試檔僅 `menu_vision_bloc_test.dart` 採用，其餘仍以 `test()` 搭配 `expectLater(bloc.stream, emitsInOrder(...))` 或 `pumpEventQueue()` 手動等待，狀態序列與互動驗證分散在各 case 內。
+- **影響檔案路徑**：
+  - 修改：`test/sign_in_bloc_test.dart`（5 個 `test`）
+  - 修改：`test/main_bloc_load_more_test.dart`（4 個 `test`）
+  - 修改：`test/flow/ai_foodie/ai_foodie_bloc_test.dart`（13 個 `test`，14 處 `pumpEventQueue`）
+- **具體實作建議**：
+  1. 每個 case 改為 `blocTest<XBloc, XState>`：stub 放 `build`、事件放 `act`、狀態序列放 `expect`、互動驗證放 `verify`，需要初始狀態時用 `seed`。
+  2. 由 `blocTest` 負責關閉 bloc，移除手寫的 `tearDown(() => bloc.close())`。
+  3. 只改寫測試結構，不刪除、不放寬任何斷言；遷移前後測試數量一致。
+  4. 無法以狀態序列表達的斷言（如 `ai_foodie_bloc_test` 對 `history` 的 `captured` 檢查）可保留 `test()`，不強求全數轉換。
+
+#### [E-8.7] 檔內 mock 替身命名統一為 `_Mock` 前綴
+- **優先級**：`P2`
+- **預估 Effort**：`0.1d`
+- **來源**：同 E-8.6。
+- **價值與收益**：E-8.2 後，檔內宣告的替身有 5 個是 public `MockX`、4 個是 `_MockX`，兩種混用。對照組的規則是「共用替身放 `test/mock/` 並用 public `MockX`，檔內私有替身用 `_MockX`」；本專案替身全為檔內宣告，統一為 `_Mock` 前綴即可與對照組一致。純外觀調整，可與 E-8.6 同一個 PR 處理。
+- **影響檔案路徑**：
+  - 修改：`test/sign_in_bloc_test.dart`（`MockSignInRepository`）
+  - 修改：`test/main_bloc_load_more_test.dart`（`MockMainRepository`）
+  - 修改：`test/flow/ai_foodie/ai_foodie_bloc_test.dart`（`MockAiFoodieRepository`）
+  - 修改：`test/flow/menu_vision/menu_vision_bloc_test.dart`、`test/flow/menu_vision/menu_vision_sheet_test.dart`（`MockMenuVisionRepository`）
+- **具體實作建議**：
+  1. 上述 5 個類別改名為 `_MockXRepository`（檔內 rename，無跨檔引用）。
+  2. 驗收：`rtk proxy grep -rnE "^class Mock" test/` 輸出為空。
+
 ---
 
 ## 8.4 與既有 Roadmap 的對齊建議 (Alignment with Existing Roadmap)
@@ -1754,7 +1784,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 4. **全面支撐 Phase 3 (Google AI Studio M4/M5 推進)**：
    - 隨著 2026-09-12 PR #116 拍菜單助手 (M3) 的落地，即將展開 M4 (覓食助理) 與 M5 (行程生成)。
-   - **E-8.2 (`mocktail` 測試框架)** 將直接應用於 M4 對話式 BottomSheet 與 Function Calling 的 Mock 測試，消滅脆弱的手寫 Fake。
+   - **E-8.2 (`mocktail` 測試框架)** 已於 2026-09-27 完成 (Issue #130 / PR #131)，M4 對話式 BottomSheet 與 Function Calling 的 Mock 測試可直接沿用；後續 **E-8.6 (`blocTest` 統一)** 與 **E-8.7 (mock 命名統一)** 收齊測試寫法。
    - **E-8.4 (核心測試覆蓋率 $\ge 80\%$)** 與 **UI-8.6 (無障礙守衛)** 將作為 M5 最終交付上線的堅實品質驗收指標。
 
 
