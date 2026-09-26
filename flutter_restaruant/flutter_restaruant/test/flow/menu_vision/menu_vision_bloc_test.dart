@@ -1,66 +1,23 @@
-import 'package:flutter_restaruant/generated/l10n.dart';
-import 'package:flutter/material.dart';
 import 'dart:typed_data';
 
+import 'package:bloc_test/bloc_test.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/domain/domain_barrel.dart';
 import 'package:flutter_restaruant/flow/menu_vision/menu_vision_barrel.dart';
+import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:bloc_test/bloc_test.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:mocktail/mocktail.dart';
 
-class MockMenuVisionRepository implements MenuVisionRepository {
-  A2UIComponent? captureResult;
-  A2UIComponent? galleryResult;
-  A2UIComponent? analyzeResult;
-  final sampleBytes = Uint8List.fromList([1, 2, 3, 4]);
-  bool shouldThrow = false;
-  bool analyzeShouldThrow = false;
-  bool captureCalled = false;
-  bool galleryCalled = false;
+class MockMenuVisionRepository extends Mock implements MenuVisionRepository {}
 
-  @override
-  Future<Uint8List?> captureImage() async {
-    captureCalled = true;
-    if (shouldThrow) throw Exception('模擬相機錯誤');
-    if (captureResult == null) return null;
-    return sampleBytes;
-  }
-
-  @override
-  Future<Uint8List?> pickImageFromGallery() async {
-    galleryCalled = true;
-    if (shouldThrow) throw Exception('模擬相簿錯誤');
-    if (galleryResult == null) return null;
-    return sampleBytes;
-  }
-
-  @override
-  Future<A2UIComponent?> captureAndAnalyzeMenu() async {
-    captureCalled = true;
-    if (shouldThrow) throw Exception('模擬網路錯誤');
-    return captureResult;
-  }
-
-  @override
-  Future<A2UIComponent?> pickFromGalleryAndAnalyzeMenu() async {
-    galleryCalled = true;
-    if (shouldThrow) throw Exception('模擬相簿錯誤');
-    return galleryResult;
-  }
-
-  @override
-  Future<A2UIComponent> analyzeMenuImageBytes(Uint8List imageBytes) async {
-    if (shouldThrow || analyzeShouldThrow) {
-      throw const FormatException('Empty menu analysis response');
-    }
-    return analyzeResult ??
-        captureResult ??
-        galleryResult ??
-        const FallbackMarkdownComponent(text: '未設定結果');
-  }
+class _Data {
+  static final Uint8List sampleBytes = Uint8List.fromList([1, 2, 3, 4]);
 }
 
 void main() {
+  setUpAll(() => registerFallbackValue(Uint8List(0)));
+
   final sampleCatalog = DishCatalogComponent(
     restaurantTitle: '居酒屋 一休',
     dishes: [
@@ -87,7 +44,12 @@ void main() {
     blocTest<MenuVisionBloc, MenuVisionState>(
       'emits [Loading, Success] when camera capture succeeds',
       build: () {
-        mockRepo.captureResult = sampleCatalog;
+        when(
+          () => mockRepo.captureImage(),
+        ).thenAnswer((_) async => _Data.sampleBytes);
+        when(
+          () => mockRepo.analyzeMenuImageBytes(any()),
+        ).thenAnswer((_) async => sampleCatalog);
         return MenuVisionBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const CaptureAndAnalyzeMenu()),
@@ -95,13 +57,13 @@ void main() {
         const MenuVisionLoading(),
         MenuVisionSuccess(catalog: DishCatalogModel.fromEntity(sampleCatalog)),
       ],
-      verify: (_) => expect(mockRepo.captureCalled, isTrue),
+      verify: (_) => verify(() => mockRepo.captureImage()).called(1),
     );
 
     blocTest<MenuVisionBloc, MenuVisionState>(
       'emits [Loading, Cancelled] when user cancels camera',
       build: () {
-        mockRepo.captureResult = null;
+        when(() => mockRepo.captureImage()).thenAnswer((_) async => null);
         return MenuVisionBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const CaptureAndAnalyzeMenu()),
@@ -111,23 +73,25 @@ void main() {
     blocTest<MenuVisionBloc, MenuVisionState>(
       'emits [Loading, Failure] when camera capture returns FallbackMarkdown',
       build: () {
-        mockRepo.captureResult = const FallbackMarkdownComponent(text: '辨識失敗');
+        when(
+          () => mockRepo.captureImage(),
+        ).thenAnswer((_) async => _Data.sampleBytes);
+        when(() => mockRepo.analyzeMenuImageBytes(any())).thenAnswer(
+          (_) async => const FallbackMarkdownComponent(text: '辨識失敗'),
+        );
         return MenuVisionBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const CaptureAndAnalyzeMenu()),
       expect: () => [
         const MenuVisionLoading(),
-        MenuVisionFailure(
-          message: '辨識失敗',
-          failedImageBytes: mockRepo.sampleBytes,
-        ),
+        MenuVisionFailure(message: '辨識失敗', failedImageBytes: _Data.sampleBytes),
       ],
     );
 
     blocTest<MenuVisionBloc, MenuVisionState>(
       'emits [Loading, Failure] when repository throws Exception',
       build: () {
-        mockRepo.shouldThrow = true;
+        when(() => mockRepo.captureImage()).thenThrow(Exception('模擬相機錯誤'));
         return MenuVisionBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const CaptureAndAnalyzeMenu()),
@@ -137,9 +101,12 @@ void main() {
     blocTest<MenuVisionBloc, MenuVisionState>(
       'keeps failedImageBytes for retry when analysis throws after capture',
       build: () {
-        mockRepo
-          ..captureResult = sampleCatalog
-          ..analyzeShouldThrow = true;
+        when(
+          () => mockRepo.captureImage(),
+        ).thenAnswer((_) async => _Data.sampleBytes);
+        when(
+          () => mockRepo.analyzeMenuImageBytes(any()),
+        ).thenThrow(const FormatException('Empty menu analysis response'));
         return MenuVisionBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const CaptureAndAnalyzeMenu()),
@@ -148,7 +115,7 @@ void main() {
         isA<MenuVisionFailure>().having(
           (s) => s.failedImageBytes,
           'failedImageBytes',
-          mockRepo.sampleBytes,
+          _Data.sampleBytes,
         ),
       ],
     );
@@ -156,7 +123,12 @@ void main() {
     blocTest<MenuVisionBloc, MenuVisionState>(
       'emits [Loading, Success] when gallery pick succeeds',
       build: () {
-        mockRepo.galleryResult = sampleCatalog;
+        when(
+          () => mockRepo.pickImageFromGallery(),
+        ).thenAnswer((_) async => _Data.sampleBytes);
+        when(
+          () => mockRepo.analyzeMenuImageBytes(any()),
+        ).thenAnswer((_) async => sampleCatalog);
         return MenuVisionBloc(repository: mockRepo);
       },
       act: (bloc) =>
@@ -165,13 +137,15 @@ void main() {
         const MenuVisionLoading(),
         MenuVisionSuccess(catalog: DishCatalogModel.fromEntity(sampleCatalog)),
       ],
-      verify: (_) => expect(mockRepo.galleryCalled, isTrue),
+      verify: (_) => verify(() => mockRepo.pickImageFromGallery()).called(1),
     );
 
     blocTest<MenuVisionBloc, MenuVisionState>(
       'emits [Loading, Success] on RetryMenuAnalysis',
       build: () {
-        mockRepo.analyzeResult = sampleCatalog;
+        when(
+          () => mockRepo.analyzeMenuImageBytes(any()),
+        ).thenAnswer((_) async => sampleCatalog);
         return MenuVisionBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(

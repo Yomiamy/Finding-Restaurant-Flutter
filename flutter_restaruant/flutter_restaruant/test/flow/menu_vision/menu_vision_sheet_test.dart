@@ -1,57 +1,17 @@
-import 'package:flutter_restaruant/generated/l10n.dart';
-import 'package:flutter/material.dart';
 import 'dart:typed_data';
 
+import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/domain/domain_barrel.dart';
 import 'package:flutter_restaruant/flow/menu_vision/menu_vision_barrel.dart';
+import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
-class MockMenuVisionRepository implements MenuVisionRepository {
-  A2UIComponent? captureResult;
-  A2UIComponent? galleryResult;
-  A2UIComponent? analyzeResult;
-  bool shouldThrow = false;
-
-  @override
-  Future<Uint8List?> captureImage() {
-    if (shouldThrow) return Future.error(Exception('模擬錯誤'));
-    if (captureResult == null) return Future.value(null);
-    return Future.value(Uint8List.fromList([1, 2, 3]));
-  }
-
-  @override
-  Future<Uint8List?> pickImageFromGallery() {
-    if (shouldThrow) return Future.error(Exception('模擬錯誤'));
-    if (galleryResult == null) return Future.value(null);
-    return Future.value(Uint8List.fromList([1, 2, 3]));
-  }
-
-  @override
-  Future<A2UIComponent?> captureAndAnalyzeMenu() {
-    if (shouldThrow) return Future.error(Exception('模擬錯誤'));
-    return Future.value(captureResult);
-  }
-
-  @override
-  Future<A2UIComponent?> pickFromGalleryAndAnalyzeMenu() {
-    if (shouldThrow) return Future.error(Exception('模擬錯誤'));
-    return Future.value(galleryResult);
-  }
-
-  @override
-  Future<A2UIComponent> analyzeMenuImageBytes(Uint8List imageBytes) {
-    if (shouldThrow) return Future.error(Exception('模擬錯誤'));
-    return Future.value(
-      analyzeResult ??
-          captureResult ??
-          galleryResult ??
-          const FallbackMarkdownComponent(text: '無結果'),
-    );
-  }
-}
+class MockMenuVisionRepository extends Mock implements MenuVisionRepository {}
 
 void main() {
   setUpAll(() async {
+    registerFallbackValue(Uint8List(0));
     await S.load(const Locale('zh', 'TW'));
   });
 
@@ -198,7 +158,12 @@ void main() {
     testWidgets(
       'tapping take photo triggers capture and transitions to success',
       (tester) async {
-        mockRepo.captureResult = sampleCatalog;
+        when(
+          () => mockRepo.captureImage(),
+        ).thenAnswer((_) async => Uint8List.fromList([1, 2, 3]));
+        when(
+          () => mockRepo.analyzeMenuImageBytes(any()),
+        ).thenAnswer((_) async => sampleCatalog);
 
         await tester.pumpWidget(
           MaterialApp(
@@ -222,7 +187,7 @@ void main() {
     );
 
     testWidgets('displays error and retry when capture fails', (tester) async {
-      mockRepo.shouldThrow = true;
+      when(() => mockRepo.captureImage()).thenThrow(Exception('模擬錯誤'));
 
       await tester.pumpWidget(
         MaterialApp(
@@ -246,7 +211,7 @@ void main() {
     testWidgets('displays cancelled view when user cancels camera', (
       tester,
     ) async {
-      mockRepo.captureResult = null;
+      when(() => mockRepo.captureImage()).thenAnswer((_) async => null);
 
       await tester.pumpWidget(
         MaterialApp(

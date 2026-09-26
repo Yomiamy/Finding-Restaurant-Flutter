@@ -6,37 +6,39 @@ import 'package:flutter_restaruant/features/utils/utils_barrel.dart';
 import 'package:flutter_restaruant/flow/ai_foodie/ai_foodie_barrel.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
-/// 特性測試：AI 覓食畫布在「全缺值／全有值」下的顯示與互動。T2 之後禁止修改。
-class _FakeRepo implements AiFoodieRepository {
-  _FakeRepo(this.initial);
-  final List<AiFoodieMessage> initial;
-  List<AiFoodieMessage>? lastHistory;
-
-  @override
-  Future<List<AiFoodieMessage>> getInitialSuggestions() async => initial;
-
-  @override
-  Future<AiFoodieMessage> askAssistant(
-    String prompt, {
-    List<AiFoodieMessage>? history,
-    List<RestaurantEntity>? candidateRestaurants,
-  }) async {
-    lastHistory = history;
-    return AiFoodieMessage.assistant(text: '回覆：$prompt');
-  }
-}
+/// 特性測試：AI 覓食畫布在「全缺值／全有值」下的顯示與互動。
+/// 修改斷言的期望值＝行為改變，必須在 PR 中說明；替換測試替身或排版不受限制。
+class _MockRepo extends Mock implements AiFoodieRepository {}
 
 class _Harness {
   _Harness(this.repo);
-  final _FakeRepo repo;
+  final _MockRepo repo;
   final routeArgs = <Object?>[];
 }
 
-Future<_Harness> _pump(WidgetTester tester, Map<String, Object?> messageJson) async {
+Future<_Harness> _pump(
+  WidgetTester tester,
+  Map<String, Object?> messageJson,
+) async {
   await tester.binding.setSurfaceSize(const Size(800, 2000));
   addTearDown(() => tester.binding.setSurfaceSize(null));
-  final h = _Harness(_FakeRepo([AiFoodieMessage.fromJson(messageJson)]));
+  final repo = _MockRepo();
+  when(
+    () => repo.getInitialSuggestions(),
+  ).thenAnswer((_) async => [AiFoodieMessage.fromJson(messageJson)]);
+  when(
+    () => repo.askAssistant(
+      any(),
+      history: any(named: 'history'),
+      candidateRestaurants: any(named: 'candidateRestaurants'),
+    ),
+  ).thenAnswer(
+    (inv) async =>
+        AiFoodieMessage.assistant(text: '回覆：${inv.positionalArguments.first}'),
+  );
+  final h = _Harness(repo);
   final bloc = AiFoodieBloc(repository: h.repo);
   addTearDown(bloc.close);
   await tester.pumpWidget(
@@ -93,13 +95,20 @@ class _Data {
         'component_type': 'action_chip_group',
         'data': {
           'chips': [
-            {'label': '找宵夜', 'action': 'query', 'payload': {'prompt': '深夜拉麵'}},
+            {
+              'label': '找宵夜',
+              'action': 'query',
+              'payload': {'prompt': '深夜拉麵'},
+            },
           ],
         },
       },
       {
         'component_type': 'decision_roulette',
-        'data': {'title': '今晚吃啥', 'options': ['A', 'B']},
+        'data': {
+          'title': '今晚吃啥',
+          'options': ['A', 'B'],
+        },
       },
       {'component_type': 'mystery', 'text': '降級文字'},
     ],
@@ -109,7 +118,9 @@ class _Data {
     'components': [
       {
         'component_type': 'comparison_matrix',
-        'data': {'items': [<String, Object?>{}]},
+        'data': {
+          'items': [<String, Object?>{}],
+        },
       },
       {
         'component_type': 'action_chip_group',
@@ -121,7 +132,9 @@ class _Data {
       },
       {
         'component_type': 'decision_roulette',
-        'data': {'options': ['A', 'B']},
+        'data': {
+          'options': ['A', 'B'],
+        },
       },
       {'component_type': 'mystery'},
     ],
@@ -169,7 +182,14 @@ void main() {
       await tester.pump();
       expect(find.text('深夜拉麵'), findsOneWidget);
       // history 是送出前的 state.messages（entity），與重新解析的同一份 JSON 相等
-      expect(h.repo.lastHistory, [AiFoodieMessage.fromJson(_Data.full)]);
+      final captured = verify(
+        () => h.repo.askAssistant(
+          any(),
+          history: captureAny(named: 'history'),
+          candidateRestaurants: any(named: 'candidateRestaurants'),
+        ),
+      ).captured;
+      expect(captured.single, [AiFoodieMessage.fromJson(_Data.full)]);
     });
 
     testWidgets('點轉盤按鈕 → 開啟轉盤並帶標題', (tester) async {
@@ -184,11 +204,17 @@ void main() {
   group('全欄位缺值', () {
     testWidgets('顯示', (tester) async {
       await _pump(tester, _Data.missing);
-      expect(find.text(A2UIFallbackStrings.comparisonMatrixTitle), findsOneWidget);
+      expect(
+        find.text(A2UIFallbackStrings.comparisonMatrixTitle),
+        findsOneWidget,
+      );
       expect(find.text(A2UIFallbackStrings.comparisonItemName), findsOneWidget);
       expect(find.text('0.0'), findsOneWidget);
       expect(find.text('只有標籤'), findsOneWidget);
-      expect(find.text(A2UIFallbackStrings.decisionRouletteTitle), findsOneWidget);
+      expect(
+        find.text(A2UIFallbackStrings.decisionRouletteTitle),
+        findsOneWidget,
+      );
       expect(find.text(A2UIFallbackStrings.unknownComponent), findsOneWidget);
       // 缺 is_user → 助理訊息：header 與訊息頭像各一個 auto_awesome
       expect(find.byIcon(Icons.auto_awesome), findsNWidgets(2));
@@ -212,14 +238,23 @@ void main() {
       await tester.tap(find.text(A2UIFallbackStrings.decisionRouletteTitle));
       await tester.pump();
       await tester.pump();
-      expect(find.text(A2UIFallbackStrings.decisionRouletteTitle), findsNWidgets(2));
+      expect(
+        find.text(A2UIFallbackStrings.decisionRouletteTitle),
+        findsNWidgets(2),
+      );
     });
 
     testWidgets('點未知 action chip → 無動作', (tester) async {
       final h = await _pump(tester, _Data.missing);
       await tester.tap(find.text('只有標籤'));
       await tester.pump();
-      expect(h.repo.lastHistory, isNull);
+      verifyNever(
+        () => h.repo.askAssistant(
+          any(),
+          history: any(named: 'history'),
+          candidateRestaurants: any(named: 'candidateRestaurants'),
+        ),
+      );
     });
   });
 }

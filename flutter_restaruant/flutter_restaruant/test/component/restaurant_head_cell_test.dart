@@ -7,33 +7,26 @@ import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
 import 'package:flutter_restaruant/flow/restaurant/bloc/bloc_barrel.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
-class _FakeRestaurantDetailRepository implements RestaurantDetailRepository {
-  RestaurantEntity? lastToggled;
-
-  @override
-  Future<RestaurantDetailEntity> fetchYelpRestaurantDetailInfo(
-    String id,
-  ) async => const RestaurantDetailEntity(name: 'Test Detail');
-
-  @override
-  Future<ReviewEntity> fetchYelpRestaurantReviewInfo(String id) async =>
-      const ReviewEntity(reviews: [], total: 0);
-
-  @override
-  Future<RestaurantEntity> toggleFavor(RestaurantEntity summaryInfo) async {
-    lastToggled = summaryInfo;
-    return summaryInfo.copyWith(favor: !summaryInfo.favor);
-  }
-}
+class _MockRestaurantDetailRepository extends Mock
+    implements RestaurantDetailRepository {}
 
 void main() {
+  setUpAll(
+    () => registerFallbackValue(const RestaurantEntity(id: '', name: '')),
+  );
+
   group('RestaurantHeadCell Widget Tests', () {
-    late _FakeRestaurantDetailRepository fakeRepo;
+    late _MockRestaurantDetailRepository fakeRepo;
     late RestaurantDetailBloc bloc;
 
     setUp(() {
-      fakeRepo = _FakeRestaurantDetailRepository();
+      fakeRepo = _MockRestaurantDetailRepository();
+      when(() => fakeRepo.toggleFavor(any())).thenAnswer((inv) async {
+        final entity = inv.positionalArguments.first as RestaurantEntity;
+        return entity.copyWith(favor: !entity.favor);
+      });
       bloc = RestaurantDetailBloc(repository: fakeRepo);
     });
 
@@ -95,7 +88,10 @@ void main() {
       await tester.tap(find.byType(InkWell));
       await tester.pump();
 
-      expect(fakeRepo.lastToggled?.id, 'unfavor_1');
+      final toggled =
+          verify(() => fakeRepo.toggleFavor(captureAny())).captured.single
+              as RestaurantEntity;
+      expect(toggled.id, 'unfavor_1');
     });
   });
 }

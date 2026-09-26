@@ -1,36 +1,15 @@
-import 'package:flutter_restaruant/domain/repositories/repositories_barrel.dart';
-import 'package:flutter_restaruant/flow/signinup/bloc/bloc_barrel.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
+import 'package:flutter_restaruant/domain/repositories/repositories_barrel.dart';
 import 'package:flutter_restaruant/features/utils/utils_barrel.dart';
+import 'package:flutter_restaruant/flow/signinup/bloc/bloc_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
-class MockSignInRepository implements SignInRepository {
-  AccountTypeModel? lastAccountType;
-  bool? lastIsSignUp;
-  String? lastMail;
-  String? lastPasswd;
-  UserEntity? returnAccountInfo;
-  AuthFailureReason? returnFailureReason;
-
-  @override
-  Future<Tuple2<UserEntity?, AuthFailureReason?>> signInUp({
-    required AccountTypeModel accountType,
-    bool isSignUp = false,
-    String mail = '',
-    String passwd = '',
-  }) async {
-    lastAccountType = accountType;
-    lastIsSignUp = isSignUp;
-    lastMail = mail;
-    lastPasswd = passwd;
-    return Tuple2(returnAccountInfo, returnFailureReason);
-  }
-
-  @override
-  Future<void> updateUserInfo(UserEntity? userEntity) async {}
-}
+class MockSignInRepository extends Mock implements SignInRepository {}
 
 void main() {
+  setUpAll(() => registerFallbackValue(AccountTypeModel.none));
+
   group('SignInBloc Tests', () {
     late MockSignInRepository mockRepo;
     late SignInBloc bloc;
@@ -46,7 +25,14 @@ void main() {
 
     test('GoogleSignInEvent passes correct parameters to repository', () async {
       const account = UserEntity(type: AccountTypeModel.google, uid: '123');
-      mockRepo.returnAccountInfo = account;
+      when(
+        () => mockRepo.signInUp(
+          accountType: any(named: 'accountType'),
+          isSignUp: any(named: 'isSignUp'),
+          mail: any(named: 'mail'),
+          passwd: any(named: 'passwd'),
+        ),
+      ).thenAnswer((_) async => const Tuple2(account, null));
 
       bloc.add(GoogleSignInEvent());
 
@@ -58,13 +44,26 @@ void main() {
         ]),
       );
 
-      expect(mockRepo.lastAccountType, AccountTypeModel.google);
-      expect(mockRepo.lastIsSignUp, false);
+      verify(
+        () => mockRepo.signInUp(
+          accountType: AccountTypeModel.google,
+          isSignUp: false,
+          mail: '',
+          passwd: '',
+        ),
+      ).called(1);
     });
 
     test('MailSignUpEvent passes correct parameters to repository', () async {
       const account = UserEntity(type: AccountTypeModel.mail, uid: '456');
-      mockRepo.returnAccountInfo = account;
+      when(
+        () => mockRepo.signInUp(
+          accountType: any(named: 'accountType'),
+          isSignUp: any(named: 'isSignUp'),
+          mail: any(named: 'mail'),
+          passwd: any(named: 'passwd'),
+        ),
+      ).thenAnswer((_) async => const Tuple2(account, null));
 
       bloc.add(const MailSignUpEvent(mail: 'test@mail.com', passwd: 'secret'));
 
@@ -76,15 +75,25 @@ void main() {
         ]),
       );
 
-      expect(mockRepo.lastAccountType, AccountTypeModel.mail);
-      expect(mockRepo.lastIsSignUp, true);
-      expect(mockRepo.lastMail, 'test@mail.com');
-      expect(mockRepo.lastPasswd, 'secret');
+      verify(
+        () => mockRepo.signInUp(
+          accountType: AccountTypeModel.mail,
+          isSignUp: true,
+          mail: 'test@mail.com',
+          passwd: 'secret',
+        ),
+      ).called(1);
     });
 
     test('AutoSignInEvent failure emits SignInInitial, not Failure', () async {
-      mockRepo.returnAccountInfo = null;
-      mockRepo.returnFailureReason = null;
+      when(
+        () => mockRepo.signInUp(
+          accountType: any(named: 'accountType'),
+          isSignUp: any(named: 'isSignUp'),
+          mail: any(named: 'mail'),
+          passwd: any(named: 'passwd'),
+        ),
+      ).thenAnswer((_) async => const Tuple2(null, null));
 
       bloc.add(AutoSignInEvent());
 
@@ -95,8 +104,16 @@ void main() {
     });
 
     test('SignIn failure emits Failure state', () async {
-      mockRepo.returnAccountInfo = null;
-      mockRepo.returnFailureReason = AuthFailureReason.signInFailed;
+      when(
+        () => mockRepo.signInUp(
+          accountType: any(named: 'accountType'),
+          isSignUp: any(named: 'isSignUp'),
+          mail: any(named: 'mail'),
+          passwd: any(named: 'passwd'),
+        ),
+      ).thenAnswer(
+        (_) async => const Tuple2(null, AuthFailureReason.signInFailed),
+      );
 
       bloc.add(GoogleSignInEvent());
 
@@ -109,19 +126,32 @@ void main() {
       );
     });
 
-    test('MailSignIn wrong password emits Failure with wrongPassword reason', () async {
-      mockRepo.returnAccountInfo = null;
-      mockRepo.returnFailureReason = AuthFailureReason.wrongPassword;
+    test(
+      'MailSignIn wrong password emits Failure with wrongPassword reason',
+      () async {
+        when(
+          () => mockRepo.signInUp(
+            accountType: any(named: 'accountType'),
+            isSignUp: any(named: 'isSignUp'),
+            mail: any(named: 'mail'),
+            passwd: any(named: 'passwd'),
+          ),
+        ).thenAnswer(
+          (_) async => const Tuple2(null, AuthFailureReason.wrongPassword),
+        );
 
-      bloc.add(const MailSignInEvent(mail: 'user@example.com', passwd: 'bad'));
+        bloc.add(
+          const MailSignInEvent(mail: 'user@example.com', passwd: 'bad'),
+        );
 
-      await expectLater(
-        bloc.stream,
-        emitsInOrder([
-          const InProgress(),
-          const Failure(reason: AuthFailureReason.wrongPassword),
-        ]),
-      );
-    });
+        await expectLater(
+          bloc.stream,
+          emitsInOrder([
+            const InProgress(),
+            const Failure(reason: AuthFailureReason.wrongPassword),
+          ]),
+        );
+      },
+    );
   });
 }

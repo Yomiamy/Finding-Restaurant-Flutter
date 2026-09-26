@@ -1,75 +1,54 @@
-import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_restaruant/domain/repositories/ai_foodie_repository.dart';
 import 'package:flutter_restaruant/flow/ai_foodie/bloc/bloc_barrel.dart';
 import 'package:flutter_restaruant/flow/ai_foodie/model/ai_foodie_model.dart';
+import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
 
-class MockAiFoodieRepository implements AiFoodieRepository {
-  List<AiFoodieMessage>? initialSuggestionsResult;
-  AiFoodieMessage? askAssistantResult;
-  bool shouldThrow = false;
-  List<AiFoodieMessage>? lastHistory;
+class MockAiFoodieRepository extends Mock implements AiFoodieRepository {}
 
-  @override
-  Future<List<AiFoodieMessage>> getInitialSuggestions() {
-    if (shouldThrow) return Future.error(Exception('模擬建議取得失敗'));
-    return Future.value(
-      initialSuggestionsResult ??
-          [
-            AiFoodieMessage.assistant(
-              text: '歡迎使用 AI 覓食助理',
-              components: const [
-                ActionChipGroupComponent(
-                  chips: [
-                    ActionChipItem(
-                      label: '居酒屋',
-                      action: 'query',
-                      payload: {'prompt': '我想吃居酒屋'},
-                    ),
-                  ],
-                ),
-              ],
+class _Data {
+  static final List<AiFoodieMessage> welcome = [
+    AiFoodieMessage.assistant(
+      text: '歡迎使用 AI 覓食助理',
+      components: const [
+        ActionChipGroupComponent(
+          chips: [
+            ActionChipItem(
+              label: '居酒屋',
+              action: 'query',
+              payload: {'prompt': '我想吃居酒屋'},
             ),
           ],
-    );
-  }
+        ),
+      ],
+    ),
+  ];
 
-  @override
-  Future<AiFoodieMessage> askAssistant(
-    String prompt, {
-    List<AiFoodieMessage>? history,
-    List<RestaurantEntity>? candidateRestaurants,
-  }) {
-    lastHistory = history;
-    if (shouldThrow) return Future.error(Exception('模擬對話連線失敗'));
-    return Future.value(
-      askAssistantResult ??
-          AiFoodieMessage.assistant(
-            text: '為您找到好吃的餐廳：$prompt',
-            components: const [
-              ComparisonMatrixComponent(
-                title: '對比清單',
-                items: [
-                  RestaurantComparisonItem(
-                    id: 'r1',
-                    name: '測試餐廳 1',
-                    rating: 4.8,
-                    highlights: ['好吃'],
-                  ),
-                  RestaurantComparisonItem(
-                    id: 'r2',
-                    name: '測試餐廳 2',
-                    rating: 4.6,
-                    highlights: ['便宜'],
-                  ),
-                ],
-              ),
-            ],
+  static AiFoodieMessage reply(String prompt) => AiFoodieMessage.assistant(
+    text: '為您找到好吃的餐廳：$prompt',
+    components: const [
+      ComparisonMatrixComponent(
+        title: '對比清單',
+        items: [
+          RestaurantComparisonItem(
+            id: 'r1',
+            name: '測試餐廳 1',
+            rating: 4.8,
+            highlights: ['好吃'],
           ),
-    );
-  }
+          RestaurantComparisonItem(
+            id: 'r2',
+            name: '測試餐廳 2',
+            rating: 4.6,
+            highlights: ['便宜'],
+          ),
+        ],
+      ),
+    ],
+  );
 }
 
 void main() {
@@ -80,6 +59,18 @@ void main() {
     setUp(() async {
       await S.load(const Locale('zh', 'TW'));
       repository = MockAiFoodieRepository();
+      when(
+        () => repository.getInitialSuggestions(),
+      ).thenAnswer((_) async => _Data.welcome);
+      when(
+        () => repository.askAssistant(
+          any(),
+          history: any(named: 'history'),
+          candidateRestaurants: any(named: 'candidateRestaurants'),
+        ),
+      ).thenAnswer(
+        (inv) async => _Data.reply(inv.positionalArguments.first as String),
+      );
       bloc = AiFoodieBloc(repository: repository);
     });
 
@@ -122,7 +113,9 @@ void main() {
     });
 
     test('LoadInitialSuggestions 錯誤時更新 errorMessage', () async {
-      repository.shouldThrow = true;
+      when(
+        () => repository.getInitialSuggestions(),
+      ).thenAnswer((_) async => throw Exception('模擬建議取得失敗'));
       bloc.add(const LoadInitialSuggestions());
       await pumpEventQueue();
 
@@ -131,7 +124,13 @@ void main() {
     });
 
     test('SendUserPrompt 錯誤時更新 errorMessage', () async {
-      repository.shouldThrow = true;
+      when(
+        () => repository.askAssistant(
+          any(),
+          history: any(named: 'history'),
+          candidateRestaurants: any(named: 'candidateRestaurants'),
+        ),
+      ).thenAnswer((_) async => throw Exception('模擬對話連線失敗'));
       bloc.add(const SendUserPrompt('4人聚餐'));
       await pumpEventQueue();
 
@@ -215,7 +214,14 @@ void main() {
       bloc.add(const SendUserPrompt('第二句'));
       await pumpEventQueue();
 
-      expect(repository.lastHistory, priorMessages);
+      final captured = verify(
+        () => repository.askAssistant(
+          '第二句',
+          history: captureAny(named: 'history'),
+          candidateRestaurants: any(named: 'candidateRestaurants'),
+        ),
+      ).captured;
+      expect(captured.single, priorMessages);
     });
   });
 }
