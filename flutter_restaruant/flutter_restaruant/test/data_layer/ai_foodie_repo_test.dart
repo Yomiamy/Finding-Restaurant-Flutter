@@ -1,9 +1,15 @@
 import 'dart:convert';
 
 import 'package:firebase_ai/firebase_ai.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_restaruant/data_layer/data_layer_barrel.dart';
 import 'package:flutter_restaruant/domain/domain_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class _MockFirebaseAI extends Mock implements FirebaseAI {}
+
+class _MockRemoteConfig extends Mock implements FirebaseRemoteConfig {}
 
 void main() {
   group('AiFoodieSchema Tests', () {
@@ -454,6 +460,67 @@ void main() {
       final chipGroup = comp as ActionChipGroupComponent;
       expect(chipGroup.chips, hasLength(1));
       expect(chipGroup.chips?.first.label, '有效 query');
+    });
+  });
+
+  group('AiFoodieRepo 讀取 AiModelConfig', () {
+    late _MockFirebaseAI ai;
+    late _MockRemoteConfig rc;
+    late AiFoodieRepo repo;
+
+    setUpAll(() {
+      registerFallbackValue(Content.system(''));
+      registerFallbackValue(GenerationConfig());
+    });
+
+    setUp(() {
+      ai = _MockFirebaseAI();
+      rc = _MockRemoteConfig();
+      when(() => rc.getString(any())).thenReturn('');
+      // GenerativeModel 是 final class 無法 mock：在建立 model 時中止，只檢查傳入參數。
+      when(
+        () => ai.generativeModel(
+          model: any(named: 'model'),
+          systemInstruction: any(named: 'systemInstruction'),
+          generationConfig: any(named: 'generationConfig'),
+        ),
+      ).thenThrow(Exception('stop before network'));
+      repo = AiFoodieRepo(
+        firebaseAI: ai,
+        modelConfig: AiModelConfig(remoteConfig: rc),
+      );
+    });
+
+    List<dynamic> captureModelArgs() => verify(
+      () => ai.generativeModel(
+        model: captureAny(named: 'model'),
+        systemInstruction: captureAny(named: 'systemInstruction'),
+        generationConfig: captureAny(named: 'generationConfig'),
+      ),
+    ).captured;
+
+    test('沒有遠端值時送出與現況一致的 model／instruction／temperature', () async {
+      await repo.askAssistant('任意');
+
+      final args = captureModelArgs();
+      expect(args[0], 'gemini-3.5-flash-lite');
+      expect(
+        ((args[1] as Content).parts.single as TextPart).text,
+        AiModelConfig.defaultAiFoodieSystemInstruction,
+      );
+      expect((args[2] as GenerationConfig).temperature, 0.2);
+    });
+
+    test('同一個 repo 實例，遠端值改變後下一次請求就使用新值', () async {
+      when(() => rc.getString('ai_foodie_model')).thenReturn('model-a');
+      await repo.askAssistant('第一次');
+      when(() => rc.getString('ai_foodie_model')).thenReturn('model-b');
+      when(() => rc.getString('ai_foodie_temperature')).thenReturn('0.9');
+      await repo.askAssistant('第二次');
+
+      final args = captureModelArgs();
+      expect([args[0], args[3]], ['model-a', 'model-b']);
+      expect((args[5] as GenerationConfig).temperature, 0.9);
     });
   });
 }
