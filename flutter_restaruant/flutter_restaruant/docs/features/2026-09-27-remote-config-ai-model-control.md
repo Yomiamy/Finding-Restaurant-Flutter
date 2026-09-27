@@ -89,7 +89,7 @@ AI 覓食助理與拍菜單分析的 Gemini 參數全部寫死在程式碼裡：
 
 - **金鑰不在本功能範圍**：本功能不讀取 Yelp Bearer token、Google API key。Console 已預建 `yelp_api_auth_token`、`static_map_api_key`，改由 Remote Config 下發屬另案，目的是讓金鑰輪替不必發版。注意 Remote Config 的值會完整下發到 client、可被讀取，不是機密儲存；金鑰仍須撤銷輪替，長期仍須走 Server-side Broker。
 - **不做 A/B testing／Personalization／條件式參數的程式支援**：Console 端要怎麼設條件是維運者的事，client 只讀 activate 後的值。
-- **不做 realtime listener（`onConfigUpdated`）**：本功能的主要情境是調參與模型汰換，下次啟動或 fetch 間隔內生效已足夠；realtime 會多一條常駐連線與「值在一次 AI 請求中途變動」的語意問題。真的需要秒級止血時再評估。
+- **不做 realtime listener（`onConfigUpdated`）**：本功能的主要情境是調參與模型汰換，下次啟動時觸發 fetch、間隔已到期且成功取得新值後生效已足夠；realtime 會多一條常駐連線與「值在一次 AI 請求中途變動」的語意問題。真的需要秒級止血時再評估。
 - **不搬其他常數**：user prompt 模板（`ai_foodie_repo.dart:169` 的指示句、`menu_vision_repo.dart:141` 的提問句）、`responseSchema`、`responseMimeType`、圖片尺寸與品質、候選餐廳上限等都不動。§7.5-2 提到的「Prompt 模板」留待有實際調整需求時再加。
 - **不設計介面 + 多實作、不做通用 config 框架**：只有一個實作，就是 Firebase Remote Config。
 - 不改 `firebase_core` 等既有 Firebase 套件版本；不改 App Check 設定。
