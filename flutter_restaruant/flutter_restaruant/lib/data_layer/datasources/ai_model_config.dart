@@ -168,9 +168,9 @@ components 陣列內的每個物件必須包含 component_type 與 data：
   }
 
   double _temperature(String key, double fallback) {
-    final raw = _read(key).trim();
+    final raw = _read(key);
     if (raw.isEmpty) return fallback;
-    final value = double.tryParse(raw);
+    final value = double.tryParse(raw.trim());
     // NaN 的任何比較都是 false，會自然落到預設值。
     if (value != null && value >= _minTemperature && value <= _maxTemperature) {
       return value;

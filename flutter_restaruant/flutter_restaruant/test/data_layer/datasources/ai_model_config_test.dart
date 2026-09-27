@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_restaruant/data_layer/datasources/ai_model_config.dart';
@@ -88,6 +90,27 @@ void main() {
       expect(
         config.menuVisionSystemInstruction,
         AiModelConfig.defaultMenuVisionSystemInstruction,
+      );
+    });
+
+    test('temperature 全空白記 warning，空字串不記', () {
+      final logs = <String>[];
+      double read(String raw) {
+        stub('ai_foodie_temperature', raw);
+        return runZoned(
+          () => config.aiFoodieTemperature,
+          zoneSpecification: ZoneSpecification(
+            print: (_, _, _, line) => logs.add(line),
+          ),
+        );
+      }
+
+      expect(read(''), 0.2);
+      expect(logs.where((l) => l.contains('ai_foodie_temperature')), isEmpty);
+      expect(read('  '), 0.2);
+      expect(
+        logs.where((l) => l.contains('ai_foodie_temperature')),
+        isNotEmpty,
       );
     });
 

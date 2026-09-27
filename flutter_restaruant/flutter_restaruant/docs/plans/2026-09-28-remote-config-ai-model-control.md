@@ -211,7 +211,7 @@ class AiModelConfig {
 }
 ```
 
-注意：`_temperature` 的全空白字串在 `trim()` 後變成 `''`，會安靜地回到預設值，**不記 log**。這和 §1.2 表格第 3 列（全空白要記 `Logger().w`）有一點出入。temperature 在 Console 是 Number 型別，實務上填不出全空白，因此不為了這個情況多寫一個分支；T2 的測試也只斷言回傳值，不斷言 log。
+注意：`_temperature` 先用原始字串判斷是否為空，再 `trim()` 後解析。空字串安靜回到預設值；全空白解析失敗，走到既有的 `Logger().w`，與 §1.2 表格第 3 列一致（PR #135 review 後修正，原實作先 `trim()` 導致全空白不記 log）。
 
 ---
 
