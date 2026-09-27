@@ -12,6 +12,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:logger/logger.dart';
 
 import 'component/ad/ad_barrel.dart';
+import 'data_layer/datasources/datasources_barrel.dart';
 import 'di/di_barrel.dart';
 import 'features/foundation/constants/constants_barrel.dart';
 import 'features/foundation/style/style_barrel.dart';
@@ -52,6 +53,9 @@ void main() async {
         providerAndroid: const AndroidPlayIntegrityProvider(),
       );
     }
+
+    // 不阻塞 runApp：失敗在 fetchAndActivate 內記錄，AI 參數沿用預設值。
+    unawaited(AiModelConfig().fetchAndActivate());
 
     await FcmManager().init();
   } catch (e, st) {
