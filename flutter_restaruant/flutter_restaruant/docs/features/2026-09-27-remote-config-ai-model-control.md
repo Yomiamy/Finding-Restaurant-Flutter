@@ -105,7 +105,7 @@ AI 覓食助理與拍菜單分析的 Gemini 參數全部寫死在程式碼裡：
 5. **型別化 getter**：呼叫端（兩個 repo）只透過具名 getter 取值（如 `aiFoodieModel`、`aiFoodieTemperature`），`lib/` 中 Remote Config 字串 key 只出現在存取點內。
 6. **不得快取 model**：`GenerativeModel` 維持每次呼叫時建立（或等效地每次呼叫時讀取設定），不因本功能改為建構時快取。
 7. **非法遠端值回退到預設值**（並記 `Logger().w`，訊息英文）：
-   - 模型名或 system instruction 為空字串或全空白 → 預設值。
+   - 模型名或 system instruction 為空字串或全空白 → 預設值。全空白記 `Logger().w`；空字串**不記**，因為 `getString` 對「key 不存在」也回傳 `''`，那是 Console 尚未建立參數時的正常狀態，每次 AI 請求都記 warning 只會製造噪音（實作計畫 §9 第 4 點，已確認）。
    - temperature 無法解析為數字、或超出 `[0.0, 2.0]` → 預設值 `0.2`。注意 `getDouble` 對非數字字串會回傳 `0.0`（落在合法範圍內），因此判斷必須基於原始字串或值來源，不能只看 `getDouble` 的結果。
    - 模型名「格式合法但不存在」不在 client 端驗證：會在 `generateContent` 時丟例外，沿用既有路徑處理（AI 覓食助理降級為本地推薦；拍菜單由 BLoC 顯示失敗）。
 8. **既有測試不破**：`AiFoodieRepo()`、`MenuVisionRepo(...)` 既有建構方式照常可用，**建構 repo 本身不得觸碰 Firebase**（測試環境沒有初始化 Firebase）；`test/data_layer/ai_foodie_repo_test.dart`、`test/data_layer/menu_vision_repo_test.dart` 及全套既有測試零斷言修改、全綠。
