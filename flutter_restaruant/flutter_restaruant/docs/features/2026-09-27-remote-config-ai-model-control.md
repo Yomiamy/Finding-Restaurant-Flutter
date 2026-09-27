@@ -87,7 +87,7 @@ AI 覓食助理與拍菜單分析的 Gemini 參數全部寫死在程式碼裡：
 
 ## 5. 明確不做（Out of scope）
 
-- **機密不進 Remote Config**：Yelp Bearer token、Google API key 等一律不搬。Remote Config 的值會完整下發到 client、可被解包讀取，不是機密儲存；「移除硬編碼 API key」要走 Server-side Broker 與金鑰輪替，不是本功能。
+- **金鑰不在本功能範圍**：本功能不讀取 Yelp Bearer token、Google API key。Console 已預建 `yelp_api_auth_token`、`static_map_api_key`，改由 Remote Config 下發屬另案，目的是讓金鑰輪替不必發版。注意 Remote Config 的值會完整下發到 client、可被讀取，不是機密儲存；金鑰仍須撤銷輪替，長期仍須走 Server-side Broker。
 - **不做 A/B testing／Personalization／條件式參數的程式支援**：Console 端要怎麼設條件是維運者的事，client 只讀 activate 後的值。
 - **不做 realtime listener（`onConfigUpdated`）**：本功能的主要情境是調參與模型汰換，下次啟動或 fetch 間隔內生效已足夠；realtime 會多一條常駐連線與「值在一次 AI 請求中途變動」的語意問題。真的需要秒級止血時再評估。
 - **不搬其他常數**：user prompt 模板（`ai_foodie_repo.dart:169` 的指示句、`menu_vision_repo.dart:141` 的提問句）、`responseSchema`、`responseMimeType`、圖片尺寸與品質、候選餐廳上限等都不動。§7.5-2 提到的「Prompt 模板」留待有實際調整需求時再加。
@@ -133,5 +133,5 @@ AI 覓食助理與拍菜單分析的 Gemini 參數全部寫死在程式碼裡：
 | 4 | **Console 參數需手動建立** | 程式上線後 Console 沒建參數也不會壞（走預設值），但 key 拼錯會**無聲**地一直用預設值 | 上線前在 Firebase Console 建立 §4.1 的 5 個參數（值 = 預設值），key 與程式常數逐字比對；建議把 key 清單寫進 PR 描述作為維運檢查項 |
 | 5 | **Firebase 初始化失敗** | `main.dart` 的 `Future.wait` 失敗時 Firebase 未初始化，此時存取 `FirebaseRemoteConfig.instance` 會丟例外 | 存取點取不到 instance 時一律回傳預設值；fetch 只在 Firebase 初始化成功後觸發 |
 | 6 | **system instruction 長度** | `ai_foodie` 的 instruction 很長，貼進 Console 容易夾帶多餘空白或換行差異 | 不做正規化（逐字使用）；只擋空字串。Console 編輯後建議在 debug build 驗證一次 |
-| 7 | **遠端值可被讀取** | system instruction 會下發到 client | 目前內容本來就編在 App 裡、非機密，無新增風險；但日後不得把機密放進任何 Remote Config 參數（§5） |
+| 7 | **遠端值可被讀取** | system instruction 會下發到 client | 目前內容本來就編在 App 裡、非機密，無新增風險；日後若經 Remote Config 下發金鑰，須視同公開值處理（§5） |
 | 8 | **setDefaults 的必要性** | getter 本身已對空值回退到程式常數，`setDefaults` 在功能上可能是多餘的 | **待決（交計畫階段）**：保留 `setDefaults` 可讓 Console／debug 工具看到一致的預設值；若保留，必須與 getter 回退引用同一組常數（驗收條件 2） |

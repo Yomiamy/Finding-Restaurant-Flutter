@@ -1592,7 +1592,9 @@ class ComparisonMatrixComponent extends A2UIComponent {
   2. 啟動時 `fetchAndActivate` 不阻塞首頁；逾時或失敗一律退回預設值並記 `Logger().e`。
   3. 對外只暴露型別化 getter（如 `aiModelName`、`aiTemperature`），不讓呼叫端散落字串 key。
   4. 第一批 key 只收已確認寫死的 AI 參數（模型名、temperature、system instruction），其餘設定有實際需求再加，不預先搬移。
-- **🔴 邊界**：Remote Config 的值會下發到 client、可被讀取，**不是機密儲存**。不得把 Yelp Bearer token、Google API key 搬進 Remote Config 當作「移除硬編碼 API Key」的解法——那項仍須走 Server-side Broker 與金鑰輪替。
+- **🔴 邊界**：Remote Config 的值會下發到 client、以明碼存在裝置上，**不是機密儲存**。
+  - 已於 Console 預先建立 `yelp_api_auth_token`、`static_map_api_key`，規劃另案讓程式改讀這兩個參數、取代 `constants.dart` 的寫死字串。收益是**金鑰輪替不必發版**，但不降低外洩面：值在裝置上照樣讀得出來。
+  - 因此這只是過渡。兩把金鑰已進 git 歷史，仍須撤銷並輪替；要讓金鑰完全不出現在 client，長期仍須走 Server-side Broker（P0「移除硬編碼 API Key」）。
 
 ---
 
