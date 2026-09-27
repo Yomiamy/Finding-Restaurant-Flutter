@@ -294,10 +294,17 @@ void main() {
       when(() => rc.getString('menu_vision_model')).thenReturn('model-a');
       await expectLater(repo.analyzeMenuImageBytes(bytes), throwsException);
       when(() => rc.getString('menu_vision_model')).thenReturn('model-b');
+      when(
+        () => rc.getString('menu_vision_system_instruction'),
+      ).thenReturn('instruction-b');
       await expectLater(repo.analyzeMenuImageBytes(bytes), throwsException);
 
       final args = captureModelArgs();
       expect([args[0], args[3]], ['model-a', 'model-b']);
+      expect(
+        ((args[4] as Content).parts.single as TextPart).text,
+        'instruction-b',
+      );
     });
   });
 }

@@ -516,10 +516,17 @@ void main() {
       await repo.askAssistant('第一次');
       when(() => rc.getString('ai_foodie_model')).thenReturn('model-b');
       when(() => rc.getString('ai_foodie_temperature')).thenReturn('0.9');
+      when(
+        () => rc.getString('ai_foodie_system_instruction'),
+      ).thenReturn('instruction-b');
       await repo.askAssistant('第二次');
 
       final args = captureModelArgs();
       expect([args[0], args[3]], ['model-a', 'model-b']);
+      expect(
+        ((args[4] as Content).parts.single as TextPart).text,
+        'instruction-b',
+      );
       expect((args[5] as GenerationConfig).temperature, 0.9);
     });
   });
