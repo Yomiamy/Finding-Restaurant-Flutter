@@ -721,7 +721,7 @@ Console 手動驗證（debug build，`minimumFetchInterval = 0`）：在 Console
 
 **回滾**：
 - 執行期（不發版）：刪除 Console 上的參數，或把值改回預設值並發布 → 裝置下一次 fetch（release 最長 12h）後就回到預設值。
-- 程式碼：T4 → T3 → T2 → T1 依序 revert。T3、T4 各自獨立，可以只 revert 其中一個（只 revert T4：不再 fetch，永遠使用預設值；只 revert T3：repo 回到寫死值，`AiModelConfig` 閒置）。
+- 程式碼：T4 → T3 → T2 → T1 依序 revert。T3、T4 各自獨立，可以只 revert 其中一個（只 revert T4：不再 fetch，但先前已 activate 的值仍會被 getter 使用；要回到預設值，必須先成功 fetch 並 activate 預設值，或同時 revert T3 以移除 `AiModelConfig` 的使用；只 revert T3：repo 回到寫死值，`AiModelConfig` 閒置）。
 
 ---
 

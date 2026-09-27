@@ -98,7 +98,7 @@ AI 覓食助理與拍菜單分析的 Gemini 參數全部寫死在程式碼裡：
 
 ## 6. 驗收條件
 
-1. **拿不到遠端值 = 現況**：首次啟動（尚未 fetch 成功）、離線、fetch 失敗或逾時、Firebase 初始化失敗時，5 個 getter 回傳的值與 §4.1 預設值完全相同；兩個 repo 送給 `generativeModel` 的 `model`、`systemInstruction`、`temperature` 與現況逐字一致（拍菜單仍不設 temperature）。
+1. **拿不到遠端值 = 現況**：裝置尚未成功 activate 過遠端值時（首次啟動且 fetch 未成功、離線、fetch 失敗或逾時、Firebase 初始化失敗），5 個 getter 回傳的值與 §4.1 預設值完全相同；兩個 repo 送給 `generativeModel` 的 `model`、`systemInstruction`、`temperature` 與現況逐字一致（拍菜單仍不設 temperature）。若裝置先前已成功 activate 過遠端值，之後 fetch 失敗或未再觸發 fetch 時，getter 會沿用上次 activate 的值，不會自動回退到預設值。
 2. **預設值只有一份**：每個參數的預設值在程式碼中只出現一次；`'gemini-3.5-flash-lite'` 字面值在 `lib/` 只出現一次；in-app defaults 與 getter 回退值引用同一組常數，不得各寫一份。
 3. **不阻塞啟動**：`runApp` 不等待 fetch 完成；fetch/activate 失敗只記 `Logger().e('<英文訊息>', error: e, stackTrace: st)`，不拋到 `main`、不影響首頁顯示。捕捉範圍為 `on Exception`，不捕捉 `Error`（flutter-styles §6.1）。
 4. **生效時機明確**：fetch 並 activate 成功後，**下一次 AI 請求**即使用新值（不需重啟 App）；已送出的請求不受影響。測試需證明：同一個 repo 實例，在存取點回傳值改變後，下一次建立 model 時用的是新值。
@@ -127,7 +127,7 @@ AI 覓食助理與拍菜單分析的 Gemini 參數全部寫死在程式碼裡：
 
 | # | 項目 | 影響 | 建議／待決 |
 |---|---|---|---|
-| 1 | **fetch 間隔** | SDK 預設 `minimumFetchInterval` 為 12 小時：Console 改值後，已 fetch 過的裝置最長 12 小時後才會拿到新值 | **待決**。建議 release 維持預設 12h（配額友善），debug（`kDebugMode`）設 `Duration.zero` 方便驗證；`fetchTimeout` 設短（例如 10 秒以內）避免背景請求長時間掛著。若 12h 不能接受，再討論縮短或 realtime |
+| 1 | **fetch 間隔** | release 設定 `minimumFetchInterval` 為 12 小時：Console 改值後，只有在 App 下一次啟動並觸發 fetch，且間隔已到期時，才可能拿到新值；`minimumFetchInterval` 不會自行排程 fetch | **待決**。建議 release 維持 12h（配額友善），debug（`kDebugMode`）設 `Duration.zero` 方便驗證；`fetchTimeout` 設短（例如 10 秒以內）避免背景請求長時間掛著。若 12h 不能接受，再討論縮短或 realtime |
 | 2 | **activate 時機造成同一 session 前後值不同** | 採「fetch 完立即 activate」時，使用者開 App 後的第一次 AI 請求可能用舊值、第二次用新值 | 建議接受（參數本來就是逐次請求讀取，單次請求內一致即可）。替代方案「本次只 fetch、下次啟動才 activate」行為較穩定但生效延遲多一次啟動，**待確認** |
 | 3 | **model 快取回歸** | 日後有人為了效能把 `GenerativeModel` 提到建構時快取，遠端值會被凍結在 lazy singleton 首次建立時 | 驗收條件 4、6 的測試鎖住 |
 | 4 | **Console 參數需手動建立** | 程式上線後 Console 沒建參數也不會壞（走預設值），但 key 拼錯會**無聲**地一直用預設值 | 上線前在 Firebase Console 建立 §4.1 的 5 個參數（值 = 預設值），key 與程式常數逐字比對；建議把 key 清單寫進 PR 描述作為維運檢查項 |
