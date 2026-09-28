@@ -2,6 +2,8 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 
+import '../../features/foundation/constants/constants_barrel.dart';
+
 /// Gemini 模型參數的唯一來源。
 ///
 /// Remote Config 有合法值時使用遠端值，否則使用本類別的預設常數。
@@ -100,6 +102,8 @@ components 陣列內的每個物件必須包含 component_type 與 data：
   static const String _menuVisionModelKey = 'menu_vision_model';
   static const String _menuVisionSystemInstructionKey =
       'menu_vision_system_instruction';
+  static const String _staticMapApiKeyKey = 'static_map_api_key';
+  static const String _yelpAuthTokenKey = 'yelp_api_auth_token';
 
   static const double _minTemperature = 0.0;
   static const double _maxTemperature = 2.0;
@@ -120,6 +124,12 @@ components 陣列內的每個物件必須包含 component_type 與 data：
     _menuVisionSystemInstructionKey,
     defaultMenuVisionSystemInstruction,
   );
+
+  // Remote Config 會下發到 client，此處只讓金鑰輪替不必發版，並非機密儲存。
+  String get staticMapApiKey =>
+      _string(_staticMapApiKeyKey, Constants.staticMapApiKey);
+
+  String get yelpAuthToken => _string(_yelpAuthTokenKey, Constants.authToken);
 
   /// 啟動時呼叫一次：套用 fetch 設定後 fetch 並立即 activate。
   ///

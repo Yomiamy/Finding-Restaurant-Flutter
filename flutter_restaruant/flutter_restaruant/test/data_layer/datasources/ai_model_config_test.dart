@@ -3,6 +3,7 @@ import 'dart:async';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_restaruant/data_layer/datasources/ai_model_config.dart';
+import 'package:flutter_restaruant/features/foundation/constants/constants_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
@@ -81,6 +82,16 @@ void main() {
       expect(config.aiFoodieTemperature, 0.0);
       stub('ai_foodie_temperature', '2');
       expect(config.aiFoodieTemperature, 2.0);
+    });
+
+    test('API 金鑰：有遠端值用遠端值，沒有時回退 Constants', () {
+      expect(config.staticMapApiKey, Constants.staticMapApiKey);
+      expect(config.yelpAuthToken, Constants.authToken);
+
+      stub('static_map_api_key', 'map-key');
+      stub('yelp_api_auth_token', 'Bearer yelp');
+      expect(config.staticMapApiKey, 'map-key');
+      expect(config.yelpAuthToken, 'Bearer yelp');
     });
 
     test('字串參數全空白時回退預設值', () {
