@@ -42,6 +42,8 @@ void main() async {
       SignInManager().loadPrefs(),
     ]);
 
+    // App Check：驗證請求來自正版 App，保護 Firebase AI（Gemini）等後端配額。
+    // debug 用 Debug Provider，需先在 Console 登記裝置的 debug token。
     if (kDebugMode) {
       await FirebaseAppCheck.instance.activate(
         providerApple: const AppleDebugProvider(),
@@ -57,6 +59,8 @@ void main() async {
     // 不阻塞 runApp：失敗在 fetchAndActivate 內記錄，AI 參數沿用預設值。
     unawaited(AiModelConfig().fetchAndActivate());
 
+    // FCM 推播：註冊前景／背景訊息處理。需在 runApp 前完成，
+    // 才能讀到「點推播冷啟動」的店家，供 SplashPage 跳頁。
     await FcmManager().init();
   } catch (e, st) {
     Logger().e('Initialization failed', error: e, stackTrace: st);
