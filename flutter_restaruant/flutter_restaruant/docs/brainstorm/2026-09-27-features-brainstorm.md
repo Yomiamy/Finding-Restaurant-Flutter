@@ -1593,7 +1593,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
   3. 對外只暴露型別化 getter（如 `aiModelName`、`aiTemperature`），不讓呼叫端散落字串 key。
   4. 第一批 key 只收已確認寫死的 AI 參數（模型名、temperature、system instruction）；§7.5-2 提到的 Prompt 模板暫緩納入本批次，留待有實際調整需求時再加。
 - **🔴 邊界**：Remote Config 的值會下發到 client、以明碼存在裝置上，**不是機密儲存**。
-  - 已於 Console 預先建立 `yelp_api_auth_token`、`static_map_api_key`，規劃另案讓程式改讀這兩個參數、取代 `constants.dart` 的寫死字串。收益是**金鑰輪替不必發版**，但不降低外洩面：值在裝置上照樣讀得出來。
+  - PR #135 一併把 Yelp token 與 Static Map key 改由 Remote Config 的 `yelp_api_auth_token`、`static_map_api_key` 提供，並從 `constants.dart` 移除寫死字串。兩者為**必填**、預設空字串：Console 未設定時 Yelp 會回 401、地圖縮圖顯示佔位圖。收益是**金鑰輪替不必發版**，但不降低外洩面：值在裝置上照樣讀得出來。
   - 因此這只是過渡。兩把金鑰已進 git 歷史，仍須撤銷並輪替；要讓金鑰完全不出現在 client，長期仍須走 Server-side Broker（P0「移除硬編碼 API Key」）。
 
 ---
