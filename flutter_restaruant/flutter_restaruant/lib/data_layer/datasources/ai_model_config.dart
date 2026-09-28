@@ -2,8 +2,6 @@ import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter/foundation.dart';
 import 'package:logger/logger.dart';
 
-import '../../features/foundation/constants/constants_barrel.dart';
-
 /// Gemini 模型參數的唯一來源。
 ///
 /// Remote Config 有合法值時使用遠端值，否則使用本類別的預設常數。
@@ -125,11 +123,11 @@ components 陣列內的每個物件必須包含 component_type 與 data：
     defaultMenuVisionSystemInstruction,
   );
 
-  // Remote Config 會下發到 client，此處只讓金鑰輪替不必發版，並非機密儲存。
-  String get staticMapApiKey =>
-      _string(_staticMapApiKeyKey, Constants.staticMapApiKey);
+  // 金鑰不寫在程式碼裡，必須由 Console 提供；未設定時為空字串。
+  // Remote Config 會下發到 client，只讓金鑰輪替不必發版，並非機密儲存。
+  String get staticMapApiKey => _string(_staticMapApiKeyKey, '');
 
-  String get yelpAuthToken => _string(_yelpAuthTokenKey, Constants.authToken);
+  String get yelpAuthToken => _string(_yelpAuthTokenKey, '');
 
   /// 啟動時呼叫一次：套用 fetch 設定後 fetch 並立即 activate。
   ///
