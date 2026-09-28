@@ -1,11 +1,18 @@
 import 'dart:convert';
 import 'dart:typed_data';
 
+import 'package:firebase_ai/firebase_ai.dart';
+import 'package:firebase_remote_config/firebase_remote_config.dart';
 import 'package:flutter_restaruant/data_layer/data_layer_barrel.dart';
 import 'package:flutter_restaruant/domain/domain_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:json_annotation/json_annotation.dart';
+import 'package:mocktail/mocktail.dart';
+
+class _MockFirebaseAI extends Mock implements FirebaseAI {}
+
+class _MockRemoteConfig extends Mock implements FirebaseRemoteConfig {}
 
 class FakeImagePicker extends ImagePicker {
   FakeImagePicker({this.fileToReturn});
@@ -232,6 +239,72 @@ void main() {
 
       final result = await repo.pickFromGalleryAndAnalyzeMenu();
       expect(result, isA<DishCatalogComponent>());
+    });
+  });
+
+  group('MenuVisionRepo 讀取 AiModelConfig', () {
+    late _MockFirebaseAI ai;
+    late _MockRemoteConfig rc;
+    late MenuVisionRepo repo;
+    final bytes = Uint8List.fromList([1, 2, 3]);
+
+    setUpAll(() {
+      registerFallbackValue(Content.system(''));
+      registerFallbackValue(GenerationConfig());
+    });
+
+    setUp(() {
+      ai = _MockFirebaseAI();
+      rc = _MockRemoteConfig();
+      when(() => rc.getString(any())).thenReturn('');
+      when(
+        () => ai.generativeModel(
+          model: any(named: 'model'),
+          systemInstruction: any(named: 'systemInstruction'),
+          generationConfig: any(named: 'generationConfig'),
+        ),
+      ).thenThrow(Exception('stop before network'));
+      repo = MenuVisionRepo(
+        firebaseAI: ai,
+        modelConfig: AiModelConfig(remoteConfig: rc),
+      );
+    });
+
+    List<dynamic> captureModelArgs() => verify(
+      () => ai.generativeModel(
+        model: captureAny(named: 'model'),
+        systemInstruction: captureAny(named: 'systemInstruction'),
+        generationConfig: captureAny(named: 'generationConfig'),
+      ),
+    ).captured;
+
+    test('沒有遠端值時送出與現況一致的參數，且不設定 temperature', () async {
+      await expectLater(repo.analyzeMenuImageBytes(bytes), throwsException);
+
+      final args = captureModelArgs();
+      expect(args[0], 'gemini-3.5-flash-lite');
+      expect(
+        ((args[1] as Content).parts.single as TextPart).text,
+        AiModelConfig.defaultMenuVisionSystemInstruction,
+      );
+      expect((args[2] as GenerationConfig).temperature, isNull);
+    });
+
+    test('同一個 repo 實例，遠端值改變後下一次請求就使用新值', () async {
+      when(() => rc.getString('menu_vision_model')).thenReturn('model-a');
+      await expectLater(repo.analyzeMenuImageBytes(bytes), throwsException);
+      when(() => rc.getString('menu_vision_model')).thenReturn('model-b');
+      when(
+        () => rc.getString('menu_vision_system_instruction'),
+      ).thenReturn('instruction-b');
+      await expectLater(repo.analyzeMenuImageBytes(bytes), throwsException);
+
+      final args = captureModelArgs();
+      expect([args[0], args[3]], ['model-a', 'model-b']);
+      expect(
+        ((args[4] as Content).parts.single as TextPart).text,
+        'instruction-b',
+      );
     });
   });
 }

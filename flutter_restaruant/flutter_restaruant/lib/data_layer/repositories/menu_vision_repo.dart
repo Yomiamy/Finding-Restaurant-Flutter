@@ -6,6 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../domain/entities/entities_barrel.dart';
 import '../../domain/repositories/menu_vision_repository.dart';
+import '../datasources/ai_model_config.dart';
 import 'menu_analysis_schema.dart';
 
 /// 菜單圖片分析函式簽章 (便於測試與自定義替換)
@@ -17,26 +18,24 @@ class MenuVisionRepo implements MenuVisionRepository {
     ImagePicker? picker,
     FirebaseAI? firebaseAI,
     MenuAnalyzerFunction? analyzer,
+    AiModelConfig? modelConfig,
   }) : _picker = picker ?? ImagePicker(),
        _firebaseAI = firebaseAI,
-       _analyzer = analyzer;
+       _analyzer = analyzer,
+       _modelConfig = modelConfig ?? AiModelConfig();
 
   final ImagePicker _picker;
   final FirebaseAI? _firebaseAI;
   final MenuAnalyzerFunction? _analyzer;
-
-  static const String systemInstruction = '''
-你是一位資深星級主廚與食品安全檢驗專家。請仔細審視傳入的菜單照片：
-1. 辨識所有可識別菜色名稱與價格。
-2. 進行成分拆解，明確標註是否有致敏成分 (包含堅果、花生、蛋、牛奶、小麥麩質、甲殼類海鮮、大豆)。
-3. 一律依據定義的 JSON Schema 輸出純 JSON，不可有任何額外的對話或說明。
-''';
+  final AiModelConfig _modelConfig;
 
   GenerativeModel _getModel() {
     final ai = _firebaseAI ?? FirebaseAI.googleAI();
     return ai.generativeModel(
-      model: 'gemini-3.5-flash-lite',
-      systemInstruction: Content.system(systemInstruction),
+      model: _modelConfig.menuVisionModel,
+      systemInstruction: Content.system(
+        _modelConfig.menuVisionSystemInstruction,
+      ),
       generationConfig: GenerationConfig(
         responseMimeType: 'application/json',
         responseSchema: menuAnalysisSchema,

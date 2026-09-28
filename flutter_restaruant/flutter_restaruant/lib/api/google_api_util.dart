@@ -1,4 +1,5 @@
 import 'package:sprintf/sprintf.dart';
+import '../data_layer/datasources/datasources_barrel.dart';
 import '../features/foundation/constants/constants_barrel.dart';
 
 class GoogleApiUtil {
@@ -9,6 +10,6 @@ class GoogleApiUtil {
     int h = 200,
   }) {
     String centerLatLngStr = sprintf('%f,%f', [lat, lng]);
-    return '${Constants.googleStaticMap}?center=$centerLatLngStr&&markers=color:red%7Clabel:S%7C$centerLatLngStr&size=${w}x$h&scale=2&zoom=16&language=zh-TW&key=${Constants.staticMapApiKey}';
+    return '${Constants.googleStaticMap}?center=$centerLatLngStr&&markers=color:red%7Clabel:S%7C$centerLatLngStr&size=${w}x$h&scale=2&zoom=16&language=zh-TW&key=${AiModelConfig().staticMapApiKey}';
   }
 }

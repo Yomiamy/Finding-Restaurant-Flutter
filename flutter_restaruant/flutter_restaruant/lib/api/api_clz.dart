@@ -4,6 +4,7 @@ import 'package:flutter_inspector_kit/flutter_inspector_kit.dart';
 import 'package:logger/logger.dart';
 import 'package:retrofit/retrofit.dart';
 
+import '../data_layer/datasources/datasources_barrel.dart';
 import '../data_layer/dto/dto_barrel.dart';
 import '../di/di_barrel.dart';
 import '../features/foundation/constants/constants_barrel.dart';
@@ -58,7 +59,7 @@ final dioClient = () {
         onRequest: (options, handler) async {
           var customHeaders = {
             'Content-Type': 'application/json',
-            'Authorization': Constants.authToken,
+            'Authorization': AiModelConfig().yelpAuthToken,
           };
           options.headers.addAll(customHeaders);
           handler.next(options);

@@ -27,7 +27,6 @@ class Constants {
   static const adIosInterstitialId = 'ca-app-pub-7910179918263365/7956300504';
 
   /// [API]
-  static const staticMapApiKey = 'AIzaSyAfe5kOHB_-GPPNovB8iCDimCBnTsW6OYQ';
   static const baseUrl = 'https://api.yelp.com';
   static const googleMapApiUrl = 'https://maps.googleapis.com/maps/api';
   static const googleStaticMap = '$googleMapApiUrl/staticmap';
@@ -37,8 +36,6 @@ class Constants {
   static const googleMapNavigationLatLng = 'q';
   static const googleMapStreetviewLayer = 'layer';
   static const googleMapStreetviewLatLng = 'cbll';
-  static const authToken =
-      'Bearer 7W-eBLLJ3ij1hx8nKfbihuC9rB-xxX9Uu0c3xmbOgaJMd8p4N0_OXtvmJkKRSiCEd5dhOThCdmudbrqga4ONcugF3GW8I8TaX_Gh6VH1cdUyDdWLNF7mwBv1zROpZnYx';
   static const locale = 'zh_TW';
   static const emailSubject = 'subject';
   static const emailBody = 'body';

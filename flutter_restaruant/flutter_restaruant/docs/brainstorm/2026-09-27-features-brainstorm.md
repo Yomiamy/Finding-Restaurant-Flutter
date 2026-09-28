@@ -1378,7 +1378,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 1. **Firebase App Check 嚴格保護** — ✅ 已接線（2026-09-25 實查：`lib/main.dart:45,50` 依 `kDebugMode` 分別啟用 Debug Provider 與 DeviceCheck／Play Integrity）
    - 透過 App Check (iOS DeviceCheck / App Attest; Android Play Integrity) 鎖定 API 請求來源，杜絕未經授權的惡意客戶端盜刷 Gemini 配額。
-2. **Firebase Remote Config 動態模型控制** — ⬜ 未導入（2026-09-25 實查：`pubspec.yaml` 無 `firebase_remote_config`）
+2. **Firebase Remote Config 動態模型控制** — ⬜ 未導入（2026-09-25 實查：`pubspec.yaml` 無 `firebase_remote_config`）；已排入 [A-8.5]（P0）
    - 模型名稱（如 `gemini-3.5-flash-lite`）、Temperature、System Instructions 與 Prompt 模板全數由 Remote Config 遠端控制，無需發布新版本即可調整。
 3. **優雅降級 (Graceful Fallback Policy)**
    - 當遇 HTTP 429 (Rate Limit)、網路離線或 JSON 語法破損時：
@@ -1572,6 +1572,29 @@ class ComparisonMatrixComponent extends A2UIComponent {
 - **優先級**：`不排程 / 維持現狀`
 - **架構裁決 (Linus 模式)**：依本專案「`Infra (DTO, API, DB) ← Domain (UseCase, Entity) ← Data Layer (Repository) ← BLoC ← Presentation`」之資料驅動分層設計，Domain 建立在底層 Infra 契約之上。`RestaurantDetailEntity.fromDto` 屬 Entity 自然且高內聚的構造方式，無須多引入一層無效的 Mapper 類別或轉發代碼，符合 YAGNI 與好品味原則，故自待辦清單中除名，維持既有實作。
 - **影響檔案路徑**：無須調整
+
+#### [A-8.5] 建置 Firebase Remote Config 動態設定存取層
+- **優先級**：`P0`
+- **預估 Effort**：`1.0d`
+- **價值與收益**：目前 AI 模型參數全數寫死在程式碼中，換模型、調 prompt 或溫度都必須重新發版送審；一旦模型下架或配額異常，只能等新版上架才能止血。導入 Remote Config 後可遠端即時調整，並作為 §7.5-2「動態模型控制」的落地項。
+- **現況（2026-09-27 實查）**：
+  - `pubspec.yaml` 無 `firebase_remote_config`（已有 `firebase_core`、`firebase_ai`、`firebase_app_check`，可直接沿用同一 Firebase 專案）。
+  - 模型名稱 `'gemini-3.5-flash-lite'` 重複寫死於 `ai_foodie_repo.dart:156` 與 `menu_vision_repo.dart:38`（同一設定兩份，遲早漂移）。
+  - `temperature`、`systemInstruction` 分別以 `static const` 寫死於兩個 repo（`ai_foodie_repo.dart:28,159`、`menu_vision_repo.dart:28,40`）。
+- **影響檔案路徑**：
+  - 修改：`pubspec.yaml`（加入 `firebase_remote_config`）
+  - 新增：`lib/data_layer/datasources/remote_config_data_source.dart`（或同層既有慣例位置）
+  - 修改：`lib/di/injection.dart`（註冊為 singleton）
+  - 修改：`lib/main.dart`（`Firebase.initializeApp` 之後初始化）
+  - 修改：`lib/data_layer/repositories/ai_foodie_repo.dart`、`lib/data_layer/repositories/menu_vision_repo.dart`
+- **具體實作建議**：
+  1. 以 `setDefaults` 帶入現行寫死值作為 in-app 預設，**確保首次啟動、離線或 fetch 失敗時行為與現況完全一致**（never break userspace）。
+  2. 啟動時 `fetchAndActivate` 不阻塞首頁；逾時或失敗記 `Logger().e`。若已有已 activate 的值則沿用，否則由 getter 使用預設值。
+  3. 對外只暴露型別化 getter（如 `aiModelName`、`aiTemperature`），不讓呼叫端散落字串 key。
+  4. 第一批 key 只收已確認寫死的 AI 參數（模型名、temperature、system instruction）；§7.5-2 提到的 Prompt 模板暫緩納入本批次，留待有實際調整需求時再加。
+- **🔴 邊界**：Remote Config 的值會下發到 client、以明碼存在裝置上，**不是機密儲存**。
+  - PR #135 一併把 Yelp token 與 Static Map key 改由 Remote Config 的 `yelp_api_auth_token`、`static_map_api_key` 提供，並從 `constants.dart` 移除寫死字串。兩者為**必填**、預設空字串：Console 未設定時 Yelp 會回 401、地圖縮圖顯示佔位圖。收益是**金鑰輪替不必發版**，但不降低外洩面：值在裝置上照樣讀得出來。
+  - 因此這只是過渡。兩把金鑰已進 git 歷史，仍須撤銷並輪替；要讓金鑰完全不出現在 client，長期仍須走 Server-side Broker（P0「移除硬編碼 API Key」）。
 
 ---
 

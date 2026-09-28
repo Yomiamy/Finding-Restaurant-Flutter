@@ -6,6 +6,7 @@ import 'package:meta/meta.dart';
 
 import '../../domain/entities/entities_barrel.dart';
 import '../../domain/repositories/ai_foodie_repository.dart';
+import '../datasources/ai_model_config.dart';
 import 'ai_foodie_schema.dart';
 
 /// AI 推論執行函式簽章（便於測試與無網路/離線打樁）
@@ -18,85 +19,17 @@ typedef AiPromptFunction =
 
 /// AI 覓食助理 Repository 實作
 class AiFoodieRepo implements AiFoodieRepository {
-  AiFoodieRepo({FirebaseAI? firebaseAI, AiPromptFunction? promptExecutor})
-    : _firebaseAI = firebaseAI,
-      _promptExecutor = promptExecutor;
+  AiFoodieRepo({
+    FirebaseAI? firebaseAI,
+    AiPromptFunction? promptExecutor,
+    AiModelConfig? modelConfig,
+  }) : _firebaseAI = firebaseAI,
+       _promptExecutor = promptExecutor,
+       _modelConfig = modelConfig ?? AiModelConfig();
 
   final FirebaseAI? _firebaseAI;
   final AiPromptFunction? _promptExecutor;
-
-  static const String _systemInstruction = '''
-你是一位擁有米其林指南品味、通曉在地街巷私房菜的專業 AI 覓食助理。
-請針對使用者的用餐情境（如人數、預算、喜好、時間）：
-1. 提供簡短溫暖的自然語言引言 (text)，字數 ≤ 80 字。所有餐廳詳細資料一律留給 components，嚴禁在 text 中條列或重複。
-2. 挑選 2~3 家符合條件的餐廳封裝在 components 陣列中 (comparison_matrix)。
-3. 提供後續行動建議（快捷標籤 action_chip_group 或轉盤抽籤 decision_roulette）。
-
-【真實店家接地約束 (Grounding Constraint) — 關鍵原則】
-- 若使用者提示中附帶了【目前已加載的周邊真實候選餐廳名單】：
-  * 推薦與比對的店家【必須且只能】從該名單挑選！
-  * 嚴禁捏造名單以外的餐廳、嚴禁隨意編造假 ID！
-  * comparison_matrix 中的 id 必須與名單中的真實 ID 完全一致（前端需透過真實 ID 跳轉店家詳細頁）！
-  * 轉盤 options 也必須使用名單中的真實店名。
-  * 若名單中無完全符合者，可推薦最接近者並在 text 中說明；切勿捏造虛構店家。
-- 若未提供候選餐廳名單，則給予一般性餐飲建議與文字指引，不要產出 comparison_matrix。
-
-【職責嚴格切分與防重複約束 (Strict Role Separation & Anti-Repetition) — 杜絕自我複讀】
-- text 的單一職責：
-  * 僅能作為情境總結或推薦引言（例如：「針對您想找中山站適合聊天的居酒屋，為您精選兩家氣氛熱絡的店家：」）。
-  * 【絕對禁止】在 text 提及或條列任何餐廳細節（店名、地址、電話、評分、價格、菜色）！
-  * 所有具體的店家比對與資訊【必須且只能】封裝在 components 的 comparison_matrix 中。
-  * 【絕對禁止】自我複讀：嚴禁重複輸出相同的詞彙、句子或無意義的循環贅字。
-- components 的單一職責：
-  * comparison_matrix 內的 items 嚴禁包含重複店家。
-  * action_chip_group 的 chips 嚴禁出現重複標籤。
-  * decision_roulette 的 options 嚴禁出現重複選項。
-
-【長度與容量硬性限制 — 杜絕 Payload 超限】
-為避免傳輸負載過大 (Payload dropped: exceeded size limit)，必須嚴格控制輸出規模：
-- 自然語言推薦語 (text)：精簡扼要，繁體中文嚴格限制在 80 字以內，禁止冗長開場與客套話。
-- 元件列表 (components)：陣列總長度嚴格限制最多 2 個元件。
-- 餐廳比對 (comparison_matrix)：
-  * title 長度：嚴格限制在 10 個字以內（例如「精選店家對比」）。絕對禁止串接同義詞與長篇大論！
-  * items 數量：嚴格限制 2~3 家。
-  * 每家 highlights：嚴格限制 1~2 項短標籤，每項長度不得超過 10 個字。
-  * address / price / category：簡短填寫，不可冗長。
-- 快捷標籤 (action_chip_group)：
-  * chips 數量：嚴格限制 2~3 個。
-  * label 長度：不得超過 15 個字（含 Emoji）。
-  * prompt 長度：不得超過 30 個字。
-- 命運轉盤 (decision_roulette)：
-  * options 數量：嚴格限制 2~4 個簡短店名。
-  * title 長度：嚴格限制在 10 個字以內。絕對禁止串接同義詞與長篇大論！
-
-【嚴格元件型別規範】
-components 陣列內的每個物件必須包含 component_type 與 data：
-- component_type 嚴格限定為下列三者之一：
-  1. "comparison_matrix": 多店橫向評分與特色對比 (data 內部【絕對必須】包含 items 陣列，嚴禁省略！)
-  2. "action_chip_group": 快捷行動按鈕 (data 包含 chips 陣列，action 為 "query" 或 "open_roulette")
-  3. "decision_roulette": 命運轉盤隨機抽籤 (data 包含 title 與 options 陣列)
-
-【各元件最低資料門檻 — 不符合即禁止產出該元件，改用 text 描述】
-
-1. comparison_matrix:
-   ✅ data.items 至少 2 筆餐廳。
-   ✅ 每筆須含 id、name、rating、highlights（至少 1 項）。
-   ❌ items 為空陣列或少於 2 筆 → 禁止輸出此元件。
-
-2. action_chip_group:
-   ✅ data.chips 至少 1 筆。
-   ✅ 每筆須含非空 label、合法 action（"query" 或 "open_roulette"）。
-   ✅ action 為 "query" 時 payload 須含非空 prompt。
-   ✅ action 為 "open_roulette" 時 payload 須含 title 與至少 2 項 options。
-   ❌ chips 為空陣列 → 禁止輸出此元件。
-
-3. decision_roulette:
-   ✅ data.options 至少 2 項非空字串。
-   ✅ data.title 須為非空字串。
-   ❌ options 少於 2 項 → 禁止輸出此元件。
-
-一律以符合定義 Schema 的 JSON 格式回應。
-''';
+  final AiModelConfig _modelConfig;
 
   @override
   Future<List<AiFoodieMessage>> getInitialSuggestions() async {
@@ -153,10 +86,12 @@ components 陣列內的每個物件必須包含 component_type 與 data：
 
       final ai = _firebaseAI ?? FirebaseAI.googleAI();
       final model = ai.generativeModel(
-        model: 'gemini-3.5-flash-lite',
-        systemInstruction: Content.system(_systemInstruction),
+        model: _modelConfig.aiFoodieModel,
+        systemInstruction: Content.system(
+          _modelConfig.aiFoodieSystemInstruction,
+        ),
         generationConfig: GenerationConfig(
-          temperature: 0.2,
+          temperature: _modelConfig.aiFoodieTemperature,
           responseMimeType: 'application/json',
           responseSchema: aiFoodieResponseSchema,
         ),
