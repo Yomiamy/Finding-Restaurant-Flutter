@@ -86,7 +86,7 @@
 | ✅ **Flutter SDK 版本遷移 (≥ 3.44.1)** | ✅ **已於 2026-08-26 完成** | 已更新 pubspec.yaml 及 CI 工作流程至 3.44.1 |
 | ✅ **iOS Swift Package Manager (SPM) 遷移** | ✅ **已於 2026-08-24 完成 (混合模式)** | 暫時保留 CocoaPods 回退相容，消除建置阻礙 |
 | ✅ **Android Built-in Kotlin 遷移** | ✅ **已於 2026-09-13 完成 (Issue #117 / PR #118)**：移除 `app/build.gradle` 顯式 `id "kotlin-android"`，由 Flutter Gradle Plugin 內部自動管理套用 | **官方棄用警告消除**：建置 0 警告，消除未來工具鏈衝突隱患 |
-| **硬編碼 API Key** | 僅改名為 `camelCase`，明碼仍在 `constants.dart:30,40` | 金鑰已入 git 歷史，須**撤銷並輪替**，非搬移可解 |
+| **硬編碼 API Key** | 🟡 **2026-09-28 (PR #135) 已移出程式碼**：`constants.dart` 的兩個明碼刪除，改由 Remote Config `yelp_api_auth_token`／`static_map_api_key` 下發（必填、預設空字串） | 金鑰已入 git 歷史，仍須**撤銷並輪替**；Remote Config 值仍會下發到 client，長期仍須 Server-side Broker |
 | ✅ **修復地圖模式定位按鈕遮擋與常數重構** | ✅ **已於 2026-09-06 完成 (Issue #110 / PR #111)**：關閉原生不可控控制項，右上角自訂 FAB 結合真實 GPS 定位，消除卡片遮擋與魔術數字 | **操作體驗與架構提升**：按鈕不再被底部卡片遮擋，全面收斂 ThemeSize 常數 |
 | ✅ **修復地圖底部列表 UI 溢出 (RenderFlex overflow)** | ~~Android 地圖底部發生溢出~~ | **已於 PR #73 修復**（實際位置為 `restaurant_item_cell.dart`，非 `rating_stars.dart`） |
 
@@ -170,7 +170,8 @@ lib/
    * `lib/flow/settings/view/settings_page.dart:36`: `build()` 內發動 `InitBioAuthSettingEvent()`。
    * `lib/flow/splash/view/splash_page.dart:16-20`: 在 `build()` 內寫入 `addPostFrameCallback` 搭配 `Future.delayed(Duration(seconds: 3))` 導航。
 
-2. **🔴 仍未修復 — 硬編碼 API 金鑰與敏感 Token (Hardcoded Secrets)**
+2. **🟡 部分修復 — 硬編碼 API 金鑰與敏感 Token (Hardcoded Secrets)**
+   * **現況（2026-09-29 實查，PR #135）**：`constants.dart` 的 `staticMapApiKey`、`authToken` 已刪除；`api_clz.dart` 的 `Authorization` header 與 `google_api_util.dart` 的 `key=` 改讀 `AiModelConfig.yelpAuthToken`／`staticMapApiKey`（Remote Config，必填、預設空字串）。**未解部分**：金鑰仍在 git 歷史與舊版 APK，須撤銷並輪替；Remote Config 值會以明碼存在裝置上，要讓金鑰完全不出現在 client 仍須 Server-side Broker。
    * **現況（2026-08-05 複測，仍未修）**：金鑰僅隨常數改名為 `camelCase`，**明碼仍留在版控中**。⚠️ **路徑已變更** —— 因 §6.4 A-1 解散 `lib/utils/`，現位於 **`lib/features/foundation/constants/constants.dart:30`** 的 `staticMapApiKey` 與 `:40` 的 `authToken`，皆未移除。（照舊路徑 `lib/utils/constants.dart` grep 會查無，勿誤判為已修）此為當前**唯一未解的 P0 安全風險**，且既有金鑰已外洩於 git 歷史，修復時必須同步「撤銷並輪替 (revoke & rotate)」，僅搬移位置無效。
    * 原始稽核紀錄：`constants.dart:37` `AUTH_TOKEN` (Yelp Fusion Token)、`constants.dart:27` `STATIC_MAP_API_KEY` (Google Maps Key)。
 
@@ -569,7 +570,7 @@ lib/
 | ✅ **修復 Yelp API 分頁邏輯 Bug** | 既有修復 | 9 | 2.5 | 100% | 0.5 | **45.0** | 23.75 | 2 | **已完成** |
 | ✅ **修復 `FilterPage` 狀態重置 Bug** | 既有修復 | 8 | 2.5 | 100% | 0.5 | **40.0** | 23.75 | 3 | **已完成** |
 | ✅ **整合 `flutter_inspector_kit` 除錯套件** | 開發工具 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | 4 | **已完成**（2026-08-05） |
-| 🔴 **移除硬編碼 API Key (改用 Server-side Broker)** | 安全修復 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | 5 | **P0（唯一未解安全風險）** |
+| 🔴 **移除硬編碼 API Key (改用 Server-side Broker)** | 安全修復 | 10 | 2.0 | 100% | 0.5 | **40.0** | 19.0 | 5 | **P0（🟡 部分：已移出程式碼改由 Remote Config 下發；仍須輪替與 Broker）** |
 | ✅ **對照組風格: 目錄架構與層級分離重構** | 架構重構 | 10 | 3.0 | 100% | 2.0 | **15.0** | 24.0 | - | **已完成** |
 | ✅ **對照組風格: 導入全域依賴注入 (GetIt)** | 架構重構 | 10 | 2.5 | 100% | 1.5 | **16.6** | 21.2 | - | **已完成** |
 | ✅ **對照組風格: DTO 與 Domain Entity 分離** | 架構重構 | 10 | 2.5 | 100% | 1.5 | **16.6** | 21.2 | - | **已完成**（2026-09-07, PR #112 解除 AccountDto 循環依賴） |
@@ -627,7 +628,7 @@ lib/
 |   • [x] P0 ✅ iOS Swift Package Manager (SPM) 遷移與 CocoaPods 淘汰 (混合模式)               |
 |   • [x] P0 ✅ Android Built-in Kotlin 遷移 (移除顯式 KGP) ✅ 2026-09-13 (Issue #117 / PR #118) |
 |   • [x] P0 ✅ Flutter SDK 版本遷移至 3.44.1+                                       |
-|   • [ ] P0 移除硬編碼 API Key ⚠️ 未動；金鑰已入 git 歷史，須撤銷並輪替            |
+|   • [ ] P0 移除硬編碼 API Key 🟡 已移出程式碼改由 Remote Config (PR #135)；仍須撤銷輪替與 Broker |
 |   • [x] P0 移除無謂假延遲 (過濾 2s / 推播導航 8s) ✅ 實查已清除                   |
 |   • [x] P0 `MapWidget` 實作 `didUpdateWidget` 使 Marker 連動列表 ✅ 實查已實作    |
 |   • [x] P0 修復地圖模式定位按鈕遮擋問題 (Map Locate Button Obscured Bug) ✅ 2026-09-06 (Issue #110) |
@@ -1378,7 +1379,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 1. **Firebase App Check 嚴格保護** — ✅ 已接線（2026-09-25 實查：`lib/main.dart:45,50` 依 `kDebugMode` 分別啟用 Debug Provider 與 DeviceCheck／Play Integrity）
    - 透過 App Check (iOS DeviceCheck / App Attest; Android Play Integrity) 鎖定 API 請求來源，杜絕未經授權的惡意客戶端盜刷 Gemini 配額。
-2. **Firebase Remote Config 動態模型控制** — ⬜ 未導入（2026-09-25 實查：`pubspec.yaml` 無 `firebase_remote_config`）；已排入 [A-8.5]（P0）
+2. **Firebase Remote Config 動態模型控制** — ✅ 已於 2026-09-28 完成（Issue #134 / PR #135，即 [A-8.5]）：模型名、temperature、system instruction 由 `AiModelConfig` 讀 Remote Config，Prompt 模板暫未納入
    - 模型名稱（如 `gemini-3.5-flash-lite`）、Temperature、System Instructions 與 Prompt 模板全數由 Remote Config 遠端控制，無需發布新版本即可調整。
 3. **優雅降級 (Graceful Fallback Policy)**
    - 當遇 HTTP 429 (Rate Limit)、網路離線或 JSON 語法破損時：
@@ -1573,7 +1574,8 @@ class ComparisonMatrixComponent extends A2UIComponent {
 - **架構裁決 (Linus 模式)**：依本專案「`Infra (DTO, API, DB) ← Domain (UseCase, Entity) ← Data Layer (Repository) ← BLoC ← Presentation`」之資料驅動分層設計，Domain 建立在底層 Infra 契約之上。`RestaurantDetailEntity.fromDto` 屬 Entity 自然且高內聚的構造方式，無須多引入一層無效的 Mapper 類別或轉發代碼，符合 YAGNI 與好品味原則，故自待辦清單中除名，維持既有實作。
 - **影響檔案路徑**：無須調整
 
-#### [A-8.5] 建置 Firebase Remote Config 動態設定存取層
+#### [A-8.5] 建置 Firebase Remote Config 動態設定存取層 — ✅ 已完成 (Issue #134 / PR #135, 2026-09-28)
+- **落地**：新增 `lib/data_layer/datasources/ai_model_config.dart`（`AiModelConfig`），兩個 repo 以可選參數注入並每次請求讀值，`main.dart` 於 App Check 之後以 `unawaited` 觸發 `fetchAndActivate`（debug 間隔 0、release 12h、逾時 10 秒）。AI 參數保留程式預設值作為回退；非法值（空白、非數字、temperature 超出 [0, 2]）回退預設。未呼叫 `setDefaults`、未註冊 GetIt。範圍於 review 期間擴充：Yelp token 與 Static Map key 亦改由 Remote Config 提供（必填、無程式預設），並自 `constants.dart` 移除明碼。`AiModelConfig` 名稱已不足以涵蓋金鑰，改名留待後續。
 - **優先級**：`P0`
 - **預估 Effort**：`1.0d`
 - **價值與收益**：目前 AI 模型參數全數寫死在程式碼中，換模型、調 prompt 或溫度都必須重新發版送審；一旦模型下架或配額異常，只能等新版上架才能止血。導入 Remote Config 後可遠端即時調整，並作為 §7.5-2「動態模型控制」的落地項。
