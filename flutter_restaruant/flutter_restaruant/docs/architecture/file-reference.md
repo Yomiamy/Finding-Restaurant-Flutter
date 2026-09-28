@@ -63,11 +63,12 @@
 | [`lib/data_layer/repositories/favor_repo.dart`](../../lib/data_layer/repositories/favor_repo.dart) | `FavorRepo` | `FavorRepository` 實作，委派 `FavorDataSource` 存取 Firestore。 |
 | [`lib/data_layer/repositories/sign_in_repo.dart`](../../lib/data_layer/repositories/sign_in_repo.dart) | `SignInRepo` | `SignInRepository` 實作，串接各登入 Manager 並轉出 `UserEntity`。 |
 | [`lib/data_layer/repositories/settings_repo.dart`](../../lib/data_layer/repositories/settings_repo.dart) | `SettingsRepo` | `SettingsRepository` 實作（`const` 建構式，無狀態）。 |
-| [`lib/data_layer/repositories/menu_vision_repo.dart`](../../lib/data_layer/repositories/menu_vision_repo.dart) | `MenuVisionRepo` | `MenuVisionRepository` 實作。串接 `FirebaseAI` 調用 `gemini-3.5-flash-lite` 進行結構化菜單視覺辨識與過敏原解析。解析失敗直接拋出例外，由 `MenuVisionBloc` 處理。 |
+| [`lib/data_layer/repositories/menu_vision_repo.dart`](../../lib/data_layer/repositories/menu_vision_repo.dart) | `MenuVisionRepo` | `MenuVisionRepository` 實作。串接 `FirebaseAI` 進行結構化菜單視覺辨識與過敏原解析，模型與 system instruction 由 `AiModelConfig` 提供。解析失敗直接拋出例外，由 `MenuVisionBloc` 處理。 |
 | [`lib/data_layer/repositories/menu_analysis_schema.dart`](../../lib/data_layer/repositories/menu_analysis_schema.dart) | `menuAnalysisSchema` | Gemini API 結構化輸出 JSON Schema 規範（定義菜品清單、價格、過敏原與辣度）。 |
-| [`lib/data_layer/repositories/ai_foodie_repo.dart`](../../lib/data_layer/repositories/ai_foodie_repo.dart) | `AiFoodieRepo` | `AiFoodieRepository` 實作。串接 `FirebaseAI` 調用 `gemini-3.5-flash-lite` 進行自然語言意圖理解、真實候選店家比對與 GenUI 元件生成。 |
+| [`lib/data_layer/repositories/ai_foodie_repo.dart`](../../lib/data_layer/repositories/ai_foodie_repo.dart) | `AiFoodieRepo` | `AiFoodieRepository` 實作。串接 `FirebaseAI` 進行自然語言意圖理解、真實候選店家比對與 GenUI 元件生成，模型、temperature 與 system instruction 由 `AiModelConfig` 提供。 |
 | [`lib/data_layer/repositories/ai_foodie_schema.dart`](../../lib/data_layer/repositories/ai_foodie_schema.dart) | `aiFoodieResponseSchema` | Gemini 結構化輸出 JSON Schema 規範（約束 text 及 components 格式）。 |
 | [`lib/data_layer/datasources/favor_data_source.dart`](../../lib/data_layer/datasources/favor_data_source.dart) | `FavorDataSource` | **最愛清單在 Firestore 的單一存取點**，每個最愛項目以 subcollection `favors/{uid}/items/{restaurant_id}` 結構儲存。內含空字串 uid 的 guard，避免 Firestore 拋 `ArgumentError`。 |
+| [`lib/data_layer/datasources/ai_model_config.dart`](../../lib/data_layer/datasources/ai_model_config.dart) | `AiModelConfig` | **Firebase Remote Config 的單一存取點**：AI 模型名、temperature、system instruction（非法或未設定時回退程式預設值），以及 Yelp token、Static Map key（必填、無程式預設）。每次讀值即時查詢、建構時不碰 Firebase；`fetchAndActivate()` 由 `main.dart` 於啟動時非阻塞觸發。 |
 | [`lib/data_layer/dto/yelp_search_dto.dart`](../../lib/data_layer/dto/yelp_search_dto.dart) | `YelpSearchDto` | Yelp 搜尋結果的線上格式鏡射（`@JsonSerializable`）。 |
 | [`lib/data_layer/dto/yelp_restaurant_summary_dto.dart`](../../lib/data_layer/dto/yelp_restaurant_summary_dto.dart) | `YelpRestaurantSummaryDto` | 餐廳摘要 Dto，對應 `RestaurantEntity`。 |
 | [`lib/data_layer/dto/yelp_restaurant_detail_dto.dart`](../../lib/data_layer/dto/yelp_restaurant_detail_dto.dart) | `YelpRestaurantDetailDto` | 餐廳詳情 Dto。 |
@@ -185,7 +186,7 @@
 | [`lib/features/foundation/style/theme_size.dart`](../../lib/features/foundation/style/theme_size.dart) | `ThemeSize` | 尺寸與間距 Token 常數。 |
 | [`lib/features/foundation/style/theme_font_size.dart`](../../lib/features/foundation/style/theme_font_size.dart) | `ThemeFontSize` | 字級 Token 常數。 |
 | [`lib/features/foundation/style/theme_text_style.dart`](../../lib/features/foundation/style/theme_text_style.dart) | `ThemeTextStyle` | 文字樣式 Token。 |
-| [`lib/features/foundation/constants/constants.dart`](../../lib/features/foundation/constants/constants.dart) | `Constants` | 全域常數（API base URL、`authToken` 等）。 |
+| [`lib/features/foundation/constants/constants.dart`](../../lib/features/foundation/constants/constants.dart) | `Constants` | 全域常數（API base URL 等）。金鑰已移至 Remote Config（見 `AiModelConfig`）。 |
 | [`lib/features/foundation/constants/ui_constants.dart`](../../lib/features/foundation/constants/ui_constants.dart) | `UIConstants` | UI 專用常數。 |
 | [`lib/features/foundation/extension/future_extension.dart`](../../lib/features/foundation/extension/future_extension.dart) | `FutureExtension` | `Future` 的擴充方法。 |
 | [`lib/features/utils/tuple.dart`](../../lib/features/utils/tuple.dart) | `Tuple2` … `Tuple7` | 泛型多值容器。<br>⚠️ **Dart 3 已內建 Records**，新程式碼應優先使用 `(a, b)` 語法，本檔屬既有程式碼的相容保留。 |

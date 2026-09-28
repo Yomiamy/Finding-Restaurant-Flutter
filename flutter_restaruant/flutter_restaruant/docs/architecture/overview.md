@@ -43,7 +43,8 @@
   │                    資料層 (Data Layer)                     │
   │   lib/data_layer/repositories/  ── Repo 實作                │
   │   lib/data_layer/dto/           ── Dto (@JsonSerializable) │
-  │   lib/data_layer/datasources/   ── FavorDataSource         │
+  │   lib/data_layer/datasources/   ── FavorDataSource,        │
+  │                                    AiModelConfig           │
   └─────────────────────────────┬──────────────────────────────┘
                                 │
                                 ▼

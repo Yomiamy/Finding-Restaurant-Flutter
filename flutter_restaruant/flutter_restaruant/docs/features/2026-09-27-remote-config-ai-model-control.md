@@ -1,7 +1,7 @@
 # Feature: Firebase Remote Config 動態模型控制（AI 參數遠端化）
 
 > 建立日期：2026-09-27
-> 來源：`docs/brainstorm/2026-09-27-features-brainstorm.md` §[A-8.5]（P0）、§7.5 第 2 點「Firebase Remote Config 動態模型控制」
+> 來源：`docs/brainstorm/2026-09-29-features-brainstorm.md` §[A-8.5]（P0）、§7.5 第 2 點「Firebase Remote Config 動態模型控制」
 > 範圍：`pubspec.yaml`、`lib/main.dart`、`lib/di/injection.dart`、`lib/data_layer/repositories/ai_foodie_repo.dart`、`lib/data_layer/repositories/menu_vision_repo.dart`，以及新增一個 Remote Config 存取點與對應測試
 > 狀態：草稿 v1（待確認）
 
