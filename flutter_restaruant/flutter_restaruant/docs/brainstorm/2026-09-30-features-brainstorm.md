@@ -9,6 +9,8 @@
 
 本報告整合了架構審計與競品探索報告之事實與推理鏈，產出符合產業界最高標準的產品與技術發展路線圖 (Strategic Product Roadmap) 及 RICE / ICE 雙優先級評估矩陣。
 
+> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。
+
 ---
 
 ## 📌 實查校正紀錄 (Codebase Re-verification — 2026-08-05)
@@ -1812,5 +1814,195 @@ class ComparisonMatrixComponent extends A2UIComponent {
    - 隨著 2026-09-12 PR #116 拍菜單助手 (M3) 的落地，即將展開 M4 (覓食助理) 與 M5 (行程生成)。
    - **E-8.2 (`mocktail` 測試框架)** 已於 2026-09-27 完成 (Issue #130 / PR #131)，M4 對話式 BottomSheet 與 Function Calling 的 Mock 測試可直接沿用；後續 **E-8.6 (`blocTest` 統一)** 與 **E-8.7 (mock 命名統一)** 收齊測試寫法。
    - **E-8.4 (核心測試覆蓋率 $\ge 80\%$)** 與 **UI-8.6 (無障礙守衛)** 將作為 M5 最終交付上線的堅實品質驗收指標。
+
+---
+
+# 9. 桌面版 (macOS) 與網頁版 (Web) 平台擴展評估 (Platform Expansion: macOS & Web)
+
+> **產出日期**：2026-09-30｜**狀態**：✅ §9.8 五項決策已定（Web 採 W-B 精簡版、macOS 採 M-B 原生、深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Blaze）；未排入 Roadmap，待轉為實作計畫
+> **產出方式**：直接檢視 `main` @ `355e3e7` 的 `lib/`、`pubspec.yaml`、`ios/`、`.github/workflows/`，並以 `.dart_tool/package_config.json` 解析每個相依套件 `pubspec.yaml` 宣告的 `flutter.plugin.platforms`（非憑記憶）。
+
+## 9.1 Linus 式前置三問
+
+1. **這是真問題嗎？** —— **目前沒有證據**。本 App 是「以定位為核心、在路上找餐廳」的行動產品，文件與 Analytics 皆無「使用者想在桌面/瀏覽器用」的需求紀錄。唯一有實際場景的是**分享連結**（F-2.2 共編地圖 URL、店家詳情分享）——收到連結的人未必裝了 App，這時需要一個可在瀏覽器打開的頁面。
+2. **有更簡單的方法嗎？** —— **有，且差距一個量級**：
+   - macOS：iOS App 可直接以「iPhone／iPad App 在 Apple Silicon Mac 上執行」上架（App Store Connect 勾選即可），**零程式碼**。本專案 `TARGETED_DEVICE_FAMILY = "1,2"`（已支援 iPad），具備條件。
+   - Web：若需求只是「分享連結打得開」，一個靜態落地頁（店名、地址、評分、開 App／下載 App 按鈕）即可，不需要把整個 Flutter App 編成 Web。
+3. **會破壞什麼嗎？** —— 原生 macOS／Flutter Web target 本身不破壞行動版，但**現有程式碼有 5 處 `dart:io` 的 `Platform.isX` 與 1 處未受保護的 AdMob 初始化，在 Web 上會直接崩潰**（見 §9.3），任何共用程式碼的改動都必須以行動版零回歸為前提。
+
+**【核心判斷】**
+- ✅ **值得做（不論是否擴平台）**：§9.5 的「共用前置清理」—— 它們本身就是既有 P0／技術債，擴平台只是讓它們從「該做」變成「必做」。
+- ✅ **值得做（低成本）**：macOS 先走 iOS-on-Mac。
+- ⏸ **暫不做，待需求證據**：原生 macOS target、完整功能的 Flutter Web。
+- 🔴 **硬性前置**：任何形式的 Web 版在 **P0「Server-side Broker」完成前不可上線**（見 §9.3-1，這不是建議，是 Yelp 的技術限制）。
+
+## 9.2 相依套件平台支援矩陣（實查）
+
+以各套件 `pubspec.yaml` 的 `flutter.plugin.platforms` 為準：
+
+| 套件 | 版本 | macOS | Web | 本專案用途（實查使用點） | 擴平台影響 |
+| :--- | :--- | :---: | :---: | :--- | :--- |
+| `google_maps_flutter` | 2.18.1 | ❌ | ✅ | 首頁地圖模式 `map_widget.dart` | **macOS 無原生地圖**；Web 需 Maps JS API key |
+| `google_mobile_ads` | 9.1.0 | ❌ | ❌ | Banner／插頁／開屏廣告（`component/ad/` 共 7 檔 + `main.dart`） | **兩平台皆無廣告收益** |
+| `local_auth` | 3.0.2 | ✅ | ❌ | 生物辨識登入 `biometric_sign_in_manager.dart:23` | Web 須隱藏此功能 |
+| `fluttertoast` | 9.1.0 | ❌ | ✅ | `sign_in_page.dart:62,66,72`、`restaurant_detail_page.dart:115` | macOS 無實作 |
+| `flutter_inappwebview` | 6.1.5 | ✅ | ✅ | **僅用 `ChromeSafariBrowser`**（`restaurant_comment_cell.dart:14`），該 API 只有 Android／iOS 實作 | 兩平台都開不了評論連結 |
+| `image_picker` | 1.2.3 | ✅ | ✅ | Menu Vision 選圖 | macOS **不支援相機來源**，只能選檔 |
+| `firebase_ai` | 4.0.0 | ✅ | ✅（純 Dart） | Menu Vision／AI Foodie | 頂層 `platforms` 宣告含 web；`live_session.dart` 引用 `web_socket_channel/io.dart`，本專案未用 Live API，需以 `flutter build web` 實測確認不影響編譯 |
+| `firebase_messaging` | 16.7.0 | ✅ | ✅ | FCM 推播 | macOS 需 APNs entitlement；Web 需 Service Worker + VAPID key |
+| `flutter_local_notifications` | 22.3.1 | ✅ | ✅ | 前景推播顯示 | — |
+| `google_sign_in` | 6.3.0 | ✅ | ✅ | `google_sign_in_manager.dart:19` 用 `GoogleSignIn().signIn()` 取 `idToken` | **Web 版 `signIn()` 走 GIS，不保證回傳 `idToken`**，現行流程需改 `FirebaseAuth.signInWithPopup` |
+| `sign_in_with_apple` | 8.2.0 | ✅ | ✅ | `apple_sign_in_manager.dart:73` | Web 需 Service ID 與 redirect URI |
+| `flutter_facebook_auth` | 7.2.0 | ✅ | ✅ | `facebook_sign_in_manager.dart:35` | Web／macOS 需 `webAndDesktopInitialize` 設定 App ID |
+| `geolocator` | 14.0.3 | ✅ | ✅ | 定位 | macOS 需 location entitlement；Web 需 HTTPS |
+| Firebase 其餘（core／auth／firestore／app_check／remote_config／analytics） | — | ✅ | ✅ | — | 需在 Firebase 專案註冊 macOS／Web App |
+| `url_launcher`、`shared_preferences`、`package_info_plus` | — | ✅ | ✅ | — | 無影響 |
+| `flutter_platform_widgets` | 10.0.1 | 純 Dart | 純 Dart | `PlatformApp` | 預設 `PlatformStyleData`：**macOS → Cupertino、Web → Material（含 iPhone Safari）** |
+| `camera` | 0.12.1 | ❌ | ✅ | **零使用**（`lib/` 無 import） | 可直接移除 |
+| `sqflite` | 2.4.4 | ✅ | ❌ | **零使用**（`lib/`、`test/` 無 import） | 可直接移除 |
+| `path_provider`、`firebase_storage` | — | — | — | **零直接使用**（`lib/` 無 import） | 可移除（動工時確認非其他套件的必要直接相依） |
+
+> **洞察**：所有相依中，真正卡住擴平台的只有 **地圖（macOS）**、**廣告（兩者）**、**生物辨識（Web）** 三項功能缺口；其餘是「設定工作」而非「重寫工作」。另有 **4 個零使用的相依**與 **1 個只為了一個 API 而引入的 WebView 大套件**——這些是現成可刪的相容面。
+
+## 9.3 🔴 阻擋級問題（不處理就無法運作）
+
+1. **Yelp Fusion API 不支援 CORS —— Web 版無法直接呼叫** 🔴
+   - Yelp 刻意不回 `Access-Control-Allow-Origin`，目的正是阻止前端直連並把 API Key 放在瀏覽器（[Yelp/yelp-fusion#579](https://github.com/Yelp/yelp-fusion/issues/579)、[#625](https://github.com/Yelp/yelp-fusion/issues/625)）。
+   - 現行 `api_clz.dart:62` 由 client 直接帶 `Authorization` 呼叫 Yelp。在瀏覽器中 **每一個 Yelp 請求都會被 CORS 擋下**，首頁列表、詳情、評論全部空白。
+   - 即使用 CORS proxy 繞過，Remote Config 下發的 `yelp_api_auth_token` 在瀏覽器 DevTools 一眼可見，外洩面從「需逆向 APK」降為「按 F12」。
+   - **結論：Web 版的硬性前置是 P0「Server-side Broker」**（例：Cloud Functions 代理 Yelp，金鑰只存在伺服器）。擴 Web 讓這個既有 P0 從「安全債」變成「功能阻擋」。
+   - **為什麼 Broker 能解**：CORS 是**瀏覽器**強制的檢查，只管「網頁跨網域呼叫」；伺服器對伺服器的呼叫不經瀏覽器、沒有 CORS。資料流改為 `瀏覽器 → 自家 Broker → Yelp` 後，瀏覽器只跟自家後端講話——以 Firebase Hosting rewrite 讓 Broker 與網頁同網域時，連 CORS 設定都不需要。
+   - **CORS 不是方案選擇的判準**：W-A／W-B／W-C（§9.7）都要取 Yelp 資料，三者**同樣**以 Broker 為前置；區分三者的仍是 D-9.1（Web 要做到什麼程度）。
+   - **App 端改動面小**：Yelp 呼叫全集中在 `lib/api/api_clz.dart`，實際使用 3 個 endpoint（`/v3/businesses/search`、`/v3/businesses/{id}`、`/v3/businesses/{id}/reviews`）。Broker 若原路徑轉發，client 只需改 `Constants.baseUrl`（`constants.dart:30`）並移除 `api_clz.dart:62` 的 `Authorization` header。**建議行動版一併改走 Broker**：全平台單一路徑，消滅「Web 走 Broker、App 直連」的特殊情況，同時完成既有 P0。
+   - **順帶清理**：`api_clz.dart:19` 的 `@POST('/oauth2/token')` `fetchToken` 為 Yelp 已廢棄的舊認證流程，全 `lib/`、`test/` **零呼叫**，做 Broker 時一併刪除。
+   - **另一個獨立的 CORS 問題**：店家照片（Yelp CDN）與靜態地圖屬**圖片**載入，是否可顯示取決於該 CDN 是否回 CORS header（待實測，見 §9.4.2「圖片跨域」），與 API 的 CORS 無關、Broker 也不處理它。
+   - **成本前置**：Cloud Functions 需 Firebase Blaze 方案（D-9.5）。
+
+2. **`dart:io` 的 `Platform.isX` 在 Web 上直接拋例外**（5 處）
+   - `features/utils/utils.dart:73` `Platform.localeName`
+   - `manager/fcm_manager.dart:109` `Platform.isIOS`
+   - `flow/signinup/view/third_party_sign_in_widget.dart:33` `Platform.isIOS`（連帶 macOS 上 Apple 登入按鈕不會出現，但 macOS 其實支援）
+   - `component/ad/banner_ad_state.dart:12`、`interstitial_ad_state.dart:9`、`app_open_ad_state.dart:11`
+   - 修法都是一行：改用 `defaultTargetPlatform` / `kIsWeb`（`foundation.dart`，全平台可用），`localeName` 改 `PlatformDispatcher.instance.locale`（`main.dart` 載入 `S` 時已用此寫法）。
+
+3. **AdMob 初始化未受保護**：`main.dart:32` `MobileAds.instance.initialize()` 位於 `try` 之外，且結果被 `BannerADState` 持有等待；在 macOS／Web 會得到 `MissingPluginException`。
+
+4. **`firebase_options.dart` 對 Web（`:20`）與 macOS（`:31`）直接 `throw UnsupportedError`**：`main.dart` 的 `try` 會吞掉例外讓 App 繼續跑，之後所有 Firebase 呼叫連鎖失敗。需以 `flutterfire configure` 註冊兩平台並重新產生。
+
+## 9.4 平台特定調整清單
+
+### 9.4.1 共用（macOS 與 Web 都需要）
+
+| 領域 | 現況（實查） | 調整 |
+| :--- | :--- | :--- |
+| 版面 | 全為手機直式設計；無任何 `LayoutBuilder`；7 檔用 `MediaQuery` 取寬高；iOS 鎖直向 | 設定內容最大寬度；寬螢幕改雙欄（列表＋地圖／詳情）；`DrawerWidget` 在寬螢幕改 `NavigationRail` |
+| BottomSheet | Menu Vision、AI Foodie 以 `DraggableScrollableSheet` 呈現 | 寬螢幕改 Dialog 或側邊面板，避免在 27 吋螢幕底部拉出整片 sheet |
+| 輸入 | 地圖卡片列為 `PageView`（`map_widget.dart:36,180`） | **Flutter 桌面／Web 預設不允許滑鼠拖曳捲動**，需以 `ScrollBehavior.dragDevices` 加入 mouse，或補左右箭頭按鈕 |
+| 回饋訊息 | `fluttertoast`（macOS 無實作） | 改 `SnackBar`。⚠️ macOS 走 `CupertinoApp` 分支，**不會自帶 `ScaffoldMessenger`**，需在 `PlatformApp.builder` 補一層 |
+| 外部連結 | `ChromeSafariBrowser` 僅 Android／iOS | 改 `url_launcher` 的 `LaunchMode.inAppBrowserView`（Android Custom Tabs／iOS SFSafariViewController 行為相同），**可一併移除 `flutter_inappwebview`** |
+| 能力閘門 | 廣告、生物辨識、推播散落各處，無平台判斷 | 見 §9.6 A-9.2：以「不支援就不註冊／不顯示」處理，而非在每個呼叫點加 `if` |
+| App Check | `main.dart:48,53` 只帶 `providerApple`／`providerAndroid` | Web 需 `providerWeb: ReCaptchaV3Provider(...)`；macOS 沿用 `providerApple`（release 分支 `2e2d0ac` 已改 `AppleAppAttestProvider`，macOS 上的可用性需實測） |
+
+### 9.4.2 Web 專屬
+
+| 項目 | 說明 |
+| :--- | :--- |
+| **路由與重新整理** | 4 處以 `ModalRoute.of(context)!.settings.arguments` 強轉取參數（`restaurant_detail_page.dart:34`、`photo_viewer.dart:25`、`filter_page.dart:32`；`main_page.dart:214` 已用 `?.`）。瀏覽器**重新整理或直接開網址時 arguments 為 null → 強轉崩潰**。要支援分享連結（`/restaurant/<id>`），網址只能承載 `id`，但詳情頁目前依賴列表頁在記憶體中傳入的整個 `Tuple2<RestaurantEntity, dynamic>`（`restaurant_detail_page.dart:32-37`：頁首店名／圖片與 `_summaryInfo.favor` 收藏狀態皆取自它）。**真正的工作是讓詳情頁只憑 `id` 自足渲染**；路由解析本身以內建 `onGenerateRoute` 拆 `/restaurant/<id>` 即可（見 A-9.4）。其餘頁面（`photo_viewer`、`filter`）缺參數時導回首頁 |
+| **圖片跨域** | 店家照片（Yelp CDN）與靜態地圖（`restaurant_detail_bloc.dart:30` 產生 URL）皆以 `FadeInImage.assetNetwork` 載入。CanvasKit／skwasm 渲染器讀取跨域圖片需對方回 CORS header；未回則需改用 `<img>` 元素策略（`NetworkImage` 的 `webHtmlElementStrategy`）。**兩個來源是否回 CORS header 待實測** |
+| **Google 登入** | 現行 `GoogleSignIn().signIn()` → `idToken` → `signInWithCredential`；Web 改 `FirebaseAuth.instance.signInWithPopup(GoogleAuthProvider())`，Apple／Facebook 同理可統一走 Firebase popup |
+| **推播** | 需 `web/firebase-messaging-sw.js`、VAPID key、瀏覽器授權；iOS Safari 僅限加入主畫面的 PWA 才能收推播 |
+| **地圖** | `web/index.html` 載入 Maps JS API，key 為公開值，須以 HTTP referrer 限制 |
+| **首次載入** | CanvasKit／wasm 需下載渲染引擎，首屏明顯慢於原生；`--wasm` 需所有套件相容 `dart:js_interop`，以編譯閘門確認 |
+| **AI 配額** | 瀏覽器端最容易被腳本濫用 Gemini 配額，App Check（reCAPTCHA）**須在 Console 開啟 enforcement**，不只是 activate |
+| **部署** | Firebase Hosting（與 Broker 的 Cloud Functions 同專案，rewrite 同網域可免 CORS） |
+
+### 9.4.3 macOS 原生 target 專屬（若選 §9.7 方案 M-B）
+
+| 項目 | 說明 |
+| :--- | :--- |
+| **Sandbox entitlements** | `com.apple.security.network.client`（**缺這個所有 HTTP 請求都會失敗**，最常見的踩雷點）、`keychain-access-groups`（Firebase Auth 存 token）、`personal-information.location`、`files.user-selected.read-only`（選圖）、`aps-environment`（推播）、Sign in with Apple capability |
+| **地圖替代** | 無原生 Google Maps。最省：**重用既有 Static Map 縮圖（`GoogleApiUtil.createStaticMapUrl`）＋ 以 `url_launcher` 開 Apple Maps／Google Maps**，隱藏地圖模式切換 |
+| **Menu Vision** | 隱藏相機來源，只留「選擇檔案」 |
+| **部署目標與建置** | 依 Firebase SDK 最低需求上修 macOS deployment target；沿用 iOS 的 SPM 混合模式 |
+| **視窗** | 在 `MainFlutterWindow.swift` 設最小視窗尺寸，避免縮到版面崩壞（不需引入 `window_manager` 套件） |
+| **發布** | Mac App Store（強制 sandbox）或 Developer ID 簽章 + notarization；`release.yml` 已跑在 `macos-15`，可加 `flutter build macos` 與上傳步驟 |
+
+## 9.5 共用前置清理（不論是否擴平台都應做）
+
+這些項目**本身就有價值**，擴平台只是讓它們變成必做：
+
+| 編號 | 項目 | Effort | 理由 |
+| :--- | :--- | :---: | :--- |
+| **E-9.1** | 移除 4 個零使用相依：`camera`、`sqflite`、`path_provider`、`firebase_storage` | 0.1d | 縮小建置相容面與 App 體積；`sqflite` 還誤導文件（§1.1 記為「本地快取」） |
+| **UI-9.1** | `ChromeSafariBrowser` 改 `url_launcher` inAppBrowserView，移除 `flutter_inappwebview` | 0.2d | 一個 API 養一個大型 WebView 套件；行動版行為不變 |
+| **A-9.1** | 5 處 `dart:io` `Platform.isX` 改 `defaultTargetPlatform`／`PlatformDispatcher` | 0.1d | 一行一處，行動版語意不變；順帶讓 macOS 顯示 Apple 登入 |
+| **E-9.2** | CI 加 `flutter build web` 編譯閘門（ubuntu runner，成本低） | 0.2d | 有它才能**機械性**防止下一個 `dart:io` 滲入共用程式碼；比文件規則可靠（Guide → Sensor） |
+| **P0（既有）** | Server-side Broker | 既有估計 | Web 的硬性前置（§9.3-1） |
+
+## 9.6 平台擴展本體（決策後才動工）
+
+| 編號 | 項目 | 平台 | Effort（粗估） | 依賴 |
+| :--- | :--- | :---: | :---: | :--- |
+| **A-9.2** | 平台能力閘門：不支援的平台不初始化 AdMob、不顯示廣告位／生物辨識／地圖模式；集中於**一處**判斷，呼叫點只讀結果 | 兩者 | 0.5d | A-9.1 |
+| **A-9.3** | `flutterfire configure` 註冊 macOS／Web App，重新產生 `firebase_options.dart`；App Check 補 `providerWeb` | 兩者 | 0.5d | — |
+| **UI-9.2** | `fluttertoast` → `SnackBar`（含 `CupertinoApp` 分支補 `ScaffoldMessenger`） | 兩者 | 0.3d | — |
+| **UI-9.3** | 響應式版面：最大寬度、寬螢幕雙欄、`NavigationRail`、Sheet → Dialog | 兩者 | 2–3d | — |
+| **UI-9.4** | 桌面輸入：`ScrollBehavior` 滑鼠拖曳、hover 狀態、AI 對話 Enter 送出 | 兩者 | 0.5d | — |
+| **A-9.4** | 深層連結：①詳情頁改為只憑 `id` 自足渲染（頁首取自詳情 API 回應、收藏狀態向收藏資料查詢，不再依賴傳入的 `RestaurantEntity`）；②`PlatformApp` 加 `onGenerateRoute` 解析 `/restaurant/<id>`；③其餘強轉 arguments 處缺參數導回首頁。**不導入 `go_router`**：現有 `routesTable` 與 10 處 `pushNamed` 不需改動 | 兩者（深層連結主要服務 Web） | 1–1.5d（主要成本在①） | D-9.3 |
+| **A-9.5** | 第三方登入改 Firebase popup 流程 | Web | 1d | A-9.3 |
+| **E-9.3** | Firebase Hosting 部署 workflow、Service Worker、Maps JS key | Web | 1d | Broker、A-9.3 |
+| **A-9.6** | macOS entitlements、地圖降級為靜態圖＋外部導航、選圖只留檔案 | macOS | 1–1.5d | A-9.2 |
+| **E-9.4** | macOS 簽章／notarization 或 Mac App Store 上傳 workflow | macOS | 1d | A-9.6 |
+
+> ⚠️ **effort 估計偏差提醒**（沿用本文件 C-1／C-2 教訓）：UI-9.3 響應式版面是最可能低估的項目——動到的不是「新寫幾個 layout」，而是**每個頁面既有的寬度假設**（`MediaQuery` 7 檔、固定寬 `230`／`260` 的 AI 卡片、`viewportFraction: 0.85`）。動工前先 grep 盤點使用點。
+
+## 9.7 方案比較
+
+### macOS
+
+| 方案 | 內容 | Effort | 取捨 |
+| :--- | :--- | :---: | :--- |
+| **M-A（建議先做）** | iOS App 以「Designed for iPad」上架 Apple Silicon Mac | 極低（App Store Connect 設定 + 實機驗證） | ✅ 零程式碼、地圖／生物辨識／相機走 iOS 實作照常運作<br>❌ 不支援 Intel Mac；視窗為 iPad 直式比例；AdMob 在 Mac 上是否正常投放**待驗證**；非原生 Mac 操作手感 |
+| **M-B** | Flutter 原生 macOS target | 高（§9.4.3 + §9.6 macOS 項） | ✅ 可調整視窗、原生選單、Intel 支援<br>❌ 無 Google 地圖、無廣告、須維護第二套 entitlements／簽章／CI |
+
+### Web
+
+| 方案 | 內容 | Effort | 取捨 |
+| :--- | :--- | :---: | :--- |
+| **W-A** | 完整功能 Flutter Web | 最高 | 須完成 Broker、登入重寫、路由重構、推播、響應式；無廣告收益；首屏慢 |
+| **W-B（若確定要 Web，建議此案）** | 精簡 Flutter Web：瀏覽、搜尋、詳情、收藏、分享連結；**不含**廣告、生物辨識、推播 | 中 | 共用程式碼最多；Broker 仍為硬性前置 |
+| **W-C（若需求只是分享）** | 非 Flutter 的靜態分享落地頁（Firebase Hosting + Cloud Function 取店家摘要），導流開 App／下載 | 低 | 首屏快、可被搜尋引擎索引、與 F-2.2 共編地圖 URL 需求直接對應；但不是「網頁版 App」 |
+
+**建議路徑**：先做 §9.5 共用前置（本身就該做）→ macOS 走 M-A 取得低成本曝光 → 以 Analytics 觀察 Mac 使用量與分享連結需求 → 有證據再決定 M-B／W-B／W-C。**不要在沒有需求證據時同時開兩個新平台**——那會讓每個功能的實作與驗證成本乘以 2～3。
+
+> **📌 2026-09-30 決議（見 §9.8）**：採 **W-B + M-B**，兩平台同時擴展，上述「先 M-A 再觀察」的建議路徑不採用。已知代價：每個後續功能的驗證面由 2 平台擴為 4 平台，須由 E-9.2（CI 編譯閘門）擴充為 `build web` + `build macos` 兩道機械檢查來承擔。
+>
+> **建議動工順序**：
+> 1. §9.5 共用前置（E-9.1、UI-9.1、A-9.1、E-9.2）＋升級 Blaze 並完成 Broker
+> 2. A-9.3 Firebase 註冊兩平台 → A-9.2 能力閘門
+> 3. A-9.4 深層連結（詳情頁只憑 id 自足渲染 + 內建 `onGenerateRoute`）
+> 4. UI-9.2、UI-9.3、UI-9.4（回饋訊息、響應式版面、桌面輸入）
+> 5. Web 專屬（A-9.5、E-9.3）與 macOS 專屬（A-9.6、E-9.4）可平行
+
+## 9.8 待決策事項
+
+| # | 問題 | 影響 |
+| :--- | :--- | :--- |
+| **D-9.1** | Web 的目的是什麼？「完整網頁版 App」還是「分享連結打得開」？ | 決定 W-A／W-B／W-C，工作量相差一個量級。✅ **2026-09-30 決議：採 W-B 精簡版**（瀏覽、搜尋、詳情、收藏、分享；不含廣告、生物辨識、推播），Broker 為硬性前置 |
+| **D-9.2** | macOS 是否接受 iOS-on-Mac（M-A）的限制（僅 Apple Silicon、iPad 視窗）？ | 決定是否需要 M-B。✅ **2026-09-30 決議：採 M-B 原生 macOS target**（接受無 Google 地圖——降級為靜態圖＋外部導航、無 AdMob，需維護 entitlements／簽章／CI；§9.4.3 與 §9.6 的 macOS 項目轉為必做） |
+| **D-9.3** | Web 是否需要深層連結（直接開 `/restaurant/<id>`）？ | 決定 A-9.4 是簡單容錯還是導入 `go_router`。✅ **2026-09-30 決議：需要深層連結，但不導入 `go_router`**（同日修正，原決議為導入 `go_router`）。修正理由：實查發現瓶頸不在路由套件，而在詳情頁依賴記憶體傳入的 `RestaurantEntity`——不論用哪種路由都得先讓詳情頁只憑 id 渲染；路由解析以內建 `onGenerateRoute` 即可，免新增相依、免改寫 `routesTable` 與 10 處 `pushNamed`。日後若需要路由守衛或巢狀路由再評估 `go_router` |
+| **D-9.4** | 桌面／Web 無 AdMob，是否接受無廣告收益，或評估 AdSense（`google_adsense` 套件）？ | Web 營收模式。✅ **2026-09-30 決議：首版接受無廣告**，macOS／Web 由 A-9.2 能力閘門關閉廣告初始化與廣告位；有流量數據後再評估 AdSense |
+| **D-9.5** | Broker（Cloud Functions）需 Firebase Blaze 方案，目前計費方案是否允許？ | Web 的硬性前置能否落地。✅ **2026-09-30 確認：目前為 Spark，可升級 Blaze**——升級後以 Cloud Functions 做 Broker、Firebase Hosting rewrite 同網域部署；升級時須同步設定預算警示，避免 Broker 或 Gemini 被濫用時帳單失控 |
+
+## 9.9 明確排除 (YAGNI)
+
+| 排除項 | 理由 |
+| :--- | :--- |
+| ❌ Windows／Linux 桌面版 | 無需求；`firebase_options.dart` 亦未設定 |
+| ❌ 為 macOS 引入第三方地圖套件（如 Apple MapKit 橋接） | 靜態地圖＋外部導航已滿足「看位置、去導航」 |
+| ❌ Web 版離線快取／PWA 離線模式 | 行動版離線快取都還沒做（§2.5-5） |
+| ❌ 導入 `go_router` | 深層連結只需解析 `/restaurant/<id>`，內建 `onGenerateRoute` 已足夠；需要路由守衛或巢狀路由時再評估（D-9.3） |
+| ❌ `window_manager` 等視窗管理套件 | 最小視窗尺寸在 `MainFlutterWindow.swift` 設一行即可 |
+| ❌ 為每個平台寫一套 Repository 實作 | 資料層本身無平台差異；差異只在「能力有無」，一處閘門即可（A-9.2） |
 
 
