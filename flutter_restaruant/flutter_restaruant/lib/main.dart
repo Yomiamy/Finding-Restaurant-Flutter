@@ -51,7 +51,7 @@ void main() async {
       );
     } else {
       await FirebaseAppCheck.instance.activate(
-        providerApple: const AppleDeviceCheckProvider(),
+        providerApple: const AppleAppAttestProvider(),
         providerAndroid: const AndroidPlayIntegrityProvider(),
       );
     }
