@@ -10,17 +10,21 @@
 quick <描述或 #issue>
   │
   ▼
+⓪ 跑 gen-grill 的 Q5（既有覆蓋實查）——只查「這個是不是已經做過了」，
+   Q1–Q4 略過。實查結果與需求敘述衝突時先回報，不逕自往下做
+  ▼
 ① 建 branch（不建 worktree，直接在原 repo checkout）
    - 有 #issue → gh issue view 解析 brief，branch 名 <prefix>/YYYYMM/<ID>-<slug>
    - 只有描述 → 不開 issue，branch 名 <prefix>/YYYYMM/<slug>
-   - prefix/slug 規則沿用 ticket-id-dev-prep
+   - prefix/slug 規則沿用 gen-dev-worktree
   ▼
 ② 主對話直接實作（不委派 implementer/MCP——小修正本來就在「不委派」硬規則內）
    - 不拆任務、不逐任務暫停；模糊需求仍問（≤2 個問題）
    - 改完跑相關測試（不重跑整套）
   ▼
 ③ Task("reviewer", "快掃 <branch> diff，單 lens：correctness")
-   - 保住「不讓同源 model 自審」原則；發現問題 → 主對話修正後重掃
+   - 保住「不讓實作模型自審」原則（reviewer frontmatter 綁定 `model: opus` 最強推論，確保獨立交叉審查強度）；發現問題 → 主對話修正後重掃
+   - quick 模式無 verifier 兩階段驗收，這是唯一的品質關卡
   ▼
 ④ 呼叫 gen-commit skill 執行 commit → 用 gen-pr skill 產 PR 草稿
   ▼
@@ -33,7 +37,7 @@ quick <描述或 #issue>
 - **超出範圍時：收工重來，不接續升級。** 中途發現超出小修正範圍（多檔設計判斷、新依賴、要動架構）→ 停下告知使用者，把已做的變更保存起來，然後**走完整流程重新開始**：
 
   ```bash
-  git add -A && git commit -m "WIP: 超出 quick 範圍，轉完整流程"   # 或 git stash -u
+  呼叫 gen-commit skill 打 WIP commit（訊息英文，如 "chore: wip, exceeds quick scope"）
   ```
 
   接著照 STAGE 1 的規則從 `origin/main` 建新的 worktree + branch，在新工作區取回變更（`git cherry-pick` 該 WIP commit，或 `git stash pop`），並刪掉 quick 的 state 檔。
