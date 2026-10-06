@@ -14,7 +14,13 @@ description: |
 
 你是整個開發流程的**總指揮**。使用者給你一個需求，你自動驅動所有 agent 跑完整個週期，只在必要時暫停。
 
-> **多 workflow 並行：** 同一 repo 可同時跑多個獨立 workflow（多個終端 / 多個 session）。STAGE 1 起隔離 key 是**獨立 worktree**（沿用 `ticket-id-dev-prep` 規則建立）——每個 workflow 跑在自己的 worktree 目錄裡，state 檔天然分開存放，彼此零衝突，不需要任何鎖或中央索引。唯一需要額外處理的窗口是「兩個流程都還在 STAGE 0a/0b（尚無 worktree，仍在原 repo 目錄）」，靠 **workflow-id** 持久化區分（見 [`references/state-machine.md`](references/state-machine.md)）。
+> **多 workflow 並行：** 同一 repo 可同時跑多個獨立 workflow（多個終端 / 多個 session）。STAGE 1 起隔離 key 是**獨立 worktree**（沿用 `gen-dev-worktree` 規則建立）——每個 workflow 跑在自己的 worktree 目錄裡，state 檔天然分開存放，彼此零衝突，不需要任何鎖或中央索引。唯一需要額外處理的窗口是「兩個流程都還在 STAGE 0a/0b（尚無 worktree，仍在原 repo 目錄）」，靠 **workflow-id** 持久化區分（見 [`references/state-machine.md`](references/state-machine.md)）。
+
+## 環境防護與初始化 (Environment Setup)
+
+在啟動流程前（進入任何 STAGE 之前），第一件事必須防護 400 錯誤：
+1. 透過 Bash 與 `jq` 在 `.claude/settings.local.json` 寫入 `"alwaysThinkingEnabled": true`，確保子 agent 攜帶最高 effort 啟動時不會因 extended thinking 被關閉而崩潰。
+（若檔案不存在或為空，請初始化為 `{}` 再寫入。此 key 於 STAGE 4 流程結束時移除；若之後再手動進入 STAGE 5／STAGE 6，各該 STAGE 結束時同樣移除。）
 
 ## Claude Workflow 編排（可選加速層）
 
@@ -34,8 +40,21 @@ description: |
            │
            ▼
     ┌─────────────────────────────────────────────────┐
+    │  STAGE 0·grill：需求盤問（planner 之前的必經步驟）│
+    │  → 呼叫 gen-grill skill                          │
+    │  → 五項判準（問題定義/觸發場景/成功標準/範圍邊界 │
+    │    /既有覆蓋實查）齊備 → 放行                     │
+    │  → 任一項缺 → 針對該項提問（一次一個）後重判      │
+    │  → 短路（已有文件背書/已 triage issue/機械性改動  │
+    │    /quick 模式）→ 跳過 Q1–Q4，但 Q5 一律要跑      │
+    │  → 產出結構化 brief，交給 planner                 │
+    │  （不動狀態機：轉移表維持 0a→0b→1→2→3→4）        │
+    └──────────────────────┬──────────────────────────┘
+                           │ 需求已收斂
+                           ▼
+    ┌─────────────────────────────────────────────────┐
     │  STAGE 0a：功能規格                             │
-    │  → 呼叫 planner agent                           │
+    │  → 呼叫 planner agent（依據 grill 產出的 brief） │
     │  → 🟢 並行 2 條（已 opt-in → 可用 Workflow）：   │
     │     A. 專案 context 收集（讀檔 / git log）       │
     │     B. 相似功能代碼調查（既有實作參考）          │
@@ -51,6 +70,11 @@ description: |
     │  → 呼叫 planner agent（依據已確認的功能規格）    │
     │  → 產出 docs/plans/YYYY-MM-DD-<feature>.md      │
     │    （How：資料結構、檔案異動、任務拆分）          │
+    │  → 呼叫 plan-verifier agent（獨立 Opus）         │
+    │     • 初審不計入修正次數；若 REVISE，退回 planner 修正   │
+    │       並重新初審（最多 2 次修正；第 2 次修正後的複審仍為 │
+    │       REVISE 時停止自動推進，交由使用者決策）           │
+    │     • READY  → 展示計畫與初審摘要                        │
     │  ⏸ 暫停：展示實作計畫，等使用者確認              │
     └──────────────────────┬──────────────────────────┘
                            │ 使用者確認
@@ -61,11 +85,11 @@ description: |
     │    （五區段 zh-tw：Problem/Root cause/Fix/        │
     │     Out of scope/Verification）                  │
     │  → 呼叫 brancher agent 產出分支名草稿             │
-    │    （prefix/slug 規則沿用 ticket-id-dev-prep）    │
+    │    （prefix/slug 規則沿用 gen-dev-worktree）    │
     │  ⏸ 暫停：展示 Issue 標題/內容 + 分支/worktree 名稱│
     │          等使用者確認或修改                       │
     │  → 委派執行 gh issue create                     │
-    │  → brancher 依 ticket-id-dev-prep 規則建立       │
+    │  → brancher 依 gen-dev-worktree 規則建立       │
     │    worktree + branch，主對話 cd                  │
     │    進新 worktree 繼續後續所有 stage               │
     └──────────────────────┬──────────────────────────┘
@@ -73,16 +97,20 @@ description: |
                            ▼
     ┌─────────────────────────────────────────────────┐
     │  STAGE 2：實作（逐任務動態分級）                  │
-    │  → 呼叫 implementer agent                       │
-    │  → 解析計畫，判斷並行模式：                       │
-    │     • ≥2 個獨立任務、寫入路徑不重疊 → 🟢 並行    │
-    │       （已 opt-in → 同批可用 Workflow fan-out）  │
-    │     • 否則 → 🔴 序列逐任務                        │
+    │  → 解析計畫任務總數 N，執行                     │
+    │    wf-state.sh set <檔> total_tasks=<N> 啟動閘門 │
+    │  → 解析計畫，逐任務先過「派發煞車」門檻：        │
+    │     • 單檔 ≤ 20 行且無公共 API 變更 → 🛑 煞車：   │
+    │       主進程原地修改，不派發 subagent，原地測驗   │
+    │     • 其餘任務 → 判斷並行模式並委派實作：         │
+    │       • ≥2 個獨立非微任務、寫入路徑不重疊 → 🟢 並行│
+    │         （已 opt-in → 同批可用 Workflow fan-out） │
+    │       • 否則 → 🔴 序列逐任務                      │
     │  → 逐任務選 model：機械性→快/便宜｜整合→標準     │
     │     ｜設計判斷/跨層→最強                         │
     │  → 委派實作任務，verifier 兩階段驗收          │
     │     （spec compliance → code quality，          │
-    │      見 delegation-and-parallel.md）            │
+    │      見 references/delegation-and-parallel.md） │
     │  🪶 Ponytail：派發模板必附〈規則塊〉，驗收把  │
     │     計畫外抽象/依賴/防禦分支當品質不佳退回    │
     │     （規則塊全文見 .claude/agents/implementer.md）│
@@ -119,6 +147,9 @@ description: |
                            │ 使用者確認
                            ▼
                       PR 建立完成 ✦
+                      🔴 環境清理：透過 Bash 與 `jq` 將
+                      `.claude/settings.local.json` 中的
+                      `"alwaysThinkingEnabled": true` 移除，避免殘留。
                       流程結束，Claude 停止。
                       （worktree 與本地 branch 一律保留，不自動刪除；
                        PR 合併後可手動觸發 STAGE 6 清理 worktree）
@@ -134,6 +165,7 @@ description: |
     → 呼叫 responder agent 處理每條意見
     → 處理完畢 → 呼叫 reviewer agent 重新審查
     → 審查通過 → 呼叫 publisher agent 更新 PR 描述與留言
+    → 🔴 環境清理：透過 Bash 與 `jq` 將 `.claude/settings.local.json` 中的 `"alwaysThinkingEnabled": true` 移除，避免殘留。
     → 呼叫 wf-state.sh stage-done 5 結束 STAGE 5
 
     ──────────────────────────────────────────────────
@@ -146,26 +178,37 @@ description: |
     → 【文件同步】先呼叫 gen-sync-docs-by-branchs skill，以當前處理的分支為
       目標，把該分支的實際變更回寫到 docs 下的發想／結構說明文件
       （brainstorm、architecture 等）
-    → 【提交同步結果】呼叫 gen-commit skill 將文件變更 commit 進 git
+    → 【提交同步結果】將文件變更 commit（移除 worktree 前必須完成）
     → 呼叫 worktree-close-cleanup skill 移除 STAGE 1 建立的 worktree
     → 僅移除 worktree 本身，**對應 branch 一律保留、不刪除**
+    → 🔴 環境清理：透過 Bash 與 `jq` 將 `.claude/settings.local.json` 中的 `"alwaysThinkingEnabled": true` 移除，避免殘留。
 ```
+
+---
+
+## Commit 規則
+
+🔴 **任何 stage、任何時候要 commit，一律用 `gen-commit` skill。**
 
 ---
 
 ## 暫停點規則
 
+> **STAGE 0·grill 不是暫停點。** 盤問本身就是對話往返，不需要 `stage-done` 棘輪，
+> 也不改變下表的 7 個暫停點。它發生在 `wf-state.sh init` 之後、planner 派發之前，
+> 狀態機完全無感（轉移表維持 `0a→0b→1→2→3→4`）。
+
 | 暫停時機 | 你要做什麼 | 繼續條件 |
 |---------|-----------|---------|
 | 功能規格完成後 | 展示功能規格（使用者故事、驗收條件、範圍），問「確認嗎？」 | 使用者確認 |
-| 實作計畫完成後 | 展示實作計畫（任務清單、檔案異動），問「確認開始實作嗎？」 | 使用者確認 |
+| 實作計畫完成後 | 展示實作計畫（任務清單、檔案異動）與 plan-verifier 初審摘要，問「確認開始實作嗎？」 | 使用者確認 |
 | Issue + 分支建立前 | 展示 Issue 標題、描述內容、分支名稱，問「確認建立嗎？」 | 使用者確認或修改後確認 |
 | 每個實作任務完成後 | 展示變更檔案清單 + 測試結果，問「確認繼續下一個任務嗎？」 | 使用者確認 |
 | 審查報告完成後 | 展示完整審查報告，問「確認繼續發布嗎？或需要修正？」 | 使用者確認 → STAGE 4，或退回 STAGE 2 |
 | 遇到模糊需求 | 問最小必要問題（≤ 2 個），不要問多 | 使用者回答後自動繼續 |
 | PR 草稿完成後 | 展示草稿，問「確認發布嗎？」 | 使用者確認 |
 
-**不應該暫停的情況：** 分支建立、任務間自動切換、STAGE 2 內部失敗 retry、STAGE 3 審查失敗退回 STAGE 2、測試執行、並行單元間的協調。這些全部自動處理（失敗 retry 與退回路徑見 [`references/delegation-and-parallel.md`](references/delegation-and-parallel.md)）。
+**不應該暫停的情況：** 分支建立、任務間自動切換、STAGE 0b plan-verifier 初審打回（REVISE）自動重修（最多 2 次；第 2 次仍為 REVISE 則停止並等待使用者決策，不再自動處理）、STAGE 2 內部失敗 retry、STAGE 3 審查失敗退回 STAGE 2、測試執行、並行單元間的協調。這些全部自動處理（失敗 retry 與退回路徑見 [`references/delegation-and-parallel.md`](references/delegation-and-parallel.md)）。
 
 **主動中斷（非暫停）：** context > 150k 時依 Token Budget Gate 主動保存並切 session，這**不是暫停點，是保護性中斷**——續接時不問「繼續還是開新流程」，直接接回原 stage（見 [`references/token-budget-gate.md`](references/token-budget-gate.md)）。
 

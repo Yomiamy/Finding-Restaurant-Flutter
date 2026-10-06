@@ -234,10 +234,15 @@ case "$cmd" in
     done
     [ -n "$branch" ] || die "promote 需要 --branch"
     validate "$src"
+    src_mode="$(jq -r '.mode' "$src")"
+    src_stage="$(jq -r '.stage' "$src")"
+    if [ "$src_mode" != "sequence" ] || { [ "$src_stage" != "0a" ] && [ "$src_stage" != "0b" ] && [ "$src_stage" != "1" ]; }; then
+      die "promote 僅支援 sequence 模式之 STAGE 0a/0b/1 pending 狀態（目前模式：$src_mode，階段：$src_stage）"
+    fi
     f="$dest/$(slugify "$branch").json"
     claim_new "$f"
     trap 'rm -f "$f"' EXIT   # 同 init：失敗不留 0-byte 佔位檔
-    jq --arg b "$branch" '.branch = $b' "$src" | atomic_write "$f"
+    jq --arg b "$branch" '.branch = $b | .stage = "1"' "$src" | atomic_write "$f"
     trap - EXIT
     rm "$src"
     echo "$f"
@@ -318,9 +323,13 @@ case "$cmd" in
     fi
     if [ "$next" = "3" ] && [ "$mode" = "sequence" ]; then
       total="$(jq -r '.total_tasks' "$f")"
-      completed_count="$(jq -r '.completed_tasks | length' "$f")"
-      if [ "$total" != "null" ] && [ "$completed_count" -lt "$total" ]; then
-        die "實作尚未全部完成（已完成 $completed_count / 共 $total 任務），拒絕推進至 STAGE 3"
+      if [ "$total" != "null" ]; then
+        completed_count="$(jq -r '.completed_tasks | length' "$f")"
+        if [ "$completed_count" -lt "$total" ]; then
+          die "實作尚未全部完成（已完成 $completed_count / 共 $total 任務），拒絕推進至 STAGE 3"
+        elif [ "$completed_count" -gt "$total" ]; then
+          die "任務狀態異常：已完成數 ($completed_count) 超出宣告總數 ($total)。若實作中追加了任務，請先更新計畫並執行 wf-state.sh set <檔> total_tasks=<N>"
+        fi
       fi
     fi
     jq --arg s "$next" '.stage = $s | .awaiting_confirmation = false | .interrupted_by = null' \
