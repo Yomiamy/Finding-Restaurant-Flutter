@@ -41,8 +41,18 @@
 `flutter/foundation.dart` 的 `kIsWeb` / `defaultTargetPlatform` / `TargetPlatform` 全平台可用，`PlatformDispatcher` 來自 `dart:ui`。相依盤點：
 
 - `banner_ad_state.dart`、`interstitial_ad_state.dart` **已** `import 'package:flutter/foundation.dart'`
-- `fcm_manager.dart`、`third_party_sign_in_widget.dart` **已** `import 'package:flutter/material.dart'`（re-export `foundation`）
+- ~~`fcm_manager.dart`、`third_party_sign_in_widget.dart` **已** `import 'package:flutter/material.dart'`（re-export `foundation`）~~
+  🔴 **此前提經實作時實測證偽（2026-10-07 更正）**：`material.dart` 轉出 `widgets.dart`，而
+  `widgets.dart:18` 是 `export 'foundation.dart' show Brightness, UniqueKey;`——**窄 export**，
+  `defaultTargetPlatform` 不在其中。兩檔皆報 `Undefined name 'defaultTargetPlatform'`，
+  實際都必須明確補 `import 'package:flutter/foundation.dart';`。
+  連帶發現：`fcm_manager.dart` 原本只為 `debugPrint` 而 import `material.dart`，
+  而 `foundation` 也提供 `debugPrint`，故 `material.dart` 變為冗餘（`unnecessary_import`）並一併移除。
 - `app_open_ad_state.dart`、`utils.dart` 需補 import，但來源為 Flutter SDK 內建
+
+> ⚠️ **給 A-9.2 / 後續平台工作的教訓**：不要假設 `material.dart` 或 `widgets.dart`
+> 能取得 `foundation` 的全部符號。它們的 re-export 是 `show` 白名單，只放了極少數型別。
+> 需要 `defaultTargetPlatform`、`kIsWeb`、`kDebugMode` 等時，一律明確 import `foundation.dart`。
 
 6 檔的 `dart:io` **僅**用於 `Platform`（`File` / `Directory` / `Socket` / `HttpClient` / `Process` / `exit` 掃描結果全為 0）→ `import 'dart:io';` 可整行移除，不留殘用。
 
