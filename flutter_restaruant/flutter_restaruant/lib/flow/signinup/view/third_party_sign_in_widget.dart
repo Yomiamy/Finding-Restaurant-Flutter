@@ -1,12 +1,11 @@
-import 'dart:io';
-
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:sign_in_button/sign_in_button.dart';
 
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../generated/l10n.dart';
 
-/// 第三方登入按鈕組。Apple 登入僅在 iOS 顯示。
+/// 第三方登入按鈕組。Apple 登入在 iOS 與 macOS 顯示（兩者皆支援 Sign in with Apple）。
 class ThirdPartySignInWidget extends StatelessWidget {
   const ThirdPartySignInWidget({
     super.key,
@@ -30,7 +29,8 @@ class ThirdPartySignInWidget extends StatelessWidget {
         ),
         onPressed: onGoogleSignIn,
       ),
-      if (Platform.isIOS) ...[
+      if (defaultTargetPlatform == TargetPlatform.iOS ||
+          defaultTargetPlatform == TargetPlatform.macOS) ...[
         const SizedBox(height: ThemeSize.space10),
         SignInButton(
           Buttons.apple,
