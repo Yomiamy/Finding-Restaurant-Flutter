@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
@@ -9,7 +7,7 @@ class BannerADState {
   Future<InitializationStatus> initialization;
   BannerADState(this.initialization);
 
-  String? get bannerAdUnitId => Platform.isAndroid
+  String? get bannerAdUnitId => defaultTargetPlatform == TargetPlatform.android
       ? Constants.adAndroidBannerId
       : Constants.adIosBannerId;
 

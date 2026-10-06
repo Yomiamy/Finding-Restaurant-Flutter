@@ -1,4 +1,4 @@
-import 'dart:io';
+import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'app_open_ad.dart';
 
@@ -8,7 +8,7 @@ abstract class AppOpenADEvent {
 }
 
 class AppOpenADState {
-  String adUnitId = Platform.isAndroid
+  String adUnitId = defaultTargetPlatform == TargetPlatform.android
       ? 'ca-app-pub-7910179918263365/2058235863'
       : 'ca-app-pub-7910179918263365/5774119595';
   bool isShowingAd = false;
