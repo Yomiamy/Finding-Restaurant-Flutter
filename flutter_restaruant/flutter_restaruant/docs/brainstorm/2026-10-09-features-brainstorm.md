@@ -1952,7 +1952,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | **A-9.4** | 深層連結：①詳情頁改為只憑 `id` 自足渲染（頁首取自詳情 API 回應、收藏狀態向收藏資料查詢，不再依賴傳入的 `RestaurantEntity`）；②`PlatformApp` 加 `onGenerateRoute` 解析 `/restaurant/<id>`；③其餘強轉 arguments 處缺參數導回首頁。**不導入 `go_router`**：現有 `routesTable` 與 10 處 `pushNamed` 不需改動 | 兩者（深層連結主要服務 Web） | 1–1.5d（主要成本在①） | D-9.3 |
 | **A-9.5** | 第三方登入改 Firebase popup 流程 | Web | 1d | A-9.3b |
 | **E-9.3** | Firebase Hosting 部署 workflow、Service Worker、Maps JS key | Web | 1d | Broker、A-9.3b |
-| **A-9.6** | macOS entitlements、地圖降級為靜態圖＋外部導航、選圖只留檔案 | macOS | 1–1.5d | A-9.2 |
+| **A-9.6** | macOS entitlements、地圖降級為靜態圖＋外部導航、選圖只留檔案、Google 登入補 macOS OAuth client 與 `CFBundleURLTypes` URL scheme（PR #138 review 移入） | macOS | 1–1.5d | A-9.2 |
 | **E-9.4** | macOS 簽章／notarization 或 Mac App Store 上傳 workflow；含 Keychain Sharing（`keychain-access-groups`）——**完成前 macOS 的 Firebase Auth 登入不可用** | macOS | 1d | A-9.6 |
 
 > ⚠️ **effort 估計偏差提醒**（沿用本文件 C-1／C-2 教訓）：UI-9.3 響應式版面是最可能低估的項目——動到的不是「新寫幾個 layout」，而是**每個頁面既有的寬度假設**（`MediaQuery` 7 檔、固定寬 `230`／`260` 的 AI 卡片、`viewportFraction: 0.85`）。動工前先 grep 盤點使用點。
