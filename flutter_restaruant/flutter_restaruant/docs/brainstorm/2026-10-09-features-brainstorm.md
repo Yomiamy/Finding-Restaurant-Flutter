@@ -1901,7 +1901,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | 回饋訊息 | `fluttertoast`（macOS 無實作） | 改 `SnackBar`。⚠️ macOS 走 `CupertinoApp` 分支，**不會自帶 `ScaffoldMessenger`**，需在 `PlatformApp.builder` 補一層 |
 | 外部連結 | `ChromeSafariBrowser` 僅 Android／iOS | 改 `url_launcher` 的 `LaunchMode.inAppBrowserView`（Android Custom Tabs／iOS SFSafariViewController 行為相同），**可一併移除 `flutter_inappwebview`** |
 | 能力閘門 | 廣告、生物辨識、推播散落各處，無平台判斷 | 見 §9.6 A-9.2：以「不支援就不註冊／不顯示」處理，而非在每個呼叫點加 `if` |
-| App Check | `main.dart:48,53` 只帶 `providerApple`／`providerAndroid` | Web 需 `providerWeb: ReCaptchaV3Provider(...)`；macOS 沿用 `providerApple`（release 分支 `2e2d0ac` 已改 `AppleAppAttestProvider`，macOS 上的可用性需實測） |
+| App Check | `main.dart:48,53` 只帶 `providerApple`／`providerAndroid` | Web 需 `providerWeb`，但**須用 Fraud Defense（reCAPTCHA Enterprise）**：`ReCaptchaEnterpriseProvider(siteKey)`／debug 用 `WebDebugProvider()`。**classic `ReCaptchaV3Provider` 已不可用於新註冊**（見 A-9.3b）。macOS 沿用 `providerApple`（release 分支 `2e2d0ac` 已改 `AppleAppAttestProvider`，macOS 上的可用性需實測） |
 
 ### 9.4.2 Web 專屬
 
@@ -1944,13 +1944,14 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | 編號 | 項目 | 平台 | Effort（粗估） | 依賴 |
 | :--- | :--- | :---: | :---: | :--- |
 | **A-9.2** | 平台能力閘門：不支援的平台不初始化 AdMob、不顯示廣告位／生物辨識／地圖模式；集中於**一處**判斷，呼叫點只讀結果 | 兩者 | 0.5d | A-9.1 |
-| **A-9.3** | `flutterfire configure` 註冊 macOS／Web App，重新產生 `firebase_options.dart`；App Check 補 `providerWeb` | 兩者 | 0.5d | — |
+| **A-9.3** | `flutterfire configure` 註冊 **macOS** App，重新產生 `firebase_options.dart`（`flutter create --platforms=macos .` 先產生 target）；App Check macOS 沿用 `providerApple`，不需新 provider | macOS | 0.3d | — |
+| **A-9.3b** | **Web 的 Firebase 註冊與 App Check**：註冊 Web App、App Check 改掛 **Fraud Defense（reCAPTCHA Enterprise）**。⚠️ **不可用 classic reCAPTCHA v3**——Firebase App Check 已不接受 v3 新註冊（2026 初 Google 已將 reCAPTCHA Classic 全數轉入 Google Cloud Fraud Defense）。程式碼用 `ReCaptchaEnterpriseProvider(siteKey)`（release）／`WebDebugProvider()`（debug），兩者皆**非 `const` 建構式**；`firebase_app_check ^0.4.7`（實裝 0.4.8）已內建三個 web provider，**無須升版**。硬前置：**Blaze**（Enterprise API 需付費方案，與 Broker 共用同一次升級；免費額度 10,000 assessments/月） | Web | 0.3d | Blaze 升級 |
 | **UI-9.2** | `fluttertoast` → `SnackBar`（含 `CupertinoApp` 分支補 `ScaffoldMessenger`） | 兩者 | 0.3d | — |
 | **UI-9.3** | 響應式版面：最大寬度、寬螢幕雙欄、`NavigationRail`、Sheet → Dialog | 兩者 | 2–3d | — |
 | **UI-9.4** | 桌面輸入：`ScrollBehavior` 滑鼠拖曳、hover 狀態、AI 對話 Enter 送出 | 兩者 | 0.5d | — |
 | **A-9.4** | 深層連結：①詳情頁改為只憑 `id` 自足渲染（頁首取自詳情 API 回應、收藏狀態向收藏資料查詢，不再依賴傳入的 `RestaurantEntity`）；②`PlatformApp` 加 `onGenerateRoute` 解析 `/restaurant/<id>`；③其餘強轉 arguments 處缺參數導回首頁。**不導入 `go_router`**：現有 `routesTable` 與 10 處 `pushNamed` 不需改動 | 兩者（深層連結主要服務 Web） | 1–1.5d（主要成本在①） | D-9.3 |
-| **A-9.5** | 第三方登入改 Firebase popup 流程 | Web | 1d | A-9.3 |
-| **E-9.3** | Firebase Hosting 部署 workflow、Service Worker、Maps JS key | Web | 1d | Broker、A-9.3 |
+| **A-9.5** | 第三方登入改 Firebase popup 流程 | Web | 1d | A-9.3b |
+| **E-9.3** | Firebase Hosting 部署 workflow、Service Worker、Maps JS key | Web | 1d | Broker、A-9.3b |
 | **A-9.6** | macOS entitlements、地圖降級為靜態圖＋外部導航、選圖只留檔案 | macOS | 1–1.5d | A-9.2 |
 | **E-9.4** | macOS 簽章／notarization 或 Mac App Store 上傳 workflow | macOS | 1d | A-9.6 |
 
@@ -1979,7 +1980,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 >
 > **建議動工順序**：
 > 1. §9.5 共用前置（E-9.1、UI-9.1、A-9.1、E-9.2）＋升級 Blaze 並完成 Broker
-> 2. A-9.3 Firebase 註冊兩平台 → A-9.2 能力閘門
+> 2. A-9.3 Firebase 註冊 macOS（可立即做，無 Blaze 依賴）→ A-9.2 能力閘門；A-9.3b（Web 註冊 + Fraud Defense）待 Blaze 升級後併入 Broker 那一輪
 > 3. A-9.4 深層連結（詳情頁只憑 id 自足渲染 + 內建 `onGenerateRoute`）
 > 4. UI-9.2、UI-9.3、UI-9.4（回饋訊息、響應式版面、桌面輸入）
 > 5. Web 專屬（A-9.5、E-9.3）與 macOS 專屬（A-9.6、E-9.4）可平行
