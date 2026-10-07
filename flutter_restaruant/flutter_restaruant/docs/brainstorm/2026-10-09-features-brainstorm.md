@@ -1887,7 +1887,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 3. **AdMob 初始化未受保護**：`main.dart:32` `MobileAds.instance.initialize()` 位於 `try` 之外，且結果被 `BannerADState` 持有等待；在 macOS／Web 會得到 `MissingPluginException`。
 
-4. **`firebase_options.dart` 對 Web（`:20`）與 macOS（`:31`）直接 `throw UnsupportedError`**：`main.dart` 的 `try` 會吞掉例外讓 App 繼續跑，之後所有 Firebase 呼叫連鎖失敗。需以 `flutterfire configure` 註冊兩平台並重新產生。
+4. ~~**`firebase_options.dart` 對 Web（`:20`）與 macOS（`:31`）直接 `throw UnsupportedError`**~~ ✅ **2026-10-08 已解（PR #138）**：`flutterfire configure` 已註冊獨立的 macOS app（bundle id `com.yomi.find-restaurant.macos`），Web options 亦一併產生，兩平台皆回傳設定不再 throw。**仍未解**：Web 的 App Check 須改掛 Fraud Defense（reCAPTCHA Enterprise）才可用，見 A-9.3b。
 
 ## 9.4 平台特定調整清單
 
