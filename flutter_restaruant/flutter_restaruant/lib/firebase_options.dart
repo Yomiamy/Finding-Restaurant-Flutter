@@ -17,10 +17,7 @@ import 'package:flutter/foundation.dart'
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
     if (kIsWeb) {
-      throw UnsupportedError(
-        'DefaultFirebaseOptions have not been configured for web - '
-        'you can reconfigure this by running the FlutterFire CLI again.',
-      );
+      return web;
     }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
@@ -28,10 +25,7 @@ class DefaultFirebaseOptions {
       case TargetPlatform.iOS:
         return ios;
       case TargetPlatform.macOS:
-        throw UnsupportedError(
-          'DefaultFirebaseOptions have not been configured for macos - '
-          'you can reconfigure this by running the FlutterFire CLI again.',
-        );
+        return macos;
       case TargetPlatform.windows:
         throw UnsupportedError(
           'DefaultFirebaseOptions have not been configured for windows - '
@@ -57,7 +51,6 @@ class DefaultFirebaseOptions {
     databaseURL: 'https://findrestaurant-c80ea.firebaseio.com',
     storageBucket: 'findrestaurant-c80ea.appspot.com',
   );
-
   static const FirebaseOptions ios = FirebaseOptions(
     apiKey: 'AIzaSyAfe5kOHB_-GPPNovB8iCDimCBnTsW6OYQ',
     appId: '1:35224406241:ios:d8eb3d68795bc2d1924fa0',
@@ -65,10 +58,30 @@ class DefaultFirebaseOptions {
     projectId: 'findrestaurant-c80ea',
     databaseURL: 'https://findrestaurant-c80ea.firebaseio.com',
     storageBucket: 'findrestaurant-c80ea.appspot.com',
-    androidClientId:
-        '35224406241-6hursinnrblkjo76gp1mlvppsddul6vu.apps.googleusercontent.com',
-    iosClientId:
-        '35224406241-8bh7hq1e07129nav2gcme5n9p565su7k.apps.googleusercontent.com',
+    androidClientId: '35224406241-6hursinnrblkjo76gp1mlvppsddul6vu.apps.googleusercontent.com',
+    iosClientId: '35224406241-8bh7hq1e07129nav2gcme5n9p565su7k.apps.googleusercontent.com',
     iosBundleId: 'com.yomi.find-restaurant',
+  );
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyCTa69PL70CSycWl0J_hLml87LukfuTw9U',
+    appId: '1:35224406241:web:cc49e6cf3d3c438d924fa0',
+    messagingSenderId: '35224406241',
+    projectId: 'findrestaurant-c80ea',
+    authDomain: 'findrestaurant-c80ea.firebaseapp.com',
+    databaseURL: 'https://findrestaurant-c80ea.firebaseio.com',
+    storageBucket: 'findrestaurant-c80ea.appspot.com',
+    measurementId: 'G-DR2KFBD7YK',
+  );
+
+  static const FirebaseOptions macos = FirebaseOptions(
+    apiKey: 'AIzaSyCnDjL5nQAx9jMzPIelhMt_eyMggq7lS3E',
+    appId: '1:35224406241:ios:821bfd632df38e44924fa0',
+    messagingSenderId: '35224406241',
+    projectId: 'findrestaurant-c80ea',
+    databaseURL: 'https://findrestaurant-c80ea.firebaseio.com',
+    storageBucket: 'findrestaurant-c80ea.appspot.com',
+    androidClientId: '35224406241-6hursinnrblkjo76gp1mlvppsddul6vu.apps.googleusercontent.com',
+    iosClientId: '35224406241-ujri5q7pfruts9uerq1vbu6omoa6nk71.apps.googleusercontent.com',
+    iosBundleId: 'com.yomi.find-restaurant.macos',
   );
 }
