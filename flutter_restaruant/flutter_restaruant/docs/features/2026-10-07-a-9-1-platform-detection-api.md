@@ -48,7 +48,7 @@
   實際都必須明確補 `import 'package:flutter/foundation.dart';`。
   連帶發現：`fcm_manager.dart` 原本只為 `debugPrint` 而 import `material.dart`，
   而 `foundation` 也提供 `debugPrint`，故 `material.dart` 變為冗餘（`unnecessary_import`）並一併移除。
-- `app_open_ad_state.dart`、`utils.dart` 需補 import，但來源為 Flutter SDK 內建
+- `app_open_ad_state.dart`、`fcm_manager.dart`、`third_party_sign_in_widget.dart` 需補 `foundation.dart` import，但來源為 Flutter SDK 內建
 
 > ⚠️ **給 A-9.2 / 後續平台工作的教訓**：不要假設 `material.dart` 或 `widgets.dart`
 > 能取得 `foundation` 的全部符號。它們的 re-export 是 `show` 白名單，只放了極少數型別。
@@ -123,7 +123,7 @@ flutter test
 
 - 上表 6 處平台判斷 API 的置換，以及隨之可整行移除的 6 個 `import 'dart:io';`
 - `third_party_sign_in_widget.dart` 的 Apple 登入判準由「iOS」放寬為「iOS 或 macOS」，含該檔 doc comment 同步
-- 必要時補上 `foundation.dart` / `dart:ui` import（2 檔）
+- 補上 `foundation.dart` import（3 檔；`dart:ui` 隨 `isLocaleZh()` 刪除而不再需要）
 - 🔄 **刪除 `Utils.isLocaleZh()`（2026-10-07 使用者授權，見 §4.1）**
 
 ### Out of Scope
@@ -146,7 +146,7 @@ flutter test
 | `isLocaleZh()` 方法本體 | 保留，內部改 `PlatformDispatcher.instance.locale.languageCode == 'zh'` | **整個方法刪除** |
 | 跨型別轉換風險（§5.1.1） | 存在，需具名測試 | **消失**——沒有置換就沒有轉換 |
 | 待置換處數 | 6 處 | **5 處**（皆為布林等價） |
-| 需新增 import | 2 檔（`foundation.dart` + `dart:ui`） | **1 檔**（`app_open_ad_state.dart` 的 `foundation.dart`；`utils.dart` 不再需要 `dart:ui`） |
+| 需新增 import | 2 檔（`foundation.dart` + `dart:ui`） | **3 檔**（`app_open_ad_state` / `fcm_manager` / `third_party_sign_in_widget` 的 `foundation.dart`；`utils.dart` 不再需要 `dart:ui`）。原記「1 檔」誤以為 `material.dart` 會轉出 `defaultTargetPlatform`，2026-10-08 依 PR #137 review 更正 |
 
 **刪除的正當性**：`lib/` 與 `test/` 零呼叫（唯一出現處即定義本身，已 grep 證實），
 屬死碼；Ponytail 階梯第 1 階「這需要存在嗎」→ 不需要。刪掉比置換更省，
@@ -170,7 +170,7 @@ AC-1 基線仍為 6、AC-2 基線仍為 12（兩者皆為**刪除前**的現況�
 | :--- | :--- | :--- |
 | `Platform.isAndroid` | `defaultTargetPlatform == TargetPlatform.android` | ✅ 在 Android 皆為 `true`、在 iOS 皆為 `false`。`defaultTargetPlatform` 是執行期 getter（Flutter SDK `foundation/platform.dart:51`），**不是**編譯期常數，release build **不保證** tree-shake 未用分支（2026-10-08 依 PR #137 review 更正） |
 | `Platform.isIOS` | `defaultTargetPlatform == TargetPlatform.iOS` | ✅ 同上（注意 enum 值拼寫為 `iOS`，非 `ios`） |
-| `Platform.localeName` | `PlatformDispatcher.instance.locale` | ⚠️ **非字串等價**，見下方 5.1.1 |
+| `Platform.localeName` | `PlatformDispatcher.instance.locale` | ⚠️ **非字串等價**，見下方 5.1.1（已隨 `isLocaleZh()` 刪除，見 §4.1） |
 
 #### 5.1.1 `localeName` 是本項唯一的實質行為風險
 
@@ -179,7 +179,7 @@ AC-1 基線仍為 6、AC-2 基線仍為 12（兩者皆為**刪除前**的現況�
 `Platform.localeName` 回傳作業系統字串（如 `zh_TW.UTF-8`、`en_US`），`isLocaleZh()` 以 `.contains('zh')` 比對。`PlatformDispatcher.instance.locale` 回傳 `Locale` 物件，兩者**型別與格式都不同**，不是機械替換：
 
 - `Locale.languageCode` 對中文為 `'zh'`（結構化欄位），比 `.contains('zh')` 掃整個 locale 字串**更精確**——原寫法對假想的 `en_ZH...` 之類字串會誤判，新寫法不會。
-- 但 `defaultTargetPlatform` 在 App 執行期間不會改變、`PlatformDispatcher.instance.locale` 則**可變**（使用者中途改系統語言會更新）。`Platform.localeName` 同樣是執行期值，故「每次呼叫重新求值」的時序特性一致，不引入快取語意變更。
+- 但 `defaultTargetPlatform` 在 release 執行期間不會改變（debug 下可用 `debugDefaultTargetPlatformOverride` 覆寫）、`PlatformDispatcher.instance.locale` 則**可變**（使用者中途改系統語言會更新）。`Platform.localeName` 同樣是執行期值，故「每次呼叫重新求值」的時序特性一致，不引入快取語意變更。
 - ⚠️ **這是本項最需要在 STAGE 0b 具名測試的一點**：其餘 5 處是布林等價的機械置換，此處是跨型別轉換。
 - 🟢 **實際影響面極小**：`isLocaleZh()` 當前**零呼叫**（§4 Out of Scope 已記載），因此任何行為偏差都不會觸及線上使用者。但正因為沒有呼叫端保護它，置換時更不能憑感覺寫。
 
@@ -214,8 +214,8 @@ AC-1 基線仍為 6、AC-2 基線仍為 12（兩者皆為**刪除前**的現況�
 
 - ✅ **值得做**：解決的是真實阻擋（`dart:io` 在 Web 不存在，不是臆想威脅）＋一個真實的判準錯誤（macOS 支援 Apple 登入卻不顯示）。
 - 🟢 **關鍵洞察**：這不是「新增平台支援」，是**把用錯的 API 換成對的 API**。`Platform.isIOS` 問的是「OS 是不是 iOS」，而程式真正想知道的是「這個平台支不支援 Apple 登入」——後者在 macOS 上答案為是。換掉它，macOS 的特殊情況自然消失，不需要新增任何 `if`。
-- ⚠️ **最大破壞風險**：`localeName` → `PlatformDispatcher.locale` 的跨型別轉換（§5.1.1）。其餘 5 處為布林等價。
-- 🪶 **規模自律**：零新相依、零新抽象、零新檔案。6 行條件式 + 6 行 import 移除 + 2 行 import 新增 + 1 行註解更新。
+- ~~⚠️ **最大破壞風險**：`localeName` → `PlatformDispatcher.locale` 的跨型別轉換（§5.1.1）~~ 已隨 §4.1 刪除 `isLocaleZh()` 而消除；其餘 5 處為布林等價。
+- 🪶 **規模自律**：零新相依、零新抽象、零新檔案。5 處條件式 + `dart:io` import 移除 + 3 行 `foundation.dart` import 新增（`fcm_manager` 同時移除 `material.dart`）+ 1 行註解更新。
 
 ---
 
