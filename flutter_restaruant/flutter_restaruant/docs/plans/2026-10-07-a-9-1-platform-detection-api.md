@@ -1,4 +1,4 @@
-# 實作計畫：A-9.1 平台判斷 API 由 `dart:io` `Platform` 改為 `foundation` 編譯期常數
+# 實作計畫：A-9.1 平台判斷 API 由 `dart:io` `Platform` 改為 `foundation` 的 `defaultTargetPlatform`
 
 - **項目編號**：A-9.1
 - **日期**：2026-10-07
@@ -64,7 +64,7 @@
 
 - ✅ 該檔**已** `import 'package:flutter/foundation.dart'`（第 3 行）。
 
-### 1.4 檔案 D：`lib/component/ad/app_open_ad_state.dart`（⚠️ 唯一需補 import 的檔）
+### 1.4 檔案 D：`lib/component/ad/app_open_ad_state.dart`（補 `foundation.dart` import）
 
 | 行 | 現狀 | 目標 |
 | :--- | :--- | :--- |
@@ -129,7 +129,7 @@
   - 專案**已有此模式的先例**：`test/app_theme_platform_test.dart:23,34,60` 就是 `for (final target in [...])` + `debugDefaultTargetPlatformOverride = target` + `finally` 復原。照抄既有慣例，零新概念、零新相依。
   - 這個測試同時**鎖住 AC-5 的三個分支**（iOS 顯示、macOS 顯示、Android 不顯示），比人工目視可靠，且在 macOS target 還不存在時就能驗證判準。
 - **缺點**：多一個測試檔／多一個 test case 的工時（約 5 分鐘）。
-- **為何值得**：`defaultTargetPlatform` 是編譯期常數，`debugDefaultTargetPlatformOverride` 是 Flutter SDK 內建的覆寫鉤子——**換成新 API 之後這個測試才寫得出來**。舊的 `Platform.isIOS` 在 widget test 裡無法覆寫（它讀真實 OS），這是置換順帶拿到的紅利，不拿反而浪費。
+- **為何值得**：`defaultTargetPlatform` 是執行期 getter，debug 模式下可用 Flutter SDK 內建的 `debugDefaultTargetPlatformOverride` 覆寫——**換成新 API 之後這個測試才寫得出來**。舊的 `Platform.isIOS` 在 widget test 裡無法覆寫（它讀真實 OS），這是置換順帶拿到的紅利，不拿反而浪費。
 
 ### 方向三：為全部 5 處置換補單元測試（❌ 不採用）
 
@@ -174,18 +174,18 @@
 - **動作**：第 1 行 `import 'dart:io';` → `import 'package:flutter/foundation.dart';`；第 11 行欄位初始化 `Platform.isAndroid` → `defaultTargetPlatform == TargetPlatform.android`。兩個字面值 ID 一字不動。
 - **驗收**：grep 該檔 `dart:io` → 0；`foundation.dart` → 1；兩個 `ca-app-pub-7910179918263365/...` 字面值仍完整存在（AC-7）。
 - **對應 AC**：AC-1、AC-2、AC-7、AC-8（import 來源為 Flutter SDK，`pubspec.yaml` 不動）
-- **註記**：⚠️ 唯一需補 import 的檔；⚠️ 欄位初始化非 getter，不要改成 `late` 或 getter。
+- **註記**：⚠️ 欄位初始化非 getter，不要改成 `late` 或 getter。
 
 ### T5：置換 `fcm_manager.dart`
 - **寫入**：`lib/manager/fcm_manager.dart`
-- **動作**：刪第 3 行 `import 'dart:io';`；第 109 行 `if (Platform.isIOS)` → `if (defaultTargetPlatform == TargetPlatform.iOS)`。if block 內容不動。保留 `dart:async` / `dart:convert`。
+- **動作**：刪第 3 行 `import 'dart:io';`；第 7 行 `material.dart` 換成 `import 'package:flutter/foundation.dart';`；第 109 行 `if (Platform.isIOS)` → `if (defaultTargetPlatform == TargetPlatform.iOS)`。if block 內容不動。保留 `dart:async` / `dart:convert`。
 - **驗收**：grep 該檔 `dart:io` → 0；`TargetPlatform.iOS` → 1。
 - **對應 AC**：AC-1、AC-2
 
 ### T6：置換 `third_party_sign_in_widget.dart` + 更新 doc comment
 - **寫入**：`lib/flow/signinup/view/third_party_sign_in_widget.dart`
 - **動作**：
-  1. 刪第 1 行 `import 'dart:io';`
+  1. 第 1 行 `import 'dart:io';` 換成 `import 'package:flutter/foundation.dart';`（`material.dart` 保留）
   2. 第 9 行 doc comment「Apple 登入僅在 iOS 顯示」→「Apple 登入在 iOS 與 macOS 顯示」
   3. 第 33 行 `if (Platform.isIOS)` → `if (defaultTargetPlatform == TargetPlatform.iOS || defaultTargetPlatform == TargetPlatform.macOS)`
 - **驗收**：grep 該檔 `dart:io` → 0；`TargetPlatform.iOS` 與 `TargetPlatform.macOS` 各 1；doc comment 不再含「僅在 iOS」。
