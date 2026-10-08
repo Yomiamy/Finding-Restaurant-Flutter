@@ -97,9 +97,9 @@
 	<key>NSFaceIDUsageDescription</key>
 	<string>使用Face ID進行登入驗證</string>
 	<key>NSLocationWhenInUseUsageDescription</key>
-	<string>要求位置資訊以進行位置資訊判斷, 如: 相鄰店家餐廳</string>
+	<string>您的位置將用於搜尋附近的餐廳。</string>
     <key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
-    <string>要求位置資訊以進行位置資訊判斷, 如: 相鄰店家餐廳</string>
+    <string>您的位置將用於搜尋附近的餐廳。</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>要求相簿權限以便進行照片選取</string>
 	<key>SKAdNetworkItems</key>
