@@ -1,12 +1,11 @@
-import 'dart:io';
-
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
 import '../../features/foundation/constants/constants_barrel.dart';
 
 class InterstitialADState {
-  String? get interstitialAdUnitId => Platform.isAndroid
+  String? get interstitialAdUnitId =>
+      defaultTargetPlatform == TargetPlatform.android
       ? Constants.adAndroidInterstitialId
       : Constants.adIosInterstitialId;
 
