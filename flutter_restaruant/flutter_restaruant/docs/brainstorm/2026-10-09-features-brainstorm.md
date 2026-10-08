@@ -1887,7 +1887,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 3. **AdMob 初始化未受保護**：`main.dart:32` `MobileAds.instance.initialize()` 位於 `try` 之外，且結果被 `BannerADState` 持有等待；在 macOS／Web 會得到 `MissingPluginException`。
 
-4. **`firebase_options.dart` 對 Web（`:20`）與 macOS（`:31`）直接 `throw UnsupportedError`**：`main.dart` 的 `try` 會吞掉例外讓 App 繼續跑，之後所有 Firebase 呼叫連鎖失敗。需以 `flutterfire configure` 註冊兩平台並重新產生。
+4. ~~**`firebase_options.dart` 對 Web（`:20`）與 macOS（`:31`）直接 `throw UnsupportedError`**~~ ✅ **2026-10-08 已解（PR #138）**：`flutterfire configure` 已註冊獨立的 macOS app（bundle id `com.yomi.find-restaurant.macos`），Web options 亦一併產生，兩平台皆回傳設定不再 throw。**仍未解**：Web 的 App Check 須改掛 Fraud Defense（reCAPTCHA Enterprise）才可用，見 A-9.3b。
 
 ## 9.4 平台特定調整清單
 
@@ -1901,7 +1901,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | 回饋訊息 | `fluttertoast`（macOS 無實作） | 改 `SnackBar`。⚠️ macOS 走 `CupertinoApp` 分支，**不會自帶 `ScaffoldMessenger`**，需在 `PlatformApp.builder` 補一層 |
 | 外部連結 | `ChromeSafariBrowser` 僅 Android／iOS | 改 `url_launcher` 的 `LaunchMode.inAppBrowserView`（Android Custom Tabs／iOS SFSafariViewController 行為相同），**可一併移除 `flutter_inappwebview`** |
 | 能力閘門 | 廣告、生物辨識、推播散落各處，無平台判斷 | 見 §9.6 A-9.2：以「不支援就不註冊／不顯示」處理，而非在每個呼叫點加 `if` |
-| App Check | `main.dart:48,53` 只帶 `providerApple`／`providerAndroid` | Web 需 `providerWeb: ReCaptchaV3Provider(...)`；macOS 沿用 `providerApple`（release 分支 `2e2d0ac` 已改 `AppleAppAttestProvider`，macOS 上的可用性需實測） |
+| App Check | `main.dart:48,53` 只帶 `providerApple`／`providerAndroid` | Web 需 `providerWeb`，但**須用 Fraud Defense（reCAPTCHA Enterprise）**：`ReCaptchaEnterpriseProvider(siteKey)`／debug 用 `WebDebugProvider()`。不採 classic `ReCaptchaV3Provider`（見 A-9.3b）。macOS 目前沿用 `providerApple`（release 分支 `2e2d0ac` 已改 `AppleAppAttestProvider`）。**2026-10-08 實查 `firebase_app_check` 0.4.8 原始碼**：`FirebaseAppCheckPlugin.swift:366-369` 在 macOS 14 以下會把 `AppleAppAttestProvider` **靜默換成 Debug provider**（release 也一樣），而專案 deployment target 是 macOS 12；同檔註解也指出 macOS 14 以上 App Attest「常常不支援」。結論：macOS 不能沿用 App Attest，處置見 A-9.2 |
 
 ### 9.4.2 Web 專屬
 
@@ -1920,7 +1920,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 | 項目 | 說明 |
 | :--- | :--- |
-| **Sandbox entitlements** | `com.apple.security.network.client`（**缺這個所有 HTTP 請求都會失敗**，最常見的踩雷點）、`keychain-access-groups`（Firebase Auth 存 token）、`personal-information.location`、`files.user-selected.read-only`（選圖）、`aps-environment`（推播）、Sign in with Apple capability |
+| **Sandbox entitlements** | `com.apple.security.network.client`（**缺這個所有 HTTP 請求都會失敗**，最常見的踩雷點）、`keychain-access-groups`（Firebase Auth 存 token；**sandbox 下缺它登入會報 `keychain-error`，且此 entitlement 需真實簽章**，ad-hoc 簽不出，故併入 E-9.4）、`personal-information.location`、`files.user-selected.read-only`（選圖）、`aps-environment`（推播）、Sign in with Apple capability |
 | **地圖替代** | 無原生 Google Maps。最省：**重用既有 Static Map 縮圖（`GoogleApiUtil.createStaticMapUrl`）＋ 以 `url_launcher` 開 Apple Maps／Google Maps**，隱藏地圖模式切換 |
 | **Menu Vision** | 隱藏相機來源，只留「選擇檔案」 |
 | **部署目標與建置** | 依 Firebase SDK 最低需求上修 macOS deployment target；沿用 iOS 的 SPM 混合模式 |
@@ -1943,16 +1943,17 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 | 編號 | 項目 | 平台 | Effort（粗估） | 依賴 |
 | :--- | :--- | :---: | :---: | :--- |
-| **A-9.2** | 平台能力閘門：不支援的平台不初始化 AdMob、不顯示廣告位／生物辨識／地圖模式；集中於**一處**判斷，呼叫點只讀結果 | 兩者 | 0.5d | A-9.1 |
-| **A-9.3** | `flutterfire configure` 註冊 macOS／Web App，重新產生 `firebase_options.dart`；App Check 補 `providerWeb` | 兩者 | 0.5d | — |
+| **A-9.2** | 平台能力閘門：不支援的平台不初始化 AdMob、不顯示廣告位／生物辨識／地圖模式；集中於**一處**判斷，呼叫點只讀結果。另含 **macOS 的 App Check provider**：改用 `AppleAppAttestWithDeviceCheckFallbackProvider`（不支援 App Attest 時退回 DeviceCheck），或僅 macOS 用 `AppleDeviceCheckProvider`；兩者都需先在 Firebase Console 登記 DeviceCheck 金鑰（PR #138 review 移入）。⚠️ 推論未實測：DeviceCheck／App Attest token 綁開發者 Team，macOS 目前為 ad-hoc 簽章，執行期驗證可能要等 E-9.4 | 兩者 | 0.5d | A-9.1 |
+| **A-9.3** | `flutterfire configure` 註冊 **macOS** App，重新產生 `firebase_options.dart`（`flutter create --platforms=macos .` 先產生 target）；App Check 的 macOS provider 選擇見 A-9.2，本項不改程式碼 | macOS | 0.3d | — |
+| **A-9.3b** | **Web 的 Firebase 註冊與 App Check**：註冊 Web App、App Check 改掛 **Fraud Defense（reCAPTCHA Enterprise）**。**採 Enterprise、不採 classic v3**：官方文件仍列 v3 provider，但明言新整合應採 Enterprise；2026-10-07 使用者回報「傳統版 reCAPTCHA 已淘汰，請改用 Google Cloud Fraud Defense」（reCAPTCHA 已併入 Fraud Defense）。程式碼用 `ReCaptchaEnterpriseProvider(siteKey)`（release）／`WebDebugProvider()`（debug），兩者皆**非 `const` 建構式**；`firebase_app_check ^0.4.7`（實裝 0.4.8）已內建三個 web provider，**無須升版**。**不需 Blaze**：Spark 可用 Enterprise，僅限 0.1／0.3／0.7／0.9 四個分數級距，連結 Cloud Billing 才開放全部 11 級；超出免費額度的 assessment 計費（2026-10-08 依官方 enterprise-provider 文件更正，原記「Blaze 為硬前置」有誤） | Web | 0.3d | — |
 | **UI-9.2** | `fluttertoast` → `SnackBar`（含 `CupertinoApp` 分支補 `ScaffoldMessenger`） | 兩者 | 0.3d | — |
 | **UI-9.3** | 響應式版面：最大寬度、寬螢幕雙欄、`NavigationRail`、Sheet → Dialog | 兩者 | 2–3d | — |
 | **UI-9.4** | 桌面輸入：`ScrollBehavior` 滑鼠拖曳、hover 狀態、AI 對話 Enter 送出 | 兩者 | 0.5d | — |
 | **A-9.4** | 深層連結：①詳情頁改為只憑 `id` 自足渲染（頁首取自詳情 API 回應、收藏狀態向收藏資料查詢，不再依賴傳入的 `RestaurantEntity`）；②`PlatformApp` 加 `onGenerateRoute` 解析 `/restaurant/<id>`；③其餘強轉 arguments 處缺參數導回首頁。**不導入 `go_router`**：現有 `routesTable` 與 10 處 `pushNamed` 不需改動 | 兩者（深層連結主要服務 Web） | 1–1.5d（主要成本在①） | D-9.3 |
-| **A-9.5** | 第三方登入改 Firebase popup 流程 | Web | 1d | A-9.3 |
-| **E-9.3** | Firebase Hosting 部署 workflow、Service Worker、Maps JS key | Web | 1d | Broker、A-9.3 |
-| **A-9.6** | macOS entitlements、地圖降級為靜態圖＋外部導航、選圖只留檔案 | macOS | 1–1.5d | A-9.2 |
-| **E-9.4** | macOS 簽章／notarization 或 Mac App Store 上傳 workflow | macOS | 1d | A-9.6 |
+| **A-9.5** | 第三方登入改 Firebase popup 流程 | Web | 1d | A-9.3b |
+| **E-9.3** | Firebase Hosting 部署 workflow、Service Worker、Maps JS key | Web | 1d | Broker、A-9.3b |
+| **A-9.6** | macOS entitlements、地圖降級為靜態圖＋外部導航、選圖只留檔案、Google 登入補 macOS OAuth client 與 `CFBundleURLTypes` URL scheme（PR #138 review 移入） | macOS | 1–1.5d | A-9.2 |
+| **E-9.4** | macOS 簽章／notarization 或 Mac App Store 上傳 workflow；含 Keychain Sharing（`keychain-access-groups`）——**完成前 macOS 的 Firebase Auth 登入不可用** | macOS | 1d | A-9.6 |
 
 > ⚠️ **effort 估計偏差提醒**（沿用本文件 C-1／C-2 教訓）：UI-9.3 響應式版面是最可能低估的項目——動到的不是「新寫幾個 layout」，而是**每個頁面既有的寬度假設**（`MediaQuery` 7 檔、固定寬 `230`／`260` 的 AI 卡片、`viewportFraction: 0.85`）。動工前先 grep 盤點使用點。
 
@@ -1979,7 +1980,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 >
 > **建議動工順序**：
 > 1. §9.5 共用前置（E-9.1、UI-9.1、A-9.1、E-9.2）＋升級 Blaze 並完成 Broker
-> 2. A-9.3 Firebase 註冊兩平台 → A-9.2 能力閘門
+> 2. A-9.3 Firebase 註冊 macOS（可立即做，無 Blaze 依賴）→ A-9.2 能力閘門；A-9.3b（Web 註冊 + Fraud Defense）無 Blaze 依賴，可獨立進行；但 Web 上線仍以 Broker 為硬前置
 > 3. A-9.4 深層連結（詳情頁只憑 id 自足渲染 + 內建 `onGenerateRoute`）
 > 4. UI-9.2、UI-9.3、UI-9.4（回饋訊息、響應式版面、桌面輸入）
 > 5. Web 專屬（A-9.5、E-9.3）與 macOS 專屬（A-9.6、E-9.4）可平行

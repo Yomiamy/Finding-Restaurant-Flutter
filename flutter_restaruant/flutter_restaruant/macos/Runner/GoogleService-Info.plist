@@ -3,19 +3,19 @@
 <plist version="1.0">
 <dict>
 	<key>CLIENT_ID</key>
-	<string>35224406241-8bh7hq1e07129nav2gcme5n9p565su7k.apps.googleusercontent.com</string>
+	<string>35224406241-ujri5q7pfruts9uerq1vbu6omoa6nk71.apps.googleusercontent.com</string>
 	<key>REVERSED_CLIENT_ID</key>
-	<string>com.googleusercontent.apps.35224406241-8bh7hq1e07129nav2gcme5n9p565su7k</string>
+	<string>com.googleusercontent.apps.35224406241-ujri5q7pfruts9uerq1vbu6omoa6nk71</string>
 	<key>ANDROID_CLIENT_ID</key>
 	<string>35224406241-6hursinnrblkjo76gp1mlvppsddul6vu.apps.googleusercontent.com</string>
 	<key>API_KEY</key>
-	<string>AIzaSyAfe5kOHB_-GPPNovB8iCDimCBnTsW6OYQ</string>
+	<string>AIzaSyCnDjL5nQAx9jMzPIelhMt_eyMggq7lS3E</string>
 	<key>GCM_SENDER_ID</key>
 	<string>35224406241</string>
 	<key>PLIST_VERSION</key>
 	<string>1</string>
 	<key>BUNDLE_ID</key>
-	<string>com.yomi.find-restaurant</string>
+	<string>com.yomi.find-restaurant.macos</string>
 	<key>PROJECT_ID</key>
 	<string>findrestaurant-c80ea</string>
 	<key>STORAGE_BUCKET</key>
@@ -31,7 +31,7 @@
 	<key>IS_SIGNIN_ENABLED</key>
 	<true></true>
 	<key>GOOGLE_APP_ID</key>
-	<string>1:35224406241:ios:d8eb3d68795bc2d1924fa0</string>
+	<string>1:35224406241:ios:821bfd632df38e44924fa0</string>
 	<key>DATABASE_URL</key>
 	<string>https://findrestaurant-c80ea.firebaseio.com</string>
 </dict>
