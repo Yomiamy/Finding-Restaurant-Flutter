@@ -1819,7 +1819,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 # 9. 桌面版 (macOS) 與網頁版 (Web) 平台擴展評估 (Platform Expansion: macOS & Web)
 
-> **產出日期**：2026-09-30｜**狀態**：✅ §9.8 五項決策已定（Web 採 W-B 精簡版、macOS 採 M-B 原生、深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Blaze）；未排入 Roadmap，待轉為實作計畫
+> **產出日期**：2026-09-30｜**狀態**：✅ §9.8 八項決策已定（2026-10-09 新增 D-9.6～D-9.8：macOS 最低 14、macOS 不做推播、CI 暫不涵蓋 macOS；原五項：Web 採 W-B 精簡版、macOS 採 M-B 原生、深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Blaze）；未排入 Roadmap，待轉為實作計畫
 > **產出方式**：直接檢視 `main` @ `355e3e7` 的 `lib/`、`pubspec.yaml`、`ios/`、`.github/workflows/`，並以 `.dart_tool/package_config.json` 解析每個相依套件 `pubspec.yaml` 宣告的 `flutter.plugin.platforms`（非憑記憶）。
 
 ## 9.1 Linus 式前置三問
@@ -1920,12 +1920,12 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 | 項目 | 說明 |
 | :--- | :--- |
-| **Sandbox entitlements** | `com.apple.security.network.client`（**缺這個所有 HTTP 請求都會失敗**，最常見的踩雷點）、`keychain-access-groups`（Firebase Auth 存 token；**sandbox 下缺它登入會報 `keychain-error`，且此 entitlement 需真實簽章**，ad-hoc 簽不出，故併入 E-9.4）、`personal-information.location`、`files.user-selected.read-only`（選圖）、`aps-environment`（推播）、Sign in with Apple capability |
+| **Sandbox entitlements** | `com.apple.security.network.client`（**缺這個所有 HTTP 請求都會失敗**，最常見的踩雷點）、`keychain-access-groups`（Firebase Auth 存 token；**sandbox 下缺它登入會報 `keychain-error`，且此 entitlement 需真實簽章**，ad-hoc 簽不出，故併入 E-9.4a）、`personal-information.location`、`files.user-selected.read-only`（選圖）、~~`aps-environment`（推播）~~（不採用：macOS 不做推播，見 D-9.7）、Sign in with Apple capability |
 | **地圖替代** | 無原生 Google Maps。最省：**重用既有 Static Map 縮圖（`GoogleApiUtil.createStaticMapUrl`）＋ 以 `url_launcher` 開 Apple Maps／Google Maps**，隱藏地圖模式切換 |
 | **Menu Vision** | 隱藏相機來源，只留「選擇檔案」 |
-| **部署目標與建置** | 依 Firebase SDK 最低需求上修 macOS deployment target；沿用 iOS 的 SPM 混合模式 |
+| **部署目標與建置** | deployment target 上修至 **macOS 14**（見 D-9.6）；沿用 iOS 的 SPM 混合模式 |
 | **視窗** | 在 `MainFlutterWindow.swift` 設最小視窗尺寸，避免縮到版面崩壞（不需引入 `window_manager` 套件） |
-| **發布** | Mac App Store（強制 sandbox）或 Developer ID 簽章 + notarization；`release.yml` 已跑在 `macos-15`，可加 `flutter build macos` 與上傳步驟 |
+| **發布** | Mac App Store（強制 sandbox）或 Developer ID 簽章 + notarization；`release.yml` 已跑在 `macos-15`；CI 暫不涵蓋 macOS，發布先採手動（見 D-9.8） |
 
 ## 9.5 共用前置清理（不論是否擴平台都應做）
 
@@ -1936,14 +1936,14 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | **E-9.1** | 移除 4 個零使用相依：`camera`、`sqflite`、`path_provider`、`firebase_storage` | 0.1d | 縮小建置相容面與 App 體積；`sqflite` 還誤導文件（§1.1 記為「本地快取」） |
 | **UI-9.1** | `ChromeSafariBrowser` 改 `url_launcher` inAppBrowserView，移除 `flutter_inappwebview` | 0.2d | 一個 API 養一個大型 WebView 套件；行動版行為不變 |
 | **A-9.1** | 5 處 `dart:io` `Platform.isX` 改 `defaultTargetPlatform`／`PlatformDispatcher` ✅ **已完成**（2026-10-08，實際 6 處；`isLocaleZh()` 改為刪除） | 0.1d | 一行一處，行動版語意不變；順帶讓 macOS 顯示 Apple 登入 |
-| **E-9.2** | CI 加 `flutter build web` 編譯閘門（ubuntu runner，成本低） | 0.2d | 有它才能**機械性**防止下一個 `dart:io` 滲入共用程式碼；比文件規則可靠（Guide → Sensor） |
+| **E-9.2** | CI 加 `flutter build web` 編譯閘門（ubuntu runner，成本低）；**不含 `build macos`**（見 D-9.8） | 0.2d | 有它才能**機械性**防止下一個 `dart:io` 滲入共用程式碼；比文件規則可靠（Guide → Sensor） |
 | **P0（既有）** | Server-side Broker | 既有估計 | Web 的硬性前置（§9.3-1） |
 
 ## 9.6 平台擴展本體（決策後才動工）
 
 | 編號 | 項目 | 平台 | Effort（粗估） | 依賴 |
 | :--- | :--- | :---: | :---: | :--- |
-| **A-9.2** | 平台能力閘門：不支援的平台不初始化 AdMob、不顯示廣告位／生物辨識／地圖模式；集中於**一處**判斷，呼叫點只讀結果。另含 **macOS 的 App Check provider**：改用 `AppleAppAttestWithDeviceCheckFallbackProvider`（不支援 App Attest 時退回 DeviceCheck），或僅 macOS 用 `AppleDeviceCheckProvider`；兩者都需先在 Firebase Console 登記 DeviceCheck 金鑰（PR #138 review 移入）。⚠️ 推論未實測：DeviceCheck／App Attest token 綁開發者 Team，macOS 目前為 ad-hoc 簽章，執行期驗證可能要等 E-9.4 | 兩者 | 0.5d | A-9.1 |
+| **A-9.2** | 平台能力閘門：不支援的平台不初始化 AdMob 與推播（FCM）、不顯示廣告位／生物辨識／地圖模式；集中於**一處**判斷，呼叫點只讀結果。另含 **macOS 的 App Check provider**：改用 `AppleAppAttestWithDeviceCheckFallbackProvider`（不支援 App Attest 時退回 DeviceCheck），或僅 macOS 用 `AppleDeviceCheckProvider`；兩者都需先在 Firebase Console 登記 DeviceCheck 金鑰（PR #138 review 移入）。2026-10-09 決議採前者（見 D-9.6）。⚠️ 推論未實測：DeviceCheck／App Attest token 綁開發者 Team，macOS 目前為 ad-hoc 簽章，執行期驗證可能要等 E-9.4a | 兩者 | 0.5d | A-9.1 |
 | **A-9.3** | `flutterfire configure` 註冊 **macOS** App，重新產生 `firebase_options.dart`（`flutter create --platforms=macos .` 先產生 target）；App Check 的 macOS provider 選擇見 A-9.2，本項不改程式碼 | macOS | 0.3d | — |
 | **A-9.3b** | **Web 的 Firebase 註冊與 App Check**：註冊 Web App、App Check 改掛 **Fraud Defense（reCAPTCHA Enterprise）**。**採 Enterprise、不採 classic v3**：官方文件仍列 v3 provider，但明言新整合應採 Enterprise；2026-10-07 使用者回報「傳統版 reCAPTCHA 已淘汰，請改用 Google Cloud Fraud Defense」（reCAPTCHA 已併入 Fraud Defense）。程式碼用 `ReCaptchaEnterpriseProvider(siteKey)`（release）／`WebDebugProvider()`（debug），兩者皆**非 `const` 建構式**；`firebase_app_check ^0.4.7`（實裝 0.4.8）已內建三個 web provider，**無須升版**。**不需 Blaze**：Spark 可用 Enterprise，僅限 0.1／0.3／0.7／0.9 四個分數級距，連結 Cloud Billing 才開放全部 11 級；超出免費額度的 assessment 計費（2026-10-08 依官方 enterprise-provider 文件更正，原記「Blaze 為硬前置」有誤） | Web | 0.3d | — |
 | **UI-9.2** | `fluttertoast` → `SnackBar`（含 `CupertinoApp` 分支補 `ScaffoldMessenger`） | 兩者 | 0.3d | — |
@@ -1953,7 +1953,8 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | **A-9.5** | 第三方登入改 Firebase popup 流程 | Web | 1d | A-9.3b |
 | **E-9.3** | Firebase Hosting 部署 workflow、Service Worker、Maps JS key | Web | 1d | Broker、A-9.3b |
 | **A-9.6** | macOS entitlements、地圖降級為靜態圖＋外部導航、選圖只留檔案、Google 登入補 macOS OAuth client 與 `CFBundleURLTypes` URL scheme（PR #138 review 移入） | macOS | 1–1.5d | A-9.2 |
-| **E-9.4** | macOS 簽章／notarization 或 Mac App Store 上傳 workflow；含 Keychain Sharing（`keychain-access-groups`）——**完成前 macOS 的 Firebase Auth 登入不可用** | macOS | 1d | A-9.6 |
+| **E-9.4a** | macOS 本機開發簽章：`DEVELOPMENT_TEAM`、Keychain Sharing（`keychain-access-groups`）、Sign in with Apple capability——**完成前 macOS 的 Firebase Auth 登入不可用**；完成後可實測登入、App Check、Apple 登入。CI 不建 macOS（D-9.8），不受 runner 無簽章身分限制，可視需要提前 | macOS | 兩段合計沿用原估 1d | A-9.3 |
+| **E-9.4b** | macOS 發布：Developer ID 簽章 + notarization 或 Mac App Store，先手動；CI 上傳暫不做（D-9.8） | macOS | （同上） | A-9.6、E-9.4a |
 
 > ⚠️ **effort 估計偏差提醒**（沿用本文件 C-1／C-2 教訓）：UI-9.3 響應式版面是最可能低估的項目——動到的不是「新寫幾個 layout」，而是**每個頁面既有的寬度假設**（`MediaQuery` 7 檔、固定寬 `230`／`260` 的 AI 卡片、`viewportFraction: 0.85`）。動工前先 grep 盤點使用點。
 
@@ -1976,14 +1977,16 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 **建議路徑**：先做 §9.5 共用前置（本身就該做）→ macOS 走 M-A 取得低成本曝光 → 以 Analytics 觀察 Mac 使用量與分享連結需求 → 有證據再決定 M-B／W-B／W-C。**不要在沒有需求證據時同時開兩個新平台**——那會讓每個功能的實作與驗證成本乘以 2～3。
 
-> **📌 2026-09-30 決議（見 §9.8）**：採 **W-B + M-B**，兩平台同時擴展，上述「先 M-A 再觀察」的建議路徑不採用。已知代價：每個後續功能的驗證面由 2 平台擴為 4 平台，須由 E-9.2（CI 編譯閘門）擴充為 `build web` + `build macos` 兩道機械檢查來承擔。
+> **📌 2026-09-30 決議（見 §9.8）**：採 **W-B + M-B**，兩平台同時擴展，上述「先 M-A 再觀察」的建議路徑不採用。已知代價：每個後續功能的驗證面由 2 平台擴為 4 平台，須由 E-9.2（CI 編譯閘門）擴充為 `build web` + `build macos` 兩道機械檢查來承擔。**2026-10-09 修正**：CI 暫不涵蓋 macOS（D-9.8），macOS 改由每個相關 PR 以本機 `flutter build macos` 驗收；代價是與 macOS 無關的 PR 弄壞 macOS 時不會即時發現。
 >
-> **建議動工順序**：
-> 1. §9.5 共用前置（E-9.1、UI-9.1、A-9.1、E-9.2）＋升級 Blaze 並完成 Broker
-> 2. A-9.3 Firebase 註冊 macOS（可立即做，無 Blaze 依賴）→ A-9.2 能力閘門；A-9.3b（Web 註冊 + Fraud Defense）無 Blaze 依賴，可獨立進行；但 Web 上線仍以 Broker 為硬前置
-> 3. A-9.4 深層連結（詳情頁只憑 id 自足渲染 + 內建 `onGenerateRoute`）
-> 4. UI-9.2、UI-9.3、UI-9.4（回饋訊息、響應式版面、桌面輸入）
-> 5. Web 專屬（A-9.5、E-9.3）與 macOS 專屬（A-9.6、E-9.4）可平行
+> **建議動工順序**（2026-10-09 依 D-9.6～D-9.8 拆為兩條線）：
+> - **macOS 線**：
+>   1. E-9.1、UI-9.1，deployment target 上修至 14
+>   2. A-9.2 能力閘門（macOS 關 AdMob／推播／生物辨識／地圖模式；App Check 改 fallback provider）
+>   3. A-9.6 macOS 適配 ＋ UI-9.2、UI-9.4——先讓 macOS 上直接壞掉的功能可用
+>   4. E-9.4a 本機開發簽章（可視需要提前）→ 實測登入、App Check、Apple 登入；之後 E-9.4b 手動發布
+>   5. UI-9.3 響應式版面（最大項、純版面，最後做；Web 共用）
+> - **Web 線**（原順序不變）：§9.5 前置（含 E-9.2 `build web`）＋升級 Blaze 並完成 Broker → A-9.3b（無 Blaze 依賴，可獨立進行；Web 上線仍以 Broker 為硬前置）→ A-9.4 深層連結 → UI-9.2／9.3／9.4 → A-9.5、E-9.3
 
 ## 9.8 待決策事項
 
@@ -1994,6 +1997,9 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | **D-9.3** | Web 是否需要深層連結（直接開 `/restaurant/<id>`）？ | 決定 A-9.4 是簡單容錯還是導入 `go_router`。✅ **2026-09-30 決議：需要深層連結，但不導入 `go_router`**（同日修正，原決議為導入 `go_router`）。修正理由：實查發現瓶頸不在路由套件，而在詳情頁依賴記憶體傳入的 `RestaurantEntity`——不論用哪種路由都得先讓詳情頁只憑 id 渲染；路由解析以內建 `onGenerateRoute` 即可，免新增相依、免改寫 `routesTable` 與 10 處 `pushNamed`。日後若需要路由守衛或巢狀路由再評估 `go_router` |
 | **D-9.4** | 桌面／Web 無 AdMob，是否接受無廣告收益，或評估 AdSense（`google_adsense` 套件）？ | Web 營收模式。✅ **2026-09-30 決議：首版接受無廣告**，macOS／Web 由 A-9.2 能力閘門關閉廣告初始化與廣告位；有流量數據後再評估 AdSense |
 | **D-9.5** | Broker（Cloud Functions）需 Firebase Blaze 方案，目前計費方案是否允許？ | Web 的硬性前置能否落地。✅ **2026-09-30 確認：目前為 Spark，可升級 Blaze**——升級後以 Cloud Functions 做 Broker、Firebase Hosting rewrite 同網域部署；升級時須同步設定預算警示，避免 Broker 或 Gemini 被濫用時帳單失控 |
+| **D-9.6** | macOS 最低支援版本？ | 決定 App Check provider 與可觸及使用者。✅ **2026-10-09 決議：上修至 macOS 14**（`MACOSX_DEPLOYMENT_TARGET` 與 `macos/Podfile` 由 12.0 改 14.0），放棄 macOS 12–13。14 以上仍有不支援 App Attest 的機器，故 A-9.2 採 `AppleAppAttestWithDeviceCheckFallbackProvider` |
+| **D-9.7** | macOS 是否做推播？ | 決定 FCM 範圍與 `aps-environment`／APNs 金鑰。✅ **2026-10-09 決議：不做**。A-9.2 能力閘門在 macOS 跳過 FCM 初始化（`main.dart` 於 `runApp` 前 `await FcmManager().init()`，無 APNs 時可能失敗或拖慢啟動——推論未實測）；不加 `aps-environment` |
+| **D-9.8** | CI 是否涵蓋 macOS？ | 決定 macOS 的回歸防線。✅ **2026-10-09 決議：暫不涵蓋**。E-9.2 只做 `build web`；macOS 相關 PR 以本機 `flutter build macos` 驗收。已知代價：與 macOS 無關的 PR 弄壞 macOS 時不會即時被發現 |
 
 ## 9.9 明確排除 (YAGNI)
 
