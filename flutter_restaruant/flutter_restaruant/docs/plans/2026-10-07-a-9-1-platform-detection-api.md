@@ -72,7 +72,7 @@
 | 11 | `String adUnitId = Platform.isAndroid` | `String adUnitId =`<br>`    defaultTargetPlatform == TargetPlatform.android` |
 | 12-13 | 兩個字面值 ID（`ca-app-pub-7910179918263365/2058235863` / `.../5774119595`） | **不動**（AC-7） |
 
-- ⚠️ **這是唯一需補 `foundation.dart` import 的檔**（規格 §4.1 已把「需新增 import」從 2 檔降為 1 檔）。
+- ⚠️ ~~**這是唯一需補 `foundation.dart` import 的檔**~~ 更正：§1.5、§1.6 也需要明確 import `foundation.dart`（`material.dart` 不轉出 `defaultTargetPlatform`）。
 - ⚠️ 該檔 import 區塊現為 `dart:io` / `google_mobile_ads` / `app_open_ad.dart` **三行無空行相隔**。依 `.claude/rules/flutter-styles.md` §3.1，`package:` 與相對路徑之間應有空行。本任務只要把 `dart:io` 換成 `package:flutter/foundation.dart` 並與 `google_mobile_ads` 同組即可；**不順手重排整個 import 區塊**（超出範圍，留給 `dart format` 與既有慣例）。
 - ⚠️ **第 11 行是欄位初始化，不是 getter**。`defaultTargetPlatform` 是 `TargetPlatform` 型別的 top-level getter，可在非 `const` 的實例欄位初始化式中求值，無時序問題（規格 §5.4 已評估）。**不要**因此把欄位改成 `late` 或改成 getter——那是擴大範圍。
 
@@ -83,7 +83,7 @@
 | 3 | `import 'dart:io';` | **整行刪除** |
 | 109 | `    if (Platform.isIOS) {` | `    if (defaultTargetPlatform == TargetPlatform.iOS) {` |
 
-- ✅ 該檔**已** `import 'package:flutter/material.dart'`（第 7 行），`material.dart` re-export `foundation.dart`，無須補 import。
+- ⚠️ **更正（PR #137 review）**：`material.dart` **不會** re-export `defaultTargetPlatform`（`widgets.dart:18` 只轉出 `foundation` 的 `Brightness`、`UniqueKey`）。實作時把第 7 行 `material.dart` 換成 `import 'package:flutter/foundation.dart';`（該檔無其他 material 依賴）。
 - ✅ 第 1-2 行 `dart:async` / `dart:convert` 另有用途（`Future` / `JsonEncoder`），**保留**。
 - ⚠️ enum 拼寫是 `TargetPlatform.iOS`（大寫 OS），**不是** `ios`。打錯 `flutter analyze` 會攔下。
 
@@ -95,7 +95,7 @@
 | 9 | `/// 第三方登入按鈕組。Apple 登入僅在 iOS 顯示。` | `/// 第三方登入按鈕組。Apple 登入在 iOS 與 macOS 顯示。`（AC-6） |
 | 33 | `      if (Platform.isIOS) ...[` | `      if (defaultTargetPlatform == TargetPlatform.iOS \|\|`<br>`          defaultTargetPlatform == TargetPlatform.macOS) ...[` |
 
-- ✅ 該檔**已** `import 'package:flutter/material.dart'`（第 3 行）。
+- ⚠️ **更正（PR #137 review）**：同 §1.5，`material.dart` 不提供 `defaultTargetPlatform`。實作時於第 1 行補 `import 'package:flutter/foundation.dart';`，`material.dart` 保留。
 - ⚠️ 這是 **5 處置換中唯一不是布林等價**的一處：判準由「iOS」放寬為「iOS 或 macOS」（規格 §5.2，刻意變更）。行動版仍等價（Android 兩種判準皆 false、iOS 皆 true），差異只在尚不存在的 macOS target。
 - ⚠️ 寫成兩個 `==` 的 `||` 比 `{TargetPlatform.iOS, TargetPlatform.macOS}.contains(...)` 更笨但更清楚，且不配置 Set——**採前者**。不要為了「優雅」引入集合。
 
