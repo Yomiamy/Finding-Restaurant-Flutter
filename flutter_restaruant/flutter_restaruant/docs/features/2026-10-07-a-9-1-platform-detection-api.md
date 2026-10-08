@@ -1,4 +1,4 @@
-# 功能規格：A-9.1 平台判斷 API 由 `dart:io` `Platform` 改為 `foundation` 編譯期常數
+# 功能規格：A-9.1 平台判斷 API 由 `dart:io` `Platform` 改為 `foundation` 的 `defaultTargetPlatform`
 
 - **項目編號**：A-9.1（沿用 `docs/brainstorm/2026-09-30-features-brainstorm.md` §9.5 編號）
 - **日期**：2026-10-07
@@ -168,16 +168,18 @@ AC-1 基線仍為 6、AC-2 基線仍為 12（兩者皆為**刪除前**的現況�
 
 | 原寫法 | 置換目標 | 行動版等價性 |
 | :--- | :--- | :--- |
-| `Platform.isAndroid` | `defaultTargetPlatform == TargetPlatform.android` | ✅ 在 Android 皆為 `true`、在 iOS 皆為 `false`。`defaultTargetPlatform` 為編譯期可判定常數，release build 可 tree-shake 死分支（符合 `.claude/rules/flutter-styles.md` §Y.3 的編譯期常數紀律） |
+| `Platform.isAndroid` | `defaultTargetPlatform == TargetPlatform.android` | ✅ 在 Android 皆為 `true`、在 iOS 皆為 `false`。`defaultTargetPlatform` 是執行期 getter（Flutter SDK `foundation/platform.dart:51`），**不是**編譯期常數，release build **不保證** tree-shake 未用分支（2026-10-08 依 PR #137 review 更正） |
 | `Platform.isIOS` | `defaultTargetPlatform == TargetPlatform.iOS` | ✅ 同上（注意 enum 值拼寫為 `iOS`，非 `ios`） |
 | `Platform.localeName` | `PlatformDispatcher.instance.locale` | ⚠️ **非字串等價**，見下方 5.1.1 |
 
 #### 5.1.1 `localeName` 是本項唯一的實質行為風險
 
+> ⚠️ **已被 §4.1 取代**：`Utils.isLocaleZh()` 最終整個刪除，本節的置換分析不再適用，保留作為決策紀錄。
+
 `Platform.localeName` 回傳作業系統字串（如 `zh_TW.UTF-8`、`en_US`），`isLocaleZh()` 以 `.contains('zh')` 比對。`PlatformDispatcher.instance.locale` 回傳 `Locale` 物件，兩者**型別與格式都不同**，不是機械替換：
 
 - `Locale.languageCode` 對中文為 `'zh'`（結構化欄位），比 `.contains('zh')` 掃整個 locale 字串**更精確**——原寫法對假想的 `en_ZH...` 之類字串會誤判，新寫法不會。
-- 但 `defaultTargetPlatform` 是編譯期常數、`PlatformDispatcher.instance.locale` 則是**執行期且可變**（使用者中途改系統語言會更新）。`Platform.localeName` 同樣是執行期值，故「每次呼叫重新求值」的時序特性一致，不引入快取語意變更。
+- 但 `defaultTargetPlatform` 在 App 執行期間不會改變、`PlatformDispatcher.instance.locale` 則**可變**（使用者中途改系統語言會更新）。`Platform.localeName` 同樣是執行期值，故「每次呼叫重新求值」的時序特性一致，不引入快取語意變更。
 - ⚠️ **這是本項最需要在 STAGE 0b 具名測試的一點**：其餘 5 處是布林等價的機械置換，此處是跨型別轉換。
 - 🟢 **實際影響面極小**：`isLocaleZh()` 當前**零呼叫**（§4 Out of Scope 已記載），因此任何行為偏差都不會觸及線上使用者。但正因為沒有呼叫端保護它，置換時更不能憑感覺寫。
 
@@ -205,7 +207,7 @@ AC-1 基線仍為 6、AC-2 基線仍為 12（兩者皆為**刪除前**的現況�
 | :--- | :--- |
 | `app_open_ad_state.dart:11` 是**欄位初始化**（非 getter），物件一建立即求值 | 置換後 `defaultTargetPlatform` 同樣可在欄位初始化求值（非 `const` 情境即可），無時序問題 |
 | `TargetPlatform` enum 拼寫（`iOS` / `macOS` / `android`）易打錯 | `flutter analyze`（AC-3）會直接攔下，風險收斂於 CI |
-| 置換後行動版出現回歸但測試未覆蓋 | `isLocaleZh` 零呼叫、ad unit ID 僅 `banner_ad_test.dart` 間接觸及。STAGE 0b 須為跨型別的 `localeName` 置換補測試（TDD-first），布林等價的 5 處以 `flutter analyze` + 既有測試即可 |
+| 置換後行動版出現回歸但測試未覆蓋 | `isLocaleZh` 零呼叫、ad unit ID 僅 `banner_ad_test.dart` 間接觸及。~~STAGE 0b 須為跨型別的 `localeName` 置換補測試（TDD-first）~~（§4.1 已刪除 `isLocaleZh()`，此項不再適用），布林等價的 5 處以 `flutter analyze` + 既有測試即可 |
 | 改動分散在 6 檔，漏改一處 | AC-1／AC-2 的 grep 判準即為完整性檢查（期望值 0，不是「少了幾個」） |
 
 ### 5.5 Linus 式核心判斷
@@ -219,6 +221,6 @@ AC-1 基線仍為 6、AC-2 基線仍為 12（兩者皆為**刪除前**的現況�
 
 ## 6. 後續建議（不屬本項，留作記錄）
 
-1. **`Utils.isLocaleZh()` 零呼叫**：建議另案評估刪除（YAGNI）。若確認為死碼，刪掉比置換更省——但該決策超出本 brief 授權範圍，故本項先保留並正確置換。
+1. ~~**`Utils.isLocaleZh()` 零呼叫**：建議另案評估刪除~~ ✅ **已於本項採納**：使用者授權後整個刪除（見 §4.1）。
 2. **A-9.2 能力閘門**：承接 §5.3 的 else-branch catch-all 問題，以及 §9.3-3 的 `MobileAds.instance.initialize()` 未受保護。
 3. **E-9.2 CI 編譯閘門**：`flutter build web` 是唯一能機械性防止下一個 `dart:io` 滲入共用程式碼的手段（Guide → Sensor）。本項的 grep 判準（AC-1／AC-2）只是一次性檢查，建議由 E-9.2 轉為常駐。
