@@ -1878,7 +1878,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
    - **另一個獨立的 CORS 問題**：店家照片（Yelp CDN）與靜態地圖屬**圖片**載入，是否可顯示取決於該 CDN 是否回 CORS header（待實測，見 §9.4.2「圖片跨域」），與 API 的 CORS 無關、Broker 也不處理它。
    - **成本前置**：Cloud Functions 需 Firebase Blaze 方案（D-9.5）。
 
-2. **`dart:io` 的 `Platform.isX` 在 Web 上直接拋例外**（5 處）
+2. **`dart:io` 的 `Platform.isX` 在 Web 上直接拋例外**（5 處） ✅ **已完成**（A-9.1，2026-10-08 合併）：實際 6 處全數移除，`lib/` 不再使用 `dart:io` 的 `Platform`。`Utils.isLocaleZh()` 因零呼叫改為直接刪除，未改用 `PlatformDispatcher`；Apple 登入改為 iOS 與 macOS 皆顯示，並以 `debugDefaultTargetPlatformOverride` 補上平台測試
    - `features/utils/utils.dart:73` `Platform.localeName`
    - `manager/fcm_manager.dart:109` `Platform.isIOS`
    - `flow/signinup/view/third_party_sign_in_widget.dart:33` `Platform.isIOS`（連帶 macOS 上 Apple 登入按鈕不會出現，但 macOS 其實支援）
@@ -1935,7 +1935,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | :--- | :--- | :---: | :--- |
 | **E-9.1** | 移除 4 個零使用相依：`camera`、`sqflite`、`path_provider`、`firebase_storage` | 0.1d | 縮小建置相容面與 App 體積；`sqflite` 還誤導文件（§1.1 記為「本地快取」） |
 | **UI-9.1** | `ChromeSafariBrowser` 改 `url_launcher` inAppBrowserView，移除 `flutter_inappwebview` | 0.2d | 一個 API 養一個大型 WebView 套件；行動版行為不變 |
-| **A-9.1** | 5 處 `dart:io` `Platform.isX` 改 `defaultTargetPlatform`／`PlatformDispatcher` | 0.1d | 一行一處，行動版語意不變；順帶讓 macOS 顯示 Apple 登入 |
+| **A-9.1** | 5 處 `dart:io` `Platform.isX` 改 `defaultTargetPlatform`／`PlatformDispatcher` ✅ **已完成**（2026-10-08，實際 6 處；`isLocaleZh()` 改為刪除） | 0.1d | 一行一處，行動版語意不變；順帶讓 macOS 顯示 Apple 登入 |
 | **E-9.2** | CI 加 `flutter build web` 編譯閘門（ubuntu runner，成本低） | 0.2d | 有它才能**機械性**防止下一個 `dart:io` 滲入共用程式碼；比文件規則可靠（Guide → Sensor） |
 | **P0（既有）** | Server-side Broker | 既有估計 | Web 的硬性前置（§9.3-1） |
 
