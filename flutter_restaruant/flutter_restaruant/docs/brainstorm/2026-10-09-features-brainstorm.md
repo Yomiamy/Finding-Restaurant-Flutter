@@ -1901,7 +1901,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | 回饋訊息 | `fluttertoast`（macOS 無實作） | 改 `SnackBar`。⚠️ macOS 走 `CupertinoApp` 分支，**不會自帶 `ScaffoldMessenger`**，需在 `PlatformApp.builder` 補一層 |
 | 外部連結 | `ChromeSafariBrowser` 僅 Android／iOS | 改 `url_launcher` 的 `LaunchMode.inAppBrowserView`（Android Custom Tabs／iOS SFSafariViewController 行為相同），**可一併移除 `flutter_inappwebview`** |
 | 能力閘門 | 廣告、生物辨識、推播散落各處，無平台判斷 | 見 §9.6 A-9.2：以「不支援就不註冊／不顯示」處理，而非在每個呼叫點加 `if` |
-| App Check | `main.dart:48,53` 只帶 `providerApple`／`providerAndroid` | Web 需 `providerWeb`，但**須用 Fraud Defense（reCAPTCHA Enterprise）**：`ReCaptchaEnterpriseProvider(siteKey)`／debug 用 `WebDebugProvider()`。不採 classic `ReCaptchaV3Provider`（見 A-9.3b）。macOS 沿用 `providerApple`（release 分支 `2e2d0ac` 已改 `AppleAppAttestProvider`，macOS 上的可用性需實測） |
+| App Check | `main.dart:48,53` 只帶 `providerApple`／`providerAndroid` | Web 需 `providerWeb`，但**須用 Fraud Defense（reCAPTCHA Enterprise）**：`ReCaptchaEnterpriseProvider(siteKey)`／debug 用 `WebDebugProvider()`。不採 classic `ReCaptchaV3Provider`（見 A-9.3b）。macOS 沿用 `providerApple`（release 分支 `2e2d0ac` 已改 `AppleAppAttestProvider`）。**2026-10-08 實查 `firebase_app_check` 0.4.8 原始碼**：`FirebaseAppCheckPlugin.swift:366-369` 在 macOS 14 以下會把 `AppleAppAttestProvider` **靜默換成 Debug provider**（release 也一樣），而專案 deployment target 是 macOS 12；同檔註解也指出 macOS 14 以上 App Attest「常常不支援」。結論：macOS 不能沿用 App Attest，處置見 A-9.2 |
 
 ### 9.4.2 Web 專屬
 
@@ -1943,7 +1943,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 | 編號 | 項目 | 平台 | Effort（粗估） | 依賴 |
 | :--- | :--- | :---: | :---: | :--- |
-| **A-9.2** | 平台能力閘門：不支援的平台不初始化 AdMob、不顯示廣告位／生物辨識／地圖模式；集中於**一處**判斷，呼叫點只讀結果 | 兩者 | 0.5d | A-9.1 |
+| **A-9.2** | 平台能力閘門：不支援的平台不初始化 AdMob、不顯示廣告位／生物辨識／地圖模式；集中於**一處**判斷，呼叫點只讀結果。另含 **macOS 的 App Check provider**：改用 `AppleAppAttestWithDeviceCheckFallbackProvider`（不支援 App Attest 時退回 DeviceCheck），或僅 macOS 用 `AppleDeviceCheckProvider`；兩者都需先在 Firebase Console 登記 DeviceCheck 金鑰（PR #138 review 移入） | 兩者 | 0.5d | A-9.1 |
 | **A-9.3** | `flutterfire configure` 註冊 **macOS** App，重新產生 `firebase_options.dart`（`flutter create --platforms=macos .` 先產生 target）；App Check macOS 沿用 `providerApple`，不需新 provider | macOS | 0.3d | — |
 | **A-9.3b** | **Web 的 Firebase 註冊與 App Check**：註冊 Web App、App Check 改掛 **Fraud Defense（reCAPTCHA Enterprise）**。**採 Enterprise、不採 classic v3**：官方文件仍列 v3 provider，但明言新整合應採 Enterprise；2026-10-07 使用者回報「傳統版 reCAPTCHA 已淘汰，請改用 Google Cloud Fraud Defense」（reCAPTCHA 已併入 Fraud Defense）。程式碼用 `ReCaptchaEnterpriseProvider(siteKey)`（release）／`WebDebugProvider()`（debug），兩者皆**非 `const` 建構式**；`firebase_app_check ^0.4.7`（實裝 0.4.8）已內建三個 web provider，**無須升版**。**不需 Blaze**：Spark 可用 Enterprise，僅限 0.1／0.3／0.7／0.9 四個分數級距，連結 Cloud Billing 才開放全部 11 級；超出免費額度的 assessment 計費（2026-10-08 依官方 enterprise-provider 文件更正，原記「Blaze 為硬前置」有誤） | Web | 0.3d | — |
 | **UI-9.2** | `fluttertoast` → `SnackBar`（含 `CupertinoApp` 分支補 `ScaffoldMessenger`） | 兩者 | 0.3d | — |
