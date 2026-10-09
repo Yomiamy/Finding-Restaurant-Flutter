@@ -43,7 +43,9 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
 
     _mainBloc = BlocProvider.of<MainBloc>(context);
 
-    _mainBloc.add(const NotificationSetup());
+    if (platformCapabilities().pushNotifications) {
+      _mainBloc.add(const NotificationSetup());
+    }
     _mainBloc.add(
       FetchSearchInfo(
         price: _configs.price,
@@ -78,10 +80,12 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         filterConfigs: _configs,
         isListMode: _isListMode,
       ),
-      bottomNavigationBar: SafeArea(
-        top: false,
-        child: BannerAD(adState: getIt<BannerADState>()),
-      ),
+      bottomNavigationBar: platformCapabilities().ads
+          ? SafeArea(
+              top: false,
+              child: BannerAD(adState: getIt<BannerADState>()),
+            )
+          : null,
     );
   }
 

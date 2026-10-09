@@ -46,8 +46,10 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
 
     _bloc = BlocProvider.of<RestaurantDetailBloc>(context);
 
-    if (AdCounterManager().decrementAndCheckShouldShowAd()) {
-      // iOS DetailPage才有全屏AD
+    // 插頁廣告（Android／iOS 皆有）：每進詳情頁 3 次載入一次。
+    // 無廣告能力的平台不載入、也不消耗計數（&& 短路）。
+    if (platformCapabilities().ads &&
+        AdCounterManager().decrementAndCheckShouldShowAd()) {
       IntersitialAD(adState: InterstitialADState()).load();
     }
   }

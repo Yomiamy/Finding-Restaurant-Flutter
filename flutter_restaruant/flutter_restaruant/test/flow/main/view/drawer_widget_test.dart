@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
@@ -83,5 +84,39 @@ void main() {
     await tester.tap(find.widgetWithText(ListTile, S.current.settings_title));
     await tester.pumpAndSettle();
     expect(settingsTapped, isTrue);
+  });
+
+  testWidgets('macOS 無地圖模式能力：不顯示列表／地圖切換項', (tester) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+    try {
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [S.delegate],
+          supportedLocales: S.delegate.supportedLocales,
+          theme: AppThemeData.materialLight,
+          home: Scaffold(
+            drawer: DrawerWidget(
+              isListMode: true,
+              onKeywordSearch: () {},
+              onFilterRules: () {},
+              onToggleViewMode: () {},
+              onMapMyLoc: () {},
+              onFavorites: () {},
+              onSettings: () {},
+            ),
+            body: const SizedBox(),
+          ),
+        ),
+      );
+      tester.state<ScaffoldState>(find.byType(Scaffold)).openDrawer();
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ListTile), findsNWidgets(5));
+      // Icons.map 只屬於切換項（定位重置用 Icons.navigation）。
+      expect(find.byIcon(Icons.map), findsNothing);
+      expect(find.text(S.current.map_mode), findsNothing);
+    } finally {
+      debugDefaultTargetPlatformOverride = null;
+    }
   });
 }
