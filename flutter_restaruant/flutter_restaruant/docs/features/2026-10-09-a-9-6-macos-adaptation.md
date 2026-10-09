@@ -198,6 +198,8 @@ git diff --stat main -- ios/ android/ lib/manager/google_sign_in_manager.dart
 - `macos/Runner/Info.plist`：`CFBundleURLTypes` 填入 macOS client 的 reversed client ID；並讓 SDK 讀得到 client ID（D-2）
 - `macos/Runner.xcodeproj/project.pbxproj`：Runner target 的 Release 與 Profile 補 `DEVELOPMENT_TEAM = H2724L9BS5;`（D-1 (a)，獨立 commit）
 - §3.2 的新增測試、AC-10 的註解同步
+- **（2026-10-10 人工驗收後追加，使用者決定）UI-9.1**：AC-14 實測時詳情頁在 macOS 拋 `createPlatformChromeSafariBrowser is not implemented`（`restaurant_comment_cell.dart` 於建構時 new `ChromeSafariBrowser()`）。改用 `url_launcher` 的 `LaunchMode.inAppBrowserView`，並移除 `flutter_inappwebview`。行動版仍為 Custom Tabs／SFSafariViewController；`url_launcher_macos` 忽略 mode，macOS 由預設瀏覽器開啟（讀原始碼確認）
+- **（2026-10-10 §4.3 條件已觸發）** Google 登入後 `firebase_auth` 回報 `keychain-error`，`RunnerDebug.entitlements` 加入 `keychain-access-groups`：App 本身的 group（Firebase Auth 預設寫入第一個 group）與 `com.google.GIDSignIn`
 
 ### 4.2 Out of Scope
 

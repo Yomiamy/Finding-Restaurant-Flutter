@@ -212,6 +212,8 @@ platformCapabilities().camera ──(initState 讀一次)──> _onCamera : Voi
 | T6 | 格式化（限異動檔）＋機械驗收 | 無手寫 diff | — | — | 不適用 | AC-1、2、4、5、6、7 | 匯合後 |
 | T7 | macOS 建置（debug＋release） | 無 | — | — | 不適用 | AC-3、AC-6 產物 | 匯合後，與 T6 可並行 |
 | T8 | diff 審查 | 無（只讀） | — | — | 不適用 | AC-7、AC-10 | 最後 |
+| T9 | （人工驗收後追加）§7 keychain 後備：`keychain-access-groups` 加入 App group 與 GIDSignIn group | `macos/Runner/RunnerDebug.entitlements` | +5 | 否 | 是 | AC-13 | — |
+| T10 | （人工驗收後追加，UI-9.1）評論連結改 `url_launcher` `inAppBrowserView`，移除 `flutter_inappwebview` | `restaurant_comment_cell.dart`、`pubspec.yaml`／`.lock`、`test/component/restaurant_comment_cell_test.dart`（新） | lib +7／−8 | 否（建構式改 `const`，相容） | 否 | AC-14 前置 | — |
 
 ### T1：Release／Profile 補 `DEVELOPMENT_TEAM`（D-1，獨立 commit）
 
