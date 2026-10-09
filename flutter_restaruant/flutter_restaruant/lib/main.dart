@@ -57,7 +57,7 @@ void main() async {
       );
     } else {
       await FirebaseAppCheck.instance.activate(
-        providerApple: const AppleAppAttestProvider(),
+        providerApple: releaseAppleAppCheckProvider(),
         providerAndroid: const AndroidPlayIntegrityProvider(),
       );
     }
@@ -77,6 +77,16 @@ void main() async {
 
   runApp(const FindingRestaruantApp());
 }
+
+/// release 的 `providerApple`。
+///
+/// 此參數同時作用於 iOS 與 macOS。多數 Mac 不支援 App Attest，macOS 改用
+/// 於 activate 時會退回 DeviceCheck 的 provider；iOS 維持 App Attest。
+@visibleForTesting
+AppleAppCheckProvider releaseAppleAppCheckProvider() =>
+    defaultTargetPlatform == TargetPlatform.macOS
+    ? const AppleAppAttestWithDeviceCheckFallbackProvider()
+    : const AppleAppAttestProvider();
 
 class FindingRestaruantApp extends StatelessWidget {
   const FindingRestaruantApp({super.key});
