@@ -1901,7 +1901,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | 回饋訊息 | `fluttertoast`（macOS 無實作） | 改 `SnackBar`。⚠️ macOS 走 `CupertinoApp` 分支，**不會自帶 `ScaffoldMessenger`**，需在 `PlatformApp.builder` 補一層 |
 | 外部連結 | `ChromeSafariBrowser` 僅 Android／iOS | 改 `url_launcher` 的 `LaunchMode.inAppBrowserView`（Android Custom Tabs／iOS SFSafariViewController 行為相同），**可一併移除 `flutter_inappwebview`** |
 | 能力閘門 | 廣告、生物辨識、推播散落各處，無平台判斷 | 見 §9.6 A-9.2：以「不支援就不註冊／不顯示」處理，而非在每個呼叫點加 `if` |
-| App Check | `main.dart:48,53` 只帶 `providerApple`／`providerAndroid` | Web 需 `providerWeb`，但**須用 Fraud Defense（reCAPTCHA Enterprise）**：`ReCaptchaEnterpriseProvider(siteKey)`／debug 用 `WebDebugProvider()`。不採 classic `ReCaptchaV3Provider`（見 A-9.3b）。macOS 目前沿用 `providerApple`（release 分支 `2e2d0ac` 已改 `AppleAppAttestProvider`）。**2026-10-08 實查 `firebase_app_check` 0.4.8 原始碼**：`FirebaseAppCheckPlugin.swift:366-369` 在 macOS 14 以下會把 `AppleAppAttestProvider` **靜默換成 Debug provider**（release 也一樣），而專案 deployment target 是 macOS 12；同檔註解也指出 macOS 14 以上 App Attest「常常不支援」。結論：macOS 不能沿用 App Attest，處置見 A-9.2 |
+| App Check | `main.dart:48,53` 只帶 `providerApple`／`providerAndroid` | Web 需 `providerWeb`，但**須用 Fraud Defense（reCAPTCHA Enterprise）**：`ReCaptchaEnterpriseProvider(siteKey)`／debug 用 `WebDebugProvider()`。不採 classic `ReCaptchaV3Provider`（見 A-9.3b）。macOS 目前沿用 `providerApple`（release 分支 `2e2d0ac` 已改 `AppleAppAttestProvider`）。**2026-10-08 實查 `firebase_app_check` 0.4.8 原始碼**：`FirebaseAppCheckPlugin.swift:366-369` 在 macOS 14 以下會把 `AppleAppAttestProvider` **靜默換成 Debug provider**（release 也一樣），而專案 deployment target 當時是 macOS 12（2026-10-09 已上修至 14，見 D-9.6）；同檔註解也指出 macOS 14 以上 App Attest「常常不支援」。結論：macOS 不能沿用 App Attest，處置見 A-9.2 |
 
 ### 9.4.2 Web 專屬
 
@@ -1923,7 +1923,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | **Sandbox entitlements** | `com.apple.security.network.client`（**缺這個所有 HTTP 請求都會失敗**，最常見的踩雷點）、`keychain-access-groups`（Firebase Auth 存 token；**sandbox 下缺它登入會報 `keychain-error`，且此 entitlement 需真實簽章**，ad-hoc 簽不出，故併入 E-9.4a）、`personal-information.location`、`files.user-selected.read-only`（選圖）、~~`aps-environment`（推播）~~（不採用：macOS 不做推播，見 D-9.7）、Sign in with Apple capability |
 | **地圖替代** | 無原生 Google Maps。最省：**重用既有 Static Map 縮圖（`GoogleApiUtil.createStaticMapUrl`）＋ 以 `url_launcher` 開 Apple Maps／Google Maps**，隱藏地圖模式切換 |
 | **Menu Vision** | 隱藏相機來源，只留「選擇檔案」 |
-| **部署目標與建置** | deployment target 上修至 **macOS 14**（見 D-9.6）；沿用 iOS 的 SPM 混合模式 |
+| **部署目標與建置** | deployment target 上修至 **macOS 14**（見 D-9.6）✅ **已完成**（2026-10-09）；沿用 iOS 的 SPM 混合模式 |
 | **視窗** | 在 `MainFlutterWindow.swift` 設最小視窗尺寸，避免縮到版面崩壞（不需引入 `window_manager` 套件） |
 | **發布** | Mac App Store（強制 sandbox）或 Developer ID 簽章 + notarization；`release.yml` 已跑在 `macos-15`；CI 暫不涵蓋 macOS，發布先採手動（見 D-9.8） |
 
@@ -1981,7 +1981,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 >
 > **建議動工順序**（2026-10-09 依 D-9.6～D-9.8 拆為兩條線）：
 > - **macOS 線**：
->   1. E-9.1、UI-9.1，deployment target 上修至 14
+>   1. E-9.1、UI-9.1，deployment target 上修至 14（✅ 上修已完成，2026-10-09）
 >   2. A-9.2 能力閘門（macOS 關 AdMob／推播／生物辨識／地圖模式；App Check 改 fallback provider）
 >   3. A-9.6 macOS 適配 ＋ UI-9.2、UI-9.4——先讓 macOS 上直接壞掉的功能可用
 >   4. E-9.4a 本機開發簽章（可視需要提前）→ 實測登入、App Check、Apple 登入；之後 E-9.4b 手動發布
@@ -1997,7 +1997,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | **D-9.3** | Web 是否需要深層連結（直接開 `/restaurant/<id>`）？ | 決定 A-9.4 是簡單容錯還是導入 `go_router`。✅ **2026-09-30 決議：需要深層連結，但不導入 `go_router`**（同日修正，原決議為導入 `go_router`）。修正理由：實查發現瓶頸不在路由套件，而在詳情頁依賴記憶體傳入的 `RestaurantEntity`——不論用哪種路由都得先讓詳情頁只憑 id 渲染；路由解析以內建 `onGenerateRoute` 即可，免新增相依、免改寫 `routesTable` 與 10 處 `pushNamed`。日後若需要路由守衛或巢狀路由再評估 `go_router` |
 | **D-9.4** | 桌面／Web 無 AdMob，是否接受無廣告收益，或評估 AdSense（`google_adsense` 套件）？ | Web 營收模式。✅ **2026-09-30 決議：首版接受無廣告**，macOS／Web 由 A-9.2 能力閘門關閉廣告初始化與廣告位；有流量數據後再評估 AdSense |
 | **D-9.5** | Broker（Cloud Functions）需 Firebase Blaze 方案，目前計費方案是否允許？ | Web 的硬性前置能否落地。✅ **2026-09-30 確認：目前為 Spark，可升級 Blaze**——升級後以 Cloud Functions 做 Broker、Firebase Hosting rewrite 同網域部署；升級時須同步設定預算警示，避免 Broker 或 Gemini 被濫用時帳單失控 |
-| **D-9.6** | macOS 最低支援版本？ | 決定 App Check provider 與可觸及使用者。✅ **2026-10-09 決議：上修至 macOS 14**（`MACOSX_DEPLOYMENT_TARGET` 與 `macos/Podfile` 由 12.0 改 14.0），放棄 macOS 12–13。14 以上仍有不支援 App Attest 的機器，故 A-9.2 採 `AppleAppAttestWithDeviceCheckFallbackProvider` |
+| **D-9.6** | macOS 最低支援版本？ | 決定 App Check provider 與可觸及使用者。✅ **2026-10-09 決議：上修至 macOS 14**（`MACOSX_DEPLOYMENT_TARGET` 與 `macos/Podfile` 由 12.0 改 14.0），放棄 macOS 12–13。✅ **已完成**（2026-10-09，Podfile 與 Runner 專案 3 個 build configuration）。14 以上仍有不支援 App Attest 的機器，故 A-9.2 採 `AppleAppAttestWithDeviceCheckFallbackProvider` |
 | **D-9.7** | macOS 是否做推播？ | 決定 FCM 範圍與 `aps-environment`／APNs 金鑰。✅ **2026-10-09 決議：不做**。A-9.2 能力閘門在 macOS 跳過 FCM 初始化（`main.dart` 於 `runApp` 前 `await FcmManager().init()`，無 APNs 時可能失敗或拖慢啟動——推論未實測）；不加 `aps-environment` |
 | **D-9.8** | CI 是否涵蓋 macOS？ | 決定 macOS 的回歸防線。✅ **2026-10-09 決議：暫不涵蓋**。E-9.2 只做 `build web`；macOS 相關 PR 以本機 `flutter build macos` 驗收。已知代價：與 macOS 無關的 PR 弄壞 macOS 時不會即時被發現 |
 
