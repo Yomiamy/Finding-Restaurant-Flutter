@@ -199,7 +199,7 @@ git diff --stat main -- ios/ android/ lib/manager/google_sign_in_manager.dart
 - `macos/Runner.xcodeproj/project.pbxproj`：Runner target 的 Release 與 Profile 補 `DEVELOPMENT_TEAM = H2724L9BS5;`（D-1 (a)，獨立 commit）
 - §3.2 的新增測試、AC-10 的註解同步
 - **（2026-10-10 人工驗收後追加，使用者決定）UI-9.1**：AC-14 實測時詳情頁在 macOS 拋 `createPlatformChromeSafariBrowser is not implemented`（`restaurant_comment_cell.dart` 於建構時 new `ChromeSafariBrowser()`）。改用 `url_launcher` 的 `LaunchMode.inAppBrowserView`，並移除 `flutter_inappwebview`。行動版仍為 Custom Tabs／SFSafariViewController；`url_launcher_macos` 忽略 mode，macOS 由預設瀏覽器開啟（讀原始碼確認）
-- **（2026-10-10 §4.3 條件已觸發）** Google 登入後 `firebase_auth` 回報 `keychain-error`，`RunnerDebug.entitlements` 加入 `keychain-access-groups`：App 本身的 group（Firebase Auth 預設寫入第一個 group）與 `com.google.GIDSignIn`
+- **（2026-10-10 §4.3 條件已觸發）** Google 登入後 `firebase_auth` 回報 `keychain-error`，`RunnerDebug.entitlements` 加入 `keychain-access-groups`：App 本身的 group（Firebase Auth 預設寫入第一個 group）與 `com.google.GIDSignIn`。PR #145 review 後一併補到 `DebugProfile.entitlements`（Profile）與 `Release.entitlements`（Release），三組態一致，避免 release 登入遇到同一個 keychain-error
 
 ### 4.2 Out of Scope
 
@@ -225,7 +225,8 @@ git diff --stat main -- ios/ android/ lib/manager/google_sign_in_manager.dart
     - `GoogleSignIn-iOS` 8.0.0 README（`:45-51`）只要求「sign your app」；範例 README（`Samples/Swift/DaysUntilBirthday/README.md:28-46`）把 `keychain error` 歸因於簽章，Keychain Sharing 只列為拿不到 provisioning profile 時的 workaround。
     - 原始碼顯示，GIDSignIn 在 macOS 用的是**舊式 keychain**：`GTMKeychainStore` 沒帶 `useDataProtectionKeychain`（`GIDSignIn.m:466`；`GTMAppAuth` 4.1.1 `KeychainStore.swift:120-126`、`:281-287`）。
     - 使用者 2026-10-09 已實測：Team 簽章本身就能修好 Firebase 的 Data Protection keychain（-34018），不需要 Keychain Sharing。Debug 現在就是 team 簽章。
-  - **若要加**：只加到 **AC-13 實測的組態**所用的 entitlements 檔，也就是 Debug → `RunnerDebug.entitlements`。D-1 (a) 之後 Release／Profile 也有 team 簽章，但本項不驗 release 登入（§3.4），留給 E-9.4a。把需要真實簽章的 entitlement 加給 ad-hoc 組態，可能讓建置或啟動失敗（推論）。
+    - **2026-10-10 AC-13 實測推翻上一點**：Team 簽章下 Google OAuth 成功，但 `firebase_auth` 仍回報 `keychain-error`，條件已觸發。
+  - **已加（三個組態）**：先依實測只加 Debug → `RunnerDebug.entitlements`。D-1 (a) 之後 Release／Profile 也有 team 簽章（不再是 ad-hoc），PR #145 review 指出它們缺 group 會在 release 登入時遇到同樣的 keychain-error，因此一併補到 `DebugProfile.entitlements` 與 `Release.entitlements`（`--profile`／release 建置與 `codesign` 皆已驗證）。release 登入的實機驗證仍留給 E-9.4a（§3.4）。
 
 ### 4.4 部署前置注意事項（手動作業，非本項驗收）
 
@@ -301,11 +302,11 @@ git diff --stat main -- ios/ android/ lib/manager/google_sign_in_manager.dart
 
 ## 7. 後續建議（不屬本項，留作記錄）
 
-1. **更正 brainstorm 的 E-9.4a**：使用者 2026-10-09 已實測，Team 簽章本身就能修好 Firebase keychain（-34018），不需要 `keychain-access-groups`；壞掉的也不只是登入，還有 Remote Config 與 Yelp。另外記錄本項 AC-13 對 GIDSignIn 的實測結果。
+1. **更正 brainstorm 的 E-9.4a**：使用者 2026-10-09 已實測，Team 簽章本身就能修好 Remote Config 的 keychain（-34018）；但 2026-10-10 AC-13 實測顯示 `firebase_auth` 登入仍需要 `keychain-access-groups`（本項已加入三個組態）。壞掉的也不只是登入，還有 Remote Config 與 Yelp。
 2. **更新 brainstorm 的 A-9.6 列**：註明 entitlements 與地圖兩項，實查後確認不需要工作（§1.4）。
 3. **刪除 `MenuVisionSheet.autoStartCapture` 死碼**（零呼叫點）。
 4. **Menu Vision 在 macOS 的文案**：「相簿」改為「檔案」。若有使用者回饋再做。
-5. **Release 的正式簽章**（Developer ID 或 App Store）：E-9.4b。
+5. **Release 的正式簽章**（Developer ID 或 App Store）：E-9.4b。`keychain-access-groups` 是受限 entitlement，App 必須內嵌授權 `H2724L9BS5.*` 的 provisioning profile 才能啟動；手動簽章時要記得放 Developer ID／App Store profile。
 
 ---
 
