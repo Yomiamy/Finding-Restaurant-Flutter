@@ -2,11 +2,13 @@ import 'package:flutter/material.dart';
 
 import '../../../features/foundation/extension/extension_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/utils/utils_barrel.dart';
 import '../../../generated/l10n.dart';
 
 /// 主頁面側邊選單元件 (Drawer)。
 ///
 /// 包含關鍵字搜尋、篩選條件、檢視模式切換、定位重置、收藏與設定頁等導覽選項。
+/// 檢視模式（列表／地圖）切換僅在具地圖模式能力的平台顯示（見 [platformCapabilities]）。
 class DrawerWidget extends StatelessWidget {
   const DrawerWidget({
     super.key,
@@ -68,15 +70,16 @@ class DrawerWidget extends StatelessWidget {
               title: Text(appLocalizations.filter_rules),
               onTap: () => _handleTap(context, onFilterRules),
             ),
-            ListTile(
-              leading: const Icon(Icons.map, color: ThemeColor.colord84a20),
-              title: Text(
-                isListMode
-                    ? appLocalizations.map_mode
-                    : appLocalizations.list_mode,
+            if (platformCapabilities().mapMode)
+              ListTile(
+                leading: const Icon(Icons.map, color: ThemeColor.colord84a20),
+                title: Text(
+                  isListMode
+                      ? appLocalizations.map_mode
+                      : appLocalizations.list_mode,
+                ),
+                onTap: () => _handleTap(context, onToggleViewMode),
               ),
-              onTap: () => _handleTap(context, onToggleViewMode),
-            ),
             ListTile(
               leading: const Icon(
                 Icons.navigation,

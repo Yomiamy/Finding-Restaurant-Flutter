@@ -16,6 +16,7 @@ import 'data_layer/datasources/datasources_barrel.dart';
 import 'di/di_barrel.dart';
 import 'features/foundation/constants/constants_barrel.dart';
 import 'features/foundation/style/style_barrel.dart';
+import 'features/utils/utils_barrel.dart';
 import 'firebase_options.dart';
 import 'generated/l10n.dart';
 import 'manager/manager_barrel.dart';
@@ -28,9 +29,14 @@ void main() async {
   WidgetsFlutterBinding.ensureInitialized();
   setupInjection();
 
-  // MobileAds init
-  final initFuture = MobileAds.instance.initialize();
-  getIt.registerSingleton<BannerADState>(BannerADState(initFuture));
+  final capabilities = platformCapabilities();
+
+  // AdMob 只有 Android／iOS 原生實作。註冊與 MainPage 的取用讀同一個能力，
+  // 不支援的平台兩端一起略過（規格 §5.3）。
+  if (capabilities.ads) {
+    final initFuture = MobileAds.instance.initialize();
+    getIt.registerSingleton<BannerADState>(BannerADState(initFuture));
+  }
 
   try {
     await Future.wait([
@@ -61,7 +67,10 @@ void main() async {
 
     // FCM 推播：註冊前景／背景訊息處理。需在 runApp 前完成，
     // 才能讀到「點推播冷啟動」的店家，供 SplashPage 跳頁。
-    await FcmManager().init();
+    // 無推播能力的平台略過，initialArguments 恆為 null，SplashPage 走一般分支。
+    if (capabilities.pushNotifications) {
+      await FcmManager().init();
+    }
   } catch (e, st) {
     Logger().e('Initialization failed', error: e, stackTrace: st);
   }
