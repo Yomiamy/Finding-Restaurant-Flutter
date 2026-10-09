@@ -192,6 +192,7 @@
 | [`lib/features/utils/tuple.dart`](../../lib/features/utils/tuple.dart) | `Tuple2` … `Tuple7` | 泛型多值容器。<br>⚠️ **Dart 3 已內建 Records**，新程式碼應優先使用 `(a, b)` 語法，本檔屬既有程式碼的相容保留。 |
 | [`lib/features/utils/view_utils.dart`](../../lib/features/utils/view_utils.dart) | `ViewUtils` | 通用 UI 輔助（對話框、提示等）。 |
 | [`lib/features/utils/utils.dart`](../../lib/features/utils/utils.dart) | `Utils` | 泛用工具函式集。 |
+| [`lib/features/utils/platform_capabilities.dart`](../../lib/features/utils/platform_capabilities.dart) | `platformCapabilities()` | 平台能力閘門：回傳 `ads`／`pushNotifications`／`mapMode`，呼叫點只讀能力、不判平台。 |
 
 ### 9. 資料傳輸與在地化 (`lib/model/`、`lib/l10n/`、`lib/gen/`)
 
