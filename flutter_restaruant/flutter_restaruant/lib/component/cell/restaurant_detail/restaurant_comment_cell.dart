@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_inappwebview/flutter_inappwebview.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../features/foundation/constants/constants_barrel.dart';
@@ -11,9 +11,8 @@ class RestaurantCommentCell extends StatelessWidget {
   static const int _imageSize = 64;
 
   final List<ReviewDetailEntity> _reviewInfos;
-  final ChromeSafariBrowser _browser = ChromeSafariBrowser();
 
-  RestaurantCommentCell({
+  const RestaurantCommentCell({
     super.key = const Key('RestaurantCommentCell'),
     required List<ReviewDetailEntity> reviewInfos,
   }) : _reviewInfos = reviewInfos;
@@ -76,11 +75,11 @@ class RestaurantCommentCell extends StatelessWidget {
           borderRadius: BorderRadius.circular(ThemeSize.radius12),
           onTap: () {
             if (commentUrl.isNotEmpty) {
-              _browser.open(
-                url: WebUri(commentUrl),
-                settings: ChromeSafariBrowserSettings(
-                  barCollapsingEnabled: true,
-                ),
+              // Android Custom Tabs／iOS SFSafariViewController；macOS 無 in-app
+              // 實作，url_launcher_macos 忽略 mode，改由預設瀏覽器開啟。
+              launchUrl(
+                Uri.parse(commentUrl),
+                mode: LaunchMode.inAppBrowserView,
               );
             }
           },

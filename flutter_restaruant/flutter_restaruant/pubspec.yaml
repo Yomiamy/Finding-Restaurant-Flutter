@@ -42,7 +42,6 @@ dependencies:
   local_auth: ^3.0.2 # 生物識別認證 (指紋 / Face ID)
   package_info_plus: ^10.2.1 # 獲取應用程式 App 版本號與包名等資訊
   url_launcher: ^6.1.12 # 啟動外部 URL (瀏覽器、電話、郵件)
-  flutter_inappwebview: ^6.1.5 # 內嵌 WebView 網頁瀏覽器元件
 
   # 地圖服務 (Maps & Navigation)
   google_maps_flutter: ^2.4.0 # Google Maps 地圖 SDK
