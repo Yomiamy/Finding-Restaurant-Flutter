@@ -1934,7 +1934,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | 編號 | 項目 | Effort | 理由 |
 | :--- | :--- | :---: | :--- |
 | **E-9.1** | 移除 4 個零使用相依：`camera`、`sqflite`、`path_provider`、`firebase_storage` | 0.1d | 縮小建置相容面與 App 體積；`sqflite` 還誤導文件（§1.1 記為「本地快取」） |
-| **UI-9.1** | `ChromeSafariBrowser` 改 `url_launcher` inAppBrowserView，移除 `flutter_inappwebview` | 0.2d | 一個 API 養一個大型 WebView 套件；行動版行為不變 |
+| **UI-9.1** | `ChromeSafariBrowser` 改 `url_launcher` inAppBrowserView，移除 `flutter_inappwebview` ✅ **已完成**（2026-10-12，併入 A-9.6：macOS 詳情頁因 `ChromeSafariBrowser` 無實作而出錯；`url_launcher` 下限提至 `^6.2.0`；macOS 忽略 mode、改由預設瀏覽器開啟） | 0.2d | 一個 API 養一個大型 WebView 套件；行動版行為不變 |
 | **A-9.1** | 5 處 `dart:io` `Platform.isX` 改 `defaultTargetPlatform`／`PlatformDispatcher` ✅ **已完成**（2026-10-08，實際 6 處；`isLocaleZh()` 改為刪除） | 0.1d | 一行一處，行動版語意不變；順帶讓 macOS 顯示 Apple 登入 |
 | **E-9.2** | CI 加 `flutter build web` 編譯閘門（ubuntu runner，成本低）；**不含 `build macos`**（見 D-9.8） | 0.2d | 有它才能**機械性**防止下一個 `dart:io` 滲入共用程式碼；比文件規則可靠（Guide → Sensor） |
 | **P0（既有）** | Server-side Broker | 既有估計 | Web 的硬性前置（§9.3-1） |
@@ -1952,8 +1952,8 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | **A-9.4** | 深層連結：①詳情頁改為只憑 `id` 自足渲染（頁首取自詳情 API 回應、收藏狀態向收藏資料查詢，不再依賴傳入的 `RestaurantEntity`）；②`PlatformApp` 加 `onGenerateRoute` 解析 `/restaurant/<id>`；③其餘強轉 arguments 處缺參數導回首頁。**不導入 `go_router`**：現有 `routesTable` 與 10 處 `pushNamed` 不需改動 | 兩者（深層連結主要服務 Web） | 1–1.5d（主要成本在①） | D-9.3 |
 | **A-9.5** | 第三方登入改 Firebase popup 流程 | Web | 1d | A-9.3b |
 | **E-9.3** | Firebase Hosting 部署 workflow、Service Worker、Maps JS key | Web | 1d | Broker、A-9.3b |
-| **A-9.6** | macOS entitlements、地圖降級為靜態圖＋外部導航、選圖只留檔案、Google 登入補 macOS OAuth client 與 `CFBundleURLTypes` URL scheme（PR #138 review 移入） | macOS | 1–1.5d | A-9.2 |
-| **E-9.4a** | macOS 本機開發簽章：`DEVELOPMENT_TEAM`、Keychain Sharing（`keychain-access-groups`）、Sign in with Apple capability——**完成前 macOS 的 Firebase Auth 登入不可用**；完成後可實測登入、App Check、Apple 登入。CI 不建 macOS（D-9.8），不受 runner 無簽章身分限制，可視需要提前 | macOS | 兩段合計沿用原估 1d | A-9.3 |
+| **A-9.6** | macOS entitlements、地圖降級為靜態圖＋外部導航、選圖只留檔案、Google 登入補 macOS OAuth client 與 `CFBundleURLTypes` URL scheme（PR #138 review 移入）。✅ **已完成**（2026-10-12）：`platformCapabilities()` 新增 `camera`（僅原生 Android／iOS 為 true），Menu Vision 無相機能力時只留選檔入口；Google 登入補 `GIDClientID` 與 `CFBundleURLTypes`；`MainFlutterWindow.swift` 設最小內容尺寸 360×640。與提案落差：**地圖未改動**（靜態圖＋外部導航既有、地圖模式已由 A-9.2 隱藏）；原屬 E-9.4a 的 `DEVELOPMENT_TEAM`（Release／Profile）與 `keychain-access-groups`（三個 configuration）因登入實測需要提前完成；另併入 UI-9.1 | macOS | 1–1.5d | A-9.2 |
+| **E-9.4a** | macOS 本機開發簽章：`DEVELOPMENT_TEAM`、Keychain Sharing（`keychain-access-groups`）、Sign in with Apple capability——**完成前 macOS 的 Firebase Auth 登入不可用**；完成後可實測登入、App Check、Apple 登入。CI 不建 macOS（D-9.8），不受 runner 無簽章身分限制，可視需要提前。🟡 **部分完成**（2026-10-12，隨 A-9.6）：`DEVELOPMENT_TEAM` 與 `keychain-access-groups` 已補，macOS Google 登入實測可用；剩 Sign in with Apple capability（目前 Apple 登入回報 `AuthorizationError 1000`） | macOS | 兩段合計沿用原估 1d | A-9.3 |
 | **E-9.4b** | macOS 發布：Developer ID 簽章 + notarization 或 Mac App Store，先手動；CI 上傳暫不做（D-9.8） | macOS | （同上） | A-9.6、E-9.4a |
 
 > ⚠️ **effort 估計偏差提醒**（沿用本文件 C-1／C-2 教訓）：UI-9.3 響應式版面是最可能低估的項目——動到的不是「新寫幾個 layout」，而是**每個頁面既有的寬度假設**（`MediaQuery` 7 檔、固定寬 `230`／`260` 的 AI 卡片、`viewportFraction: 0.85`）。動工前先 grep 盤點使用點。
@@ -1981,9 +1981,9 @@ class ComparisonMatrixComponent extends A2UIComponent {
 >
 > **建議動工順序**（2026-10-09 依 D-9.6～D-9.8 拆為兩條線）：
 > - **macOS 線**：
->   1. E-9.1、UI-9.1，deployment target 上修至 14（✅ 上修已完成，2026-10-09）
+>   1. E-9.1、UI-9.1，deployment target 上修至 14（✅ 上修已完成，2026-10-09；UI-9.1 ✅ 2026-10-12 隨 A-9.6 完成）
 >   2. A-9.2 能力閘門（macOS 關 AdMob／推播／生物辨識／地圖模式；App Check 改 fallback provider）（✅ 已完成，2026-10-09；生物辨識因無 UI 入口未納入）
->   3. A-9.6 macOS 適配 ＋ UI-9.2、UI-9.4——先讓 macOS 上直接壞掉的功能可用
+>   3. A-9.6 macOS 適配 ＋ UI-9.2、UI-9.4——先讓 macOS 上直接壞掉的功能可用（A-9.6 ✅ 已完成，2026-10-12；UI-9.2、UI-9.4 待做）
 >   4. E-9.4a 本機開發簽章（可視需要提前）→ 實測登入、App Check、Apple 登入；之後 E-9.4b 手動發布
 >   5. UI-9.3 響應式版面（最大項、純版面，最後做；Web 共用）
 > - **Web 線**（原順序不變）：§9.5 前置（含 E-9.2 `build web`）＋升級 Blaze 並完成 Broker → A-9.3b（無 Blaze 依賴，可獨立進行；Web 上線仍以 Broker 為硬前置）→ A-9.4 深層連結 → UI-9.2／9.3／9.4 → A-9.5、E-9.3
