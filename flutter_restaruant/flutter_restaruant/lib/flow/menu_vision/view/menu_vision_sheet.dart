@@ -4,12 +4,16 @@ import 'package:get_it/get_it.dart';
 import 'package:image_picker/image_picker.dart';
 
 import '../../../domain/repositories/menu_vision_repository.dart';
+import '../../../features/utils/utils_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../bloc/menu_vision_bloc.dart';
 import '../model/menu_vision_model.dart';
 import 'dish_card.dart';
 
 /// AI 拍菜單翻譯與過敏原拆解 Sheet
+///
+/// 拍照入口（標題列、初始／失敗／取消畫面與 [autoStartCapture]）只在具相機
+/// 能力的平台出現（見 [platformCapabilities]）；其餘平台只提供相簿選圖。
 class MenuVisionSheet extends StatefulWidget {
   final String restaurantTitle;
   final MenuVisionBloc? bloc;
@@ -51,6 +55,7 @@ class MenuVisionSheet extends StatefulWidget {
 class _MenuVisionSheetState extends State<MenuVisionSheet> {
   late final MenuVisionBloc _bloc;
   late final bool _isLocalBloc;
+  late final VoidCallback? _onCamera;
 
   @override
   void initState() {
@@ -63,10 +68,14 @@ class _MenuVisionSheetState extends State<MenuVisionSheet> {
       _isLocalBloc = true;
     }
 
+    // 無相機能力的平台（如 macOS）為 null：四個拍照入口與自動拍照一併消失。
+    _onCamera = platformCapabilities().camera
+        ? () =>
+              _bloc.add(const CaptureAndAnalyzeMenu(source: ImageSource.camera))
+        : null;
+
     if (widget.autoStartCapture) {
-      WidgetsBinding.instance.addPostFrameCallback((_) {
-        _bloc.add(const CaptureAndAnalyzeMenu(source: ImageSource.camera));
-      });
+      WidgetsBinding.instance.addPostFrameCallback((_) => _onCamera?.call());
     }
   }
 
@@ -88,9 +97,7 @@ class _MenuVisionSheetState extends State<MenuVisionSheet> {
           children: [
             _SheetHeader(
               restaurantTitle: widget.restaurantTitle,
-              onCameraPressed: () => _bloc.add(
-                const CaptureAndAnalyzeMenu(source: ImageSource.camera),
-              ),
+              onCameraPressed: _onCamera,
               onGalleryPressed: () => _bloc.add(
                 const CaptureAndAnalyzeMenu(source: ImageSource.gallery),
               ),
@@ -102,9 +109,7 @@ class _MenuVisionSheetState extends State<MenuVisionSheet> {
                 builder: (context, state) {
                   return switch (state) {
                     MenuVisionInitial() => _InitialPromptView(
-                      onCamera: () => _bloc.add(
-                        const CaptureAndAnalyzeMenu(source: ImageSource.camera),
-                      ),
+                      onCamera: _onCamera,
                       onGallery: () => _bloc.add(
                         const CaptureAndAnalyzeMenu(
                           source: ImageSource.gallery,
@@ -126,11 +131,7 @@ class _MenuVisionSheetState extends State<MenuVisionSheet> {
                                 RetryMenuAnalysis(imageBytes: failedImageBytes),
                               )
                             : null,
-                        onRetryCamera: () => _bloc.add(
-                          const CaptureAndAnalyzeMenu(
-                            source: ImageSource.camera,
-                          ),
-                        ),
+                        onRetryCamera: _onCamera,
                         onRetryGallery: () => _bloc.add(
                           const CaptureAndAnalyzeMenu(
                             source: ImageSource.gallery,
@@ -138,9 +139,7 @@ class _MenuVisionSheetState extends State<MenuVisionSheet> {
                         ),
                       ),
                     MenuVisionCancelled() => _CancelledView(
-                      onCamera: () => _bloc.add(
-                        const CaptureAndAnalyzeMenu(source: ImageSource.camera),
-                      ),
+                      onCamera: _onCamera,
                       onGallery: () => _bloc.add(
                         const CaptureAndAnalyzeMenu(
                           source: ImageSource.gallery,
@@ -160,7 +159,7 @@ class _MenuVisionSheetState extends State<MenuVisionSheet> {
 
 class _SheetHeader extends StatelessWidget {
   final String restaurantTitle;
-  final VoidCallback onCameraPressed;
+  final VoidCallback? onCameraPressed;
   final VoidCallback onGalleryPressed;
 
   const _SheetHeader({
@@ -213,11 +212,12 @@ class _SheetHeader extends StatelessWidget {
               ],
             ),
           ),
-          IconButton(
-            tooltip: S.current.menu_vision_tooltip_camera,
-            icon: const Icon(Icons.camera_alt_outlined),
-            onPressed: onCameraPressed,
-          ),
+          if (onCameraPressed != null)
+            IconButton(
+              tooltip: S.current.menu_vision_tooltip_camera,
+              icon: const Icon(Icons.camera_alt_outlined),
+              onPressed: onCameraPressed,
+            ),
           IconButton(
             tooltip: S.current.menu_vision_tooltip_gallery,
             icon: const Icon(Icons.photo_library_outlined),
@@ -235,7 +235,7 @@ class _SheetHeader extends StatelessWidget {
 }
 
 class _InitialPromptView extends StatelessWidget {
-  final VoidCallback onCamera;
+  final VoidCallback? onCamera;
   final VoidCallback onGallery;
 
   const _InitialPromptView({required this.onCamera, required this.onGallery});
@@ -271,14 +271,16 @@ class _InitialPromptView extends StatelessWidget {
               ),
             ),
             const SizedBox(height: 32),
-            FilledButton.icon(
-              key: const Key('take_photo_button'),
-              onPressed: onCamera,
-              icon: const Icon(Icons.camera_alt),
-              label: Text(S.current.menu_vision_btn_camera),
-              style: FilledButton.styleFrom(minimumSize: const Size(220, 48)),
-            ),
-            const SizedBox(height: 12),
+            if (onCamera != null) ...[
+              FilledButton.icon(
+                key: const Key('take_photo_button'),
+                onPressed: onCamera,
+                icon: const Icon(Icons.camera_alt),
+                label: Text(S.current.menu_vision_btn_camera),
+                style: FilledButton.styleFrom(minimumSize: const Size(220, 48)),
+              ),
+              const SizedBox(height: 12),
+            ],
             OutlinedButton.icon(
               key: const Key('gallery_pick_button'),
               onPressed: onGallery,
@@ -410,7 +412,7 @@ class _CatalogContentView extends StatelessWidget {
 class _FailureRetryView extends StatelessWidget {
   final String message;
   final VoidCallback? onRetryPhoto;
-  final VoidCallback onRetryCamera;
+  final VoidCallback? onRetryCamera;
   final VoidCallback onRetryGallery;
 
   const _FailureRetryView({
@@ -460,12 +462,14 @@ class _FailureRetryView extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                OutlinedButton.icon(
-                  onPressed: onRetryCamera,
-                  icon: const Icon(Icons.camera_alt),
-                  label: Text(S.current.menu_vision_btn_retake),
-                ),
-                const SizedBox(width: 12),
+                if (onRetryCamera != null) ...[
+                  OutlinedButton.icon(
+                    onPressed: onRetryCamera,
+                    icon: const Icon(Icons.camera_alt),
+                    label: Text(S.current.menu_vision_btn_retake),
+                  ),
+                  const SizedBox(width: 12),
+                ],
                 OutlinedButton.icon(
                   onPressed: onRetryGallery,
                   icon: const Icon(Icons.photo_library),
@@ -481,7 +485,7 @@ class _FailureRetryView extends StatelessWidget {
 }
 
 class _CancelledView extends StatelessWidget {
-  final VoidCallback onCamera;
+  final VoidCallback? onCamera;
   final VoidCallback onGallery;
 
   const _CancelledView({required this.onCamera, required this.onGallery});
@@ -519,12 +523,14 @@ class _CancelledView extends StatelessWidget {
             Row(
               mainAxisAlignment: MainAxisAlignment.center,
               children: [
-                FilledButton.icon(
-                  onPressed: onCamera,
-                  icon: const Icon(Icons.camera_alt),
-                  label: Text(S.current.menu_vision_btn_take_photo_short),
-                ),
-                const SizedBox(width: 12),
+                if (onCamera != null) ...[
+                  FilledButton.icon(
+                    onPressed: onCamera,
+                    icon: const Icon(Icons.camera_alt),
+                    label: Text(S.current.menu_vision_btn_take_photo_short),
+                  ),
+                  const SizedBox(width: 12),
+                ],
                 OutlinedButton.icon(
                   onPressed: onGallery,
                   icon: const Icon(Icons.photo_library),

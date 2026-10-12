@@ -7,8 +7,18 @@ import 'package:flutter_test/flutter_test.dart';
 /// Web 列以 `isWeb: true` 注入：`kIsWeb` 是編譯期常數，VM 測試下恆為 false，
 /// 但「行動瀏覽器回報 android／iOS」正是最該擋的情境（規格 §5.2），不得略過。
 class _Data {
-  static const all = (ads: true, pushNotifications: true, mapMode: true);
-  static const none = (ads: false, pushNotifications: false, mapMode: false);
+  static const all = (
+    ads: true,
+    pushNotifications: true,
+    mapMode: true,
+    camera: true,
+  );
+  static const none = (
+    ads: false,
+    pushNotifications: false,
+    mapMode: false,
+    camera: false,
+  );
 
   static const rows = [
     (isWeb: false, platform: TargetPlatform.android, expected: all),
