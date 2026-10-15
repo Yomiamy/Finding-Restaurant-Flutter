@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import '../../../features/utils/utils_barrel.dart';
@@ -265,26 +267,38 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
                       child: Row(
                         children: [
                           Expanded(
-                            child: TextField(
-                              controller: _textController,
-                              textInputAction: TextInputAction.send,
-                              onSubmitted: (_) => _sendMessage(),
-                              decoration: InputDecoration(
-                                hintText: S.of(context).ai_foodie_input_hint,
-                                hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                                  color: colorScheme.outline,
-                                ),
-                                isDense: true,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: ThemeSize.space16,
-                                  vertical: ThemeSize.space12,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    ThemeSize.radiusTag,
+                            child: CallbackShortcuts(
+                              bindings: {
+                                const SingleActivator(LogicalKeyboardKey.enter):
+                                    _sendMessage,
+                              },
+                              child: TextField(
+                                controller: _textController,
+                                minLines: 1,
+                                maxLines: 4,
+                                keyboardType: TextInputType.multiline,
+                                textInputAction:
+                                    defaultTargetPlatform == TargetPlatform.windows
+                                        ? TextInputAction.newline
+                                        : TextInputAction.send,
+                                onSubmitted: (_) => _sendMessage(),
+                                decoration: InputDecoration(
+                                  hintText: S.of(context).ai_foodie_input_hint,
+                                  hintStyle: theme.textTheme.bodyMedium?.copyWith(
+                                    color: colorScheme.outline,
                                   ),
-                                  borderSide: BorderSide(
-                                    color: colorScheme.outlineVariant,
+                                  isDense: true,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: ThemeSize.space16,
+                                    vertical: ThemeSize.space12,
+                                  ),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      ThemeSize.radiusTag,
+                                    ),
+                                    borderSide: BorderSide(
+                                      color: colorScheme.outlineVariant,
+                                    ),
                                   ),
                                 ),
                               ),
