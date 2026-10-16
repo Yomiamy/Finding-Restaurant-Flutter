@@ -99,6 +99,9 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
   }
 
   void _sendMessage() {
+    if (_bloc.state.isLoading || _textController.value.isComposingRangeValid) {
+      return;
+    }
     final text = _textController.text.trim();
     if (text.isEmpty) return;
     _textController.clear();
@@ -267,10 +270,22 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
                       child: Row(
                         children: [
                           Expanded(
-                            child: CallbackShortcuts(
-                              bindings: {
-                                const SingleActivator(LogicalKeyboardKey.enter):
-                                    _sendMessage,
+                            child: ValueListenableBuilder<TextEditingValue>(
+                              valueListenable: _textController,
+                              builder: (context, value, child) {
+                                return CallbackShortcuts(
+                                  bindings: value.isComposingRangeValid
+                                      ? const {}
+                                      : {
+                                          const SingleActivator(
+                                            LogicalKeyboardKey.enter,
+                                          ): _sendMessage,
+                                          const SingleActivator(
+                                            LogicalKeyboardKey.numpadEnter,
+                                          ): _sendMessage,
+                                        },
+                                  child: child!,
+                                );
                               },
                               child: TextField(
                                 controller: _textController,
@@ -278,15 +293,15 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
                                 maxLines: 4,
                                 keyboardType: TextInputType.multiline,
                                 textInputAction:
-                                    defaultTargetPlatform == TargetPlatform.windows
-                                        ? TextInputAction.newline
-                                        : TextInputAction.send,
+                                    defaultTargetPlatform ==
+                                        TargetPlatform.windows
+                                    ? TextInputAction.newline
+                                    : TextInputAction.send,
                                 onSubmitted: (_) => _sendMessage(),
                                 decoration: InputDecoration(
                                   hintText: S.of(context).ai_foodie_input_hint,
-                                  hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                                    color: colorScheme.outline,
-                                  ),
+                                  hintStyle: theme.textTheme.bodyMedium
+                                      ?.copyWith(color: colorScheme.outline),
                                   isDense: true,
                                   contentPadding: const EdgeInsets.symmetric(
                                     horizontal: ThemeSize.space16,
