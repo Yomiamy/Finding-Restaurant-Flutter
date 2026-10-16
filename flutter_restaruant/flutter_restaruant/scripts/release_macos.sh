@@ -226,10 +226,22 @@ log_success "找到唯一目標 App 產物: $APP_PATH"
 
 WORK_TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/macos_release.XXXXXX")
 
+# 輔助函式：判斷 Provisioning Profile 是否為符合 Team ID 與 Bundle ID 的 Developer ID Profile
+profile_matches() {
+  local prof="$1"
+  local target_team="$2"
+  local target_bundle="$3"
+  local decoded
+  decoded=$(security cms -D -i "$prof" 2>/dev/null || true)
+  [[ -n "$decoded" ]] || return 1
+  # 以 here-string 餵 grep -q：pipe 在 pipefail 下會因 SIGPIPE (141) 誤判為不符
+  grep -q "<key>ProvisionsAllDevices</key>" <<< "$decoded" &&
+    grep -q "<string>${target_team}</string>" <<< "$decoded" &&
+    grep -Eq "<string>${target_team}\.(\*|${target_bundle})</string>" <<< "$decoded"
+}
+
 # 輔助函式：自動搜尋符合 Team ID 與 Bundle ID 的 Developer ID Provisioning Profile
 find_developer_id_profile() {
-  local target_team="$1"
-  local target_bundle="$2"
   local profile_dirs=(
     "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
     "$HOME/Library/MobileDevice/Provisioning Profiles"
@@ -240,13 +252,7 @@ find_developer_id_profile() {
     local profiles=("$dir"/*.provisionprofile)
     shopt -u nullglob
     for prof in "${profiles[@]}"; do
-      local decoded
-      decoded=$(security cms -D -i "$prof" 2>/dev/null || true)
-      [[ -n "$decoded" ]] || continue
-      # 以 here-string 餵 grep -q：pipe 在 pipefail 下會因 SIGPIPE (141) 誤判為不符
-      if grep -q "<key>ProvisionsAllDevices</key>" <<< "$decoded" &&
-         grep -q "<string>${target_team}</string>" <<< "$decoded" &&
-         grep -Eq "<string>${target_team}\.(\*|${target_bundle})</string>" <<< "$decoded"; then
+      if profile_matches "$prof" "$1" "$2"; then
         echo "$prof"
         return 0
       fi
@@ -305,20 +311,22 @@ if [[ "$SKIP_CODESIGN" == false && -n "$IDENTITY" ]]; then
     PROVISIONING_PROFILE=$(find_developer_id_profile "$TEAM_ID" "$BUNDLE_ID" || true)
   fi
 
-  if [[ -n "$PROVISIONING_PROFILE" ]]; then
-    if [[ ! -f "$PROVISIONING_PROFILE" ]]; then
-      log_error "指定的 Provisioning Profile 不存在: $PROVISIONING_PROFILE"
-      exit 1
-    fi
-    cp "$PROVISIONING_PROFILE" "$APP_PATH/Contents/embedded.provisionprofile"
-    log_info "已嵌入 Developer ID Provisioning Profile: $PROVISIONING_PROFILE"
-  elif [[ "$SKIP_NOTARIZE" == false ]]; then
+  # 缺少匹配的 profile 時，帶 keychain-access-groups 簽出的 App 會在執行期失敗，與是否公證無關，故一律中止
+  if [[ -z "$PROVISIONING_PROFILE" ]]; then
     log_error "未找到對應 ${TEAM_ID}.${BUNDLE_ID} 的 Developer ID Provisioning Profile。"
     log_error "由於 Release.entitlements 包含受限的 keychain-access-groups，請透過 -P / --provisioning-profile 指定 Developer ID Provisioning Profile。"
     exit 1
-  else
-    log_warn "未提供 Developer ID Provisioning Profile（本機測試模式繼續執行）。"
   fi
+  if [[ ! -f "$PROVISIONING_PROFILE" ]]; then
+    log_error "指定的 Provisioning Profile 不存在: $PROVISIONING_PROFILE"
+    exit 1
+  fi
+  if ! profile_matches "$PROVISIONING_PROFILE" "$TEAM_ID" "$BUNDLE_ID"; then
+    log_error "Provisioning Profile 不是對應 ${TEAM_ID}.${BUNDLE_ID} 的 Developer ID Profile: $PROVISIONING_PROFILE"
+    exit 1
+  fi
+  cp "$PROVISIONING_PROFILE" "$APP_PATH/Contents/embedded.provisionprofile"
+  log_info "已嵌入 Developer ID Provisioning Profile: $PROVISIONING_PROFILE"
 
   # 簽署內部 Frameworks, dylibs 與 plugins
   FRAMEWORKS_DIR="$APP_PATH/Contents/Frameworks"

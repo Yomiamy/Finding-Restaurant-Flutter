@@ -129,7 +129,7 @@ xcrun notarytool history --keychain-profile "notary-profile"
 
 ```bash
 # 1. 僅在本機測試打包與簽章（不連線 Apple 進行公證）
-#    仍應帶 -P：否則 App 不內嵌 Profile，行為與正式產物不同（腳本只警告不中止）
+#    必須帶 -P（或本機有可自動搜尋到的 Profile）：缺少匹配的 Profile 時腳本會中止
 ./scripts/release_macos.sh -P "$PROFILE" --skip-notarize
 
 # 2. 打包為 .zip 而非 .dmg
