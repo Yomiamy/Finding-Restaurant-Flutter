@@ -78,7 +78,7 @@ show_help() {
   $(basename "$0") -i "Developer ID Application: Li-Sheng Hsu (H2724L9BS5)" -P "/path/to/Developer_ID.provisionprofile" -p "notary-profile"
 
   # 本機測試打包（略過公證）
-  $(basename "$0") --dmg --skip-notarize
+  $(basename "$0") --dmg --skip-notarize -P "/path/to/Developer_ID.provisionprofile"
 EOF
 }
 
@@ -317,6 +317,7 @@ if [[ "$SKIP_CODESIGN" == false && -n "$IDENTITY" ]]; then
   if [[ -z "$PROVISIONING_PROFILE" ]]; then
     log_error "未找到對應 ${TEAM_ID}.${BUNDLE_ID} 的 Developer ID Provisioning Profile。"
     log_error "由於 Release.entitlements 包含受限的 keychain-access-groups，請透過 -P / --provisioning-profile 指定 Developer ID Provisioning Profile。"
+    log_error "若僅需本機打包測試而不簽章，請改用 --skip-codesign。"
     exit 1
   fi
   if [[ ! -f "$PROVISIONING_PROFILE" ]]; then
