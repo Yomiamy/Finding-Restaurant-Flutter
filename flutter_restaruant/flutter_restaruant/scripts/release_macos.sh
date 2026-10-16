@@ -242,9 +242,10 @@ find_developer_id_profile() {
       local decoded
       decoded=$(security cms -D -i "$prof" 2>/dev/null || true)
       [[ -n "$decoded" ]] || continue
-      if echo "$decoded" | grep -q "<key>ProvisionsAllDevices</key>" &&
-         echo "$decoded" | grep -q "<string>${target_team}</string>" &&
-         echo "$decoded" | grep -Eq "<string>${target_team}\.(\*|${target_bundle})</string>"; then
+      # 以 here-string 餵 grep -q：pipe 在 pipefail 下會因 SIGPIPE (141) 誤判為不符
+      if grep -q "<key>ProvisionsAllDevices</key>" <<< "$decoded" &&
+         grep -q "<string>${target_team}</string>" <<< "$decoded" &&
+         grep -Eq "<string>${target_team}\.(\*|${target_bundle})</string>" <<< "$decoded"; then
         echo "$prof"
         return 0
       fi
@@ -333,12 +334,14 @@ if [[ "$SKIP_CODESIGN" == false && -n "$IDENTITY" ]]; then
   # 驗證簽章、Hardened Runtime 與簽入的 Entitlements
   log_info "驗證主應用程式簽章與已展開 Entitlements..."
   codesign --verify --deep --strict --verbose=2 "$APP_PATH"
-  if ! codesign --display --verbose=2 "$APP_PATH" 2>&1 | grep -q 'flags=.*runtime'; then
+  # 先存變數再 grep：直接 pipe 給 grep -q 會令 codesign 收到 SIGPIPE，pipefail 下誤判為失敗
+  SIGN_INFO=$(codesign --display --verbose=2 "$APP_PATH" 2>&1)
+  if ! grep -q 'flags=.*runtime' <<< "$SIGN_INFO"; then
     log_error "主應用程式簽章缺少 Hardened Runtime (runtime) 旗標。"
     exit 1
   fi
   SIGNED_ENTITLEMENTS=$(codesign -d --entitlements :- "$APP_PATH" 2>/dev/null || true)
-  if echo "$SIGNED_ENTITLEMENTS" | grep -q '\$(' || ! echo "$SIGNED_ENTITLEMENTS" | grep -q "${TEAM_ID}.${BUNDLE_ID}"; then
+  if grep -q '\$(' <<< "$SIGNED_ENTITLEMENTS" || ! grep -q "${TEAM_ID}.${BUNDLE_ID}" <<< "$SIGNED_ENTITLEMENTS"; then
     log_error "簽入的 Entitlements 驗證失敗，未包含預期的 ${TEAM_ID}.${BUNDLE_ID}。"
     exit 1
   fi
