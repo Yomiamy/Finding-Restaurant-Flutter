@@ -14,6 +14,14 @@ extension BuildContextSnackBarX on BuildContext {
     final messenger = ScaffoldMessenger.maybeOf(this);
     if (messenger == null) return;
 
+    final callerInset = MediaQuery.maybeViewInsetsOf(this)?.bottom ?? 0.0;
+    final messengerInset =
+        MediaQuery.maybeViewInsetsOf(messenger.context)?.bottom ?? 0.0;
+    final bottomInset = callerInset > messengerInset
+        ? callerInset
+        : messengerInset;
+    final keyboardIsOpen = bottomInset > 0.0;
+
     messenger
       ..hideCurrentSnackBar()
       ..showSnackBar(
@@ -21,6 +29,8 @@ extension BuildContextSnackBarX on BuildContext {
           content: Text(message),
           duration: duration,
           action: action,
+          behavior: keyboardIsOpen ? SnackBarBehavior.floating : null,
+          margin: keyboardIsOpen ? EdgeInsets.only(bottom: bottomInset) : null,
         ),
       );
   }

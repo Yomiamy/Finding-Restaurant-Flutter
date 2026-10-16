@@ -62,8 +62,9 @@ void main() {
       expect(find.text('Second Message'), findsOneWidget);
     });
 
-    testWidgets('在 CupertinoApp + ScaffoldMessenger 架構下成功顯示 SnackBar 且零崩潰',
-        (tester) async {
+    testWidgets('在 CupertinoApp + ScaffoldMessenger 架構下成功顯示 SnackBar 且零崩潰', (
+      tester,
+    ) async {
       final originalErrorWidgetBuilder = ErrorWidget.builder;
       final originalFlutterErrorOnError = FlutterError.onError;
       final originalPlatformDispatcherOnError =
@@ -116,6 +117,66 @@ void main() {
       await tester.pump();
 
       expect(find.byType(SnackBar), findsNothing);
+    });
+
+    testWidgets('當鍵盤彈出（bottom viewInsets > 0）時 SnackBar 浮於鍵盤上方', (
+      tester,
+    ) async {
+      final originalErrorWidgetBuilder = ErrorWidget.builder;
+      final originalFlutterErrorOnError = FlutterError.onError;
+      final originalPlatformDispatcherOnError =
+          ui.PlatformDispatcher.instance.onError;
+      addTearDown(() {
+        ErrorWidget.builder = originalErrorWidgetBuilder;
+        FlutterError.onError = originalFlutterErrorOnError;
+        ui.PlatformDispatcher.instance.onError =
+            originalPlatformDispatcherOnError;
+      });
+
+      const keyboardHeight = 300.0;
+      tester.view.viewInsets = FakeViewPadding(
+        bottom: keyboardHeight * tester.view.devicePixelRatio,
+      );
+      addTearDown(tester.view.resetViewInsets);
+
+      await tester.pumpWidget(
+        CupertinoApp(
+          builder: appRootBuilder,
+          home: CupertinoPageScaffold(
+            child: Builder(
+              builder: (context) => CupertinoButton(
+                onPressed: () =>
+                    context.showAppSnackBar('Above Keyboard SnackBar'),
+                child: const Text('Trigger'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Trigger'));
+      await tester.pumpAndSettle();
+
+      final snackBarFinder = find.byType(SnackBar);
+      expect(snackBarFinder, findsOneWidget);
+
+      final snackBarWidget = tester.widget<SnackBar>(snackBarFinder);
+      expect(snackBarWidget.behavior, SnackBarBehavior.floating);
+      expect(
+        snackBarWidget.margin,
+        const EdgeInsets.only(bottom: keyboardHeight),
+      );
+
+      final screenBottom =
+          tester.view.physicalSize.height / tester.view.devicePixelRatio;
+      final snackBarMaterialFinder = find.descendant(
+        of: snackBarFinder,
+        matching: find.byType(Material),
+      );
+      final snackBarBottom = tester
+          .getBottomLeft(snackBarMaterialFinder.first)
+          .dy;
+      expect(snackBarBottom, lessThanOrEqualTo(screenBottom - keyboardHeight));
     });
   });
 }
