@@ -32,19 +32,40 @@ security find-identity -p codesigning -v
 ```
 
 - 若走**路徑 A (外部獨立分發)**：必須看見 `"Developer ID Application: ... (H2724L9BS5)"`。
-- 若走**路徑 B (Mac App Store)**：必須看見 `"Apple Distribution: ... (H2724L9BS5)"`。
+- 若走**路徑 B (Mac App Store)**：必須看見 `"Apple Distribution: ... (H2724L9BS5)"`，另需 `Mac Installer Distribution` 憑證簽署 `.pkg`（屬 installer 類，不會出現在上述 codesigning 清單）。
 
-### 2.2 設定 Notarytool 鑰匙圈 Profile (路徑 A 必要)
-Apple 公證服務（Notarization）推薦使用 `xcrun notarytool` 並搭配儲存於 macOS 鑰匙圈的密鑰設定檔 (Profile)。
+> ⚠️ 鑰匙圈中的 `Developer ID Certification Authority` 是 Apple 中繼 CA，**不是**簽章憑證；`Apple Distribution` 也無法用於路徑 A 的公證。
+
+缺少憑證時，以 Xcode 建立：`Xcode` → `Settings` → `Accounts` → 選擇 Team **`H2724L9BS5`** → `Manage Certificates` → 左下角 `+` → `Developer ID Application`（路徑 B 則選 `Mac Installer Distribution`）。
+
+- 建立 Developer ID 憑證須具備 Account Holder 身分。
+- 本機若同時有其他 Team 的 `Apple Development` 憑證，務必選對 Team，否則與專案 `DEVELOPMENT_TEAM` 不一致。
+
+### 2.2 建立 Developer ID Provisioning Profile (路徑 A 必要)
+`Release.entitlements` 含受限的 `keychain-access-groups` 與 `com.apple.developer.applesignin`，必須內嵌授權這些 Entitlements 的 Profile；腳本找不到 Profile 時會直接中止。
+
+1. 確認 App ID `com.yomi.find-restaurant.macos` 已在 Developer Portal 啟用 **Sign in with Apple**。
+2. Developer Portal → `Certificates, IDs & Profiles` → `Profiles` → `+` → Distribution 區塊選 **Developer ID**（平台 macOS）。
+3. App ID 選 `com.yomi.find-restaurant.macos`，憑證選 2.1 建立的 `Developer ID Application`。
+4. 下載後雙擊安裝，Profile 會落在 `~/Library/Developer/Xcode/UserData/Provisioning Profiles/`，腳本會自動搜尋；亦可用 `-P <路徑>` 明確指定。
+
+> ⚠️ Profile 會固化建立當下的 App ID Capabilities。App ID 新增或變更 Capability 後必須**重新產生並下載** Profile，否則簽入的 Entitlements 與 Profile 不符，App 啟動即被系統拒絕。
+
+確認 Profile 已包含 Sign in with Apple：
+```bash
+security cms -D -i "<profile 路徑>.provisionprofile" | grep -A2 applesignin
+```
+
+### 2.3 設定 Notarytool 鑰匙圈 Profile (路徑 A 必要)
+Apple 公證服務（Notarization）推薦使用 `xcrun notarytool` 並搭配儲存於 macOS 鑰匙圈的密鑰設定檔 (Profile)。於執行發布腳本的 Mac 上設定一次即可。
 
 #### 方式一：使用 App 專用密碼 (App-Specific Password)
-1. 前往 [appleid.apple.com](https://appleid.apple.com) 登入，於「登入與安全性」區塊產生一組專用密碼。
-2. 在終端機執行儲存指令（將設定檔命名為 `notary-profile`）：
+1. 前往 [appleid.apple.com](https://appleid.apple.com) 登入，於「登入與安全性」→「App 專用密碼」產生一組密碼（格式 `xxxx-xxxx-xxxx-xxxx`，**非** Apple ID 登入密碼）。
+2. 在終端機執行儲存指令（將設定檔命名為 `notary-profile`）。省略 `--password` 會改為互動輸入，避免密碼留在 shell history：
    ```bash
    xcrun notarytool store-credentials "notary-profile" \
      --apple-id "your-apple-id@example.com" \
-     --team-id "H2724L9BS5" \
-     --password "xxxx-xxxx-xxxx-xxxx"
+     --team-id "H2724L9BS5"
    ```
 
 #### 方式二：使用 App Store Connect API Key (團隊推薦)
@@ -56,6 +77,12 @@ Apple 公證服務（Notarization）推薦使用 `xcrun notarytool` 並搭配儲
      --key-id "XXXXXXXXXX" \
      --issuer "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
    ```
+
+#### 驗證設定
+```bash
+xcrun notarytool history --keychain-profile "notary-profile"
+```
+未出現 `No Keychain password item found` 即表示設定成功（尚未提交過公證時回傳空清單）。
 
 ---
 
@@ -168,4 +195,4 @@ codesign --display --verbose=2 build/macos/Build/Products/Release/finding_restau
 
 ### Q3：啟動時當機，出現 Keychain -34018 錯誤？
 - **原因**：`Release.entitlements` 宣告了 `keychain-access-groups`，但使用的 Provisioning Profile 未授權該 Team ID 的存取群組。
-- **解法**：Developer ID 外部分發時，需在 Apple Developer 後台為該 App ID 產生對應之 Developer ID Provisioning Profile，或確認憑證與 Team ID (`H2724L9BS5`) 一致。
+- **解法**：Developer ID 外部分發時，需在 Apple Developer 後台為該 App ID 產生對應之 Developer ID Provisioning Profile（見 §2.2），或確認憑證與 Team ID (`H2724L9BS5`) 一致。
