@@ -114,6 +114,7 @@ class FindingRestaruantApp extends StatelessWidget {
       theme: AppThemeData.materialLight,
       darkTheme: AppThemeData.materialLight,
       themeMode: ThemeMode.light,
+      scrollBehavior: const AppScrollBehavior(),
     ),
     // iOS 走 CupertinoApp 分支，`material:` 不生效。CupertinoApp 自身的
     // brightness 預設會跟隨 MediaQuery.platformBrightnessOf，導致系統深色
@@ -121,10 +122,15 @@ class FindingRestaruantApp extends StatelessWidget {
     cupertino: (_, __) => CupertinoAppData(theme: AppThemeData.cupertinoLight),
     // 兩個平台的 Material widget 都靠這層解析到同一份 ThemeData
     // （iOS 沒有 MaterialApp 可繼承，Android 則是與內層 Theme 重疊但無害）。
+    // 並在此注入全域 AppScrollBehavior，啟用全平台與桌面滑鼠拖曳滾動支援。
     builder: (context, child) {
+      final scrollable = ScrollConfiguration(
+        behavior: const AppScrollBehavior(),
+        child: child ?? const SizedBox.shrink(),
+      );
       final theme = Theme(
         data: AppThemeData.materialLight,
-        child: child ?? const SizedBox.shrink(),
+        child: scrollable,
       );
       final ins = kDebugMode ? inspector : null;
       return ins == null

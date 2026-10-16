@@ -198,24 +198,24 @@ class _MapPageState extends State<MapWidget> {
               itemBuilder: (context, index) {
                 return Padding(
                   padding: const EdgeInsets.symmetric(horizontal: ThemeSize.space4),
-                  child: GestureDetector(
-                    onTap: () {
-                      final summaryInfo = _validRestaurants[index];
-                      final arguments = Tuple2<RestaurantEntity, dynamic>(
-                        summaryInfo,
-                        null,
-                      );
-                      // Avoid duplicate push, use pushNamedAndRemoveUntil instead of push
-                      // ignore: unawaited_futures
-                      Navigator.of(context).pushNamedAndRemoveUntil(
-                        RestaurantDetailPage.routeName,
-                        ModalRoute.withName(MainPage.routeName),
-                        arguments: arguments,
-                      );
-                    },
-                    child: Card(
-                      clipBehavior: Clip.antiAlias,
-                      elevation: 4.0,
+                  child: Card(
+                    clipBehavior: Clip.antiAlias,
+                    elevation: 4.0,
+                    child: InkWell(
+                      onTap: () {
+                        final summaryInfo = _validRestaurants[index];
+                        final arguments = Tuple2<RestaurantEntity, dynamic>(
+                          summaryInfo,
+                          null,
+                        );
+                        // Avoid duplicate push, use pushNamedAndRemoveUntil instead of push
+                        // ignore: unawaited_futures
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          RestaurantDetailPage.routeName,
+                          ModalRoute.withName(MainPage.routeName),
+                          arguments: arguments,
+                        );
+                      },
                       child: RestaurantItemCell(
                         summaryInfo: _validRestaurants[index],
                       ),
