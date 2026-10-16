@@ -101,11 +101,12 @@ Apple 公證服務（Notarization）推薦使用 `xcrun notarytool` 並搭配儲
 # 檢查 DMG 上的公證票證
 xcrun stapler validate build/macos/release-dist/finding_restaurant.dmg
 
-# 檢查 Gatekeeper 評估結果（應顯示 accepted）
-spctl -a -vvv -t install build/macos/release-dist/finding_restaurant.dmg
+# 檢查 DMG 磁碟映像檔之 Gatekeeper 評估結果（應顯示 accepted）
+spctl -a -vvv -t open --context context:primary-signature build/macos/release-dist/finding_restaurant.dmg
 
-# 檢查代碼簽章與 Hardened Runtime 旗標
-codesign -vvv --deep --strict build/macos/Build/Products/Release/finding_restaurant.app
+# 檢查代碼簽章完整性與 Hardened Runtime (runtime) 旗標
+codesign --verify --deep --strict build/macos/Build/Products/Release/finding_restaurant.app
+codesign --display --verbose=2 build/macos/Build/Products/Release/finding_restaurant.app 2>&1 | grep 'flags=.*runtime'
 ```
 
 ---
@@ -153,7 +154,7 @@ codesign -vvv --deep --strict build/macos/Build/Products/Release/finding_restaur
 
 ### Q1：下載安裝後跳出「無法打開，因為無法驗證開發者」或「已損毀」？
 - **原因**：外部分發的應用程式未通過 Apple 公證，或公證成功後未執行 `xcrun stapler staple` 裝訂票證，導致離線或無快取時 Gatekeeper 封鎖。
-- **解法**：確認發布腳本完整執行了公證與裝訂流程，並以 `spctl -a -vvv -t install <產物>` 檢查是否顯示 `accepted / source=Notarized Developer ID`。
+- **解法**：確認發布腳本完整執行了公證與裝訂流程，並以 `spctl -a -vvv -t open --context context:primary-signature <DMG產物>`（或針對 `.app` 執行 `spctl -a -vvv -t exec <App產物>`）檢查是否顯示 `accepted / source=Notarized Developer ID`。
 
 ### Q2：公證失敗 (`xcrun notarytool submit` 回傳 Invalid)？
 - **檢視日誌**：執行以下指令查詢 Apple 給出的具體錯誤清單：
