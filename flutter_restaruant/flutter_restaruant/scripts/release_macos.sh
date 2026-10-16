@@ -185,8 +185,9 @@ fi
 
 # 3. 建置 Release
 if [[ "$SKIP_BUILD" == false ]]; then
-  log_info "正在編譯 Release 產物 (flutter build macos --release)..."
-  flutter build macos --release
+  # DEVELOPER_ID_BUILD 讓 App 隱藏 Apple 登入（Developer ID 不支援 Sign in with Apple）
+  log_info "正在編譯 Release 產物 (flutter build macos --release --dart-define=DEVELOPER_ID_BUILD=true)..."
+  flutter build macos --release --dart-define=DEVELOPER_ID_BUILD=true
 else
   log_info "略過建置步驟，使用既有產物..."
 fi
@@ -290,6 +291,8 @@ if [[ "$SKIP_CODESIGN" == false && -n "$IDENTITY" ]]; then
     /usr/libexec/PlistBuddy -c "Set :com.apple.application-identifier ${TEAM_ID}.${BUNDLE_ID}" "$RESOLVED_ENTITLEMENTS"
   /usr/libexec/PlistBuddy -c "Add :com.apple.developer.team-identifier string ${TEAM_ID}" "$RESOLVED_ENTITLEMENTS" 2>/dev/null || \
     /usr/libexec/PlistBuddy -c "Set :com.apple.developer.team-identifier ${TEAM_ID}" "$RESOLVED_ENTITLEMENTS"
+  # Developer ID profile 無法授權 Sign in with Apple（僅 Mac App Store 可），保留會導致 App 啟動即被系統終止
+  /usr/libexec/PlistBuddy -c "Delete :com.apple.developer.applesignin" "$RESOLVED_ENTITLEMENTS" 2>/dev/null || true
 
   plutil -lint "$RESOLVED_ENTITLEMENTS" >/dev/null
   if grep -q '\$(' "$RESOLVED_ENTITLEMENTS"; then
