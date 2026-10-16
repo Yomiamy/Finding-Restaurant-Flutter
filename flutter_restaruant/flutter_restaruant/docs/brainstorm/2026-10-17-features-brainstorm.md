@@ -1954,7 +1954,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | **E-9.3** | Firebase Hosting 部署 workflow、Service Worker、Maps JS key | Web | 1d | Broker、A-9.3b |
 | **A-9.6** | macOS entitlements、地圖降級為靜態圖＋外部導航、選圖只留檔案、Google 登入補 macOS OAuth client 與 `CFBundleURLTypes` URL scheme（PR #138 review 移入）。✅ **已完成**（2026-10-12）：`platformCapabilities()` 新增 `camera`（僅原生 Android／iOS 為 true），Menu Vision 無相機能力時只留選檔入口；Google 登入補 `GIDClientID` 與 `CFBundleURLTypes`；`MainFlutterWindow.swift` 設最小內容尺寸 360×640。與提案落差：**地圖未改動**（靜態圖＋外部導航既有、地圖模式已由 A-9.2 隱藏）；原屬 E-9.4a 的 `DEVELOPMENT_TEAM`（Release／Profile）與 `keychain-access-groups`（三個 configuration）因登入實測需要提前完成；另併入 UI-9.1 | macOS | 1–1.5d | A-9.2 |
 | **E-9.4a** | macOS 本機開發簽章：`DEVELOPMENT_TEAM`、Keychain Sharing（`keychain-access-groups`）、Sign in with Apple capability——**完成前 macOS 的 Firebase Auth 登入不可用**；完成後可實測登入、App Check、Apple 登入。CI 不建 macOS（D-9.8），不受 runner 無簽章身分限制，可視需要提前。✅ **已完成**（2026-10-16）：`DEVELOPMENT_TEAM` 與 `keychain-access-groups` 隨 A-9.6 於 2026-10-12 補上，macOS Google 登入實測可用；Sign in with Apple capability 補於三個 configuration 的 entitlements（`com.apple.developer.applesignin`）與 `project.pbxproj` 的 `SystemCapabilities`，Developer Portal 端 App ID 已啟用。與提案落差：Debug／Release 建置與既有測試通過，但 Apple 登入不再回報 `AuthorizationError 1000` 的執行期實測尚無紀錄 | macOS | 兩段合計沿用原估 1d | A-9.3 |
-| **E-9.4b** | macOS 發布：Developer ID 簽章 + notarization 或 Mac App Store，先手動；CI 上傳暫不做（D-9.8）。⚠️ Developer ID 版不支援 Sign in with Apple，DMG 版暫隱藏 Apple 登入，後續方向見 D-9.9 | macOS | （同上） | A-9.6、E-9.4a |
+| **E-9.4b** | macOS 發布：Developer ID 簽章 + notarization 或 Mac App Store，先手動；CI 上傳暫不做（D-9.8）。⚠️ Developer ID 版不支援 Sign in with Apple，DMG 版暫隱藏 Apple 登入，後續方向見 D-9.9。✅ **已完成**（2026-10-17，PR #149）：Developer ID 路徑實作為 `scripts/release_macos.sh`（建置、深度簽章＋Hardened Runtime、內嵌並驗證 Developer ID profile、DMG／ZIP、`notarytool` 公證、staple、`spctl`），實機完整跑通公證；操作手冊為 `docs/manuals/macos-release-guide.md`。Mac App Store 路徑僅提供 `ExportOptions-AppStore.plist` 與手冊步驟，未實測。與提案落差：`platformCapabilities()` 新增 `appleSignIn`，以 `--dart-define=DEVELOPER_ID_BUILD=true` 於 DMG 版隱藏 Apple 登入，簽章前移除 `applesignin` entitlement | macOS | （同上） | A-9.6、E-9.4a |
 
 > ⚠️ **effort 估計偏差提醒**（沿用本文件 C-1／C-2 教訓）：UI-9.3 響應式版面是最可能低估的項目——動到的不是「新寫幾個 layout」，而是**每個頁面既有的寬度假設**（`MediaQuery` 7 檔、固定寬 `230`／`260` 的 AI 卡片、`viewportFraction: 0.85`）。動工前先 grep 盤點使用點。
 
@@ -1984,7 +1984,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 >   1. E-9.1、UI-9.1，deployment target 上修至 14（✅ 上修已完成，2026-10-09；UI-9.1 ✅ 2026-10-12 隨 A-9.6 完成）
 >   2. A-9.2 能力閘門（macOS 關 AdMob／推播／生物辨識／地圖模式；App Check 改 fallback provider）（✅ 已完成，2026-10-09；生物辨識因無 UI 入口未納入）
 >   3. A-9.6 macOS 適配 ＋ UI-9.2、UI-9.4——先讓 macOS 上直接壞掉的功能可用（A-9.6 ✅ 已完成，2026-10-12；UI-9.2、UI-9.4 待做）
->   4. E-9.4a 本機開發簽章（可視需要提前）→ 實測登入、App Check、Apple 登入；之後 E-9.4b 手動發布
+>   4. E-9.4a 本機開發簽章（可視需要提前）→ 實測登入、App Check、Apple 登入；之後 E-9.4b 手動發布（E-9.4a ✅ 2026-10-16；E-9.4b ✅ 2026-10-17，Developer ID 路徑）
 >   5. UI-9.3 響應式版面（最大項、純版面，最後做；Web 共用）
 > - **Web 線**（原順序不變）：§9.5 前置（含 E-9.2 `build web`）＋升級 Blaze 並完成 Broker → A-9.3b（無 Blaze 依賴，可獨立進行；Web 上線仍以 Broker 為硬前置）→ A-9.4 深層連結 → UI-9.2／9.3／9.4 → A-9.5、E-9.3
 
