@@ -35,6 +35,7 @@ cd "$PROJECT_ROOT"
 # 預設參數
 IDENTITY=""
 KEYCHAIN_PROFILE=""
+PROVISIONING_PROFILE="${MACOS_PROVISIONING_PROFILE:-}"
 FORMAT="dmg" # dmg 或 zip
 SKIP_BUILD=false
 SKIP_CODESIGN=false
@@ -42,30 +43,42 @@ SKIP_NOTARIZE=false
 OUTPUT_DIR="$PROJECT_ROOT/build/macos/release-dist"
 ENTITLEMENTS="$PROJECT_ROOT/macos/Runner/Release.entitlements"
 
+WORK_TMP_DIR=""
+cleanup() {
+  if [[ -n "$WORK_TMP_DIR" && -d "$WORK_TMP_DIR" ]]; then
+    rm -rf "$WORK_TMP_DIR"
+  fi
+}
+trap cleanup EXIT
+
 show_help() {
   cat << EOF
 使用方式: $(basename "$0") [選項]
 
 選項:
-  -i, --identity <身分字串>       代碼簽章身分（如 "Developer ID Application: Your Name (TEAMID)"）
-                                若未指定，將自動搜尋鑰匙圈中的 Developer ID Application 憑證。
-  -p, --keychain-profile <名稱>  notarytool 的鑰匙圈 Profile 名稱（預先以 xcrun notarytool store-credentials 儲存）
-  -f, --format <dmg|zip>         產物封裝格式，預設為 "dmg"
-  -o, --output-dir <路徑>        發布產物輸出目錄，預設為 "build/macos/release-dist"
-      --skip-build              略過 flutter build macos --release 步驟（直接使用現有 build 產物）
-      --skip-codesign           略過 Developer ID 重新簽章步驟
-      --skip-notarize           略過 Apple 公證 (notarytool) 步驟
-  -h, --help                    顯示此說明訊息
+  -i, --identity <身分字串>              代碼簽章身分（如 "Developer ID Application: Your Name (TEAMID)"）
+                                        若未指定，將自動搜尋鑰匙圈中的 Developer ID Application 憑證。
+  -p, --keychain-profile <名稱>         notarytool 的鑰匙圈 Profile 名稱（預先以 xcrun notarytool store-credentials 儲存）
+  -P, --provisioning-profile <檔案路徑> Developer ID Provisioning Profile (.provisionprofile) 路徑
+                                        若未指定，將自動於本機 Xcode Profile 目錄搜尋對應的 Developer ID Profile。
+  -f, --format <dmg|zip>                產物封裝格式，預設為 "dmg"
+      --dmg                             封裝為 DMG 磁碟映像檔（等同於 --format dmg）
+      --zip                             封裝為 ZIP 壓縮檔（等同於 --format zip）
+  -o, --output-dir <路徑>               發布產物輸出目錄，預設為 "build/macos/release-dist"
+      --skip-build                      略過 flutter build macos --release 步驟（直接使用現有 build 產物）
+      --skip-codesign                   略過 Developer ID 重新簽章步驟
+      --skip-notarize                   略過 Apple 公證 (notarytool) 步驟
+  -h, --help                            顯示此說明訊息
 
 範例:
   # 完整執行：建置、簽章、打包 DMG、公證並裝訂
   $(basename "$0") -p "notary-profile"
 
-  # 指定簽章身分與 Profile
-  $(basename "$0") -i "Developer ID Application: Li-Sheng Hsu (H2724L9BS5)" -p "notary-profile"
+  # 指定簽章身分、Provisioning Profile 與公證 Profile
+  $(basename "$0") -i "Developer ID Application: Li-Sheng Hsu (H2724L9BS5)" -P "/path/to/Developer_ID.provisionprofile" -p "notary-profile"
 
   # 本機測試打包（略過公證）
-  $(basename "$0") --skip-notarize
+  $(basename "$0") --dmg --skip-notarize
 EOF
 }
 
@@ -80,6 +93,10 @@ while [[ $# -gt 0 ]]; do
       KEYCHAIN_PROFILE="$2"
       shift 2
       ;;
+    -P|--provisioning-profile)
+      PROVISIONING_PROFILE="$2"
+      shift 2
+      ;;
     -f|--format)
       FORMAT="$(echo "$2" | tr '[:upper:]' '[:lower:]')"
       if [[ "$FORMAT" != "dmg" && "$FORMAT" != "zip" ]]; then
@@ -87,6 +104,14 @@ while [[ $# -gt 0 ]]; do
         exit 1
       fi
       shift 2
+      ;;
+    --dmg)
+      FORMAT="dmg"
+      shift
+      ;;
+    --zip)
+      FORMAT="zip"
+      shift
       ;;
     -o|--output-dir)
       OUTPUT_DIR="$2"
@@ -118,8 +143,8 @@ done
 
 # 1. 前置檢查
 log_info "開始 macOS 發布流程檢查..."
-if ! command -v flutter >/dev/null 2>&1; then
-  log_error "找不到 flutter 命令，請確保 Flutter SDK 已加入 PATH。"
+if [[ "$SKIP_BUILD" == false ]] && ! command -v flutter >/dev/null 2>&1; then
+  log_error "找不到 flutter 命令，請確保 Flutter SDK 已加入 PATH（或使用 --skip-build 略過建置）。"
   exit 1
 fi
 
@@ -166,19 +191,67 @@ else
   log_info "略過建置步驟，使用既有產物..."
 fi
 
-# 尋找產出的 .app
+# 確定性選擇產出的 .app（檢查 AppInfo.xcconfig 的 PRODUCT_NAME 並拒絕多個候選 .app）
 APP_DIR="$PROJECT_ROOT/build/macos/Build/Products/Release"
-APP_PATH=$(find "$APP_DIR" -maxdepth 1 -name "*.app" | head -n 1)
+APP_INFO_XCCONFIG="$PROJECT_ROOT/macos/Runner/Configs/AppInfo.xcconfig"
+CONFIGURED_PRODUCT_NAME=""
+if [[ -f "$APP_INFO_XCCONFIG" ]]; then
+  CONFIGURED_PRODUCT_NAME=$(sed -n 's/^[[:space:]]*PRODUCT_NAME[[:space:]]*=[[:space:]]*\([^[:space:]]*\).*/\1/p' "$APP_INFO_XCCONFIG" | head -n 1)
+fi
 
-if [[ -z "$APP_PATH" || ! -d "$APP_PATH" ]]; then
+shopt -s nullglob
+APP_CANDIDATES=("$APP_DIR"/*.app)
+shopt -u nullglob
+
+if [[ ${#APP_CANDIDATES[@]} -eq 0 ]]; then
   log_error "在 $APP_DIR 找不到 .app 產物，請確認建置是否成功。"
+  exit 1
+elif [[ ${#APP_CANDIDATES[@]} -gt 1 ]]; then
+  log_error "在 $APP_DIR 找到多個 .app 產物，拒絕猜測發布目標:"
+  for candidate in "${APP_CANDIDATES[@]}"; do
+    log_error "  - $(basename "$candidate")"
+  done
+  log_error "請先清理舊產物（例如執行 flutter clean）以確保唯一目標。"
   exit 1
 fi
 
+APP_PATH="${APP_CANDIDATES[0]}"
 APP_NAME=$(basename "$APP_PATH")
-log_success "找到 App 產物: $APP_PATH"
+if [[ -n "$CONFIGURED_PRODUCT_NAME" && "$APP_NAME" != "${CONFIGURED_PRODUCT_NAME}.app" ]]; then
+  log_error "找到的產物 $APP_NAME 與 AppInfo.xcconfig 設定的 ${CONFIGURED_PRODUCT_NAME}.app 不一致。"
+  exit 1
+fi
+log_success "找到唯一目標 App 產物: $APP_PATH"
 
-mkdir -p "$OUTPUT_DIR"
+WORK_TMP_DIR=$(mktemp -d "${TMPDIR:-/tmp}/macos_release.XXXXXX")
+
+# 輔助函式：自動搜尋符合 Team ID 與 Bundle ID 的 Developer ID Provisioning Profile
+find_developer_id_profile() {
+  local target_team="$1"
+  local target_bundle="$2"
+  local profile_dirs=(
+    "$HOME/Library/Developer/Xcode/UserData/Provisioning Profiles"
+    "$HOME/Library/MobileDevice/Provisioning Profiles"
+  )
+  for dir in "${profile_dirs[@]}"; do
+    [[ -d "$dir" ]] || continue
+    shopt -s nullglob
+    local profiles=("$dir"/*.provisionprofile)
+    shopt -u nullglob
+    for prof in "${profiles[@]}"; do
+      local decoded
+      decoded=$(security cms -D -i "$prof" 2>/dev/null || true)
+      [[ -n "$decoded" ]] || continue
+      if echo "$decoded" | grep -q "<key>ProvisionsAllDevices</key>" &&
+         echo "$decoded" | grep -q "<string>${target_team}</string>" &&
+         echo "$decoded" | grep -Eq "<string>${target_team}\.(\*|${target_bundle})</string>"; then
+        echo "$prof"
+        return 0
+      fi
+    done
+  done
+  return 1
+}
 
 # 4. 執行代碼簽名 (Inside-Out Deep Sign)
 if [[ "$SKIP_CODESIGN" == false && -n "$IDENTITY" ]]; then
@@ -189,60 +262,124 @@ if [[ "$SKIP_CODESIGN" == false && -n "$IDENTITY" ]]; then
     exit 1
   fi
 
+  # 解析 Team ID (AppIdentifierPrefix) 與 Bundle ID，展開 Release.entitlements 中的 Xcode 變數
+  TEAM_ID=$(echo "$IDENTITY" | sed -n 's/.*(\([A-Z0-9]\{10\}\)).*/\1/p')
+  if [[ -z "$TEAM_ID" && -f "$PROJECT_ROOT/macos/Runner.xcodeproj/project.pbxproj" ]]; then
+    TEAM_ID=$(sed -n 's/.*DEVELOPMENT_TEAM = \([A-Z0-9]\{10\}\);.*/\1/p' "$PROJECT_ROOT/macos/Runner.xcodeproj/project.pbxproj" | head -n 1)
+  fi
+  if [[ -z "$TEAM_ID" ]]; then
+    log_error "無法從簽章身分或專案設定解析 Team ID (AppIdentifierPrefix)。"
+    exit 1
+  fi
+
+  BUNDLE_ID=$(/usr/libexec/PlistBuddy -c "Print :CFBundleIdentifier" "$APP_PATH/Contents/Info.plist" 2>/dev/null || true)
+  if [[ -z "$BUNDLE_ID" && -f "$APP_INFO_XCCONFIG" ]]; then
+    BUNDLE_ID=$(sed -n 's/^[[:space:]]*PRODUCT_BUNDLE_IDENTIFIER[[:space:]]*=[[:space:]]*\([^[:space:]]*\).*/\1/p' "$APP_INFO_XCCONFIG" | head -n 1)
+  fi
+  if [[ -z "$BUNDLE_ID" ]]; then
+    log_error "無法解析 PRODUCT_BUNDLE_IDENTIFIER。"
+    exit 1
+  fi
+
+  RESOLVED_ENTITLEMENTS="$WORK_TMP_DIR/ResolvedRelease.entitlements"
+  sed -e "s/\$(AppIdentifierPrefix)/${TEAM_ID}./g" \
+      -e "s/\$(PRODUCT_BUNDLE_IDENTIFIER)/${BUNDLE_ID}/g" \
+      "$ENTITLEMENTS" > "$RESOLVED_ENTITLEMENTS"
+  /usr/libexec/PlistBuddy -c "Add :com.apple.application-identifier string ${TEAM_ID}.${BUNDLE_ID}" "$RESOLVED_ENTITLEMENTS" 2>/dev/null || \
+    /usr/libexec/PlistBuddy -c "Set :com.apple.application-identifier ${TEAM_ID}.${BUNDLE_ID}" "$RESOLVED_ENTITLEMENTS"
+  /usr/libexec/PlistBuddy -c "Add :com.apple.developer.team-identifier string ${TEAM_ID}" "$RESOLVED_ENTITLEMENTS" 2>/dev/null || \
+    /usr/libexec/PlistBuddy -c "Set :com.apple.developer.team-identifier ${TEAM_ID}" "$RESOLVED_ENTITLEMENTS"
+
+  plutil -lint "$RESOLVED_ENTITLEMENTS" >/dev/null
+  if grep -q '\$(' "$RESOLVED_ENTITLEMENTS"; then
+    log_error "Entitlements 仍包含未展開的 Xcode 變數: $(grep '\$(' "$RESOLVED_ENTITLEMENTS")"
+    exit 1
+  fi
+
+  # 嵌入匹配的 Developer ID Provisioning Profile（授權 keychain-access-groups 等受限 Entitlements）
+  if [[ -z "$PROVISIONING_PROFILE" ]]; then
+    PROVISIONING_PROFILE=$(find_developer_id_profile "$TEAM_ID" "$BUNDLE_ID" || true)
+  fi
+
+  if [[ -n "$PROVISIONING_PROFILE" ]]; then
+    if [[ ! -f "$PROVISIONING_PROFILE" ]]; then
+      log_error "指定的 Provisioning Profile 不存在: $PROVISIONING_PROFILE"
+      exit 1
+    fi
+    cp "$PROVISIONING_PROFILE" "$APP_PATH/Contents/embedded.provisionprofile"
+    log_info "已嵌入 Developer ID Provisioning Profile: $PROVISIONING_PROFILE"
+  elif [[ "$SKIP_NOTARIZE" == false ]]; then
+    log_error "未找到對應 ${TEAM_ID}.${BUNDLE_ID} 的 Developer ID Provisioning Profile。"
+    log_error "由於 Release.entitlements 包含受限的 keychain-access-groups，請透過 -P / --provisioning-profile 指定 Developer ID Provisioning Profile。"
+    exit 1
+  else
+    log_warn "未提供 Developer ID Provisioning Profile（本機測試模式繼續執行）。"
+  fi
+
   # 簽署內部 Frameworks, dylibs 與 plugins
   FRAMEWORKS_DIR="$APP_PATH/Contents/Frameworks"
   if [[ -d "$FRAMEWORKS_DIR" ]]; then
     log_info "簽署 Frameworks 與動態庫..."
-    find "$FRAMEWORKS_DIR" -depth -type d -name "*.framework" -o -name "*.dylib" | while read -r item; do
+    find "$FRAMEWORKS_DIR" -depth \( -type d -name "*.framework" -o -name "*.dylib" \) | while read -r item; do
       log_info "  -> 簽署: $(basename "$item")"
       codesign --force --options runtime --timestamp --sign "$IDENTITY" "$item"
     done
   fi
 
-  # 簽署主應用程式與其 Entitlements
+  # 簽署主應用程式與已展開的 Entitlements
   log_info "簽署主應用程式 $APP_NAME..."
-  codesign --force --options runtime --entitlements "$ENTITLEMENTS" --timestamp --sign "$IDENTITY" "$APP_PATH"
+  codesign --force --options runtime --entitlements "$RESOLVED_ENTITLEMENTS" --timestamp --sign "$IDENTITY" "$APP_PATH"
 
-  # 驗證簽章
-  log_info "驗證主應用程式簽章..."
-  codesign -vvv --deep --strict "$APP_PATH"
-  log_success "代碼簽署完成且驗證通過。"
+  # 驗證簽章、Hardened Runtime 與簽入的 Entitlements
+  log_info "驗證主應用程式簽章與已展開 Entitlements..."
+  codesign --verify --deep --strict --verbose=2 "$APP_PATH"
+  if ! codesign --display --verbose=2 "$APP_PATH" 2>&1 | grep -q 'flags=.*runtime'; then
+    log_error "主應用程式簽章缺少 Hardened Runtime (runtime) 旗標。"
+    exit 1
+  fi
+  SIGNED_ENTITLEMENTS=$(codesign -d --entitlements :- "$APP_PATH" 2>/dev/null || true)
+  if echo "$SIGNED_ENTITLEMENTS" | grep -q '\$(' || ! echo "$SIGNED_ENTITLEMENTS" | grep -q "${TEAM_ID}.${BUNDLE_ID}"; then
+    log_error "簽入的 Entitlements 驗證失敗，未包含預期的 ${TEAM_ID}.${BUNDLE_ID}。"
+    exit 1
+  fi
+  log_success "代碼簽署完成且簽章、Hardened Runtime 與 Entitlements 驗證通過。"
 else
   log_info "略過重新簽章步驟。"
 fi
 
-# 5. 打包 (DMG 或 ZIP)
-DIST_FILE=""
-if [[ "$FORMAT" == "dmg" ]]; then
-  DMG_NAME="${APP_NAME%.app}.dmg"
-  OUTPUT_DMG="$OUTPUT_DIR/$DMG_NAME"
-  rm -f "$OUTPUT_DMG"
+# 5. 於暫存目錄打包 (DMG 或 ZIP)，待所有步驟成功後才原子替換正式產物
+STAGE_OUT_DIR="$WORK_TMP_DIR/stage"
+mkdir -p "$STAGE_OUT_DIR"
+ARTIFACT_NAME=""
+STAGE_DIST_FILE=""
 
-  log_info "正在建立 DMG 映像檔: $OUTPUT_DMG..."
-  TMP_DMG_DIR=$(mktemp -d /tmp/macos_release_dmg.XXXXXX)
+if [[ "$FORMAT" == "dmg" ]]; then
+  ARTIFACT_NAME="${APP_NAME%.app}.dmg"
+  STAGE_DIST_FILE="$STAGE_OUT_DIR/$ARTIFACT_NAME"
+
+  log_info "正在建立暫存 DMG 映像檔: $STAGE_DIST_FILE..."
+  TMP_DMG_DIR="$WORK_TMP_DIR/dmg_src"
+  mkdir -p "$TMP_DMG_DIR"
   cp -R "$APP_PATH" "$TMP_DMG_DIR/"
   ln -s /Applications "$TMP_DMG_DIR/Applications"
 
-  hdiutil create -volname "${APP_NAME%.app}" -srcfolder "$TMP_DMG_DIR" -ov -format UDZO "$OUTPUT_DMG"
+  hdiutil create -volname "${APP_NAME%.app}" -srcfolder "$TMP_DMG_DIR" -ov -format UDZO "$STAGE_DIST_FILE"
   rm -rf "$TMP_DMG_DIR"
 
   if [[ "$SKIP_CODESIGN" == false && -n "$IDENTITY" ]]; then
     log_info "對 DMG 映像檔進行簽署..."
-    codesign --force --timestamp --sign "$IDENTITY" "$OUTPUT_DMG"
+    codesign --force --timestamp --sign "$IDENTITY" "$STAGE_DIST_FILE"
   fi
 
-  DIST_FILE="$OUTPUT_DMG"
-  log_success "DMG 打包完成: $DIST_FILE"
+  log_success "DMG 暫存打包完成: $STAGE_DIST_FILE"
 else
-  ZIP_NAME="${APP_NAME%.app}.zip"
-  OUTPUT_ZIP="$OUTPUT_DIR/$ZIP_NAME"
-  rm -f "$OUTPUT_ZIP"
+  ARTIFACT_NAME="${APP_NAME%.app}.zip"
+  STAGE_DIST_FILE="$STAGE_OUT_DIR/$ARTIFACT_NAME"
 
-  log_info "正在建立 ZIP 壓縮檔: $OUTPUT_ZIP..."
-  ditto -c -k --keepParent "$APP_PATH" "$OUTPUT_ZIP"
+  log_info "正在建立暫存 ZIP 壓縮檔: $STAGE_DIST_FILE..."
+  ditto -c -k --keepParent "$APP_PATH" "$STAGE_DIST_FILE"
 
-  DIST_FILE="$OUTPUT_ZIP"
-  log_success "ZIP 打包完成: $DIST_FILE"
+  log_success "ZIP 暫存打包完成: $STAGE_DIST_FILE"
 fi
 
 # 6. Apple Notarization 公證
@@ -257,32 +394,37 @@ if [[ "$SKIP_NOTARIZE" == false ]]; then
     exit 1
   fi
 
-  log_info "正在將 $DIST_FILE 提交至 Apple 公證服務 (profile: $KEYCHAIN_PROFILE)..."
-  xcrun notarytool submit "$DIST_FILE" --keychain-profile "$KEYCHAIN_PROFILE" --wait
+  log_info "正在將 $STAGE_DIST_FILE 提交至 Apple 公證服務 (profile: $KEYCHAIN_PROFILE)..."
+  xcrun notarytool submit "$STAGE_DIST_FILE" --keychain-profile "$KEYCHAIN_PROFILE" --wait
 
   # 7. Stapling 裝訂公證票證
   log_info "正在將公證票證裝訂 (staple) 至產物..."
   if [[ "$FORMAT" == "dmg" ]]; then
-    xcrun stapler staple "$DIST_FILE"
+    xcrun stapler staple "$STAGE_DIST_FILE"
     log_success "公證票證已成功裝訂至 DMG！"
   else
     xcrun stapler staple "$APP_PATH"
     log_info "重新包裝已裝訂票證的 App 為 ZIP..."
-    rm -f "$DIST_FILE"
-    ditto -c -k --keepParent "$APP_PATH" "$DIST_FILE"
+    rm -f "$STAGE_DIST_FILE"
+    ditto -c -k --keepParent "$APP_PATH" "$STAGE_DIST_FILE"
     log_success "公證票證已裝訂至 App 並重新打包 ZIP！"
   fi
 
   # 8. Gatekeeper 驗證評估
   log_info "執行 Gatekeeper 評估 (spctl)..."
   if [[ "$FORMAT" == "dmg" ]]; then
-    spctl -a -vvv -t open --context context:primary-signature "$DIST_FILE"
+    spctl -a -vvv -t open --context context:primary-signature "$STAGE_DIST_FILE"
   else
     spctl -a -vvv -t exec "$APP_PATH"
   fi
 else
   log_info "略過公證步驟 (--skip-notarize)。"
 fi
+
+# 所有步驟驗證通過後，原子移動替換目標路徑的正式產物
+mkdir -p "$OUTPUT_DIR"
+DIST_FILE="$OUTPUT_DIR/$ARTIFACT_NAME"
+mv -f "$STAGE_DIST_FILE" "$DIST_FILE"
 
 # 9. 完成摘要
 log_success "=== 發布產物準備就緒 ==="
