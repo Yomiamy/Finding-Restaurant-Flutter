@@ -234,10 +234,12 @@ profile_matches() {
   local decoded
   decoded=$(security cms -D -i "$prof" 2>/dev/null || true)
   [[ -n "$decoded" ]] || return 1
-  # 以 here-string 餵 grep -q：pipe 在 pipefail 下會因 SIGPIPE (141) 誤判為不符
-  grep -q "<key>ProvisionsAllDevices</key>" <<< "$decoded" &&
-    grep -q "<string>${target_team}</string>" <<< "$decoded" &&
-    grep -Eq "<string>${target_team}\.(\*|${target_bundle})</string>" <<< "$decoded"
+  # 讀具名欄位而非全文 grep：keychain-access-groups 的 `TEAM.*` 會讓任意 Bundle ID 誤判為符合
+  local all_devices app_id
+  all_devices=$(plutil -extract ProvisionsAllDevices raw -o - - <<< "$decoded" 2>/dev/null || true)
+  app_id=$(plutil -extract 'Entitlements.com\.apple\.application-identifier' raw -o - - <<< "$decoded" 2>/dev/null || true)
+  [[ "$all_devices" == "true" ]] &&
+    [[ "$app_id" == "${target_team}.${target_bundle}" || "$app_id" == "${target_team}.*" ]]
 }
 
 # 輔助函式：自動搜尋符合 Team ID 與 Bundle ID 的 Developer ID Provisioning Profile
