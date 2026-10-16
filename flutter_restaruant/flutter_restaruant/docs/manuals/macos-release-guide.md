@@ -100,10 +100,20 @@ xcrun notarytool history --keychain-profile "notary-profile"
 ### 3.1 一鍵發布完整指令
 ```bash
 # 於專案根目錄下執行：
-./scripts/release_macos.sh -p "notary-profile"
+./scripts/release_macos.sh \
+  -P "<Developer ID provisioning profile 路徑>.provisionprofile" \
+  -p "notary-profile"
 ```
+
+`-P` 與 `-p` 僅差大小寫，指的是兩個無關的東西：
+
+| 參數 | 指定對象 | 用於 | 何時可省略 |
+| :--- | :--- | :--- | :--- |
+| `-P`（大寫） | Provisioning Profile **檔案路徑**（§2.2） | 簽章：內嵌至 `.app`，授權受限 Entitlements | Profile 已位於 `~/Library/Developer/Xcode/UserData/Provisioning Profiles/` 時腳本會自動搜尋 |
+| `-p`（小寫） | notarytool 鑰匙圈 Profile **名稱**（§2.3） | 公證：以其中的 Apple ID 認證上傳 | 僅搭配 `--skip-notarize` 時 |
+
 腳本將依序自動完成：
-1. 執行 `flutter build macos --release` 編譯 release 產物。
+1. 執行 `flutter build macos --release --dart-define=DEVELOPER_ID_BUILD=true` 編譯 release 產物（隱藏 Apple 登入，見 §2.2）。
 2. 自動偵測鑰匙圈中的 `Developer ID Application` 憑證。
 3. 對 `Contents/Frameworks/`（FlutterMacOS、動態庫及 Pods）由內而外重新深度簽名，啟用 Hardened Runtime (`--options runtime`) 並掛載 `Release.entitlements`。
 4. 打包為 `.dmg` 映像檔（內建 `/Applications` 捷徑）。
@@ -112,35 +122,38 @@ xcrun notarytool history --keychain-profile "notary-profile"
 7. 成功後自動將公證票證裝訂至 `.dmg` (`xcrun stapler staple`)。
 8. 執行 Gatekeeper 檢驗 (`spctl`) 並產出 SHA-256 校驗碼。
 
-產物將輸出至：`build/macos/release-dist/finding_restaurant.dmg`。
+產物將輸出至：`build/macos/release-dist/flutter_restaruant.dmg`（檔名取自 `.app` 名稱，即 `AppInfo.xcconfig` 的 `PRODUCT_NAME`）。
 
 ### 3.2 常用命令選項
+以下範例中的 `PROFILE` 代表 §2.2 的 Profile 路徑，例如 `PROFILE="/path/to/Developer_ID.provisionprofile"`。
+
 ```bash
 # 1. 僅在本機測試打包與簽章（不連線 Apple 進行公證）
-./scripts/release_macos.sh --skip-notarize
+#    仍應帶 -P：否則 App 不內嵌 Profile，行為與正式產物不同（腳本只警告不中止）
+./scripts/release_macos.sh -P "$PROFILE" --skip-notarize
 
 # 2. 打包為 .zip 而非 .dmg
-./scripts/release_macos.sh -p "notary-profile" -f zip
+./scripts/release_macos.sh -P "$PROFILE" -p "notary-profile" -f zip
 
 # 3. 指定特定簽章身分（當鑰匙圈中有多個憑證時）
-./scripts/release_macos.sh -i "Developer ID Application: Li-Sheng Hsu (H2724L9BS5)" -p "notary-profile"
+./scripts/release_macos.sh -i "Developer ID Application: Li-Sheng Hsu (H2724L9BS5)" -P "$PROFILE" -p "notary-profile"
 
-# 4. 跳過重新編譯（使用既有 build 產物快速重打）
-./scripts/release_macos.sh --skip-build -p "notary-profile"
+# 4. 跳過重新編譯（使用既有 build 產物快速重打；產物須由本腳本建置，見 §2.2）
+./scripts/release_macos.sh --skip-build -P "$PROFILE" -p "notary-profile"
 ```
 
 ### 3.3 產物驗收指令
 手動驗證產物是否能通過 macOS Gatekeeper：
 ```bash
 # 檢查 DMG 上的公證票證
-xcrun stapler validate build/macos/release-dist/finding_restaurant.dmg
+xcrun stapler validate build/macos/release-dist/flutter_restaruant.dmg
 
 # 檢查 DMG 磁碟映像檔之 Gatekeeper 評估結果（應顯示 accepted）
-spctl -a -vvv -t open --context context:primary-signature build/macos/release-dist/finding_restaurant.dmg
+spctl -a -vvv -t open --context context:primary-signature build/macos/release-dist/flutter_restaruant.dmg
 
 # 檢查代碼簽章完整性與 Hardened Runtime (runtime) 旗標
-codesign --verify --deep --strict build/macos/Build/Products/Release/finding_restaurant.app
-codesign --display --verbose=2 build/macos/Build/Products/Release/finding_restaurant.app 2>&1 | grep 'flags=.*runtime'
+codesign --verify --deep --strict build/macos/Build/Products/Release/flutter_restaruant.app
+codesign --display --verbose=2 build/macos/Build/Products/Release/flutter_restaruant.app 2>&1 | grep 'flags=.*runtime'
 ```
 
 ---
