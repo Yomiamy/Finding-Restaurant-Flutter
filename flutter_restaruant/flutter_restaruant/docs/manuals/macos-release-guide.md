@@ -42,18 +42,25 @@ security find-identity -p codesigning -v
 - 本機若同時有其他 Team 的 `Apple Development` 憑證，務必選對 Team，否則與專案 `DEVELOPMENT_TEAM` 不一致。
 
 ### 2.2 建立 Developer ID Provisioning Profile (路徑 A 必要)
-`Release.entitlements` 含受限的 `keychain-access-groups` 與 `com.apple.developer.applesignin`，必須內嵌授權這些 Entitlements 的 Profile；腳本找不到 Profile 時會直接中止。
+`Release.entitlements` 含受限的 `keychain-access-groups`，必須內嵌授權它的 Profile；腳本找不到 Profile 時會直接中止。
 
-1. 確認 App ID `com.yomi.find-restaurant.macos` 已在 Developer Portal 啟用 **Sign in with Apple**。
-2. Developer Portal → `Certificates, IDs & Profiles` → `Profiles` → `+` → Distribution 區塊選 **Developer ID**（平台 macOS）。
-3. App ID 選 `com.yomi.find-restaurant.macos`，憑證選 2.1 建立的 `Developer ID Application`。
-4. 下載後雙擊安裝，Profile 會落在 `~/Library/Developer/Xcode/UserData/Provisioning Profiles/`，腳本會自動搜尋；亦可用 `-P <路徑>` 明確指定。
+1. Developer Portal → `Certificates, IDs & Profiles` → `Profiles` → `+` → Distribution 區塊選 **Developer ID**（平台 macOS）。
+2. App ID 選 `com.yomi.find-restaurant.macos`，憑證選 2.1 建立的 `Developer ID Application`。
+3. 下載後安裝至 `~/Library/Developer/Xcode/UserData/Provisioning Profiles/`，腳本會自動搜尋；雙擊不一定會複製到此目錄，此時以 `-P <路徑>` 明確指定。
 
 > ⚠️ Profile 會固化建立當下的 App ID Capabilities。App ID 新增或變更 Capability 後必須**重新產生並下載** Profile，否則簽入的 Entitlements 與 Profile 不符，App 啟動即被系統拒絕。
 
-確認 Profile 已包含 Sign in with Apple：
+#### Sign in with Apple 不適用於 Developer ID
+Apple 僅允許 **Mac App Store** 分發的 macOS App 使用 Sign in with Apple；Developer ID Profile 即使 App ID 已啟用該 Capability，也**不會**包含 `com.apple.developer.applesignin`（Portal 頁面的「Enabled Capabilities」反映的是 App ID，不代表 Profile 內容）。因此腳本對路徑 A：
+
+- 建置時注入 `--dart-define=DEVELOPER_ID_BUILD=true`，App 隱藏 Apple 登入按鈕（見 `platformCapabilities().appleSignIn`）。
+- 簽章前自展開後的 Entitlements 移除 `com.apple.developer.applesignin`。
+
+⚠️ 搭配 `--skip-build` 時，既有產物必須同樣以 `--dart-define=DEVELOPER_ID_BUILD=true` 建置，否則 App 仍顯示 Apple 登入按鈕且點擊必定失敗。
+
+確認 Profile 授權的 Entitlements：
 ```bash
-security cms -D -i "<profile 路徑>.provisionprofile" | grep -A2 applesignin
+security cms -D -i "<profile 路徑>.provisionprofile" | plutil -extract Entitlements xml1 -o - -
 ```
 
 ### 2.3 設定 Notarytool 鑰匙圈 Profile (路徑 A 必要)
