@@ -15,7 +15,7 @@ class _HostWidget extends StatelessWidget {
 }
 
 void main() {
-  group('ContextFrameCallbackExtension', () {
+  group('FrameCallbackExtension', () {
     testWidgets('runAfterFrame 在該幀後執行 action', (tester) async {
       var called = false;
       await tester.pumpWidget(

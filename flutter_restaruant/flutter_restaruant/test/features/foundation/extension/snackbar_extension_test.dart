@@ -7,7 +7,7 @@ import 'package:flutter_restaruant/main.dart' show appRootBuilder;
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
-  group('BuildContextSnackBarX', () {
+  group('SnackBarExtension', () {
     testWidgets('在 MaterialApp 中成功顯示 SnackBar', (tester) async {
       await tester.pumpWidget(
         MaterialApp(
