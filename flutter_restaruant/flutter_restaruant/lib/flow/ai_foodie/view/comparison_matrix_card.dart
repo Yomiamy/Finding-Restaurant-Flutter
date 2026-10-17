@@ -39,11 +39,13 @@ class ComparisonMatrixCard extends StatelessWidget {
                 color: colorScheme.primary,
               ),
               const SizedBox(width: ThemeSize.space8),
-              Text(
-                component.title,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
+              Flexible(
+                child: Text(
+                  component.title,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
               ),
             ],
