@@ -2,7 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/widgets.dart';
 
-extension ContextFrameCallbackExtension on BuildContext {
+extension FrameCallbackExtension on BuildContext {
   /// 在本幀 build 結束後執行 [action]，且僅在 widget 仍掛載時執行。
   ///
   /// 包裝 `WidgetsBinding.instance.addPostFrameCallback` 與 `mounted` 檢查，

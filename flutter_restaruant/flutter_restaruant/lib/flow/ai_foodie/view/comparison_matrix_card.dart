@@ -39,11 +39,13 @@ class ComparisonMatrixCard extends StatelessWidget {
                 color: colorScheme.primary,
               ),
               const SizedBox(width: ThemeSize.space8),
-              Text(
-                component.title,
-                style: theme.textTheme.titleSmall?.copyWith(
-                  fontWeight: FontWeight.bold,
-                  color: colorScheme.onSurface,
+              Flexible(
+                child: Text(
+                  component.title,
+                  style: theme.textTheme.titleSmall?.copyWith(
+                    fontWeight: FontWeight.bold,
+                    color: colorScheme.onSurface,
+                  ),
                 ),
               ),
             ],
@@ -136,17 +138,18 @@ class _ComparisonItemCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: ThemeSize.space4),
-                    Row(
+                    Wrap(
+                      spacing: ThemeSize.space8,
                       children: [
-                        if (item.category case final category?) ...[
+                        if (item.category case final category?)
                           Text(
                             category,
                             style: theme.textTheme.bodySmall?.copyWith(
                               color: colorScheme.onSurfaceVariant,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
-                          const SizedBox(width: ThemeSize.space8),
-                        ],
                         if (item.price case final price?)
                           Text(
                             price,
@@ -154,6 +157,8 @@ class _ComparisonItemCard extends StatelessWidget {
                               fontWeight: FontWeight.w600,
                               color: colorScheme.primary,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                       ],
                     ),

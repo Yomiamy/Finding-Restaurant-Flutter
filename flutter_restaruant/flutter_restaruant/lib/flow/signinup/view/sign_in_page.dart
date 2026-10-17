@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../component/component_barrel.dart';
+import '../../../features/foundation/extension/extension_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../../../manager/manager_barrel.dart';
@@ -59,17 +59,17 @@ class _SignInPageState extends State<SignInPage> {
       body: BlocConsumer<SignInBloc, SignInState>(
         listener: (context, state) {
           if (state is SignInSuccess) {
-            Fluttertoast.showToast(msg: S.current.signin_success_msg);
+            context.showAppSnackBar(S.current.signin_success_msg);
             // ignore: unawaited_futures
             _goToMainPage(context);
           } else if (state is SignUpSuccess) {
-            Fluttertoast.showToast(
-              msg: S.current.email_signup_success_hint_msg,
+            context.showAppSnackBar(
+              S.current.email_signup_success_hint_msg,
             );
             // ignore: unawaited_futures
             _goToMainPage(context);
           } else if (state is Failure) {
-            Fluttertoast.showToast(msg: state.reason.localizedMessage);
+            context.showAppSnackBar(state.reason.localizedMessage);
           }
         },
         builder: (context, state) => Stack(
