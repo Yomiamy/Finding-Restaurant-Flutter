@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 /// 提供安全且一致的全域 SnackBar 呼叫擴充方法。
-extension BuildContextSnackBarX on BuildContext {
+extension SnackBarExtension on BuildContext {
   /// 顯示一則 Material 3 風格的 [SnackBar]。
   ///
   /// 會先清除當前顯示中的 SnackBar（[ScaffoldMessengerState.hideCurrentSnackBar]），
