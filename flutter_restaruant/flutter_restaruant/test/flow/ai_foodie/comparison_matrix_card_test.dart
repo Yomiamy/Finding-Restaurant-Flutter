@@ -7,6 +7,7 @@ class _Data {
   static const String longTitle = '這是一段由模型產生而且非常非常非常長的多店對比標題文字內容';
   static const String longCategory = '日式料理居酒屋燒肉串燒丼飯拉麵';
   static const String longPrice = r'$550 - $1,200 per person';
+  static const String shortPrice = r'$550';
 
   static ComparisonMatrixModel matrix({
     required String category,
@@ -51,6 +52,20 @@ void main() {
       );
 
       expect(tester.takeException(), isNull);
+    });
+
+    testWidgets('價格短時類別可使用超過半列寬度', (tester) async {
+      await _pumpCard(
+        tester,
+        _Data.matrix(category: _Data.longCategory, price: _Data.shortPrice),
+      );
+
+      expect(tester.takeException(), isNull);
+      // 卡片內容寬 198，舊版 Flexible 平分後每欄上限約 95
+      expect(
+        tester.getSize(find.text(_Data.longCategory)).width,
+        greaterThan(100),
+      );
     });
   });
 }
