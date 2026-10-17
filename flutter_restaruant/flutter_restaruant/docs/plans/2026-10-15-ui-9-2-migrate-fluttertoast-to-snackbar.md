@@ -34,7 +34,7 @@
 
 ### 任務 1：全域 ScaffoldMessenger 注入與 SnackBar 擴充函式
 - **內容**：
-  - 在 `lib/features/foundation/extension/snackbar_extension.dart` 定義 `extension BuildContextSnackBarX on BuildContext`，實作 `showAppSnackBar(String message)`，自動調用 `hideCurrentSnackBar()` 與 `showSnackBar(SnackBar(content: Text(message)))`。
+  - 在 `lib/features/foundation/extension/snackbar_extension.dart` 定義 `extension SnackBarExtension on BuildContext`，實作 `showAppSnackBar(String message)`，自動調用 `hideCurrentSnackBar()` 與 `showSnackBar(SnackBar(content: Text(message)))`。
   - 在 `lib/features/foundation/extension/extension_barrel.dart` 匯出。
   - 在 `lib/main.dart` 的 `builder:` 內包覆 `ScaffoldMessenger(child: scrollable)`。
 - **驗證**：語法與型別檢查無誤。
