@@ -138,7 +138,7 @@ class _ComparisonItemCard extends StatelessWidget {
                       ],
                     ),
                     const SizedBox(height: ThemeSize.space4),
-                    Row(
+                    Wrap(
                       spacing: ThemeSize.space8,
                       children: [
                         if (item.category case final category?)
@@ -151,16 +151,14 @@ class _ComparisonItemCard extends StatelessWidget {
                             overflow: TextOverflow.ellipsis,
                           ),
                         if (item.price case final price?)
-                          Expanded(
-                            child: Text(
-                              price,
-                              style: theme.textTheme.bodySmall?.copyWith(
-                                fontWeight: FontWeight.w600,
-                                color: colorScheme.primary,
-                              ),
-                              maxLines: 1,
-                              overflow: TextOverflow.ellipsis,
+                          Text(
+                            price,
+                            style: theme.textTheme.bodySmall?.copyWith(
+                              fontWeight: FontWeight.w600,
+                              color: colorScheme.primary,
                             ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                           ),
                       ],
                     ),

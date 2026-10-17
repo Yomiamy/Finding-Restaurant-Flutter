@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/rendering.dart';
 import 'package:flutter_restaruant/flow/ai_foodie/model/ai_foodie_model.dart';
 import 'package:flutter_restaruant/flow/ai_foodie/view/comparison_matrix_card.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -6,6 +7,7 @@ import 'package:flutter_test/flutter_test.dart';
 class _Data {
   static const String longTitle = '這是一段由模型產生而且非常非常非常長的多店對比標題文字內容';
   static const String longCategory = '日式料理居酒屋燒肉串燒丼飯拉麵';
+  static const String overflowCategory = '日式料理居酒屋燒肉串燒丼飯拉麵日式料理居酒屋燒肉串燒丼飯拉麵';
   static const String longPrice = r'$550 - $1,200 per person';
   static const String shortPrice = r'$550';
 
@@ -65,6 +67,21 @@ void main() {
       expect(
         tester.getSize(find.text(_Data.longCategory)).width,
         greaterThan(100),
+      );
+    });
+
+    testWidgets('超長類別不會 overflow 且價格完整顯示', (tester) async {
+      await _pumpCard(
+        tester,
+        _Data.matrix(category: _Data.overflowCategory, price: _Data.shortPrice),
+      );
+
+      expect(tester.takeException(), isNull);
+      expect(
+        tester
+            .renderObject<RenderParagraph>(find.text(_Data.shortPrice))
+            .didExceedMaxLines,
+        isFalse,
       );
     });
   });
