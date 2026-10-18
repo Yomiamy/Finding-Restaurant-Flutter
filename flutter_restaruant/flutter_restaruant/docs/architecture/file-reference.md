@@ -161,21 +161,21 @@
 | [`lib/features/component/ad/app_open_ad.dart`](../../lib/features/component/ad/app_open_ad.dart) | `AppOpenAd` | 開屏廣告。 |
 | [`lib/features/component/ad/app_lifecycle_reactor.dart`](../../lib/features/component/ad/app_lifecycle_reactor.dart) | `AppLifecycleReactor` | 監聽 App 前景/背景切換以觸發開屏廣告。 |
 
-### 7. 管理層 — 第三方 SDK 封裝 (`lib/manager/`)
+### 7. 管理層 — 第三方 SDK 封裝 (`lib/features/manager/`)
 
 > 全數採同一套 Singleton 模式：`static final _singleton` + `factory` 回傳同一實例。每個 Manager 只封裝**一個** SDK 的互動細節。
 
 | 檔案路徑 | 關鍵類別 | 單一職責 (Single Responsibility) |
 | :--- | :--- | :--- |
-| [`lib/manager/sign_in_manager.dart`](../../lib/manager/sign_in_manager.dart) | `SignInManager` | 登入狀態的單一真實來源（含 `isGuest` 訪客模式判定），供 UI 同步查詢。 |
-| [`lib/manager/fcm_manager.dart`](../../lib/manager/fcm_manager.dart) | `FcmManager` | Firebase Cloud Messaging 推播權限申請、token 管理與訊息處理。 |
-| [`lib/manager/ad_counter_manager.dart`](../../lib/manager/ad_counter_manager.dart) | `AdCounterManager` | 廣告展示次數計數，決定何時顯示插頁廣告。 |
-| [`lib/manager/google_sign_in_manager.dart`](../../lib/manager/google_sign_in_manager.dart) | `GoogleSignInManager` | Google 登入流程。 |
-| [`lib/manager/apple_sign_in_manager.dart`](../../lib/manager/apple_sign_in_manager.dart) | `AppleSignInManager` | Apple 登入流程（iOS 必備）。 |
-| [`lib/manager/facebook_sign_in_manager.dart`](../../lib/manager/facebook_sign_in_manager.dart) | `FacebookSignInManager` | Facebook 登入流程。 |
-| [`lib/manager/mail_sign_in_up_manager.dart`](../../lib/manager/mail_sign_in_up_manager.dart) | `MailSignInUpManager` | Email/密碼註冊與登入。 |
-| [`lib/manager/auto_sign_in_manager.dart`](../../lib/manager/auto_sign_in_manager.dart) | `AutoSignInManager` | 自動登入（憑證持久化與還原）。 |
-| [`lib/manager/biometric_sign_in_manager.dart`](../../lib/manager/biometric_sign_in_manager.dart) | `BiometricSignInManager` | 生物辨識（Face ID / 指紋）登入。 |
+| [`lib/features/manager/sign_in_manager.dart`](../../lib/features/manager/sign_in_manager.dart) | `SignInManager` | 登入狀態的單一真實來源（含 `isGuest` 訪客模式判定），供 UI 同步查詢。 |
+| [`lib/features/manager/fcm_manager.dart`](../../lib/features/manager/fcm_manager.dart) | `FcmManager` | Firebase Cloud Messaging 推播權限申請、token 管理與訊息處理。 |
+| [`lib/features/manager/ad_counter_manager.dart`](../../lib/features/manager/ad_counter_manager.dart) | `AdCounterManager` | 廣告展示次數計數，決定何時顯示插頁廣告。 |
+| [`lib/features/manager/google_sign_in_manager.dart`](../../lib/features/manager/google_sign_in_manager.dart) | `GoogleSignInManager` | Google 登入流程。 |
+| [`lib/features/manager/apple_sign_in_manager.dart`](../../lib/features/manager/apple_sign_in_manager.dart) | `AppleSignInManager` | Apple 登入流程（iOS 必備）。 |
+| [`lib/features/manager/facebook_sign_in_manager.dart`](../../lib/features/manager/facebook_sign_in_manager.dart) | `FacebookSignInManager` | Facebook 登入流程。 |
+| [`lib/features/manager/mail_sign_in_up_manager.dart`](../../lib/features/manager/mail_sign_in_up_manager.dart) | `MailSignInUpManager` | Email/密碼註冊與登入。 |
+| [`lib/features/manager/auto_sign_in_manager.dart`](../../lib/features/manager/auto_sign_in_manager.dart) | `AutoSignInManager` | 自動登入（憑證持久化與還原）。 |
+| [`lib/features/manager/biometric_sign_in_manager.dart`](../../lib/features/manager/biometric_sign_in_manager.dart) | `BiometricSignInManager` | 生物辨識（Face ID / 指紋）登入。 |
 
 ### 8. 基礎設施 — 設計 Token 與工具 (`lib/features/`)
 
@@ -187,8 +187,8 @@
 | [`lib/features/foundation/style/theme_size.dart`](../../lib/features/foundation/style/theme_size.dart) | `ThemeSize` | 尺寸與間距 Token 常數。 |
 | [`lib/features/foundation/style/theme_font_size.dart`](../../lib/features/foundation/style/theme_font_size.dart) | `ThemeFontSize` | 字級 Token 常數。 |
 | [`lib/features/foundation/style/theme_text_style.dart`](../../lib/features/foundation/style/theme_text_style.dart) | `ThemeTextStyle` | 文字樣式 Token。 |
-| [`lib/features/foundation/constants/constants.dart`](../../lib/features/foundation/constants/constants.dart) | `Constants` | 全域常數（API base URL 等）。金鑰已移至 Remote Config（見 `AiModelConfig`）。 |
-| [`lib/features/foundation/constants/ui_constants.dart`](../../lib/features/foundation/constants/ui_constants.dart) | `UIConstants` | UI 專用常數。 |
+| [`lib/app/constants/constants.dart`](../../lib/app/constants/constants.dart) | `Constants` | 全域常數（API base URL 等）。金鑰已移至 Remote Config（見 `AiModelConfig`）。 |
+| [`lib/app/constants/ui_constants.dart`](../../lib/app/constants/ui_constants.dart) | `UIConstants` | UI 專用常數。 |
 | [`lib/features/foundation/extension/future_extension.dart`](../../lib/features/foundation/extension/future_extension.dart) | `FutureExtension` | `Future` 的擴充方法。 |
 | [`lib/features/foundation/extension/snackbar_extension.dart`](../../lib/features/foundation/extension/snackbar_extension.dart) | `SnackBarExtension` | `BuildContext.showAppSnackBar`：先清除顯示中的 SnackBar 再顯示新訊息；查無 `ScaffoldMessenger` 時安全略過；鍵盤開啟時改 floating 並上移到鍵盤上方。 |
 | [`lib/features/utils/tuple.dart`](../../lib/features/utils/tuple.dart) | `Tuple2` … `Tuple7` | 泛型多值容器。<br>⚠️ **Dart 3 已內建 Records**，新程式碼應優先使用 `(a, b)` 語法，本檔屬既有程式碼的相容保留。 |
