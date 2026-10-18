@@ -6,7 +6,7 @@ import 'package:meta/meta.dart';
 
 import '../../domain/entities/entities_barrel.dart';
 import '../../domain/repositories/ai_foodie_repository.dart';
-import '../datasources/ai_model_config.dart';
+import '../../api/dto/ai_model_config.dart';
 import 'ai_foodie_schema.dart';
 
 /// AI 推論執行函式簽章（便於測試與無網路/離線打樁）

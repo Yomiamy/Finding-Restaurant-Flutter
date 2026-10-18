@@ -1,3 +1,4 @@
+export 'ai_model_config.dart';
 export 'yelp_restaurant_business_time_dto.dart';
 export 'yelp_restaurant_category_dto.dart';
 export 'yelp_restaurant_coordinates_dto.dart';

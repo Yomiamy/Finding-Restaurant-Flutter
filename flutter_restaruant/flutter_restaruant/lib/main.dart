@@ -12,7 +12,7 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:logger/logger.dart';
 
 import 'features/component/ad/ad_barrel.dart';
-import 'data_layer/datasources/datasources_barrel.dart';
+import 'api/dto/ai_model_config.dart';
 import 'app/di/di_barrel.dart';
 import 'app/constants/constants_barrel.dart';
 import 'features/foundation/style/style_barrel.dart';
