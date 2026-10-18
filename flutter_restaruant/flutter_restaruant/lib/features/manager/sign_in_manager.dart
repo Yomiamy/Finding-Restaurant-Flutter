@@ -1,7 +1,7 @@
 import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../api/api_barrel.dart';
-import '../../data_layer/dto/dto_barrel.dart';
+import '../../data_layer/model/model_barrel.dart';
 import '../../domain/entities/entities_barrel.dart';
 import '../../app/constants/constants_barrel.dart';
 import '../utils/utils_barrel.dart';
