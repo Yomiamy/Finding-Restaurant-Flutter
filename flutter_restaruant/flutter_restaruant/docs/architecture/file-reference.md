@@ -24,7 +24,7 @@
 
 > ⚠️ **本層不依賴 I/O 技術**：全目錄無 `dio`、`cloud_firestore`、`retrofit` 等 import。
 >
-> 🔴 **但有已知反向依賴**：11 個 entity 檔案全數 import `data_layer/dto/dto_barrel.dart`（因 `fromDto`/`toDto` 寫在 Entity 上）。原本 `UserEntity` ⇄ `AccountDto` 之雙向循環 import 已透過拆分 `AccountType` / `AccountTypeModel` 解開，`AccountDto` 不再反向依賴 Domain，但 Entity 對 DTO 的依賴仍待未來抽取 Mapper 解除。5 個 Repository 介面則完全乾淨。詳見 [`overview.md`](./overview.md#-已知架構缺陷entity-反向依賴-dto)。
+> 🔴 **但有已知反向依賴**：11 個 entity 檔案全數 import `api/dto/dto_barrel.dart`（因 `fromDto`/`toDto` 寫在 Entity 上）。原本 `UserEntity` ⇄ `AccountDto` 之雙向循環 import 已透過拆分 `AccountType` / `AccountTypeModel` 解開，`AccountDto` 不再反向依賴 Domain，但 Entity 對 DTO 的依賴仍待未來抽取 Mapper 解除。5 個 Repository 介面則完全乾淨。詳見 [`overview.md`](./overview.md#-已知架構缺陷entity-反向依賴-dto)。
 
 | 檔案路徑 | 關鍵類別/列舉 | 單一職責 (Single Responsibility) |
 | :--- | :--- | :--- |
@@ -68,18 +68,18 @@
 | [`lib/data_layer/repositories/ai_foodie_repo.dart`](../../lib/data_layer/repositories/ai_foodie_repo.dart) | `AiFoodieRepo` | `AiFoodieRepository` 實作。串接 `FirebaseAI` 進行自然語言意圖理解、真實候選店家比對與 GenUI 元件生成，模型、temperature 與 system instruction 由 `AiModelConfig` 提供。 |
 | [`lib/data_layer/repositories/ai_foodie_schema.dart`](../../lib/data_layer/repositories/ai_foodie_schema.dart) | `aiFoodieResponseSchema` | Gemini 結構化輸出 JSON Schema 規範（約束 text 及 components 格式）。 |
 | [`lib/data_layer/datasources/favor_data_source.dart`](../../lib/data_layer/datasources/favor_data_source.dart) | `FavorDataSource` | **最愛清單在 Firestore 的單一存取點**，每個最愛項目以 subcollection `favors/{uid}/items/{restaurant_id}` 結構儲存。內含空字串 uid 的 guard，避免 Firestore 拋 `ArgumentError`。 |
-| [`lib/data_layer/datasources/ai_model_config.dart`](../../lib/data_layer/datasources/ai_model_config.dart) | `AiModelConfig` | **Firebase Remote Config 的單一存取點**：AI 模型名、temperature、system instruction（非法或未設定時回退程式預設值），以及 Yelp token、Static Map key（必填、無程式預設）。每次讀值即時查詢、建構時不碰 Firebase；`fetchAndActivate()` 由 `main.dart` 於啟動時非阻塞觸發。 |
-| [`lib/data_layer/dto/yelp_search_dto.dart`](../../lib/data_layer/dto/yelp_search_dto.dart) | `YelpSearchDto` | Yelp 搜尋結果的線上格式鏡射（`@JsonSerializable`）。 |
-| [`lib/data_layer/dto/yelp_restaurant_summary_dto.dart`](../../lib/data_layer/dto/yelp_restaurant_summary_dto.dart) | `YelpRestaurantSummaryDto` | 餐廳摘要 Dto，對應 `RestaurantEntity`。 |
-| [`lib/data_layer/dto/yelp_restaurant_detail_dto.dart`](../../lib/data_layer/dto/yelp_restaurant_detail_dto.dart) | `YelpRestaurantDetailDto` | 餐廳詳情 Dto。 |
-| [`lib/data_layer/dto/yelp_review_dto.dart`](../../lib/data_layer/dto/yelp_review_dto.dart) | `YelpReviewDto` | 評論集合 Dto。 |
-| [`lib/data_layer/dto/yelp_review_detail_dto.dart`](../../lib/data_layer/dto/yelp_review_detail_dto.dart) | `YelpReviewDetailDto` | 單筆評論 Dto。 |
-| [`lib/data_layer/dto/yelp_reviewer_dto.dart`](../../lib/data_layer/dto/yelp_reviewer_dto.dart) | `YelpReviewerDto` | 評論者 Dto。 |
-| [`lib/data_layer/dto/yelp_restaurant_category_dto.dart`](../../lib/data_layer/dto/yelp_restaurant_category_dto.dart) | `YelpRestaurantCategoryDto` | 分類 Dto。 |
-| [`lib/data_layer/dto/yelp_restaurant_location_dto.dart`](../../lib/data_layer/dto/yelp_restaurant_location_dto.dart) | `YelpRestaurantLocationDto` | 地址 Dto。 |
-| [`lib/data_layer/dto/yelp_restaurant_coordinates_dto.dart`](../../lib/data_layer/dto/yelp_restaurant_coordinates_dto.dart) | `YelpRestaurantCoordinatesDto` | 座標 Dto。 |
-| [`lib/data_layer/dto/yelp_restaurant_business_time_dto.dart`](../../lib/data_layer/dto/yelp_restaurant_business_time_dto.dart) | `YelpRestaurantBusinessTimeDto` | 營業時段 Dto。 |
-| [`lib/data_layer/dto/yelp_restaurant_hours_dto.dart`](../../lib/data_layer/dto/yelp_restaurant_hours_dto.dart) | `YelpRestaurantHoursDto` | 營業時間 Dto。 |
+| [`lib/api/dto/ai_model_config.dart`](../../lib/api/dto/ai_model_config.dart) | `AiModelConfig` | **Firebase Remote Config 的單一存取點**：AI 模型名、temperature、system instruction（非法或未設定時回退程式預設值），以及 Yelp token、Static Map key（必填、無程式預設）。每次讀值即時查詢、建構時不碰 Firebase；`fetchAndActivate()` 由 `main.dart` 於啟動時非阻塞觸發。 |
+| [`lib/api/dto/yelp_search_dto.dart`](../../lib/api/dto/yelp_search_dto.dart) | `YelpSearchDto` | Yelp 搜尋結果的線上格式鏡射（`@JsonSerializable`）。 |
+| [`lib/api/dto/yelp_restaurant_summary_dto.dart`](../../lib/api/dto/yelp_restaurant_summary_dto.dart) | `YelpRestaurantSummaryDto` | 餐廳摘要 Dto，對應 `RestaurantEntity`。 |
+| [`lib/api/dto/yelp_restaurant_detail_dto.dart`](../../lib/api/dto/yelp_restaurant_detail_dto.dart) | `YelpRestaurantDetailDto` | 餐廳詳情 Dto。 |
+| [`lib/api/dto/yelp_review_dto.dart`](../../lib/api/dto/yelp_review_dto.dart) | `YelpReviewDto` | 評論集合 Dto。 |
+| [`lib/api/dto/yelp_review_detail_dto.dart`](../../lib/api/dto/yelp_review_detail_dto.dart) | `YelpReviewDetailDto` | 單筆評論 Dto。 |
+| [`lib/api/dto/yelp_reviewer_dto.dart`](../../lib/api/dto/yelp_reviewer_dto.dart) | `YelpReviewerDto` | 評論者 Dto。 |
+| [`lib/api/dto/yelp_restaurant_category_dto.dart`](../../lib/api/dto/yelp_restaurant_category_dto.dart) | `YelpRestaurantCategoryDto` | 分類 Dto。 |
+| [`lib/api/dto/yelp_restaurant_location_dto.dart`](../../lib/api/dto/yelp_restaurant_location_dto.dart) | `YelpRestaurantLocationDto` | 地址 Dto。 |
+| [`lib/api/dto/yelp_restaurant_coordinates_dto.dart`](../../lib/api/dto/yelp_restaurant_coordinates_dto.dart) | `YelpRestaurantCoordinatesDto` | 座標 Dto。 |
+| [`lib/api/dto/yelp_restaurant_business_time_dto.dart`](../../lib/api/dto/yelp_restaurant_business_time_dto.dart) | `YelpRestaurantBusinessTimeDto` | 營業時段 Dto。 |
+| [`lib/api/dto/yelp_restaurant_hours_dto.dart`](../../lib/api/dto/yelp_restaurant_hours_dto.dart) | `YelpRestaurantHoursDto` | 營業時間 Dto。 |
 | [`lib/data_layer/model/account_dto.dart`](../../lib/data_layer/model/account_dto.dart) | `AccountDto` | 帳號資料 Dto，對應 `UserEntity`。 |
 | [`lib/data_layer/model/account_type.dart`](../../lib/data_layer/model/account_type.dart) | `AccountType` | 帳號登入方式 Dto/Data 層枚舉（帶 `@JsonValue` 序列化與雙向映射）。 |
 

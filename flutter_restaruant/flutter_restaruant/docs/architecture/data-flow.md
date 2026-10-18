@@ -160,7 +160,7 @@ List<RestaurantEntity> fetchedEntities = (searchDto.businesses ?? []).map((dto) 
 - **`YelpRestaurantSummaryDto` 在執行期永不越過 Repository 邊界**——Bloc 與 UI 拿到的一律是 `RestaurantEntity`。這讓 Yelp 改欄位名時，衝擊被限制在 Dto 與 `fromDto` 兩處。
 - **`copyWith(favor:)` 是合併點**：Yelp 不知道使用者收藏了什麼，最愛狀態只能在此疊加。
 
-> 🔴 **但 import 層級並未隔離**：`fromDto` / `toDto` 是寫在 **Entity 自己身上**的成員（11 個 entity 皆然），因此 `domain/entities/` 反向 import 了 `data_layer/dto/`。執行期的資料不會外洩，編譯期的依賴卻已經反向。詳見 [`overview.md` 的架構缺陷章節](./overview.md#-已知架構缺陷entity-反向依賴-dto)。
+> 🔴 **但 import 層級並未隔離**：`fromDto` / `toDto` 是寫在 **Entity 自己身上**的成員（11 個 entity 皆然），因此 `domain/entities/` 反向 import 了 `api/dto/`。執行期的資料不會外洩，編譯期的依賴卻已經反向。詳見 [`overview.md` 的架構缺陷章節](./overview.md#-已知架構缺陷entity-反向依賴-dto)。
 
 ### 關鍵細節：`_isLoading` 重入守衛
 
@@ -501,7 +501,7 @@ Inspector 的 pending→complete 機制靠 `options.extra` 傳遞：`onRequest` 
 ### 關鍵設計細節
 
 1. **結構化輸出 (Structured Output)**：透過 `menu_analysis_schema.dart` 嚴格約束 Gemini 輸出為 JSON Schema，杜絕正則或 Markdown 字串修剪之脆弱性。
-2. **零 DTO 污染 (Pure Domain Entities)**：AI 相關業務模型（`DishItemEntity`、`AllergenInfo`、`A2UIComponent`）定義於 `lib/domain/entities/`，完全不 import `data_layer/dto`，建立 Clean Architecture 的良好示範。Entity 欄位全 nullable（`@JsonSerializable(checked: true)` 產生碼），由 BLoC 轉為 UI model（`DishCatalogModel` 等）時補上呈現預設值；解析失敗時 `MenuVisionRepo` 直接拋出 `FormatException`／`CheckedFromJsonException`，由 BLoC 轉為 `MenuVisionFailure`。
+2. **零 DTO 污染 (Pure Domain Entities)**：AI 相關業務模型（`DishItemEntity`、`AllergenInfo`、`A2UIComponent`）定義於 `lib/domain/entities/`，完全不 import `api/dto`，建立 Clean Architecture 的良好示範。Entity 欄位全 nullable（`@JsonSerializable(checked: true)` 產生碼），由 BLoC 轉為 UI model（`DishCatalogModel` 等）時補上呈現預設值；解析失敗時 `MenuVisionRepo` 直接拋出 `FormatException`／`CheckedFromJsonException`，由 BLoC 轉為 `MenuVisionFailure`。
 3. **貨幣符號相容性 (`formatPrice`)**：依餐廳幣別格式化價格，前綴符號（如 `$120`）與後綴／文字貨幣（如 `120 TWD`）皆能正確渲染。
 4. **App Check 整合**：`main.dart` 於 `kDebugMode` 配置 `AndroidDebugProvider` 與 `AppleDebugProvider`，Release 模式則無縫對接正式 App Attest / Play Integrity。
 

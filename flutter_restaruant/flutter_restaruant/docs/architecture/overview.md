@@ -34,7 +34,7 @@
   │   lib/domain/repositories/  ── abstract interface class    │
   │   ⚠️ 介面層乾淨：6 個介面皆不 import data_layer            │
   │   lib/domain/entities/      ── Entity (業務模型)            │
-  │   🔴 11 個 Yelp entity 反向 import data_layer/dto（見下方）│
+  │   🔴 11 個 Yelp entity 反向 import api/dto（見下方）       │
   │   ✅ 新增 AI entities (DishItem/Allergen/A2UI) 零依賴 DTO   │
   └─────────────────────────────▲──────────────────────────────┘
                                 │ implements（依賴反轉）
@@ -42,7 +42,7 @@
   ┌─────────────────────────────┴──────────────────────────────┐
   │                    資料層 (Data Layer)                     │
   │   lib/data_layer/repositories/  ── Repo 實作                │
-  │   lib/data_layer/dto/           ── Dto (@JsonSerializable) │
+  │   lib/api/dto/                  ── Dto (@JsonSerializable) │
   │   lib/data_layer/datasources/   ── FavorDataSource,        │
   │                                    AiModelConfig           │
   └─────────────────────────────┬──────────────────────────────┘
@@ -70,7 +70,7 @@
 - **以底層傳輸契約為基石**：`Infra/DTO` 定義原始資料結構，`Domain` 建立在 `Infra` 之上。因此 Entity 提供 `fromDto` 建構子，將底層 DTO 轉化為高階領域模型，乃本專案既定之高內聚實作方式：
 ```dart
 // lib/domain/entities/restaurant_entity.dart:1
-import '../../data_layer/dto/dto_barrel.dart';
+import '../../api/dto/dto_barrel.dart';
 
 factory RestaurantEntity.fromDto(YelpRestaurantSummaryDto dto) => ...
 YelpRestaurantSummaryDto get toDto => ...
@@ -87,7 +87,7 @@ YelpRestaurantSummaryDto get toDto => ...
 ### 2. 資料層 (Data Layer) — 實作契約，向內依賴
 
 - **`*Repo` implements `*Repository`**：`MainRepo`、`RestaurantDetailRepo`、`FavorRepo`、`SignInRepo`、`SettingsRepo`、`MenuVisionRepo`。依賴方向朝內——`data_layer` import `domain`，反之絕無。
-- **Dto 與 Entity 分離**：`lib/data_layer/dto/` 下的 `Yelp*Dto` 以 `@JsonSerializable` 標註，由 `json_serializable` 產生 `*.g.dart`。Dto 是 API 線上格式的鏡射（欄位名對齊 Yelp JSON），Entity 才是 App 內部使用的模型；AI 菜單辨識則透過 `menu_analysis_schema.dart` 定義 Gemini Structured Output Schema，輸出由 `MenuVisionRepo` 映射為領域 Entity。
+- **Dto 與 Entity 分離**：`lib/api/dto/` 下的 `Yelp*Dto` 以 `@JsonSerializable` 標註，由 `json_serializable` 產生 `*.g.dart`。Dto 是 API 線上格式的鏡射（欄位名對齊 Yelp JSON），Entity 才是 App 內部使用的模型；AI 菜單辨識則透過 `menu_analysis_schema.dart` 定義 Gemini Structured Output Schema，輸出由 `MenuVisionRepo` 映射為領域 Entity。
 - **轉換點明確**：`RestaurantEntity.fromDto(dto)` 一律在 `data_layer` 內呼叫（`main_repo.dart:63`、`restaurant_detail_repo.dart:22,29`、`sign_in_repo.dart:43`、`favor_data_source.dart:52`）。**Dto 永不外洩到 Presentation 層。**
 - **`FavorDataSource`**：最愛清單在 Firestore 的**單一存取點**，每個最愛項目以 subcollection `favors/{uid}/items/{restaurant_id}` 結構儲存。內含空字串 uid 的 guard——少了它 Firestore 會拋 `ArgumentError`。
 
