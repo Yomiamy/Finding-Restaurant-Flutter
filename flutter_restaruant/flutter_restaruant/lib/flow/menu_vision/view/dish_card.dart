@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 
 import '../../../generated/l10n.dart';
-import '../model/menu_vision_model.dart';
+import '../models/menu_vision_model.dart';
 import 'allergen_badge.dart';
 
 /// 菜色卡片元件

@@ -7,7 +7,7 @@ import '../../../domain/repositories/menu_vision_repository.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../bloc/menu_vision_bloc.dart';
-import '../model/menu_vision_model.dart';
+import '../models/menu_vision_model.dart';
 import 'dish_card.dart';
 
 /// AI 拍菜單翻譯與過敏原拆解 Sheet

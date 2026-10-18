@@ -4,7 +4,7 @@ import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
 import 'package:flutter_restaruant/features/utils/utils_barrel.dart';
 import 'package:flutter_restaruant/flow/filter/view/filter_page.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
-import 'package:flutter_restaruant/model/model_barrel.dart';
+import 'package:flutter_restaruant/models/model_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

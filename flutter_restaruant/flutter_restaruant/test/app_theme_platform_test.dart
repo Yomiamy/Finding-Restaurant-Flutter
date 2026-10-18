@@ -2,7 +2,7 @@ import 'dart:ui' as ui;
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_restaruant/di/di_barrel.dart';
+import 'package:flutter_restaruant/app/di/di_barrel.dart';
 import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
 import 'package:flutter_restaruant/main.dart';
 
@@ -22,7 +22,7 @@ void main() {
 
   for (final target in [TargetPlatform.iOS, TargetPlatform.android]) {
     testWidgets('AppThemeData 在 $target 上可被解析', (tester) async {
-      // lib/di/inspector.dart 的 captureUncaughtErrors: true 會在
+      // lib/app/di/inspector.dart 的 captureUncaughtErrors: true 會在
       // FlutterInspector 建構子內立刻 attach 三個全域 error hook
       // （FlutterError.onError／PlatformDispatcher.onError／
       // ErrorWidget.builder）。`inspector` 是頂層 lazy final，全專案

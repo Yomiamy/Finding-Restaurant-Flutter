@@ -1,4 +1,4 @@
-import '../../data_layer/dto/dto_barrel.dart';
+import '../../api/dto/dto_barrel.dart';
 import 'restaurant_business_time_entity.dart';
 
 class RestaurantHoursEntity {

@@ -2,10 +2,11 @@ import 'dart:convert';
 
 import 'package:flutter/services.dart';
 import 'package:flutter_restaruant/data_layer/datasources/datasources_barrel.dart';
-import 'package:flutter_restaruant/data_layer/dto/dto_barrel.dart';
+import 'package:flutter_restaruant/api/dto/dto_barrel.dart';
+import 'package:flutter_restaruant/data_layer/models/model_barrel.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
-import 'package:flutter_restaruant/manager/manager_barrel.dart';
-import 'package:flutter_restaruant/features/foundation/constants/constants_barrel.dart';
+import 'package:flutter_restaruant/features/manager/manager_barrel.dart';
+import 'package:flutter_restaruant/app/constants/constants_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -31,8 +32,8 @@ class _Data {
   }
   ''';
 
-  static AccountDto get signedInAccount =>
-      AccountDto(uid: 'test-uid', type: AccountType.mail);
+  static AccountModel get signedInAccount =>
+      AccountModel(uid: 'test-uid', type: AccountType.mail);
 }
 
 /// 涵蓋範圍說明

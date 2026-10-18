@@ -2,9 +2,9 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
 
-import '../../../component/cell/main_page/main_page_barrel.dart';
+import '../../../features/component/cell/main_page/main_page_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
-import '../../../features/foundation/constants/constants_barrel.dart';
+import '../../../app/constants/constants_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../generated/l10n.dart';

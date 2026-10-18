@@ -3,6 +3,7 @@ import 'dart:typed_data';
 
 import 'package:firebase_ai/firebase_ai.dart';
 import 'package:firebase_remote_config/firebase_remote_config.dart';
+import 'package:flutter_restaruant/api/dto/ai_model_config.dart';
 import 'package:flutter_restaruant/data_layer/data_layer_barrel.dart';
 import 'package:flutter_restaruant/domain/domain_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_restaruant/domain/repositories/ai_foodie_repository.dart';
 import 'package:flutter_restaruant/flow/ai_foodie/bloc/bloc_barrel.dart';
-import 'package:flutter_restaruant/flow/ai_foodie/model/ai_foodie_model.dart';
+import 'package:flutter_restaruant/flow/ai_foodie/models/ai_foodie_model.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';

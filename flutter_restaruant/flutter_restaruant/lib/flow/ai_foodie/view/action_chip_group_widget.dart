@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../features/foundation/foundation_barrel.dart';
-import '../model/ai_foodie_model.dart';
+import '../models/ai_foodie_model.dart';
 
 /// GenUI 行動按鈕群組渲染元件
 class ActionChipGroupWidget extends StatelessWidget {

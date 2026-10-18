@@ -1,4 +1,4 @@
-import 'package:flutter_restaruant/manager/manager_barrel.dart';
+import 'package:flutter_restaruant/features/manager/manager_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {

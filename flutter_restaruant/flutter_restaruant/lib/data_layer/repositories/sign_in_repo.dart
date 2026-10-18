@@ -6,10 +6,10 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../domain/entities/entities_barrel.dart';
 import '../../domain/repositories/repositories_barrel.dart';
-import '../../features/foundation/constants/constants_barrel.dart';
+import '../../app/constants/constants_barrel.dart';
 import '../../features/utils/utils_barrel.dart';
-import '../../manager/manager_barrel.dart';
-import '../dto/dto_barrel.dart';
+import '../../features/manager/manager_barrel.dart';
+import '../models/model_barrel.dart';
 
 class SignInRepo implements SignInRepository {
   static const String userCollectionName = 'users';
@@ -23,8 +23,8 @@ class SignInRepo implements SignInRepository {
     String mail = '',
     String passwd = '',
   }) async {
-    Tuple2<AccountDto?, AuthFailureReason?> signInUpResult =
-        const Tuple2<AccountDto?, AuthFailureReason?>(null, null);
+    Tuple2<AccountModel?, AuthFailureReason?> signInUpResult =
+        const Tuple2<AccountModel?, AuthFailureReason?>(null, null);
 
     if (isSignUp) {
       signInUpResult = await _signInManager.signUp(
@@ -40,7 +40,7 @@ class SignInRepo implements SignInRepository {
       );
     }
 
-    AccountDto? accountDto = _signInManager.accountDto;
+    AccountModel? accountDto = _signInManager.accountDto;
     UserEntity? userEntity = accountDto != null
         ? UserEntity.fromDto(accountDto)
         : null;
@@ -58,7 +58,7 @@ class SignInRepo implements SignInRepository {
       return;
     }
 
-    AccountDto dto = userEntity.toDto;
+    AccountModel dto = userEntity.toDto;
 
     // 緩存登入資料代表登入過
     final prefs = await SharedPreferences.getInstance();

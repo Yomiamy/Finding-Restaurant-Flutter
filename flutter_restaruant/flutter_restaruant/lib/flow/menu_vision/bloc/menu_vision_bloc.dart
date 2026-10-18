@@ -9,7 +9,7 @@ import 'package:meta/meta.dart';
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../domain/repositories/repositories_barrel.dart';
 import '../../../generated/l10n.dart';
-import '../model/menu_vision_model.dart';
+import '../models/menu_vision_model.dart';
 
 part 'menu_vision_event.dart';
 part 'menu_vision_state.dart';

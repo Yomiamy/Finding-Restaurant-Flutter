@@ -2,8 +2,8 @@ import 'dart:convert';
 import 'package:fake_cloud_firestore/fake_cloud_firestore.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_restaruant/data_layer/datasources/datasources_barrel.dart';
-import 'package:flutter_restaruant/data_layer/dto/dto_barrel.dart';
-import 'package:flutter_restaruant/manager/manager_barrel.dart';
+import 'package:flutter_restaruant/data_layer/models/model_barrel.dart';
+import 'package:flutter_restaruant/features/manager/manager_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -39,13 +39,13 @@ void main() {
       };
       await fakeFirestore.collection('favors').doc('user_A').set(legacyDataA);
 
-      SignInManager().accountDto = AccountDto(
+      SignInManager().accountDto = AccountModel(
         type: AccountType.mail,
         uid: 'user_A',
       );
 
       final future = favorDataSource.fetchFavorIds();
-      SignInManager().accountDto = AccountDto(
+      SignInManager().accountDto = AccountModel(
         type: AccountType.mail,
         uid: 'user_B',
       );

@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_restaruant/data_layer/dto/dto_barrel.dart';
+import 'package:flutter_restaruant/api/dto/dto_barrel.dart';
+import 'package:flutter_restaruant/data_layer/models/model_barrel.dart';
 
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 
@@ -8,7 +9,7 @@ void main() {
     'Empirical Stress Tests - Milestone 3 DTO & Domain Entity Separation',
     () {
       test('1. Null field handling in all DTO toEntity() mappings', () {
-        final accountDto = AccountDto(type: AccountType.google);
+        final accountDto = AccountModel(type: AccountType.google);
         final userEntity = UserEntity.fromDto(accountDto);
         expect(userEntity.uid, isNull);
         expect(userEntity.account, isNull);

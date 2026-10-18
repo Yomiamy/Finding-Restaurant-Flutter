@@ -1,6 +1,6 @@
 import 'package:sprintf/sprintf.dart';
-import '../data_layer/datasources/datasources_barrel.dart';
-import '../features/foundation/constants/constants_barrel.dart';
+import 'dto/ai_model_config.dart';
+import '../app/constants/constants_barrel.dart';
 
 class GoogleApiUtil {
   static String createStaticMapUrl({

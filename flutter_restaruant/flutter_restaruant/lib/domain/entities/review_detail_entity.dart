@@ -1,4 +1,4 @@
-import '../../data_layer/dto/dto_barrel.dart';
+import '../../api/dto/dto_barrel.dart';
 import 'reviewer_entity.dart';
 
 class ReviewDetailEntity {

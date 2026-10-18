@@ -6,7 +6,7 @@ import 'package:image_picker/image_picker.dart';
 
 import '../../domain/entities/entities_barrel.dart';
 import '../../domain/repositories/menu_vision_repository.dart';
-import '../datasources/ai_model_config.dart';
+import '../../api/dto/ai_model_config.dart';
 import 'menu_analysis_schema.dart';
 
 /// 菜單圖片分析函式簽章 (便於測試與自定義替換)
