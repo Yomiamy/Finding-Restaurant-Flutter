@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
-import '../../../di/di_barrel.dart';
+import '../../../app/di/di_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../../../manager/manager_barrel.dart';

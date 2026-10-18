@@ -13,11 +13,11 @@ import 'package:logger/logger.dart';
 
 import 'component/ad/ad_barrel.dart';
 import 'data_layer/datasources/datasources_barrel.dart';
-import 'di/di_barrel.dart';
+import 'app/di/di_barrel.dart';
 import 'features/foundation/constants/constants_barrel.dart';
 import 'features/foundation/style/style_barrel.dart';
 import 'features/utils/utils_barrel.dart';
-import 'firebase_options.dart';
+import 'app/firebase_options.dart';
 import 'generated/l10n.dart';
 import 'manager/manager_barrel.dart';
 import 'routes/routes_barrel.dart';

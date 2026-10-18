@@ -6,7 +6,7 @@ import 'package:retrofit/retrofit.dart';
 
 import '../data_layer/datasources/datasources_barrel.dart';
 import '../data_layer/dto/dto_barrel.dart';
-import '../di/di_barrel.dart';
+import '../app/di/di_barrel.dart';
 import '../features/foundation/constants/constants_barrel.dart';
 import 'dio/dio_barrel.dart';
 

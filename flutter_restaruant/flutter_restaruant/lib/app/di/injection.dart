@@ -1,9 +1,9 @@
 import 'package:get_it/get_it.dart';
-import '../api/api_barrel.dart';
-import '../data_layer/datasources/datasources_barrel.dart';
-import '../data_layer/repositories/repositories_barrel.dart';
-import '../domain/repositories/repositories_barrel.dart';
-import '../manager/manager_barrel.dart';
+import '../../api/api_barrel.dart';
+import '../../data_layer/datasources/datasources_barrel.dart';
+import '../../data_layer/repositories/repositories_barrel.dart';
+import '../../domain/repositories/repositories_barrel.dart';
+import '../../manager/manager_barrel.dart';
 
 final getIt = GetIt.instance;
 
