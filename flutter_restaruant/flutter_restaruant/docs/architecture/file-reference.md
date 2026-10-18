@@ -80,8 +80,8 @@
 | [`lib/data_layer/dto/yelp_restaurant_coordinates_dto.dart`](../../lib/data_layer/dto/yelp_restaurant_coordinates_dto.dart) | `YelpRestaurantCoordinatesDto` | 座標 Dto。 |
 | [`lib/data_layer/dto/yelp_restaurant_business_time_dto.dart`](../../lib/data_layer/dto/yelp_restaurant_business_time_dto.dart) | `YelpRestaurantBusinessTimeDto` | 營業時段 Dto。 |
 | [`lib/data_layer/dto/yelp_restaurant_hours_dto.dart`](../../lib/data_layer/dto/yelp_restaurant_hours_dto.dart) | `YelpRestaurantHoursDto` | 營業時間 Dto。 |
-| [`lib/data_layer/dto/account_dto.dart`](../../lib/data_layer/dto/account_dto.dart) | `AccountDto` | 帳號資料 Dto，對應 `UserEntity`。 |
-| [`lib/data_layer/dto/account_type.dart`](../../lib/data_layer/dto/account_type.dart) | `AccountType` | 帳號登入方式 Dto/Data 層枚舉（帶 `@JsonValue` 序列化與雙向映射）。 |
+| [`lib/data_layer/model/account_dto.dart`](../../lib/data_layer/model/account_dto.dart) | `AccountDto` | 帳號資料 Dto，對應 `UserEntity`。 |
+| [`lib/data_layer/model/account_type.dart`](../../lib/data_layer/model/account_type.dart) | `AccountType` | 帳號登入方式 Dto/Data 層枚舉（帶 `@JsonValue` 序列化與雙向映射）。 |
 
 ### 4. 網路層 (`lib/api/`)
 
