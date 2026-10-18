@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:fluttertoast/fluttertoast.dart';
 
 import '../../../component/component_barrel.dart';
+import '../../../features/foundation/extension/extension_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
 import '../../menu_vision/menu_vision_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
@@ -114,7 +114,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                   ? S.current.favorite_store_add
                   : S.current.favorite_store_remove;
 
-              Fluttertoast.showToast(msg: favorToggleMsg);
+              context.showAppSnackBar(favorToggleMsg);
               // Re-fetch detail and build detail page
               _bloc.add(FetchDetailInfo(id: _summaryInfo.id!));
             }

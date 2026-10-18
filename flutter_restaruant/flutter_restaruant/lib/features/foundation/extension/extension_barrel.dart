@@ -1,2 +1,3 @@
 export 'double_extension.dart';
+export 'snackbar_extension.dart';
 export 'widget_extension.dart';

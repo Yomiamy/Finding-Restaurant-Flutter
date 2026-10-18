@@ -121,18 +121,35 @@ class FindingRestaruantApp extends StatelessWidget {
     cupertino: (_, __) => CupertinoAppData(theme: AppThemeData.cupertinoLight),
     // 兩個平台的 Material widget 都靠這層解析到同一份 ThemeData
     // （iOS 沒有 MaterialApp 可繼承，Android 則是與內層 Theme 重疊但無害）。
-    builder: (context, child) {
-      final theme = Theme(
-        data: AppThemeData.materialLight,
-        child: child ?? const SizedBox.shrink(),
-      );
-      final ins = kDebugMode ? inspector : null;
-      return ins == null
-          ? theme
-          : FlutterInspectorMagicalTap(
-              onTap: () => ins.openDashboard(),
-              child: theme,
-            );
-    },
+    // 並在此注入全域 ScaffoldMessenger，確保 iOS/macOS 的 CupertinoApp
+    // 分支亦具備 ScaffoldMessenger 祖先，可正常彈出 SnackBar（見 UI-9.2）。
+    builder: appRootBuilder,
   );
+}
+
+/// 應用程式根節點包覆器。
+///
+/// 注入全域 [ScaffoldMessenger] 與透明根 [Scaffold]，確保不論 Material
+/// 或 Cupertino 路由皆具備 [Scaffold] 祖先，使 [SnackBar] 正常呈現（見 UI-9.2）。
+@visibleForTesting
+Widget appRootBuilder(BuildContext context, Widget? child) {
+  final scaffold = Scaffold(
+    backgroundColor: Colors.transparent,
+    resizeToAvoidBottomInset: false,
+    body: child ?? const SizedBox.shrink(),
+  );
+  final messenger = ScaffoldMessenger(
+    child: scaffold,
+  );
+  final theme = Theme(
+    data: AppThemeData.materialLight,
+    child: messenger,
+  );
+  final ins = kDebugMode ? inspector : null;
+  return ins == null
+      ? theme
+      : FlutterInspectorMagicalTap(
+          onTap: () => ins.openDashboard(),
+          child: theme,
+        );
 }
