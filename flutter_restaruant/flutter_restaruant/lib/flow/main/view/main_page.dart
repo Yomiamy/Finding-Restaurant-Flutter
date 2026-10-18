@@ -9,7 +9,7 @@ import '../../../features/foundation/extension/extension_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../generated/l10n.dart';
-import '../../../model/model_barrel.dart';
+import '../../../models/model_barrel.dart';
 import '../../favor/view/view_barrel.dart';
 import '../../filter/view/view_barrel.dart';
 import '../../restaurant/view/view_barrel.dart';

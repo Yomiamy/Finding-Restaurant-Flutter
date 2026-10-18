@@ -9,7 +9,7 @@ import '../../domain/repositories/repositories_barrel.dart';
 import '../../app/constants/constants_barrel.dart';
 import '../../features/utils/utils_barrel.dart';
 import '../../features/manager/manager_barrel.dart';
-import '../model/model_barrel.dart';
+import '../models/model_barrel.dart';
 
 class SignInRepo implements SignInRepository {
   static const String userCollectionName = 'users';

@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import '../model/ai_foodie_model.dart';
+import '../models/ai_foodie_model.dart';
 
 /// AI 覓食助理 BLoC 事件基類
 sealed class AiFoodieEvent extends Equatable {

@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../features/foundation/style/style_barrel.dart';
-import '../../../model/model_barrel.dart';
+import '../../../models/model_barrel.dart';
 import '../bloc/bloc_barrel.dart';
 import 'main_page.dart';
 

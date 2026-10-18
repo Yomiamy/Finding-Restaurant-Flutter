@@ -3,7 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../features/component/component_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
-import '../../../model/model_barrel.dart';
+import '../../../models/model_barrel.dart';
 import '../bloc/bloc_barrel.dart';
 import 'map_widget.dart';
 import 'restaurant_info_list_widget.dart';

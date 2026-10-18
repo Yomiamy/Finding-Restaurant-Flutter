@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
-import 'package:flutter_restaruant/flow/ai_foodie/model/ai_foodie_model.dart';
+import 'package:flutter_restaruant/flow/ai_foodie/models/ai_foodie_model.dart';
 import 'package:flutter_restaruant/flow/ai_foodie/view/comparison_matrix_card.dart';
 import 'package:flutter_test/flutter_test.dart';
 

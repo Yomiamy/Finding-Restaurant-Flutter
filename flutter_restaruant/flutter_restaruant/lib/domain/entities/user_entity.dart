@@ -1,4 +1,4 @@
-import '../../data_layer/model/model_barrel.dart';
+import '../../data_layer/models/model_barrel.dart';
 import 'account_type_model.dart';
 
 class UserEntity {

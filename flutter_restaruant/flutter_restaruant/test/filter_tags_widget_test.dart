@@ -3,7 +3,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
 import 'package:flutter_restaruant/flow/main/view/view_barrel.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
-import 'package:flutter_restaruant/model/model_barrel.dart';
+import 'package:flutter_restaruant/models/model_barrel.dart';
 
 void main() {
   setUpAll(() async {

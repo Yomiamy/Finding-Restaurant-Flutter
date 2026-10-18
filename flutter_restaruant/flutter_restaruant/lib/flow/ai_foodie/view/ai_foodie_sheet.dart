@@ -11,7 +11,7 @@ import '../../../domain/repositories/ai_foodie_repository.dart';
 import '../../../features/foundation/foundation_barrel.dart';
 import '../../restaurant/view/restaurant_detail_page.dart';
 import '../bloc/bloc_barrel.dart';
-import '../model/ai_foodie_model.dart';
+import '../models/ai_foodie_model.dart';
 import '../../../generated/l10n.dart';
 import 'action_chip_group_widget.dart';
 import 'comparison_matrix_card.dart';

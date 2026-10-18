@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../features/foundation/foundation_barrel.dart';
-import '../model/ai_foodie_model.dart';
+import '../models/ai_foodie_model.dart';
 
 /// GenUI 多店對比卡片橫向輪播元件
 class ComparisonMatrixCard extends StatelessWidget {

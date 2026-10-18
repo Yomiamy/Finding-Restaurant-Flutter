@@ -1,7 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 
-import '../../data_layer/model/model_barrel.dart';
+import '../../data_layer/models/model_barrel.dart';
 import '../../domain/entities/entities_barrel.dart';
 import '../utils/utils_barrel.dart';
 

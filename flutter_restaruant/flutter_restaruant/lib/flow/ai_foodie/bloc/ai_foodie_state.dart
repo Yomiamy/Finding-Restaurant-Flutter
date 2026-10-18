@@ -1,6 +1,6 @@
 import 'package:equatable/equatable.dart';
 import '../../../domain/entities/entities_barrel.dart';
-import '../model/ai_foodie_model.dart';
+import '../models/ai_foodie_model.dart';
 
 /// AI 覓食助理狀態類別
 final class AiFoodieState extends Equatable {

@@ -6,7 +6,7 @@ import '../../../domain/entities/entities_barrel.dart';
 import '../../../features/foundation/extension/extension_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
-import '../../../model/model_barrel.dart';
+import '../../../models/model_barrel.dart';
 import '../../restaurant/view/view_barrel.dart';
 import '../bloc/bloc_barrel.dart';
 import 'filter_tags_widget.dart';

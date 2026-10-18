@@ -6,7 +6,7 @@ import '../../api/api_barrel.dart';
 import '../../domain/entities/entities_barrel.dart';
 import '../../domain/repositories/repositories_barrel.dart';
 import '../../app/constants/constants_barrel.dart';
-import '../../model/model_barrel.dart';
+import '../../models/model_barrel.dart';
 import '../datasources/datasources_barrel.dart';
 
 class MainRepo implements MainRepository {
