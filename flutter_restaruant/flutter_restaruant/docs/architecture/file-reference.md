@@ -14,7 +14,7 @@
 
 | 檔案路徑 | 關鍵類別/變數 | 單一職責 (Single Responsibility) |
 | :--- | :--- | :--- |
-| [`lib/main.dart`](../../lib/main.dart) | `main()`<br>`FindingRestaruantApp`<br>`navigatorKey` | App 入口。初始化 binding、DI、Firebase 與登入狀態後 `runApp`。組裝 `PlatformApp`（iOS/Android 雙分支）、掛載 `navigatorKey`、`navigatorObservers` 與 debug-only 的 5 連點喚起手勢。 |
+| [`lib/main.dart`](../../lib/main.dart) | `main()`<br>`FindingRestaruantApp`<br>`navigatorKey`<br>`appRootBuilder` | App 入口。初始化 binding、DI、Firebase 與登入狀態後 `runApp`。組裝 `PlatformApp`（iOS/Android 雙分支）、掛載 `navigatorKey`、`navigatorObservers` 與 debug-only 的 5 連點喚起手勢。`appRootBuilder`（`builder:`）注入 `Theme`、全域 `ScaffoldMessenger` 與透明根 `Scaffold`，讓兩個分支都能顯示 SnackBar。 |
 | [`lib/di/injection.dart`](../../lib/di/injection.dart) | `getIt`<br>`setupInjection()` | GetIt 依賴注入註冊中心。以**介面為 key、實作為 value** 註冊全部 Repository、DataSource 與 Manager，全數 `registerLazySingleton`。 |
 | [`lib/di/inspector.dart`](../../lib/di/inspector.dart) | `inspector` | Debug-only 除錯工具實例（頂層 `final FlutterInspector?`）。`kDebugMode` 為 false 時恆為 `null`，release build 中所有引用點成為 dead code 被 tree-shaking 移除。 |
 | [`lib/routes/routes_table.dart`](../../lib/routes/routes_table.dart) | `routesTable` | **Composition Root**。路由名稱 → WidgetBuilder 的對照表，是全 App 唯一把「路由 / Bloc / Repository」接起來的地方（`BlocProvider` + `GetIt.I<介面>()`）。 |
@@ -138,7 +138,7 @@
 | [`lib/flow/ai_foodie/view/ai_foodie_sheet.dart`](../../lib/flow/ai_foodie/view/ai_foodie_sheet.dart) | `AiFoodieSheet` | 底部對話畫布視窗（包含對話串流、GenUI 動態元件容器與輸入欄）。 |
 | [`lib/flow/ai_foodie/view/comparison_matrix_card.dart`](../../lib/flow/ai_foodie/view/comparison_matrix_card.dart) | `ComparisonMatrixCard` | 橫向滑動餐廳比對卡片（支援特色標籤、評分、價格及點擊導航至詳情頁）。 |
 | [`lib/flow/ai_foodie/view/decision_roulette_dialog.dart`](../../lib/flow/ai_foodie/view/decision_roulette_dialog.dart) | `DecisionRouletteDialog` | 轉盤隨機挑選對話框（視覺化動態指針、勝選呈現與再轉一次控制）。 |
-| [`lib/flow/signinup/view/auth_failure_l10n_extension.dart`](../../lib/flow/signinup/view/auth_failure_l10n_extension.dart) | `AuthFailureL10n` | 將 `AuthFailureReason` 領域錯誤列舉映射為本地化 Toast 錯誤文字的擴充。 |
+| [`lib/flow/signinup/view/auth_failure_l10n_extension.dart`](../../lib/flow/signinup/view/auth_failure_l10n_extension.dart) | `AuthFailureL10n` | 將 `AuthFailureReason` 領域錯誤列舉映射為本地化 SnackBar 錯誤文字的擴充。 |
 
 ### 6. 共用元件層 (`lib/component/`)
 
@@ -189,6 +189,7 @@
 | [`lib/features/foundation/constants/constants.dart`](../../lib/features/foundation/constants/constants.dart) | `Constants` | 全域常數（API base URL 等）。金鑰已移至 Remote Config（見 `AiModelConfig`）。 |
 | [`lib/features/foundation/constants/ui_constants.dart`](../../lib/features/foundation/constants/ui_constants.dart) | `UIConstants` | UI 專用常數。 |
 | [`lib/features/foundation/extension/future_extension.dart`](../../lib/features/foundation/extension/future_extension.dart) | `FutureExtension` | `Future` 的擴充方法。 |
+| [`lib/features/foundation/extension/snackbar_extension.dart`](../../lib/features/foundation/extension/snackbar_extension.dart) | `SnackBarExtension` | `BuildContext.showAppSnackBar`：先清除顯示中的 SnackBar 再顯示新訊息；查無 `ScaffoldMessenger` 時安全略過；鍵盤開啟時改 floating 並上移到鍵盤上方。 |
 | [`lib/features/utils/tuple.dart`](../../lib/features/utils/tuple.dart) | `Tuple2` … `Tuple7` | 泛型多值容器。<br>⚠️ **Dart 3 已內建 Records**，新程式碼應優先使用 `(a, b)` 語法，本檔屬既有程式碼的相容保留。 |
 | [`lib/features/utils/view_utils.dart`](../../lib/features/utils/view_utils.dart) | `ViewUtils` | 通用 UI 輔助（對話框、提示等）。 |
 | [`lib/features/utils/utils.dart`](../../lib/features/utils/utils.dart) | `Utils` | 泛用工具函式集。 |
