@@ -119,7 +119,7 @@ Presentation 層要 `MainRepository`（介面），拿到的是 `MainRepo`（實
 
 ### 2. `routesTable` 是 Composition Root
 
-`lib/routes/routes_table.dart` 是全 App 唯一把「路由 → Bloc → Repository」三者接起來的地方：
+`lib/app/routes/routes_table.dart` 是全 App 唯一把「路由 → Bloc → Repository」三者接起來的地方：
 
 ```dart
 MainPage.routeName: (context) => BlocProvider<MainBloc>(
