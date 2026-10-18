@@ -114,7 +114,6 @@ class FindingRestaruantApp extends StatelessWidget {
       theme: AppThemeData.materialLight,
       darkTheme: AppThemeData.materialLight,
       themeMode: ThemeMode.light,
-      scrollBehavior: const AppScrollBehavior(),
     ),
     // iOS 走 CupertinoApp 分支，`material:` 不生效。CupertinoApp 自身的
     // brightness 預設會跟隨 MediaQuery.platformBrightnessOf，導致系統深色
