@@ -95,7 +95,7 @@
 
 每個 feature 皆為 `bloc/`（Bloc + Event + State 三檔）與 `view/`（Page 與其專屬 Widget）的組合。
 
-> **本表的收錄規則**：`main` feature 的 Event / State 檔已完整列出作為**參考範本**，其餘 feature 的 `*_event.dart` / `*_state.dart` 結構與之同形（Event 繼承 `Equatable` 基類、State 以互斥具名子類別表達），故不逐檔重複列舉。`lib/component/ad/*_state.dart` 三檔為廣告元件的內部狀態載體，同理省略。
+> **本表的收錄規則**：`main` feature 的 Event / State 檔已完整列出作為**參考範本**，其餘 feature 的 `*_event.dart` / `*_state.dart` 結構與之同形（Event 繼承 `Equatable` 基類、State 以互斥具名子類別表達），故不逐檔重複列舉。`lib/features/component/ad/*_state.dart` 三檔為廣告元件的內部狀態載體，同理省略。
 
 | 檔案路徑 | 關鍵類別 | 單一職責 (Single Responsibility) |
 | :--- | :--- | :--- |
@@ -140,26 +140,26 @@
 | [`lib/flow/ai_foodie/view/decision_roulette_dialog.dart`](../../lib/flow/ai_foodie/view/decision_roulette_dialog.dart) | `DecisionRouletteDialog` | 轉盤隨機挑選對話框（視覺化動態指針、勝選呈現與再轉一次控制）。 |
 | [`lib/flow/signinup/view/auth_failure_l10n_extension.dart`](../../lib/flow/signinup/view/auth_failure_l10n_extension.dart) | `AuthFailureL10n` | 將 `AuthFailureReason` 領域錯誤列舉映射為本地化 SnackBar 錯誤文字的擴充。 |
 
-### 6. 共用元件層 (`lib/component/`)
+### 6. 共用元件層 (`lib/features/component/`)
 
 | 檔案路徑 | 關鍵類別 | 單一職責 (Single Responsibility) |
 | :--- | :--- | :--- |
-| [`lib/component/loading_widget.dart`](../../lib/component/loading_widget.dart) | `LoadingWidget` | 統一的載入中指示器。 |
-| [`lib/component/empty_data_widget.dart`](../../lib/component/empty_data_widget.dart) | `EmptyDataWidget` | 統一的空資料狀態呈現。 |
-| [`lib/component/rating_stars.dart`](../../lib/component/rating_stars.dart) | `RatingStars` | 星等評分繪製元件（以 Flutter 內建 Icon 取代舊版 11 張 PNG）。 |
-| [`lib/component/skeleton.dart`](../../lib/component/skeleton.dart) | `Skeleton` | Shimmer 骨架屏基底元件。 |
-| [`lib/component/cell/main_page/restaurant_item_skeleton.dart`](../../lib/component/cell/main_page/restaurant_item_skeleton.dart) | `RestaurantItemSkeleton` | 餐廳列表卡片骨架屏。 |
-| [`lib/component/cell/restaurant_detail/restaurant_detail_skeleton.dart`](../../lib/component/cell/restaurant_detail/restaurant_detail_skeleton.dart) | `RestaurantDetailSkeleton` | 餐廳詳情頁骨架屏；尺寸刻意對齊真實 cell，避免載入完成時版面跳動。 |
-| [`lib/component/cell/main_page/restaurant_item_cell.dart`](../../lib/component/cell/main_page/restaurant_item_cell.dart) | `RestaurantItemCell` | 餐廳列表卡片（列表與最愛頁共用）。 |
-| [`lib/component/cell/restaurant_detail/restaurant_head_cell.dart`](../../lib/component/cell/restaurant_detail/restaurant_head_cell.dart) | `RestaurantHeadCell` | 詳情頁頁首（名稱、評分、價位）。 |
-| [`lib/component/cell/restaurant_detail/restaurant_info_cell.dart`](../../lib/component/cell/restaurant_detail/restaurant_info_cell.dart) | `RestaurantInfoCell` | 詳情頁基本資訊列。 |
-| [`lib/component/cell/restaurant_detail/restaurant_image_cell.dart`](../../lib/component/cell/restaurant_detail/restaurant_image_cell.dart) | `RestaurantImageCell` | 詳情頁照片輪播。 |
-| [`lib/component/cell/restaurant_detail/restaurant_business_hour_cell.dart`](../../lib/component/cell/restaurant_detail/restaurant_business_hour_cell.dart) | `RestaurantBusinessHourCell` | 詳情頁營業時間。 |
-| [`lib/component/cell/restaurant_detail/restaurant_comment_cell.dart`](../../lib/component/cell/restaurant_detail/restaurant_comment_cell.dart) | `RestaurantCommentCell` | 詳情頁評論卡片。 |
-| [`lib/component/ad/banner_ad.dart`](../../lib/component/ad/banner_ad.dart) | `BannerAD` | AdMob 底部常駐標準 320x50 橫幅廣告元件，鎖定 50dp 高度佔位消滅版面突跳 (CLS) 並具備頂部邊界線。 |
-| [`lib/component/ad/interstitial_ad.dart`](../../lib/component/ad/interstitial_ad.dart) | `InterstitialAd` | 插頁廣告載入與展示。 |
-| [`lib/component/ad/app_open_ad.dart`](../../lib/component/ad/app_open_ad.dart) | `AppOpenAd` | 開屏廣告。 |
-| [`lib/component/ad/app_lifecycle_reactor.dart`](../../lib/component/ad/app_lifecycle_reactor.dart) | `AppLifecycleReactor` | 監聽 App 前景/背景切換以觸發開屏廣告。 |
+| [`lib/features/component/loading_widget.dart`](../../lib/features/component/loading_widget.dart) | `LoadingWidget` | 統一的載入中指示器。 |
+| [`lib/features/component/empty_data_widget.dart`](../../lib/features/component/empty_data_widget.dart) | `EmptyDataWidget` | 統一的空資料狀態呈現。 |
+| [`lib/features/component/rating_stars.dart`](../../lib/features/component/rating_stars.dart) | `RatingStars` | 星等評分繪製元件（以 Flutter 內建 Icon 取代舊版 11 張 PNG）。 |
+| [`lib/features/component/skeleton.dart`](../../lib/features/component/skeleton.dart) | `Skeleton` | Shimmer 骨架屏基底元件。 |
+| [`lib/features/component/cell/main_page/restaurant_item_skeleton.dart`](../../lib/features/component/cell/main_page/restaurant_item_skeleton.dart) | `RestaurantItemSkeleton` | 餐廳列表卡片骨架屏。 |
+| [`lib/features/component/cell/restaurant_detail/restaurant_detail_skeleton.dart`](../../lib/features/component/cell/restaurant_detail/restaurant_detail_skeleton.dart) | `RestaurantDetailSkeleton` | 餐廳詳情頁骨架屏；尺寸刻意對齊真實 cell，避免載入完成時版面跳動。 |
+| [`lib/features/component/cell/main_page/restaurant_item_cell.dart`](../../lib/features/component/cell/main_page/restaurant_item_cell.dart) | `RestaurantItemCell` | 餐廳列表卡片（列表與最愛頁共用）。 |
+| [`lib/features/component/cell/restaurant_detail/restaurant_head_cell.dart`](../../lib/features/component/cell/restaurant_detail/restaurant_head_cell.dart) | `RestaurantHeadCell` | 詳情頁頁首（名稱、評分、價位）。 |
+| [`lib/features/component/cell/restaurant_detail/restaurant_info_cell.dart`](../../lib/features/component/cell/restaurant_detail/restaurant_info_cell.dart) | `RestaurantInfoCell` | 詳情頁基本資訊列。 |
+| [`lib/features/component/cell/restaurant_detail/restaurant_image_cell.dart`](../../lib/features/component/cell/restaurant_detail/restaurant_image_cell.dart) | `RestaurantImageCell` | 詳情頁照片輪播。 |
+| [`lib/features/component/cell/restaurant_detail/restaurant_business_hour_cell.dart`](../../lib/features/component/cell/restaurant_detail/restaurant_business_hour_cell.dart) | `RestaurantBusinessHourCell` | 詳情頁營業時間。 |
+| [`lib/features/component/cell/restaurant_detail/restaurant_comment_cell.dart`](../../lib/features/component/cell/restaurant_detail/restaurant_comment_cell.dart) | `RestaurantCommentCell` | 詳情頁評論卡片。 |
+| [`lib/features/component/ad/banner_ad.dart`](../../lib/features/component/ad/banner_ad.dart) | `BannerAD` | AdMob 底部常駐標準 320x50 橫幅廣告元件，鎖定 50dp 高度佔位消滅版面突跳 (CLS) 並具備頂部邊界線。 |
+| [`lib/features/component/ad/interstitial_ad.dart`](../../lib/features/component/ad/interstitial_ad.dart) | `InterstitialAd` | 插頁廣告載入與展示。 |
+| [`lib/features/component/ad/app_open_ad.dart`](../../lib/features/component/ad/app_open_ad.dart) | `AppOpenAd` | 開屏廣告。 |
+| [`lib/features/component/ad/app_lifecycle_reactor.dart`](../../lib/features/component/ad/app_lifecycle_reactor.dart) | `AppLifecycleReactor` | 監聽 App 前景/背景切換以觸發開屏廣告。 |
 
 ### 7. 管理層 — 第三方 SDK 封裝 (`lib/manager/`)
 

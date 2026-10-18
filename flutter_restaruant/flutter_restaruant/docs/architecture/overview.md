@@ -17,7 +17,7 @@
   │                 表現層 (Presentation Layer)                │
   │  lib/flow/<feature>/view/  ── Page + Widget                │
   │  lib/flow/<feature>/bloc/  ── Bloc / Event / State         │
-  │  lib/component/  [Cell] [Ad] [Loading]                     │
+  │  lib/features/component/  [Cell] [Ad] [Loading]            │
   │  lib/features/foundation/style/  ── Design Tokens          │
   └─────────────────────────────┬──────────────────────────────┘
                                 │ 發送 Event / 監聽 State
