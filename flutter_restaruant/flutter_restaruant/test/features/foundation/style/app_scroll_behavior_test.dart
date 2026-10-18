@@ -1,21 +1,20 @@
 import 'dart:ui';
 
 import 'package:flutter/cupertino.dart';
+import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/features/foundation/style/app_scroll_behavior.dart';
 import 'package:flutter_restaruant/main.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
   group('AppScrollBehavior Tests', () {
-    test('dragDevices includes mouse, touch, trackpad and stylus', () {
-      const behavior = AppScrollBehavior();
-      final devices = behavior.dragDevices;
+    test('dragDevices keeps every default device and adds mouse', () {
+      final devices = const AppScrollBehavior().dragDevices;
 
+      // 預設集合含 Voice Access 用的 unknown，任何一項被漏掉都是回歸
+      expect(devices, containsAll(const MaterialScrollBehavior().dragDevices));
+      expect(devices, contains(PointerDeviceKind.unknown));
       expect(devices, contains(PointerDeviceKind.mouse));
-      expect(devices, contains(PointerDeviceKind.touch));
-      expect(devices, contains(PointerDeviceKind.trackpad));
-      expect(devices, contains(PointerDeviceKind.stylus));
-      expect(devices, contains(PointerDeviceKind.invertedStylus));
     });
 
     // CupertinoApp 預設的 CupertinoScrollBehavior 不含 mouse，iOS/macOS

@@ -2,7 +2,7 @@ import 'dart:ui';
 
 import 'package:flutter/material.dart';
 
-/// 支援滑鼠、觸控、觸控板與手寫筆拖曳滾動的全域 [ScrollBehavior]。
+/// 在預設拖曳裝置之外加入滑鼠的全域 [ScrollBehavior]。
 ///
 /// 預設 Flutter 的 [MaterialScrollBehavior] 排除 [PointerDeviceKind.mouse]，
 /// 導致桌面與 Web 環境下無法以滑鼠按住拖曳 [PageView]、[ListView] 等元件。
@@ -10,12 +10,10 @@ import 'package:flutter/material.dart';
 class AppScrollBehavior extends MaterialScrollBehavior {
   const AppScrollBehavior();
 
+  // 沿用預設集合再加 mouse：預設含 Android Voice Access 送出的 unknown，整組重寫會漏掉
   @override
-  Set<PointerDeviceKind> get dragDevices => const {
-    PointerDeviceKind.touch,
+  Set<PointerDeviceKind> get dragDevices => {
+    ...super.dragDevices,
     PointerDeviceKind.mouse,
-    PointerDeviceKind.stylus,
-    PointerDeviceKind.invertedStylus,
-    PointerDeviceKind.trackpad,
   };
 }
