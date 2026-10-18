@@ -57,6 +57,7 @@
        │   └─ builder: ─┬─ Theme(AppThemeData)          │
        │                │   └─ ScaffoldMessenger         │
        │                │       └─ Scaffold（透明根）    │
+       │                │           └─ ScrollConfiguration│
        │                └─ [debug] MagicalTap (5 連點)   │
        └────────────────────────────────────────────────┘
 ```
@@ -97,6 +98,8 @@ Future.wait([
 一個 `builder:` 同時解決兩個平台，不需要 `if (Platform.isIOS)` 分支。
 
 同一層也注入 `ScaffoldMessenger` 與透明根 `Scaffold`：`CupertinoApp` 不自帶 messenger，Cupertino 頁面也沒有 Material `Scaffold` 可承載 SnackBar。Android 會與 `MaterialApp` 自帶的 messenger 重疊，實際生效的是內層這個。根 `Scaffold` 設 `resizeToAvoidBottomInset: false`，鍵盤開啟時改由 `showAppSnackBar` 依 `viewInsets` 把 SnackBar 改為 floating 並上移。
+
+最內層的 `ScrollConfiguration(AppScrollBehavior)` 包住 Navigator，讓所有捲動元件都能用滑鼠拖曳。它位於 `MaterialApp`／`CupertinoApp` 自帶的 `ScrollConfiguration` 之下，捲動元件取用最近一層，因此兩個分支都生效；不需在 `MaterialAppData.scrollBehavior` 另外指定。
 
 ---
 
