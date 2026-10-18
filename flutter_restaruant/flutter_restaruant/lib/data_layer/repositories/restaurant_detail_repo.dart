@@ -5,7 +5,7 @@ import 'package:get_it/get_it.dart';
 import '../../api/api_barrel.dart';
 import '../../domain/entities/entities_barrel.dart';
 import '../../domain/repositories/repositories_barrel.dart';
-import '../../features/foundation/constants/constants_barrel.dart';
+import '../../app/constants/constants_barrel.dart';
 import '../datasources/datasources_barrel.dart';
 import '../dto/dto_barrel.dart';
 

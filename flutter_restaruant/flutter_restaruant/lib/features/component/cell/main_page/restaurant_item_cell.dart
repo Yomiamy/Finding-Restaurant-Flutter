@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../domain/entities/entities_barrel.dart';
-import '../../../foundation/constants/constants_barrel.dart';
+import '../../../../app/constants/constants_barrel.dart';
 import '../../../foundation/extension/extension_barrel.dart';
 import '../../../foundation/style/style_barrel.dart';
 import '../../../../generated/l10n.dart';

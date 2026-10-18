@@ -14,7 +14,7 @@ import 'package:logger/logger.dart';
 import 'features/component/ad/ad_barrel.dart';
 import 'data_layer/datasources/datasources_barrel.dart';
 import 'app/di/di_barrel.dart';
-import 'features/foundation/constants/constants_barrel.dart';
+import 'app/constants/constants_barrel.dart';
 import 'features/foundation/style/style_barrel.dart';
 import 'features/utils/utils_barrel.dart';
 import 'app/firebase_options.dart';

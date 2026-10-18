@@ -6,7 +6,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 
 import '../../domain/entities/entities_barrel.dart';
 import '../../domain/repositories/repositories_barrel.dart';
-import '../../features/foundation/constants/constants_barrel.dart';
+import '../../app/constants/constants_barrel.dart';
 import '../../features/utils/utils_barrel.dart';
 import '../../manager/manager_barrel.dart';
 import '../dto/dto_barrel.dart';

@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../domain/entities/entities_barrel.dart';
-import '../../../foundation/constants/constants_barrel.dart';
+import '../../../../app/constants/constants_barrel.dart';
 import '../../../foundation/style/style_barrel.dart';
 import '../../../../flow/restaurant/bloc/bloc_barrel.dart';
 import '../../../../flow/signinup/view/view_barrel.dart';

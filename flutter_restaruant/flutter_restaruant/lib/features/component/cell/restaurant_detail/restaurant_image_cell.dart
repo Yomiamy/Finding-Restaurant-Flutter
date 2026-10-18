@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../foundation/constants/constants_barrel.dart';
+import '../../../../app/constants/constants_barrel.dart';
 import '../../../foundation/style/style_barrel.dart';
 import '../../../utils/utils_barrel.dart';
 import '../../../../flow/photo_viewer/view/view_barrel.dart';

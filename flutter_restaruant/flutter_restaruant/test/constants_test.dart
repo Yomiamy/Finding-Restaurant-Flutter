@@ -1,4 +1,4 @@
-import 'package:flutter_restaruant/features/foundation/constants/constants_barrel.dart';
+import 'package:flutter_restaruant/app/constants/constants_barrel.dart';
 import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 

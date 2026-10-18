@@ -7,7 +7,7 @@ import 'package:flutter/foundation.dart';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
 
 import '../domain/entities/entities_barrel.dart';
-import '../features/foundation/constants/constants_barrel.dart';
+import '../app/constants/constants_barrel.dart';
 import '../features/utils/utils_barrel.dart';
 import '../app/firebase_options.dart';
 import '../flow/main/view/view_barrel.dart';
