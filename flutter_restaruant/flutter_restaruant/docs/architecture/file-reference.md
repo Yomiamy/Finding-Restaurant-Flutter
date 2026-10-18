@@ -200,7 +200,6 @@
 
 | 檔案路徑 | 關鍵類別 | 單一職責 (Single Responsibility) |
 | :--- | :--- | :--- |
-| [`lib/model/result_vo.dart`](../../lib/model/result_vo.dart) | `ResultVo` | 通用結果包裝（`@JsonSerializable`），承載操作成敗與訊息。 |
 | [`lib/model/filter_configs.dart`](../../lib/model/filter_configs.dart) | `FilterConfigs` | 搜尋篩選條件的 UI 模型（價位、營業中、排序方式）。 |
 | [`lib/generated/l10n.dart`](../../lib/generated/l10n.dart) | `S` | `intl_utils` 產生的在地化存取類別（en / zh_TW）。 |
 | [`lib/gen/assets.gen.dart`](../../lib/gen/assets.gen.dart) | `Assets` | `flutter_gen` 產生的型別安全資源路徑。 |
