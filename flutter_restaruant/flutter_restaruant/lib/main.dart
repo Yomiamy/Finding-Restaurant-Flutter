@@ -20,7 +20,7 @@ import 'features/utils/utils_barrel.dart';
 import 'app/firebase_options.dart';
 import 'generated/l10n.dart';
 import 'manager/manager_barrel.dart';
-import 'routes/routes_barrel.dart';
+import 'app/routes/routes_barrel.dart';
 
 // For FCM onMessageOpenedApp to open specific page
 final GlobalKey<NavigatorState> navigatorKey = GlobalKey<NavigatorState>();
