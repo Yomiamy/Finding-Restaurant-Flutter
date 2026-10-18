@@ -5,7 +5,7 @@ import 'package:logger/logger.dart';
 import 'package:retrofit/retrofit.dart';
 
 import '../data_layer/datasources/datasources_barrel.dart';
-import '../data_layer/dto/dto_barrel.dart';
+import 'dto/dto_barrel.dart';
 import '../app/di/di_barrel.dart';
 import '../app/constants/constants_barrel.dart';
 import 'dio/dio_barrel.dart';

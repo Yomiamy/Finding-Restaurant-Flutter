@@ -1,4 +1,4 @@
-import '../../data_layer/dto/dto_barrel.dart';
+import '../../api/dto/dto_barrel.dart';
 import 'restaurant_category_entity.dart';
 import 'restaurant_coordinates_entity.dart';
 import 'restaurant_location_entity.dart';

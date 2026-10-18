@@ -6,7 +6,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../api/api_barrel.dart';
 import '../../domain/entities/entities_barrel.dart';
 import '../../features/manager/manager_barrel.dart';
-import '../dto/dto_barrel.dart';
 
 /// 最愛餐廳在 Firestore 的單一存取點。
 ///

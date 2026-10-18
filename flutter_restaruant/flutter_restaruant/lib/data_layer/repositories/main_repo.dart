@@ -8,7 +8,6 @@ import '../../domain/repositories/repositories_barrel.dart';
 import '../../app/constants/constants_barrel.dart';
 import '../../model/model_barrel.dart';
 import '../datasources/datasources_barrel.dart';
-import '../dto/dto_barrel.dart';
 
 class MainRepo implements MainRepository {
   static const int _maxItemsCountInList = 50;

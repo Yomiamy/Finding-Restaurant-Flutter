@@ -1,5 +1,5 @@
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_restaruant/data_layer/dto/dto_barrel.dart';
+import 'package:flutter_restaruant/api/dto/dto_barrel.dart';
 import 'package:flutter_restaruant/data_layer/model/model_barrel.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 

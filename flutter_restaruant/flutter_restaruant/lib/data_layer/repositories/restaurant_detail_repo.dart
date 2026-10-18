@@ -7,7 +7,6 @@ import '../../domain/entities/entities_barrel.dart';
 import '../../domain/repositories/repositories_barrel.dart';
 import '../../app/constants/constants_barrel.dart';
 import '../datasources/datasources_barrel.dart';
-import '../dto/dto_barrel.dart';
 
 class RestaurantDetailRepo implements RestaurantDetailRepository {
   final FavorDataSource _favorDataSource;
