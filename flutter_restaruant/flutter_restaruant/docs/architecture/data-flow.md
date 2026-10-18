@@ -366,7 +366,7 @@ App 支援 5 種登入方式，每種各有一個 Manager 封裝其 SDK 差異�
         └────────┴────────┼────────┴─────────────┘
                           │ 統一產出
                           ▼
-                    AccountDto
+                   AccountModel
                           │
                           ▼
                 UserEntity.fromDto(accountDto)

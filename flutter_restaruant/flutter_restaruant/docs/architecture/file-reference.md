@@ -80,8 +80,8 @@
 | [`lib/api/dto/yelp_restaurant_coordinates_dto.dart`](../../lib/api/dto/yelp_restaurant_coordinates_dto.dart) | `YelpRestaurantCoordinatesDto` | 座標 Dto。 |
 | [`lib/api/dto/yelp_restaurant_business_time_dto.dart`](../../lib/api/dto/yelp_restaurant_business_time_dto.dart) | `YelpRestaurantBusinessTimeDto` | 營業時段 Dto。 |
 | [`lib/api/dto/yelp_restaurant_hours_dto.dart`](../../lib/api/dto/yelp_restaurant_hours_dto.dart) | `YelpRestaurantHoursDto` | 營業時間 Dto。 |
-| [`lib/data_layer/model/account_dto.dart`](../../lib/data_layer/model/account_dto.dart) | `AccountDto` | 帳號資料 Dto，對應 `UserEntity`。 |
-| [`lib/data_layer/model/account_type.dart`](../../lib/data_layer/model/account_type.dart) | `AccountType` | 帳號登入方式 Dto/Data 層枚舉（帶 `@JsonValue` 序列化與雙向映射）。 |
+| [`lib/data_layer/models/account_model.dart`](../../lib/data_layer/models/account_model.dart) | `AccountModel` | 帳號資料 Model（本機持久化），對應 `UserEntity`。 |
+| [`lib/data_layer/models/account_type.dart`](../../lib/data_layer/models/account_type.dart) | `AccountType` | 帳號登入方式 Dto/Data 層枚舉（帶 `@JsonValue` 序列化與雙向映射）。 |
 
 ### 4. 網路層 (`lib/api/`)
 
@@ -129,12 +129,12 @@
 | [`lib/flow/photo_viewer/view/photo_viewer.dart`](../../lib/flow/photo_viewer/view/photo_viewer.dart) | `PhotoViewer` | 全螢幕照片瀏覽（無 Bloc）。 |
 | [`lib/flow/splash/bloc/splash_bloc.dart`](../../lib/flow/splash/bloc/splash_bloc.dart) | `SplashBloc` | 啟動頁業務邏輯。 |
 | [`lib/flow/menu_vision/bloc/menu_vision_bloc.dart`](../../lib/flow/menu_vision/bloc/menu_vision_bloc.dart) | `MenuVisionBloc` | AI 多模態菜單視覺識別業務邏輯（事件驅動、狀態模式比對）。 |
-| [`lib/flow/menu_vision/model/menu_vision_model.dart`](../../lib/flow/menu_vision/model/menu_vision_model.dart) | `DishCatalogModel`<br>`DishModel`<br>`AllergenModel` | Menu Vision UI model（欄位 non-null），由 BLoC 從 entity 轉換並補上呈現預設值。 |
+| [`lib/flow/menu_vision/models/menu_vision_model.dart`](../../lib/flow/menu_vision/models/menu_vision_model.dart) | `DishCatalogModel`<br>`DishModel`<br>`AllergenModel` | Menu Vision UI model（欄位 non-null），由 BLoC 從 entity 轉換並補上呈現預設值。 |
 | [`lib/flow/menu_vision/view/menu_vision_sheet.dart`](../../lib/flow/menu_vision/view/menu_vision_sheet.dart) | `MenuVisionSheet` | 底部動態彈出式菜單看板（包含拍照/選圖、類別 Tab、點餐試算與重試）。 |
 | [`lib/flow/menu_vision/view/dish_card.dart`](../../lib/flow/menu_vision/view/dish_card.dart) | `DishCard` | 單道菜色卡片元件（雙語菜名、價格格式化、點餐數量控制）。 |
 | [`lib/flow/menu_vision/view/allergen_badge.dart`](../../lib/flow/menu_vision/view/allergen_badge.dart) | `AllergenBadge` | 食材過敏原與辣度警示膠囊標籤（色彩語意化）。 |
 | [`lib/flow/ai_foodie/bloc/ai_foodie_bloc.dart`](../../lib/flow/ai_foodie/bloc/ai_foodie_bloc.dart) | `AiFoodieBloc` | AI 智能覓食助理業務邏輯（管理對話歷程、請求 Token 版本控制與樂觀更新）。 |
-| [`lib/flow/ai_foodie/model/ai_foodie_model.dart`](../../lib/flow/ai_foodie/model/ai_foodie_model.dart) | `AiFoodieMessageModel`<br>`A2UIComponentModel`（sealed） | AI 覓食 UI model（欄位 non-null），`AiFoodieState.messageModels` 由 entity 即時轉換。 |
+| [`lib/flow/ai_foodie/models/ai_foodie_model.dart`](../../lib/flow/ai_foodie/models/ai_foodie_model.dart) | `AiFoodieMessageModel`<br>`A2UIComponentModel`（sealed） | AI 覓食 UI model（欄位 non-null），`AiFoodieState.messageModels` 由 entity 即時轉換。 |
 | [`lib/flow/ai_foodie/view/ai_foodie_sheet.dart`](../../lib/flow/ai_foodie/view/ai_foodie_sheet.dart) | `AiFoodieSheet` | 底部對話畫布視窗（包含對話串流、GenUI 動態元件容器與輸入欄；輸入欄以 Enter／numpadEnter 送出，IME 組字中或載入中不送出）。 |
 | [`lib/flow/ai_foodie/view/comparison_matrix_card.dart`](../../lib/flow/ai_foodie/view/comparison_matrix_card.dart) | `ComparisonMatrixCard` | 橫向滑動餐廳比對卡片（支援特色標籤、評分、價格及點擊導航至詳情頁）。 |
 | [`lib/flow/ai_foodie/view/decision_roulette_dialog.dart`](../../lib/flow/ai_foodie/view/decision_roulette_dialog.dart) | `DecisionRouletteDialog` | 轉盤隨機挑選對話框（視覺化動態指針、勝選呈現與再轉一次控制）。 |
@@ -196,10 +196,10 @@
 | [`lib/features/utils/utils.dart`](../../lib/features/utils/utils.dart) | `Utils` | 泛用工具函式集。 |
 | [`lib/features/utils/platform_capabilities.dart`](../../lib/features/utils/platform_capabilities.dart) | `platformCapabilities()` | 平台能力閘門：回傳 `ads`／`pushNotifications`／`mapMode`／`camera`，呼叫點只讀能力、不判平台。 |
 
-### 9. 資料傳輸與在地化 (`lib/model/`、`lib/l10n/`、`lib/gen/`)
+### 9. 資料傳輸與在地化 (`lib/models/`、`lib/l10n/`、`lib/gen/`)
 
 | 檔案路徑 | 關鍵類別 | 單一職責 (Single Responsibility) |
 | :--- | :--- | :--- |
-| [`lib/model/filter_configs.dart`](../../lib/model/filter_configs.dart) | `FilterConfigs` | 搜尋篩選條件的 UI 模型（價位、營業中、排序方式）。 |
+| [`lib/models/filter_configs.dart`](../../lib/models/filter_configs.dart) | `FilterConfigs` | 搜尋篩選條件的 UI 模型（價位、營業中、排序方式）。 |
 | [`lib/generated/l10n.dart`](../../lib/generated/l10n.dart) | `S` | `intl_utils` 產生的在地化存取類別（en / zh_TW）。 |
 | [`lib/gen/assets.gen.dart`](../../lib/gen/assets.gen.dart) | `Assets` | `flutter_gen` 產生的型別安全資源路徑。 |
