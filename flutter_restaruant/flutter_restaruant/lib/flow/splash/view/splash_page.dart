@@ -6,7 +6,7 @@ import 'package:flutter/material.dart';
 import '../../../app/di/di_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../generated/l10n.dart';
-import '../../../manager/manager_barrel.dart';
+import '../../../features/manager/manager_barrel.dart';
 import '../../main/view/view_barrel.dart';
 import '../../signinup/view/view_barrel.dart';
 import 'splash_hero_widget.dart';

@@ -4,11 +4,11 @@ import 'package:intl/intl.dart';
 import 'package:local_auth/local_auth.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
-import '../data_layer/dto/dto_barrel.dart';
-import '../domain/entities/entities_barrel.dart';
-import '../app/constants/constants_barrel.dart';
-import '../features/utils/utils_barrel.dart';
-import '../generated/l10n.dart';
+import '../../data_layer/dto/dto_barrel.dart';
+import '../../domain/entities/entities_barrel.dart';
+import '../../app/constants/constants_barrel.dart';
+import '../utils/utils_barrel.dart';
+import '../../generated/l10n.dart';
 
 class BiometricSignInManager {
   static final BiometricSignInManager _singleton =

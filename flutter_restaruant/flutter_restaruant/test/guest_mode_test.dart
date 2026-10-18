@@ -4,7 +4,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_restaruant/data_layer/datasources/datasources_barrel.dart';
 import 'package:flutter_restaruant/data_layer/dto/dto_barrel.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
-import 'package:flutter_restaruant/manager/manager_barrel.dart';
+import 'package:flutter_restaruant/features/manager/manager_barrel.dart';
 import 'package:flutter_restaruant/app/constants/constants_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:shared_preferences/shared_preferences.dart';

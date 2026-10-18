@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:flutter_facebook_auth/flutter_facebook_auth.dart';
 
-import '../data_layer/dto/dto_barrel.dart';
-import '../domain/entities/entities_barrel.dart';
-import '../features/utils/utils_barrel.dart';
+import '../../data_layer/dto/dto_barrel.dart';
+import '../../domain/entities/entities_barrel.dart';
+import '../utils/utils_barrel.dart';
 
 class FacebookSignInManager {
   static final FacebookSignInManager _singleton =

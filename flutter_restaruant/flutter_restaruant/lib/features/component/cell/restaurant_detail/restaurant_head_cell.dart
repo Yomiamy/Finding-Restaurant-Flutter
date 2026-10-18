@@ -6,7 +6,7 @@ import '../../../../app/constants/constants_barrel.dart';
 import '../../../foundation/style/style_barrel.dart';
 import '../../../../flow/restaurant/bloc/bloc_barrel.dart';
 import '../../../../flow/signinup/view/view_barrel.dart';
-import '../../../../manager/manager_barrel.dart';
+import '../../../manager/manager_barrel.dart';
 
 class RestaurantHeadCell extends StatelessWidget {
   static const int headImageH = 220;

@@ -2,9 +2,9 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
-import '../data_layer/dto/dto_barrel.dart';
-import '../domain/entities/entities_barrel.dart';
-import '../features/utils/utils_barrel.dart';
+import '../../data_layer/dto/dto_barrel.dart';
+import '../../domain/entities/entities_barrel.dart';
+import '../utils/utils_barrel.dart';
 
 class GoogleSignInManager {
   static final GoogleSignInManager _singleton = GoogleSignInManager._internal();

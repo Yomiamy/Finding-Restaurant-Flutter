@@ -19,7 +19,7 @@ import 'features/foundation/style/style_barrel.dart';
 import 'features/utils/utils_barrel.dart';
 import 'app/firebase_options.dart';
 import 'generated/l10n.dart';
-import 'manager/manager_barrel.dart';
+import 'features/manager/manager_barrel.dart';
 import 'app/routes/routes_barrel.dart';
 
 // For FCM onMessageOpenedApp to open specific page

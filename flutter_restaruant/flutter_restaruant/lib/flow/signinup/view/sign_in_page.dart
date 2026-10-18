@@ -5,7 +5,7 @@ import '../../../features/component/component_barrel.dart';
 import '../../../features/foundation/extension/extension_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../generated/l10n.dart';
-import '../../../manager/manager_barrel.dart';
+import '../../../features/manager/manager_barrel.dart';
 import '../../main/view/view_barrel.dart';
 import '../../splash/view/view_barrel.dart';
 import '../bloc/bloc_barrel.dart';
