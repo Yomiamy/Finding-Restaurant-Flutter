@@ -122,7 +122,8 @@ class FindingRestaruantApp extends StatelessWidget {
     // 兩個平台的 Material widget 都靠這層解析到同一份 ThemeData
     // （iOS 沒有 MaterialApp 可繼承，Android 則是與內層 Theme 重疊但無害）。
     // 並在此注入全域 ScaffoldMessenger，確保 iOS/macOS 的 CupertinoApp
-    // 分支亦具備 ScaffoldMessenger 祖先，可正常彈出 SnackBar（見 UI-9.2）。
+    // 分支亦具備 ScaffoldMessenger 祖先，可正常彈出 SnackBar（見 UI-9.2）；
+    // 以及全域 AppScrollBehavior，啟用全平台與桌面滑鼠拖曳滾動支援。
     builder: appRootBuilder,
   );
 }
@@ -130,13 +131,18 @@ class FindingRestaruantApp extends StatelessWidget {
 /// 應用程式根節點包覆器。
 ///
 /// 注入全域 [ScaffoldMessenger] 與透明根 [Scaffold]，確保不論 Material
-/// 或 Cupertino 路由皆具備 [Scaffold] 祖先，使 [SnackBar] 正常呈現（見 UI-9.2）。
+/// 或 Cupertino 路由皆具備 [Scaffold] 祖先，使 [SnackBar] 正常呈現（見 UI-9.2）；
+/// 並以 [AppScrollBehavior] 啟用桌面滑鼠拖曳滾動（見 UI-9.4）。
 @visibleForTesting
 Widget appRootBuilder(BuildContext context, Widget? child) {
+  final scrollable = ScrollConfiguration(
+    behavior: const AppScrollBehavior(),
+    child: child ?? const SizedBox.shrink(),
+  );
   final scaffold = Scaffold(
     backgroundColor: Colors.transparent,
     resizeToAvoidBottomInset: false,
-    body: child ?? const SizedBox.shrink(),
+    body: scrollable,
   );
   final messenger = ScaffoldMessenger(
     child: scaffold,

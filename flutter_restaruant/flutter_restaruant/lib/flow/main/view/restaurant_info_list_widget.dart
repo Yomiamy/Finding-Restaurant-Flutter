@@ -104,8 +104,7 @@ class _RestaurantInfoListWidgetState extends State<RestaurantInfoListWidget> {
           } else {
             RestaurantEntity summaryInfo = _summaryInfos[index - 1];
 
-            return GestureDetector(
-              child: RestaurantItemCell(summaryInfo: summaryInfo),
+            return InkWell(
               onTap: () async {
                 Tuple2 arguments = Tuple2<RestaurantEntity, dynamic>(
                   summaryInfo,
@@ -120,6 +119,7 @@ class _RestaurantInfoListWidgetState extends State<RestaurantInfoListWidget> {
                   arguments: arguments,
                 );
               },
+              child: RestaurantItemCell(summaryInfo: summaryInfo),
             );
           }
         },

@@ -1,4 +1,6 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:get_it/get_it.dart';
 import '../../../features/utils/utils_barrel.dart';
@@ -97,6 +99,9 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
   }
 
   void _sendMessage() {
+    if (_bloc.state.isLoading || _textController.value.isComposingRangeValid) {
+      return;
+    }
     final text = _textController.text.trim();
     if (text.isEmpty) return;
     _textController.clear();
@@ -265,26 +270,50 @@ class _AiFoodieSheetState extends State<AiFoodieSheet> {
                       child: Row(
                         children: [
                           Expanded(
-                            child: TextField(
-                              controller: _textController,
-                              textInputAction: TextInputAction.send,
-                              onSubmitted: (_) => _sendMessage(),
-                              decoration: InputDecoration(
-                                hintText: S.of(context).ai_foodie_input_hint,
-                                hintStyle: theme.textTheme.bodyMedium?.copyWith(
-                                  color: colorScheme.outline,
-                                ),
-                                isDense: true,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: ThemeSize.space16,
-                                  vertical: ThemeSize.space12,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(
-                                    ThemeSize.radiusTag,
+                            child: ValueListenableBuilder<TextEditingValue>(
+                              valueListenable: _textController,
+                              builder: (context, value, child) {
+                                return CallbackShortcuts(
+                                  bindings: value.isComposingRangeValid
+                                      ? const {}
+                                      : {
+                                          const SingleActivator(
+                                            LogicalKeyboardKey.enter,
+                                          ): _sendMessage,
+                                          const SingleActivator(
+                                            LogicalKeyboardKey.numpadEnter,
+                                          ): _sendMessage,
+                                        },
+                                  child: child!,
+                                );
+                              },
+                              child: TextField(
+                                controller: _textController,
+                                minLines: 1,
+                                maxLines: 4,
+                                keyboardType: TextInputType.multiline,
+                                textInputAction:
+                                    defaultTargetPlatform ==
+                                        TargetPlatform.windows
+                                    ? TextInputAction.newline
+                                    : TextInputAction.send,
+                                onSubmitted: (_) => _sendMessage(),
+                                decoration: InputDecoration(
+                                  hintText: S.of(context).ai_foodie_input_hint,
+                                  hintStyle: theme.textTheme.bodyMedium
+                                      ?.copyWith(color: colorScheme.outline),
+                                  isDense: true,
+                                  contentPadding: const EdgeInsets.symmetric(
+                                    horizontal: ThemeSize.space16,
+                                    vertical: ThemeSize.space12,
                                   ),
-                                  borderSide: BorderSide(
-                                    color: colorScheme.outlineVariant,
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(
+                                      ThemeSize.radiusTag,
+                                    ),
+                                    borderSide: BorderSide(
+                                      color: colorScheme.outlineVariant,
+                                    ),
                                   ),
                                 ),
                               ),
