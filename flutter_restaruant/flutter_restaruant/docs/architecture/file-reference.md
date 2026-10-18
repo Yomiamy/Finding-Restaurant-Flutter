@@ -14,7 +14,7 @@
 
 | 檔案路徑 | 關鍵類別/變數 | 單一職責 (Single Responsibility) |
 | :--- | :--- | :--- |
-| [`lib/main.dart`](../../lib/main.dart) | `main()`<br>`FindingRestaruantApp`<br>`navigatorKey`<br>`appRootBuilder` | App 入口。初始化 binding、DI、Firebase 與登入狀態後 `runApp`。組裝 `PlatformApp`（iOS/Android 雙分支）、掛載 `navigatorKey`、`navigatorObservers` 與 debug-only 的 5 連點喚起手勢。`appRootBuilder`（`builder:`）注入 `Theme`、全域 `ScaffoldMessenger` 與透明根 `Scaffold`，讓兩個分支都能顯示 SnackBar。 |
+| [`lib/main.dart`](../../lib/main.dart) | `main()`<br>`FindingRestaruantApp`<br>`navigatorKey`<br>`appRootBuilder` | App 入口。初始化 binding、DI、Firebase 與登入狀態後 `runApp`。組裝 `PlatformApp`（iOS/Android 雙分支）、掛載 `navigatorKey`、`navigatorObservers` 與 debug-only 的 5 連點喚起手勢。`appRootBuilder`（`builder:`）注入 `Theme`、全域 `ScaffoldMessenger` 與透明根 `Scaffold`，讓兩個分支都能顯示 SnackBar；並以 `ScrollConfiguration(AppScrollBehavior)` 讓兩個分支都能用滑鼠拖曳捲動。 |
 | [`lib/di/injection.dart`](../../lib/di/injection.dart) | `getIt`<br>`setupInjection()` | GetIt 依賴注入註冊中心。以**介面為 key、實作為 value** 註冊全部 Repository、DataSource 與 Manager，全數 `registerLazySingleton`。 |
 | [`lib/di/inspector.dart`](../../lib/di/inspector.dart) | `inspector` | Debug-only 除錯工具實例（頂層 `final FlutterInspector?`）。`kDebugMode` 為 false 時恆為 `null`，release build 中所有引用點成為 dead code 被 tree-shaking 移除。 |
 | [`lib/routes/routes_table.dart`](../../lib/routes/routes_table.dart) | `routesTable` | **Composition Root**。路由名稱 → WidgetBuilder 的對照表，是全 App 唯一把「路由 / Bloc / Repository」接起來的地方（`BlocProvider` + `GetIt.I<介面>()`）。 |
@@ -135,7 +135,7 @@
 | [`lib/flow/menu_vision/view/allergen_badge.dart`](../../lib/flow/menu_vision/view/allergen_badge.dart) | `AllergenBadge` | 食材過敏原與辣度警示膠囊標籤（色彩語意化）。 |
 | [`lib/flow/ai_foodie/bloc/ai_foodie_bloc.dart`](../../lib/flow/ai_foodie/bloc/ai_foodie_bloc.dart) | `AiFoodieBloc` | AI 智能覓食助理業務邏輯（管理對話歷程、請求 Token 版本控制與樂觀更新）。 |
 | [`lib/flow/ai_foodie/model/ai_foodie_model.dart`](../../lib/flow/ai_foodie/model/ai_foodie_model.dart) | `AiFoodieMessageModel`<br>`A2UIComponentModel`（sealed） | AI 覓食 UI model（欄位 non-null），`AiFoodieState.messageModels` 由 entity 即時轉換。 |
-| [`lib/flow/ai_foodie/view/ai_foodie_sheet.dart`](../../lib/flow/ai_foodie/view/ai_foodie_sheet.dart) | `AiFoodieSheet` | 底部對話畫布視窗（包含對話串流、GenUI 動態元件容器與輸入欄）。 |
+| [`lib/flow/ai_foodie/view/ai_foodie_sheet.dart`](../../lib/flow/ai_foodie/view/ai_foodie_sheet.dart) | `AiFoodieSheet` | 底部對話畫布視窗（包含對話串流、GenUI 動態元件容器與輸入欄；輸入欄以 Enter／numpadEnter 送出，IME 組字中或載入中不送出）。 |
 | [`lib/flow/ai_foodie/view/comparison_matrix_card.dart`](../../lib/flow/ai_foodie/view/comparison_matrix_card.dart) | `ComparisonMatrixCard` | 橫向滑動餐廳比對卡片（支援特色標籤、評分、價格及點擊導航至詳情頁）。 |
 | [`lib/flow/ai_foodie/view/decision_roulette_dialog.dart`](../../lib/flow/ai_foodie/view/decision_roulette_dialog.dart) | `DecisionRouletteDialog` | 轉盤隨機挑選對話框（視覺化動態指針、勝選呈現與再轉一次控制）。 |
 | [`lib/flow/signinup/view/auth_failure_l10n_extension.dart`](../../lib/flow/signinup/view/auth_failure_l10n_extension.dart) | `AuthFailureL10n` | 將 `AuthFailureReason` 領域錯誤列舉映射為本地化 SnackBar 錯誤文字的擴充。 |
@@ -182,6 +182,7 @@
 | 檔案路徑 | 關鍵類別 | 單一職責 (Single Responsibility) |
 | :--- | :--- | :--- |
 | [`lib/features/foundation/style/theme_data.dart`](../../lib/features/foundation/style/theme_data.dart) | `AppThemeData` | App 主題定義。`materialLight` 的色票**只做 `ColorScheme.fromSeed`、零 `copyWith` 覆寫**；另提供 `cupertinoLight` 供 iOS 分支使用。 |
+| [`lib/features/foundation/style/app_scroll_behavior.dart`](../../lib/features/foundation/style/app_scroll_behavior.dart) | `AppScrollBehavior` | 繼承 `MaterialScrollBehavior`，沿用預設 `dragDevices` 再加入 mouse，讓桌面可用滑鼠拖曳 `PageView`／`ListView`。由 `appRootBuilder` 注入。 |
 | [`lib/features/foundation/style/theme_color.dart`](../../lib/features/foundation/style/theme_color.dart) | `ThemeColor` | 色彩 Token 常數。 |
 | [`lib/features/foundation/style/theme_size.dart`](../../lib/features/foundation/style/theme_size.dart) | `ThemeSize` | 尺寸與間距 Token 常數。 |
 | [`lib/features/foundation/style/theme_font_size.dart`](../../lib/features/foundation/style/theme_font_size.dart) | `ThemeFontSize` | 字級 Token 常數。 |

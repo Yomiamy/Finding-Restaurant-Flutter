@@ -1897,7 +1897,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | :--- | :--- | :--- |
 | 版面 | 全為手機直式設計；無任何 `LayoutBuilder`；7 檔用 `MediaQuery` 取寬高；iOS 鎖直向 | 設定內容最大寬度；寬螢幕改雙欄（列表＋地圖／詳情）；`DrawerWidget` 在寬螢幕改 `NavigationRail` |
 | BottomSheet | Menu Vision、AI Foodie 以 `DraggableScrollableSheet` 呈現 | 寬螢幕改 Dialog 或側邊面板，避免在 27 吋螢幕底部拉出整片 sheet |
-| 輸入 | 地圖卡片列為 `PageView`（`map_widget.dart:36,180`） | **Flutter 桌面／Web 預設不允許滑鼠拖曳捲動**，需以 `ScrollBehavior.dragDevices` 加入 mouse，或補左右箭頭按鈕 |
+| 輸入 | 地圖卡片列為 `PageView`（`map_widget.dart:36,180`） | **Flutter 桌面／Web 預設不允許滑鼠拖曳捲動**，需以 `ScrollBehavior.dragDevices` 加入 mouse，或補左右箭頭按鈕。✅ 已以 `dragDevices` 加入 mouse 完成（UI-9.4，2026-10-18） |
 | 回饋訊息 | `fluttertoast`（macOS 無實作） | 改 `SnackBar`。⚠️ macOS 走 `CupertinoApp` 分支，**不會自帶 `ScaffoldMessenger`**，需在 `PlatformApp.builder` 補一層。✅ 已完成（UI-9.2，2026-10-18） |
 | 外部連結 | `ChromeSafariBrowser` 僅 Android／iOS | 改 `url_launcher` 的 `LaunchMode.inAppBrowserView`（Android Custom Tabs／iOS SFSafariViewController 行為相同），**可一併移除 `flutter_inappwebview`** |
 | 能力閘門 | 廣告、生物辨識、推播散落各處，無平台判斷 | 見 §9.6 A-9.2：以「不支援就不註冊／不顯示」處理，而非在每個呼叫點加 `if` |
@@ -1948,7 +1948,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | **A-9.3b** | **Web 的 Firebase 註冊與 App Check**：註冊 Web App、App Check 改掛 **Fraud Defense（reCAPTCHA Enterprise）**。**採 Enterprise、不採 classic v3**：官方文件仍列 v3 provider，但明言新整合應採 Enterprise；2026-10-07 使用者回報「傳統版 reCAPTCHA 已淘汰，請改用 Google Cloud Fraud Defense」（reCAPTCHA 已併入 Fraud Defense）。程式碼用 `ReCaptchaEnterpriseProvider(siteKey)`（release）／`WebDebugProvider()`（debug），兩者皆**非 `const` 建構式**；`firebase_app_check ^0.4.7`（實裝 0.4.8）已內建三個 web provider，**無須升版**。**不需 Blaze**：Spark 可用 Enterprise，僅限 0.1／0.3／0.7／0.9 四個分數級距，連結 Cloud Billing 才開放全部 11 級；超出免費額度的 assessment 計費（2026-10-08 依官方 enterprise-provider 文件更正，原記「Blaze 為硬前置」有誤） | Web | 0.3d | — |
 | **UI-9.2** | `fluttertoast` → `SnackBar`（含 `CupertinoApp` 分支補 `ScaffoldMessenger`）。✅ **已完成**（2026-10-18，PR #153）：新增 `BuildContext.showAppSnackBar`（`SnackBarExtension`，先 `hideCurrentSnackBar` 再顯示、查無 messenger 時安全略過、鍵盤開啟時改 floating 並上移到鍵盤上方），`main.dart` 的 `appRootBuilder` 注入 `ScaffoldMessenger` 與透明根 `Scaffold`（`resizeToAvoidBottomInset: false`），登入／註冊／失敗與收藏共 4 處提示遷移，移除 `fluttertoast`。與提案落差：`ScaffoldMessenger` 兩個分支一律注入（Android 與 `MaterialApp` 自帶的那層重疊，實際生效的是內層），並多補透明根 `Scaffold`，因為 Cupertino 頁面沒有 Material `Scaffold` 可承載 SnackBar | 兩者 | 0.3d | — |
 | **UI-9.3** | 響應式版面：最大寬度、寬螢幕雙欄、`NavigationRail`、Sheet → Dialog | 兩者 | 2–3d | — |
-| **UI-9.4** | 桌面輸入：`ScrollBehavior` 滑鼠拖曳、hover 狀態、AI 對話 Enter 送出 | 兩者 | 0.5d | — |
+| **UI-9.4** | 桌面輸入：`ScrollBehavior` 滑鼠拖曳、hover 狀態、AI 對話 Enter 送出。✅ **已完成**（2026-10-18，PR #151）：新增 `AppScrollBehavior`（沿用預設 `dragDevices` 再加 mouse，保留 Voice Access 用的 `unknown`），由 `appRootBuilder` 的 `ScrollConfiguration` 注入，Material／Cupertino 兩分支皆生效；主頁列表與地圖卡片由 `GestureDetector` 改 `InkWell`，取得 hover 高亮與手型游標；AI 對話輸入欄以 Enter／numpadEnter 送出（IME 組字中或載入中不送出），改為 1–4 行多行輸入，Windows 的 IME 動作為換行。與提案落差：iOS／macOS 改用 Material 系的 behavior，macOS 的捲軸由 `CupertinoScrollbar` 變為 Material `Scrollbar` | 兩者 | 0.5d | — |
 | **A-9.4** | 深層連結：①詳情頁改為只憑 `id` 自足渲染（頁首取自詳情 API 回應、收藏狀態向收藏資料查詢，不再依賴傳入的 `RestaurantEntity`）；②`PlatformApp` 加 `onGenerateRoute` 解析 `/restaurant/<id>`；③其餘強轉 arguments 處缺參數導回首頁。**不導入 `go_router`**：現有 `routesTable` 與 10 處 `pushNamed` 不需改動 | 兩者（深層連結主要服務 Web） | 1–1.5d（主要成本在①） | D-9.3 |
 | **A-9.5** | 第三方登入改 Firebase popup 流程 | Web | 1d | A-9.3b |
 | **E-9.3** | Firebase Hosting 部署 workflow、Service Worker、Maps JS key | Web | 1d | Broker、A-9.3b |
@@ -1983,7 +1983,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 > - **macOS 線**：
 >   1. E-9.1、UI-9.1，deployment target 上修至 14（✅ 上修已完成，2026-10-09；UI-9.1 ✅ 2026-10-12 隨 A-9.6 完成）
 >   2. A-9.2 能力閘門（macOS 關 AdMob／推播／生物辨識／地圖模式；App Check 改 fallback provider）（✅ 已完成，2026-10-09；生物辨識因無 UI 入口未納入）
->   3. A-9.6 macOS 適配 ＋ UI-9.2、UI-9.4——先讓 macOS 上直接壞掉的功能可用（A-9.6 ✅ 已完成，2026-10-12；UI-9.2 ✅ 2026-10-18；UI-9.4 待做）
+>   3. A-9.6 macOS 適配 ＋ UI-9.2、UI-9.4——先讓 macOS 上直接壞掉的功能可用（A-9.6 ✅ 已完成，2026-10-12；UI-9.2 ✅ 2026-10-18；UI-9.4 ✅ 2026-10-18）
 >   4. E-9.4a 本機開發簽章（可視需要提前）→ 實測登入、App Check、Apple 登入；之後 E-9.4b 手動發布（E-9.4a ✅ 2026-10-16；E-9.4b ✅ 2026-10-17，Developer ID 路徑）
 >   5. UI-9.3 響應式版面（最大項、純版面，最後做；Web 共用）
 > - **Web 線**（原順序不變）：§9.5 前置（含 E-9.2 `build web`）＋升級 Blaze 並完成 Broker → A-9.3b（無 Blaze 依賴，可獨立進行；Web 上線仍以 Broker 為硬前置）→ A-9.4 深層連結 → UI-9.2／9.3／9.4 → A-9.5、E-9.3
