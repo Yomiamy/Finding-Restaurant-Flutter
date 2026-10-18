@@ -100,7 +100,7 @@ YelpRestaurantSummaryDto get toDto => ...
 ### 4. 跨層設施 (Cross-cutting)
 
 - **`Manager` 層（9 個）**：`SignInManager`、`FcmManager`、`AdCounterManager`、`GoogleSignInManager`、`AppleSignInManager`、`FacebookSignInManager`、`MailSignInUpManager`、`AutoSignInManager`、`BiometricSignInManager`。全數採**同一套 Singleton 模式**（`static final _singleton` + `factory` 回傳），各自封裝一個第三方 SDK 的互動細節。
-- **`FlutterInspector`（debug-only）**：`lib/di/inspector.dart` 的頂層 `final FlutterInspector?`，`kDebugMode` 為 `false` 時恆為 `null`，所有引用點成為 dead code 被 tree-shaking 移除。
+- **`FlutterInspector`（debug-only）**：`lib/app/di/inspector.dart` 的頂層 `final FlutterInspector?`，`kDebugMode` 為 `false` 時恆為 `null`，所有引用點成為 dead code 被 tree-shaking 移除。
 
 ---
 
@@ -108,7 +108,7 @@ YelpRestaurantSummaryDto get toDto => ...
 
 ### 1. 依賴反轉是靠 GetIt 註冊「介面 → 實作」落實的
 
-`lib/di/injection.dart` 的註冊全部以**介面**為 key、**實作**為 value：
+`lib/app/di/injection.dart` 的註冊全部以**介面**為 key、**實作**為 value：
 
 ```dart
 getIt.registerLazySingleton<MainRepository>(
@@ -161,7 +161,7 @@ iOS 走 `CupertinoApp` 分支時 `material:` 的設定**根本不會被呼叫**�
 
 ### 5. Debug 工具絕不進 production build
 
-`lib/di/inspector.dart` 以三元運算在**編譯期**決定：
+`lib/app/di/inspector.dart` 以三元運算在**編譯期**決定：
 
 ```dart
 final FlutterInspector? inspector = kDebugMode ? FlutterInspector(...) : null;

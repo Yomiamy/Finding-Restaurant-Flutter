@@ -399,7 +399,7 @@ class SignInManager {
 Inspector 有 **5 個接線點分散在 4 個檔案**，全數以 `kDebugMode` 或 `?.` 保護，release build 中整條路徑被 tree-shaking 移除。
 
 ```text
-  lib/di/inspector.dart
+  lib/app/di/inspector.dart
     final FlutterInspector? inspector = kDebugMode ? FlutterInspector(...) : null;
                     │
                     │ release build：恆為 null，以下引用全成 dead code
