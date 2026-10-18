@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../features/foundation/style/style_barrel.dart';
-import '../generated/l10n.dart';
+import '../foundation/style/style_barrel.dart';
+import '../../generated/l10n.dart';
 
 /// 畫面查無資料或空清單時的共用佔位元件。
 ///

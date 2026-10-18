@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../features/foundation/style/style_barrel.dart';
+import '../../../foundation/style/style_barrel.dart';
 import '../../skeleton.dart';
 
 /// 餐廳詳情頁的載入骨架。

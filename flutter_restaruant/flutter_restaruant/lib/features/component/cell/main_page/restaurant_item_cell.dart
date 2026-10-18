@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/entities/entities_barrel.dart';
-import '../../../features/foundation/constants/constants_barrel.dart';
-import '../../../features/foundation/extension/extension_barrel.dart';
-import '../../../features/foundation/style/style_barrel.dart';
-import '../../../generated/l10n.dart';
+import '../../../../domain/entities/entities_barrel.dart';
+import '../../../foundation/constants/constants_barrel.dart';
+import '../../../foundation/extension/extension_barrel.dart';
+import '../../../foundation/style/style_barrel.dart';
+import '../../../../generated/l10n.dart';
 import '../../rating_stars.dart';
 
 /// 餐廳列表與地圖卡片中的項目單元 (Restaurant Item Cell)。

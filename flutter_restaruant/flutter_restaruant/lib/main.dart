@@ -11,7 +11,7 @@ import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 import 'package:logger/logger.dart';
 
-import 'component/ad/ad_barrel.dart';
+import 'features/component/ad/ad_barrel.dart';
 import 'data_layer/datasources/datasources_barrel.dart';
 import 'app/di/di_barrel.dart';
 import 'features/foundation/constants/constants_barrel.dart';

@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../features/foundation/style/style_barrel.dart';
+import '../../../foundation/style/style_barrel.dart';
 import '../../skeleton.dart';
 
 class RestaurantItemSkeleton extends StatelessWidget {

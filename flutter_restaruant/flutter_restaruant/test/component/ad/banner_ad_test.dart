@@ -1,8 +1,8 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:flutter_restaruant/component/ad/banner_ad.dart';
-import 'package:flutter_restaruant/component/ad/banner_ad_state.dart';
+import 'package:flutter_restaruant/features/component/ad/banner_ad.dart';
+import 'package:flutter_restaruant/features/component/ad/banner_ad_state.dart';
 import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';

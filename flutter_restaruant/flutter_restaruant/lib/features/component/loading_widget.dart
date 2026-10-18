@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
-import '../features/foundation/style/style_barrel.dart';
-import '../generated/l10n.dart';
+import '../foundation/style/style_barrel.dart';
+import '../../generated/l10n.dart';
 
 class LoadingWidget extends StatelessWidget {
   final String? text;

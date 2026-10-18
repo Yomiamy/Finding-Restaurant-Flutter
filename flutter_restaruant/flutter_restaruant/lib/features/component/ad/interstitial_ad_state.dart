@@ -1,7 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-import '../../features/foundation/constants/constants_barrel.dart';
+import '../../foundation/constants/constants_barrel.dart';
 
 class InterstitialADState {
   String? get interstitialAdUnitId =>

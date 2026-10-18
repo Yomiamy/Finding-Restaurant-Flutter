@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:flutter_restaruant/component/component_barrel.dart';
+import 'package:flutter_restaruant/features/component/component_barrel.dart';
 import 'package:flutter_restaruant/flow/main/bloc/bloc_barrel.dart';
 import 'package:flutter_restaruant/flow/main/view/view_barrel.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';

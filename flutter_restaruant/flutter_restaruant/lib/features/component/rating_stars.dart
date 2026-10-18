@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import '../features/foundation/style/style_barrel.dart';
+import '../foundation/style/style_barrel.dart';
 
 class RatingStars extends StatelessWidget {
   const RatingStars({super.key, required this.rating});

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-import '../../../domain/entities/entities_barrel.dart';
-import '../../../features/foundation/constants/constants_barrel.dart';
-import '../../../features/foundation/style/style_barrel.dart';
-import '../../../generated/l10n.dart';
+import '../../../../domain/entities/entities_barrel.dart';
+import '../../../foundation/constants/constants_barrel.dart';
+import '../../../foundation/style/style_barrel.dart';
+import '../../../../generated/l10n.dart';
 import '../../rating_stars.dart';
 
 class RestaurantCommentCell extends StatelessWidget {

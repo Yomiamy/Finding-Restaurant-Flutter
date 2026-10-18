@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../component/component_barrel.dart';
+import '../../../features/component/component_barrel.dart';
 import '../../../features/foundation/extension/extension_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
 import '../../menu_vision/menu_vision_barrel.dart';

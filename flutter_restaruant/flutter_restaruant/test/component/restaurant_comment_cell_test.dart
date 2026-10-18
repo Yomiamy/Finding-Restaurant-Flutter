@@ -1,6 +1,6 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_restaruant/component/cell/restaurant_detail/restaurant_comment_cell.dart';
+import 'package:flutter_restaruant/features/component/cell/restaurant_detail/restaurant_comment_cell.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';

@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 
-import '../../../domain/entities/entities_barrel.dart';
-import '../../../features/foundation/style/style_barrel.dart';
-import '../../../generated/l10n.dart';
+import '../../../../domain/entities/entities_barrel.dart';
+import '../../../foundation/style/style_barrel.dart';
+import '../../../../generated/l10n.dart';
 
 class RestaurantBusinessHourCell extends StatelessWidget {
   final List<RestaurantBusinessTimeEntity> _businessTimeInfos;

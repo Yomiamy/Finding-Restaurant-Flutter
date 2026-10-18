@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_restaruant/component/empty_data_widget.dart';
+import 'package:flutter_restaruant/features/component/empty_data_widget.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
 

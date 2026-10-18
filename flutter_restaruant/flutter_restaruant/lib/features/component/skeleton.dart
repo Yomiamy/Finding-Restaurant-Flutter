@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
-import '../features/foundation/style/style_barrel.dart';
+import '../foundation/style/style_barrel.dart';
 
 class Skeleton extends StatelessWidget {
   const Skeleton({

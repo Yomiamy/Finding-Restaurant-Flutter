@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
-import '../../../component/component_barrel.dart';
+import '../../../features/component/component_barrel.dart';
 import '../../../app/di/di_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../features/foundation/extension/extension_barrel.dart';

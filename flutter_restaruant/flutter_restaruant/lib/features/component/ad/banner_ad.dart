@@ -3,7 +3,7 @@ import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
 
-import '../../features/foundation/style/style_barrel.dart';
+import '../../foundation/style/style_barrel.dart';
 import 'banner_ad_state.dart';
 
 /// 底部常駐標準橫幅廣告元件 (Standard Banner AD, 320x50)。
