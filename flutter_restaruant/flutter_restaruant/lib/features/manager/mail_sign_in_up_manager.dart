@@ -12,7 +12,7 @@ class MailSignInUpManager {
 
   factory MailSignInUpManager() => _singleton;
 
-  Future<Tuple2<AccountDto?, AuthFailureReason?>> signUpWithMail(
+  Future<Tuple2<AccountModel?, AuthFailureReason?>> signUpWithMail(
     String mail,
     String passwd,
   ) async {
@@ -26,7 +26,7 @@ class MailSignInUpManager {
         await user.sendEmailVerification();
       }
 
-      AccountDto accountDto = AccountDto(
+      AccountModel accountDto = AccountModel(
         type: AccountType.mail,
         uid: userCredential.user?.uid ?? '',
         account: userCredential.user?.email ?? '',
@@ -51,7 +51,7 @@ class MailSignInUpManager {
     }
   }
 
-  Future<Tuple2<AccountDto?, AuthFailureReason?>> signInWithMail(
+  Future<Tuple2<AccountModel?, AuthFailureReason?>> signInWithMail(
     String mail,
     String passwd,
   ) async {
@@ -65,7 +65,7 @@ class MailSignInUpManager {
         return const Tuple2(null, AuthFailureReason.emailNotVerified);
       }
 
-      AccountDto accountDto = AccountDto(
+      AccountModel accountDto = AccountModel(
         type: AccountType.mail,
         uid: userCredential.user?.uid ?? '',
         account: userCredential.user?.email ?? '',

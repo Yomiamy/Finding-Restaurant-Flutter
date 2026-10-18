@@ -19,7 +19,7 @@ class SignInManager {
 
   factory SignInManager() => _singleton;
 
-  AccountDto? accountDto;
+  AccountModel? accountDto;
 
   /// 由 [loadPrefs] 於啟動時填入。`shared_preferences` 內部持有一份記憶體
   /// 快取，取得 instance 後 `getBool` 即為同步呼叫，因此不需要另外複製一份
@@ -59,13 +59,13 @@ class SignInManager {
   Future<void> clearGuestFlag() async =>
       await _prefs?.remove(Constants.prefKeyGuestMode);
 
-  Future<Tuple2<AccountDto?, AuthFailureReason?>> signIn(
+  Future<Tuple2<AccountModel?, AuthFailureReason?>> signIn(
     AccountType accountType, {
     String mail = '',
     String passwd = '',
     String? localizedReason,
   }) async {
-    Tuple2<AccountDto?, AuthFailureReason?> signInResult =
+    Tuple2<AccountModel?, AuthFailureReason?> signInResult =
         const Tuple2(null, null);
 
     switch (accountType) {
@@ -103,12 +103,12 @@ class SignInManager {
     return signInResult;
   }
 
-  Future<Tuple2<AccountDto?, AuthFailureReason?>> signUp(
+  Future<Tuple2<AccountModel?, AuthFailureReason?>> signUp(
     AccountType accountType, {
     required String mail,
     required String passwd,
   }) async {
-    Tuple2<AccountDto?, AuthFailureReason?> signUpResult =
+    Tuple2<AccountModel?, AuthFailureReason?> signUpResult =
         const Tuple2(null, null);
 
     switch (accountType) {

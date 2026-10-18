@@ -14,14 +14,14 @@ class FacebookSignInManager {
 
   factory FacebookSignInManager() => _singleton;
 
-  Future<Tuple2<AccountDto?, AuthFailureReason?>> signInWithFB() async {
+  Future<Tuple2<AccountModel?, AuthFailureReason?>> signInWithFB() async {
     try {
       // Trigger the sign-in flow
       final LoginResult loginResult = await FacebookAuth.instance.login();
 
       if (loginResult.accessToken == null) {
         // 未登入
-        return const Tuple2<AccountDto?, AuthFailureReason?>(
+        return const Tuple2<AccountModel?, AuthFailureReason?>(
           null,
           AuthFailureReason.signInFailed,
         );
@@ -33,7 +33,7 @@ class FacebookSignInManager {
       // Once signed in, return the UserCredential
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithCredential(facebookAuthCredential);
-      AccountDto accountDto = AccountDto(
+      AccountModel accountDto = AccountModel(
         type: AccountType.facebook,
         uid: userCredential.user?.uid ?? '',
         account: userCredential.user?.email ?? '',

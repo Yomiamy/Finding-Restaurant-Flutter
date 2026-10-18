@@ -39,13 +39,13 @@ void main() {
       };
       await fakeFirestore.collection('favors').doc('user_A').set(legacyDataA);
 
-      SignInManager().accountDto = AccountDto(
+      SignInManager().accountDto = AccountModel(
         type: AccountType.mail,
         uid: 'user_A',
       );
 
       final future = favorDataSource.fetchFavorIds();
-      SignInManager().accountDto = AccountDto(
+      SignInManager().accountDto = AccountModel(
         type: AccountType.mail,
         uid: 'user_B',
       );

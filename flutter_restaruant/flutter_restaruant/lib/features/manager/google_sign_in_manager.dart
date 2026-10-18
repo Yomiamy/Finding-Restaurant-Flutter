@@ -13,7 +13,7 @@ class GoogleSignInManager {
 
   factory GoogleSignInManager() => _singleton;
 
-  Future<Tuple2<AccountDto?, AuthFailureReason?>> signInWithGoogle() async {
+  Future<Tuple2<AccountModel?, AuthFailureReason?>> signInWithGoogle() async {
     try {
       // Trigger the authentication flow
       final GoogleSignInAccount? googleUser = await GoogleSignIn().signIn();
@@ -24,7 +24,7 @@ class GoogleSignInManager {
 
       if (googleAuth?.accessToken == null && googleAuth?.idToken == null) {
         // 未登入
-        return const Tuple2<AccountDto?, AuthFailureReason?>(
+        return const Tuple2<AccountModel?, AuthFailureReason?>(
           null,
           AuthFailureReason.signInFailed,
         );
@@ -39,7 +39,7 @@ class GoogleSignInManager {
       // Once signed in, return the UserCredential
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithCredential(credential);
-      AccountDto accountDto = AccountDto(
+      AccountModel accountDto = AccountModel(
         type: AccountType.google,
         uid: userCredential.user?.uid ?? '',
         account: userCredential.user?.email ?? '',

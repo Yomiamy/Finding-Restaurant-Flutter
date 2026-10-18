@@ -14,14 +14,14 @@ class AutoSignInManager {
 
   factory AutoSignInManager() => _singleton;
 
-  Future<Tuple2<AccountDto?, AuthFailureReason?>> signInWithAuto() async {
+  Future<Tuple2<AccountModel?, AuthFailureReason?>> signInWithAuto() async {
     final prefs = await SharedPreferences.getInstance();
     final accountInfoJsonStr = prefs.getString(Constants.prefKeyAccountInfo);
 
     if (accountInfoJsonStr == null || accountInfoJsonStr.isEmpty) {
       return const Tuple2(null, null);
     } else {
-      AccountDto accountDto = AccountDto.fromJson(
+      AccountModel accountDto = AccountModel.fromJson(
         jsonDecode(accountInfoJsonStr),
       );
       return Tuple2(accountDto, null);

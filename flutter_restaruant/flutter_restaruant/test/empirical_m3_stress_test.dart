@@ -9,7 +9,7 @@ void main() {
     'Empirical Stress Tests - Milestone 3 DTO & Domain Entity Separation',
     () {
       test('1. Null field handling in all DTO toEntity() mappings', () {
-        final accountDto = AccountDto(type: AccountType.google);
+        final accountDto = AccountModel(type: AccountType.google);
         final userEntity = UserEntity.fromDto(accountDto);
         expect(userEntity.uid, isNull);
         expect(userEntity.account, isNull);

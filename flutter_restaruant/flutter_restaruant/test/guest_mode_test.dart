@@ -32,8 +32,8 @@ class _Data {
   }
   ''';
 
-  static AccountDto get signedInAccount =>
-      AccountDto(uid: 'test-uid', type: AccountType.mail);
+  static AccountModel get signedInAccount =>
+      AccountModel(uid: 'test-uid', type: AccountType.mail);
 }
 
 /// 涵蓋範圍說明

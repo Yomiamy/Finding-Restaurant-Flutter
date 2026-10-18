@@ -102,8 +102,8 @@ void main() {
       },
     );
 
-    test('AccountDto to UserEntity mapping and round-trip', () {
-      final accountDto = AccountDto(
+    test('AccountModel to UserEntity mapping and round-trip', () {
+      final accountDto = AccountModel(
         type: AccountType.google,
         uid: 'user_123',
         account: 'test@example.com',

@@ -1,18 +1,18 @@
 // GENERATED CODE - DO NOT MODIFY BY HAND
 
-part of 'account_dto.dart';
+part of 'account_model.dart';
 
 // **************************************************************************
 // JsonSerializableGenerator
 // **************************************************************************
 
-AccountDto _$AccountDtoFromJson(Map<String, dynamic> json) => AccountDto(
+AccountModel _$AccountModelFromJson(Map<String, dynamic> json) => AccountModel(
   type: $enumDecode(_$AccountTypeEnumMap, json['type']),
   uid: json['uid'] as String?,
   account: json['account'] as String?,
 );
 
-Map<String, dynamic> _$AccountDtoToJson(AccountDto instance) =>
+Map<String, dynamic> _$AccountModelToJson(AccountModel instance) =>
     <String, dynamic>{
       'uid': instance.uid,
       'account': instance.account,

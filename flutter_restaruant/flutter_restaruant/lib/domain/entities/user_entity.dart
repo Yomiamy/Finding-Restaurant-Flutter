@@ -8,7 +8,7 @@ class UserEntity {
 
   const UserEntity({required this.type, this.uid, this.account});
 
-  factory UserEntity.fromDto(AccountDto dto) {
+  factory UserEntity.fromDto(AccountModel dto) {
     return UserEntity(
       type: dto.type.toModel(),
       uid: dto.uid,
@@ -16,6 +16,6 @@ class UserEntity {
     );
   }
 
-  AccountDto get toDto =>
-      AccountDto(type: type.toDto(), uid: uid, account: account);
+  AccountModel get toDto =>
+      AccountModel(type: type.toDto(), uid: uid, account: account);
 }

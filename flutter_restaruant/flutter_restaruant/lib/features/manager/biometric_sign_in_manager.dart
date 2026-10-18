@@ -35,7 +35,7 @@ class BiometricSignInManager {
     isSupportFaceIdAuth = _availableBiometrics.contains(BiometricType.face);
   }
 
-  Future<Tuple2<AccountDto?, AuthFailureReason?>> signInWithBiometric({
+  Future<Tuple2<AccountModel?, AuthFailureReason?>> signInWithBiometric({
     String? localizedReason,
   }) async {
     final prefs = await SharedPreferences.getInstance();
@@ -64,7 +64,7 @@ class BiometricSignInManager {
         return const Tuple2(null, AuthFailureReason.biometricFailed);
       }
 
-      AccountDto accountDto = AccountDto.fromJson(
+      AccountModel accountDto = AccountModel.fromJson(
         jsonDecode(accountInfoJsonStr),
       );
       return Tuple2(accountDto, null);

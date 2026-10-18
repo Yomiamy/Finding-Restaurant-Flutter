@@ -36,7 +36,7 @@ class AppleSignInManager {
     return digest.toString();
   }
 
-  Future<Tuple2<AccountDto?, AuthFailureReason?>> signInWithApple() async {
+  Future<Tuple2<AccountModel?, AuthFailureReason?>> signInWithApple() async {
     try {
       // To prevent replay attacks with the credential returned from Apple, we
       // include a nonce in the credential request. When signing in with
@@ -56,7 +56,7 @@ class AppleSignInManager {
 
       if (appleCredential.identityToken == null) {
         // 未登入
-        return const Tuple2<AccountDto?, AuthFailureReason?>(
+        return const Tuple2<AccountModel?, AuthFailureReason?>(
           null,
           AuthFailureReason.signInFailed,
         );
@@ -71,7 +71,7 @@ class AppleSignInManager {
       // not match the nonce in `appleCredential.identityToken`, sign in will fail.
       UserCredential userCredential = await FirebaseAuth.instance
           .signInWithCredential(oauthCredential);
-      AccountDto accountDto = AccountDto(
+      AccountModel accountDto = AccountModel(
         type: AccountType.apple,
         uid: userCredential.user?.uid ?? '',
         account: userCredential.user?.email ?? '',
