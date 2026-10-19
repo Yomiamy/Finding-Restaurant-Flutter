@@ -140,5 +140,12 @@
   "weekday_thursday": "星期四",
   "weekday_friday": "星期五",
   "weekday_saturday": "星期六",
-  "weekday_sunday": "星期日"
+  "weekday_sunday": "星期日",
+  "review_summary_title": "AI 評論情報",
+  "review_summary_pros": "值得一試",
+  "review_summary_cons": "注意事項",
+  "review_summary_highlights": "招牌推薦",
+  "review_summary_retry": "重試",
+  "review_summary_failed": "AI 評論情報暫時無法取得",
+  "review_summary_empty": "暫無評論情報"
 }

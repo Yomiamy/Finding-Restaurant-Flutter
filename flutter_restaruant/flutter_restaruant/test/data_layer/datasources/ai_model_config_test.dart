@@ -34,7 +34,9 @@ void main() {
     void expectAllDefaults(AiModelConfig c) {
       expect(c.aiFoodieModel, 'gemini-3.5-flash-lite');
       expect(c.menuVisionModel, 'gemini-3.5-flash-lite');
+      expect(c.reviewSummaryModel, 'gemini-3.5-flash-lite');
       expect(c.aiFoodieTemperature, 0.2);
+      expect(c.reviewSummaryTemperature, 0.2);
       expect(
         c.aiFoodieSystemInstruction,
         AiModelConfig.defaultAiFoodieSystemInstruction,
@@ -42,6 +44,10 @@ void main() {
       expect(
         c.menuVisionSystemInstruction,
         AiModelConfig.defaultMenuVisionSystemInstruction,
+      );
+      expect(
+        c.reviewSummarySystemInstruction,
+        AiModelConfig.defaultReviewSummarySystemInstruction,
       );
     }
 
@@ -65,15 +71,21 @@ void main() {
     test('合法遠端值逐字回傳', () {
       stub('ai_foodie_model', 'gemini-x');
       stub('menu_vision_model', 'gemini-y');
+      stub('review_summary_model', 'gemini-z');
       stub('ai_foodie_system_instruction', ' A \n');
       stub('menu_vision_system_instruction', 'B');
+      stub('review_summary_system_instruction', 'C');
       stub('ai_foodie_temperature', '0.7');
+      stub('review_summary_temperature', '0.4');
 
       expect(config.aiFoodieModel, 'gemini-x');
       expect(config.menuVisionModel, 'gemini-y');
+      expect(config.reviewSummaryModel, 'gemini-z');
       expect(config.aiFoodieSystemInstruction, ' A \n');
       expect(config.menuVisionSystemInstruction, 'B');
+      expect(config.reviewSummarySystemInstruction, 'C');
       expect(config.aiFoodieTemperature, 0.7);
+      expect(config.reviewSummaryTemperature, 0.4);
     });
 
     test('temperature 邊界 0 與 2 是合法值', () {
@@ -81,6 +93,10 @@ void main() {
       expect(config.aiFoodieTemperature, 0.0);
       stub('ai_foodie_temperature', '2');
       expect(config.aiFoodieTemperature, 2.0);
+      stub('review_summary_temperature', '0');
+      expect(config.reviewSummaryTemperature, 0.0);
+      stub('review_summary_temperature', '2');
+      expect(config.reviewSummaryTemperature, 2.0);
     });
 
     test('API 金鑰：有遠端值用遠端值，沒有時為空字串（必須由 Console 提供）', () {

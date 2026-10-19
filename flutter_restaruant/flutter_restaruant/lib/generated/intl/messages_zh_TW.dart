@@ -237,6 +237,15 @@ class MessageLookup extends MessageLookupByLibrary {
     "restaurant_detail_menu_vision_tooltip":
         MessageLookupByLibrary.simpleMessage("AI 拍照辨識菜單"),
     "review_count_suffix": MessageLookupByLibrary.simpleMessage("則評論"),
+    "review_summary_cons": MessageLookupByLibrary.simpleMessage("注意事項"),
+    "review_summary_empty": MessageLookupByLibrary.simpleMessage("暫無評論情報"),
+    "review_summary_failed": MessageLookupByLibrary.simpleMessage(
+      "AI 評論情報暫時無法取得",
+    ),
+    "review_summary_highlights": MessageLookupByLibrary.simpleMessage("招牌推薦"),
+    "review_summary_pros": MessageLookupByLibrary.simpleMessage("值得一試"),
+    "review_summary_retry": MessageLookupByLibrary.simpleMessage("重試"),
+    "review_summary_title": MessageLookupByLibrary.simpleMessage("AI 評論情報"),
     "route_navigation": MessageLookupByLibrary.simpleMessage("導航"),
     "settings_title": MessageLookupByLibrary.simpleMessage("設定"),
     "signin_btn_title": MessageLookupByLibrary.simpleMessage("登入"),
