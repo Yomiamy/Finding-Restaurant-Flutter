@@ -137,6 +137,10 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                   RestaurantBusinessHourCell(
                     businessTimeInfos: state.detailInfo.hours?[0].open ?? [],
                   ),
+                  ReviewSummaryCard(
+                    detail: state.detailInfo,
+                    reviews: state.reviewInfo.reviews ?? [],
+                  ),
                   RestaurantCommentCell(
                     reviewInfos: state.reviewInfo.reviews ?? [],
                   ),
