@@ -53,6 +53,9 @@ void main() {
       expect(prompt, contains('生魚片厚度十足'));
       expect(prompt, contains('Bob'));
       expect(prompt, contains('座位只有 10 席'));
+      expect(prompt, contains('<customer_reviews>'));
+      expect(prompt, contains('</customer_reviews>'));
+      expect(prompt, contains('<review index="1"'));
       expect(prompt, contains('繁體中文 (zh-TW)'));
     });
 
