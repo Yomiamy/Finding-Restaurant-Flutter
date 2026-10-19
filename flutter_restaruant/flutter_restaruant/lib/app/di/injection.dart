@@ -34,4 +34,7 @@ void setupInjection() {
   getIt.registerLazySingleton<SettingsRepository>(() => const SettingsRepo());
   getIt.registerLazySingleton<MenuVisionRepository>(() => MenuVisionRepo());
   getIt.registerLazySingleton<AiFoodieRepository>(() => AiFoodieRepo());
+  getIt.registerLazySingleton<ReviewSummaryRepository>(
+    () => ReviewSummaryRepo(),
+  );
 }
