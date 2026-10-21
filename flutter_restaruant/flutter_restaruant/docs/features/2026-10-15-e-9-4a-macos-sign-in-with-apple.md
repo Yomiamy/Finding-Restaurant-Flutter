@@ -1,6 +1,6 @@
 # 功能規格：E-9.4a macOS 補齊 Sign in with Apple Capability
 
-- **項目編號**：E-9.4a 剩餘項（沿用 `docs/brainstorm/2026-10-18-features-brainstorm.md` §9.6 編號）
+- **項目編號**：E-9.4a 剩餘項（沿用 `docs/brainstorm/2026-10-21-features-brainstorm.md` §9.6 編號）
 - **日期**：2026-10-15
 - **Effort（估計）**：0.2d（純 Xcode 配置與 Entitlements 聲明）
 - **依賴**：A-9.6（PR #145 已完成，補齊 DEVELOPMENT_TEAM 與 Keychain Access Groups）

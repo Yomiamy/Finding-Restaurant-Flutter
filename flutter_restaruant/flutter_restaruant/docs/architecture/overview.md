@@ -60,8 +60,8 @@
 ### 1. 領域層 (Domain Layer) — 架構的錨點（但錨沒有完全打穩）
 
 - **不依賴 I/O 技術**：`lib/domain/` 全目錄**沒有** import `dio`、`cloud_firestore`、`shared_preferences`、`retrofit`。業務契約確實獨立於任何網路／資料庫技術。
-- **`abstract interface class` 契約**：六個 Repository 介面（`MainRepository`、`RestaurantDetailRepository`、`FavorRepository`、`SignInRepository`、`SettingsRepository`、`MenuVisionRepository`）以 Dart 3 的 `abstract interface class` 宣告，明確表達「只能被 implement，不能被 extend」。**這 6 個介面檔案全數乾淨**，不 import 任何 data_layer 內容。
-- **Entity 為業務模型**：除既有 Yelp 相關的 11 個模型（`RestaurantEntity`、`RestaurantDetailEntity`、`UserEntity`、`ReviewEntity` 等）外，包含 AI 視覺菜單領域的 `DishItemEntity`、`AllergenInfo` 與 `A2UIComponent` sealed 階層。新加入的 AI 領域模型實現了無 DTO 污染的高品味架構。AI 領域 entity（`A2UIComponent` 階層、`AiFoodieMessage`、`DishItemEntity`、`AllergenInfo`）以 `@JsonSerializable(checked: true)` 產生 `fromJson`／`toJson`，欄位全 nullable、如實反映 LLM 回傳；A2UI 協定外殼 `{component_type, data}` 由 sealed 基底類別的分派器 `A2UIComponent.fromJson` 與 `toEnvelopeJson()` 成對處理。
+- **`abstract interface class` 契約**：八個 Repository 介面（`MainRepository`、`RestaurantDetailRepository`、`FavorRepository`、`SignInRepository`、`SettingsRepository`、`MenuVisionRepository`、`AiFoodieRepository`、`ReviewSummaryRepository`）以 Dart 3 的 `abstract interface class` 宣告，明確表達「只能被 implement，不能被 extend」。**這 8 個介面檔案全數乾淨**，不 import 任何 data_layer 內容。
+- **Entity 為業務模型**：除既有 Yelp 相關的 11 個模型（`RestaurantEntity`、`RestaurantDetailEntity`、`UserEntity`、`ReviewEntity` 等）外，包含 AI 視覺菜單領域的 `DishItemEntity`、`AllergenInfo` 與 `A2UIComponent` sealed 階層，以及評論智慧摘要領域的 `ReviewSummaryEntity`、`ReviewDetailEntity`。新加入的 AI 領域模型實現了無 DTO 污染的高品味架構。AI 領域 entity（`A2UIComponent` 階層、`AiFoodieMessage`、`DishItemEntity`、`AllergenInfo`、`ReviewSummaryEntity`、`ReviewDetailEntity`）以 `@JsonSerializable(checked: true)` 產生 `fromJson`／`toJson`，欄位全 nullable、如實反映 LLM 回傳；A2UI 協定外殼 `{component_type, data}` 由 sealed 基底類別的分派器 `A2UIComponent.fromJson` 與 `toEnvelopeJson()` 成對處理。
 
 #### 📌 分層邊界說明：Entity 與 DTO 的關係（資料驅動分層架構 As-Designed）
 
@@ -86,14 +86,14 @@ YelpRestaurantSummaryDto get toDto => ...
 
 ### 2. 資料層 (Data Layer) — 實作契約，向內依賴
 
-- **`*Repo` implements `*Repository`**：`MainRepo`、`RestaurantDetailRepo`、`FavorRepo`、`SignInRepo`、`SettingsRepo`、`MenuVisionRepo`。依賴方向朝內——`data_layer` import `domain`，反之絕無。
-- **Dto 與 Entity 分離**：`lib/api/dto/` 下的 `Yelp*Dto` 以 `@JsonSerializable` 標註，由 `json_serializable` 產生 `*.g.dart`。Dto 是 API 線上格式的鏡射（欄位名對齊 Yelp JSON），Entity 才是 App 內部使用的模型；AI 菜單辨識則透過 `menu_analysis_schema.dart` 定義 Gemini Structured Output Schema，輸出由 `MenuVisionRepo` 映射為領域 Entity。
+- **`*Repo` implements `*Repository`**：`MainRepo`、`RestaurantDetailRepo`、`FavorRepo`、`SignInRepo`、`SettingsRepo`、`MenuVisionRepo`、`AiFoodieRepo`、`ReviewSummaryRepo`。依賴方向朝內——`data_layer` import `domain`，反之絕無。
+- **Dto 與 Entity 分離**：`lib/api/dto/` 下的 `Yelp*Dto` 以 `@JsonSerializable` 標註，由 `json_serializable` 產生 `*.g.dart`。Dto 是 API 線上格式的鏡射（欄位名對齊 Yelp JSON），Entity 才是 App 內部使用的模型；AI 菜單辨識與評論摘要則透過 `lib/data_layer/models/` 的 `menu_analysis_schema.dart`、`review_summary_schema.dart`、`ai_foodie_schema.dart` 定義 Gemini Structured Output Schema，輸出由對應的 Repository 映射為領域 Entity。
 - **轉換點明確**：`RestaurantEntity.fromDto(dto)` 一律在 `data_layer` 內呼叫（`main_repo.dart:63`、`restaurant_detail_repo.dart:22,29`、`sign_in_repo.dart:43`、`favor_data_source.dart:52`）。**Dto 永不外洩到 Presentation 層。**
 - **`FavorDataSource`**：最愛清單在 Firestore 的**單一存取點**，每個最愛項目以 subcollection `favors/{uid}/items/{restaurant_id}` 結構儲存。內含空字串 uid 的 guard——少了它 Firestore 會拋 `ArgumentError`。
 
 ### 3. 表現層 (Presentation Layer)
 
-- **Feature-First 目錄**：`lib/flow/<feature>/` 下再分 `bloc/` 與 `view/`，每個 feature 自成一個垂直切片（main、restaurant、favor、signinup、settings、splash、filter、photo_viewer、menu_vision）。
+- **Feature-First 目錄**：`lib/flow/<feature>/` 下再分 `bloc/` 與 `view/`，每個 feature 自成一個垂直切片（main、restaurant、favor、signinup、settings、splash、filter、photo_viewer、menu_vision、ai_foodie）。
 - **BLoC 單向資料流**：`Bloc<Event, State>` + `Equatable`。State 以**具名子類別**表達（`MainInitial` / `InProgress` / `Success` / `Failure` / `LoadMoreSuccess` / `ToggleFavorSuccess`；MenuVision 則採 `sealed class MenuVisionState` 搭配 Pattern Matching），而非單一 class 塞 `isLoading` 布林旗標——狀態互斥性由型別系統保證。Menu Vision 與 AI 覓食由 BLoC 將 nullable entity 轉為欄位 non-null 的 UI model（`lib/flow/<feature>/model/`），呈現用預設值集中於轉換處，View 只讀 UI model。
 - **Design Tokens**：`lib/features/foundation/style/` 下的 `AppThemeData`、`ThemeColor`、`ThemeSize`、`ThemeFontSize`、`ThemeTextStyle`。
 
