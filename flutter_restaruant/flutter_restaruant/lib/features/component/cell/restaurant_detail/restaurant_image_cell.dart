@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 
-import '../../../../app/constants/constants_barrel.dart';
+import '../../../../gen/assets.gen.dart';
 import '../../../foundation/style/style_barrel.dart';
 import '../../../utils/utils_barrel.dart';
 import '../../../../flow/photo_viewer/view/view_barrel.dart';
@@ -45,9 +45,9 @@ class RestaurantImageCell extends StatelessWidget {
                   ).pushNamed(PhotoViewer.routeName, arguments: arguments);
                 },
                 child: FadeInImage.assetNetwork(
-                  placeholder: UIConstants.noImage,
+                  placeholder: Assets.images.empty.path,
                   imageErrorBuilder: (context, error, trace) =>
-                      Image.asset(UIConstants.noImage, fit: BoxFit.cover),
+                      Assets.images.empty.image(fit: BoxFit.cover),
                   image: _photos[index],
                   imageCacheHeight: RestaurantImageCell._imageH,
                   imageCacheWidth: MediaQuery.of(context).size.width.toInt(),

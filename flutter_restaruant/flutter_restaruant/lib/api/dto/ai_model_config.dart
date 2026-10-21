@@ -92,6 +92,19 @@ components 陣列內的每個物件必須包含 component_type 與 data：
 2. 進行成分拆解，明確標註是否有致敏成分 (包含堅果、花生、蛋、牛奶、小麥麩質、甲殼類海鮮、大豆)。
 3. 一律依據定義的 JSON Schema 輸出純 JSON，不可有任何額外的對話或說明。
 ''';
+  static const double defaultReviewSummaryTemperature = 0.2;
+  static const String defaultReviewSummarySystemInstruction = '''
+你是一位米其林美食評審與大數據食評分析專家。請閱讀給予的餐廳資訊與顧客評論，客觀提煉出：
+1. 值得一試 (pros: 1~3 項核心優勢)
+2. 注意事項或避雷點 (cons: 1~2 項需留意之處)
+3. 招牌必點或特色菜品 (highlights: 1~3 項招牌餐點或體驗)
+4. 一句話短評總結 (summary: ≤ 40 字之客觀總結)
+
+【格式與語言約束】
+- 無論原始顧客短評語言為何，一律以繁體中文 (zh-TW) 輸出。
+- 條目必須客觀、精煉，避免冗言贅字。
+- 嚴格依據定義的 JSON Schema 輸出純 JSON，不可有任何額外的對話或說明。
+''';
 
   static const String _aiFoodieModelKey = 'ai_foodie_model';
   static const String _aiFoodieTemperatureKey = 'ai_foodie_temperature';
@@ -100,6 +113,11 @@ components 陣列內的每個物件必須包含 component_type 與 data：
   static const String _menuVisionModelKey = 'menu_vision_model';
   static const String _menuVisionSystemInstructionKey =
       'menu_vision_system_instruction';
+  static const String _reviewSummaryModelKey = 'review_summary_model';
+  static const String _reviewSummaryTemperatureKey =
+      'review_summary_temperature';
+  static const String _reviewSummarySystemInstructionKey =
+      'review_summary_system_instruction';
   static const String _staticMapApiKeyKey = 'static_map_api_key';
   static const String _yelpAuthTokenKey = 'yelp_api_auth_token';
 
@@ -121,6 +139,19 @@ components 陣列內的每個物件必須包含 component_type 與 data：
   String get menuVisionSystemInstruction => _string(
     _menuVisionSystemInstructionKey,
     defaultMenuVisionSystemInstruction,
+  );
+
+  String get reviewSummaryModel =>
+      _string(_reviewSummaryModelKey, defaultModel);
+
+  double get reviewSummaryTemperature => _temperature(
+    _reviewSummaryTemperatureKey,
+    defaultReviewSummaryTemperature,
+  );
+
+  String get reviewSummarySystemInstruction => _string(
+    _reviewSummarySystemInstructionKey,
+    defaultReviewSummarySystemInstruction,
   );
 
   // 金鑰不寫在程式碼裡，必須由 Console 提供；未設定時為空字串。

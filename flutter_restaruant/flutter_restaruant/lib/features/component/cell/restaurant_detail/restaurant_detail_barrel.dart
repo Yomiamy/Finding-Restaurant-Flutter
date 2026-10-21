@@ -4,3 +4,5 @@ export 'restaurant_detail_skeleton.dart';
 export 'restaurant_head_cell.dart';
 export 'restaurant_image_cell.dart';
 export 'restaurant_info_cell.dart';
+export 'review_summary_card.dart';
+export 'review_summary_skeleton.dart';

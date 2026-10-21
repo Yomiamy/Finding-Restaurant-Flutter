@@ -297,6 +297,23 @@ class MessageLookup extends MessageLookupByLibrary {
     "restaurant_detail_menu_vision_tooltip":
         MessageLookupByLibrary.simpleMessage("AI Menu Vision Recognition"),
     "review_count_suffix": MessageLookupByLibrary.simpleMessage(" reviews"),
+    "review_summary_cons": MessageLookupByLibrary.simpleMessage(
+      "Considerations",
+    ),
+    "review_summary_empty": MessageLookupByLibrary.simpleMessage(
+      "No review summary available",
+    ),
+    "review_summary_failed": MessageLookupByLibrary.simpleMessage(
+      "Failed to generate AI review summary",
+    ),
+    "review_summary_highlights": MessageLookupByLibrary.simpleMessage(
+      "Highlights",
+    ),
+    "review_summary_pros": MessageLookupByLibrary.simpleMessage("Pros"),
+    "review_summary_retry": MessageLookupByLibrary.simpleMessage("Retry"),
+    "review_summary_title": MessageLookupByLibrary.simpleMessage(
+      "AI Review Intelligence",
+    ),
     "route_navigation": MessageLookupByLibrary.simpleMessage(
       "Route Navigation",
     ),

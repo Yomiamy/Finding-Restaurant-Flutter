@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../../domain/entities/entities_barrel.dart';
-import '../../../../app/constants/constants_barrel.dart';
+import '../../../../gen/assets.gen.dart';
 import '../../../foundation/style/style_barrel.dart';
 import '../../../../flow/restaurant/bloc/bloc_barrel.dart';
 import '../../../../flow/signinup/view/view_barrel.dart';
@@ -27,15 +27,15 @@ class RestaurantHeadCell extends StatelessWidget {
     return Stack(
       children: <Widget>[
         FadeInImage.assetNetwork(
-          placeholder: UIConstants.noImage,
+          placeholder: Assets.images.empty.path,
           // FadeInImage 的 width/height 不會傳給 errorBuilder 回傳的 widget，
           // 未約束時會以原圖尺寸撐開外層 Stack，把收藏按鈕推出畫面。
-          imageErrorBuilder: (context, error, trace) => Image.asset(
-            UIConstants.noImage,
-            width: MediaQuery.of(context).size.width,
-            height: RestaurantHeadCell.headImageH.toDouble(),
-            fit: BoxFit.cover,
-          ),
+          imageErrorBuilder: (context, error, trace) =>
+              Assets.images.empty.image(
+                width: MediaQuery.of(context).size.width,
+                height: RestaurantHeadCell.headImageH.toDouble(),
+                fit: BoxFit.cover,
+              ),
           image: _imageUrl,
           imageCacheHeight: RestaurantHeadCell.headImageH,
           imageCacheWidth: MediaQuery.of(context).size.width.toInt(),
@@ -65,7 +65,9 @@ class RestaurantHeadCell extends StatelessWidget {
                   bloc.add(ToggleFavor(summaryInfo: _summaryInfo));
                 },
                 child: CircleAvatar(
-                  backgroundColor: ThemeColor.colorffffff.withValues(alpha: 0.9),
+                  backgroundColor: ThemeColor.colorffffff.withValues(
+                    alpha: 0.9,
+                  ),
                   radius: ThemeSize.space20,
                   child: Icon(
                     _summaryInfo.favor ? Icons.favorite : Icons.favorite_border,

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../features/foundation/style/style_barrel.dart';
+import '../../../gen/assets.gen.dart';
 
 /// 設定頁頁首圖形。
 ///
@@ -14,8 +15,7 @@ class SettingsHeaderWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) => ClipOval(
-    child: Image.asset(
-      'images/icon_setting_icon.jpg',
+    child: Assets.images.iconSettingIcon.image(
       // 設計稿（Stitch handoff）標註 Settings Graphic: 200.0 × 200.0dp。
       width: ThemeSize.size200,
       height: ThemeSize.size200,

@@ -98,6 +98,18 @@ void main() {
       expect(repo, isA<MenuVisionRepository>());
     });
 
+    test('AiFoodieRepository resolves to AiFoodieRepository', () {
+      expect(GetIt.I.isRegistered<AiFoodieRepository>(), isTrue);
+      final repo = GetIt.I<AiFoodieRepository>();
+      expect(repo, isA<AiFoodieRepository>());
+    });
+
+    test('ReviewSummaryRepository resolves to ReviewSummaryRepository', () {
+      expect(GetIt.I.isRegistered<ReviewSummaryRepository>(), isTrue);
+      final repo = GetIt.I<ReviewSummaryRepository>();
+      expect(repo, isA<ReviewSummaryRepository>());
+    });
+
     test('Lazy singletons return the same instance', () {
       final mainRepo1 = GetIt.I<MainRepository>();
       final mainRepo2 = GetIt.I<MainRepository>();
@@ -106,6 +118,10 @@ void main() {
       final favorRepo1 = GetIt.I<FavorRepository>();
       final favorRepo2 = GetIt.I<FavorRepository>();
       expect(identical(favorRepo1, favorRepo2), isTrue);
+
+      final reviewSummaryRepo1 = GetIt.I<ReviewSummaryRepository>();
+      final reviewSummaryRepo2 = GetIt.I<ReviewSummaryRepository>();
+      expect(identical(reviewSummaryRepo1, reviewSummaryRepo2), isTrue);
     });
   });
 }

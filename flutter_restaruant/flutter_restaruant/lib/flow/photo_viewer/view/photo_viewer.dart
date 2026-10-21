@@ -2,7 +2,7 @@ import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
 
-import '../../../app/constants/constants_barrel.dart';
+import '../../../gen/assets.gen.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../generated/l10n.dart';
@@ -30,7 +30,10 @@ class _PhotoViewerState extends State<PhotoViewer> {
         leading: PlatformIconButton(
           padding: const EdgeInsets.all(ThemeSize.zero),
           onPressed: () => Navigator.of(context).pop(),
-          materialIcon: const Icon(Icons.arrow_back, color: ThemeColor.colorffffff),
+          materialIcon: const Icon(
+            Icons.arrow_back,
+            color: ThemeColor.colorffffff,
+          ),
           cupertinoIcon: const Icon(
             CupertinoIcons.back,
             color: ThemeColor.colorffffff,
@@ -53,7 +56,7 @@ class _PhotoViewerState extends State<PhotoViewer> {
         child: FadeInImage.assetNetwork(
           width: MediaQuery.of(context).size.width,
           height: MediaQuery.of(context).size.height,
-          placeholder: UIConstants.noImage,
+          placeholder: Assets.images.empty.path,
           image: _photoUrl,
           fit: BoxFit.contain,
         ),

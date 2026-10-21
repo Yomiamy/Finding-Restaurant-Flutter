@@ -140,5 +140,12 @@
   "weekday_thursday": "Thursday",
   "weekday_friday": "Friday",
   "weekday_saturday": "Saturday",
-  "weekday_sunday": "Sunday"
+  "weekday_sunday": "Sunday",
+  "review_summary_title": "AI Review Intelligence",
+  "review_summary_pros": "Pros",
+  "review_summary_cons": "Considerations",
+  "review_summary_highlights": "Highlights",
+  "review_summary_retry": "Retry",
+  "review_summary_failed": "Failed to generate AI review summary",
+  "review_summary_empty": "No review summary available"
 }

@@ -1349,6 +1349,76 @@ class S {
   String get weekday_sunday {
     return Intl.message('Sunday', name: 'weekday_sunday', desc: '', args: []);
   }
+
+  /// `AI Review Intelligence`
+  String get review_summary_title {
+    return Intl.message(
+      'AI Review Intelligence',
+      name: 'review_summary_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Pros`
+  String get review_summary_pros {
+    return Intl.message(
+      'Pros',
+      name: 'review_summary_pros',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Considerations`
+  String get review_summary_cons {
+    return Intl.message(
+      'Considerations',
+      name: 'review_summary_cons',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Highlights`
+  String get review_summary_highlights {
+    return Intl.message(
+      'Highlights',
+      name: 'review_summary_highlights',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Retry`
+  String get review_summary_retry {
+    return Intl.message(
+      'Retry',
+      name: 'review_summary_retry',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to generate AI review summary`
+  String get review_summary_failed {
+    return Intl.message(
+      'Failed to generate AI review summary',
+      name: 'review_summary_failed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No review summary available`
+  String get review_summary_empty {
+    return Intl.message(
+      'No review summary available',
+      name: 'review_summary_empty',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
