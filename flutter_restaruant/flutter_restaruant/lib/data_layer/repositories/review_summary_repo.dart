@@ -7,7 +7,7 @@ import 'package:meta/meta.dart';
 import '../../api/dto/ai_model_config.dart';
 import '../../domain/entities/entities_barrel.dart';
 import '../../domain/repositories/review_summary_repository.dart';
-import 'review_summary_schema.dart';
+import '../models/review_summary_schema.dart';
 
 /// 評論推論執行函式簽章（便於單元測試與離線打樁）
 typedef ReviewSummaryPromptFunction =

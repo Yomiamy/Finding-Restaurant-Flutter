@@ -1,5 +1,6 @@
 import 'dart:convert';
 
+import 'package:flutter_restaruant/data_layer/models/model_barrel.dart';
 import 'package:flutter_restaruant/data_layer/repositories/repositories_barrel.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';

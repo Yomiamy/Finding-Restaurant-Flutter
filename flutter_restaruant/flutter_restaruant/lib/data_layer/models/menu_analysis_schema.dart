@@ -44,17 +44,13 @@ final menuAnalysisSchema = Schema.object(
               description: '單一過敏原資訊',
               properties: {
                 'name': Schema.string(
-                  description:
-                      '過敏原名稱 (如 堅果, 甲殼類, 蛋, 牛奶, 麩質, 花生, 大豆)',
+                  description: '過敏原名稱 (如 堅果, 甲殼類, 蛋, 牛奶, 麩質, 花生, 大豆)',
                 ),
                 'risk_level': Schema.enumString(
                   enumValues: ['contains', 'may_contain', 'none'],
                   description: '過敏原風險等級',
                 ),
-                'note': Schema.string(
-                  description: '過敏原備註說明',
-                  nullable: true,
-                ),
+                'note': Schema.string(description: '過敏原備註說明', nullable: true),
               },
               optionalProperties: ['note'],
             ),
@@ -63,8 +59,7 @@ final menuAnalysisSchema = Schema.object(
             description: '辣度等級 (0: 不辣, 1: 微辣, 2: 中辣, 3: 大辣)',
           ),
           'dietary_tags': Schema.array(
-            description:
-                '飲食偏好標籤 (如 vegan, vegetarian, gluten-free, halal)',
+            description: '飲食偏好標籤 (如 vegan, vegetarian, gluten-free, halal)',
             items: Schema.string(),
           ),
           'chef_recommendation_score': Schema.number(

@@ -69,7 +69,7 @@ class ReviewSummaryEntity extends Equatable {
      });
    }
    ```
-2. **強型別 JSON Schema (`lib/data_layer/repositories/review_summary_schema.dart`)**：
+2. **強型別 JSON Schema (`lib/data_layer/models/review_summary_schema.dart`)**：
    - 遵循 `firebase_ai` 的 `Schema.object` 規範：
      - `pros`: `Schema.array(items: Schema.string())`
      - `cons`: `Schema.array(items: Schema.string())`
