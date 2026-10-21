@@ -576,3 +576,56 @@ AiFoodieBloc (BlocProvider)
    └─► Event: ResetAiFoodie ──► 重置版本 Token + 重新載入 Initial Suggestions
 ```
 
+
+---
+
+## 10. AI 餐廳評論智慧摘要資料流 (AI Review Intelligence & Highlights Flow)
+
+```text
+RestaurantDetailPage (詳情頁加載)
+  │
+  ├─► Yelp API 成功回傳 RestaurantDetailEntity 與 List<ReviewDetailEntity>
+  │     │
+  │     ▼
+  │   ReviewSummaryCard 內部掛載 ReviewSummaryBloc
+  │     │
+  │     ├─► reviews.isEmpty?
+  │     │     ├─► [是] ──► 短路發射 ReviewSummaryEmpty ──► SizedBox.shrink() 隱藏，零 API 浪費
+  │     │     └─► [否] ──► 發射 ReviewSummaryLoading ──► 渲染 Shimmer 骨架屏
+  │     │
+  │     ▼
+  │   ReviewSummaryRepo.generateReviewSummary(detail, reviews)
+  │     │
+  │     ├─ 1. formatPrompt(detail, reviews)
+  │     │     ├─ 餐廳中繼資料格式化 (店名、評分、分類、地址)
+  │     │     ├─ 顧客評論以 <customer_reviews> 標籤安全沙盒隔離 (防 Prompt Injection)
+  │     │     └─ 系統任務指示約束 (繁體中文、Pros/Cons/Highlights/Summary 結構化產出)
+  │     │
+  │     ├─ 2. 呼叫 FirebaseAI.googleAI().generativeModel(...)
+  │     │     ├─ model / systemInstruction: AiModelConfig (Remote Config 動態控制)
+  │     │     ├─ generationConfig: GenerationConfig(
+  │     │     │    temperature: AiModelConfig.reviewSummaryTemperature,
+  │     │     │    responseMimeType: 'application/json',
+  │     │     │    responseSchema: reviewSummarySchema,
+  │     │     │  )
+  │     │     └─ Prompt 執行與 Token 採樣 (由 reviewSummarySchema 約束格式)
+  │     │
+  │     ├─ 3. 解析模型回傳 JSON ➔ ReviewSummaryEntity.fromJson(decoded)
+  │     │
+  │     ├─► 成功 ──► State: ReviewSummarySuccess(summary)
+  │     │                 │
+  │     │                 ▼
+  │     │           ReviewSummaryCard 渲染情報卡片
+  │     │             ├─ 總評摘要 (summary ≤ 40字)
+  │     │             ├─ 值得一試 Pros (綠色 Check 標籤)
+  │     │             ├─ 注意事項 Cons (橙色 Alert 標籤)
+  │     │             └─ 招牌必點 Highlights (紫色 Sparkles 標籤)
+  │     │
+  │     └─► 失敗 ──► State: ReviewSummaryFailure(error, canRetry: true)
+  │                       │
+  │                       ▼
+  │                 ReviewSummaryCard 渲染輕量重試提示與按鈕
+  │                       │ 點擊重試
+  │                       ▼
+  │                 Event: RetryReviewSummary (使用快取之 detail 與 reviews 重新觸發)
+```
