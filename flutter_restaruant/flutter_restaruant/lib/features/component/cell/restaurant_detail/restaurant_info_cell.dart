@@ -5,6 +5,7 @@ import 'package:url_launcher/url_launcher.dart';
 
 import '../../../../domain/entities/entities_barrel.dart';
 import '../../../../app/constants/constants_barrel.dart';
+import '../../../../gen/assets.gen.dart';
 import '../../../foundation/style/style_barrel.dart';
 import '../../../utils/utils_barrel.dart';
 import '../../../../generated/l10n.dart';
@@ -68,9 +69,9 @@ class RestaurantInfoCell extends StatelessWidget {
                   fit: StackFit.expand,
                   children: [
                     FadeInImage.assetNetwork(
-                      placeholder: UIConstants.noImage,
+                      placeholder: Assets.images.empty.path,
                       imageErrorBuilder: (context, error, trace) =>
-                          Image.asset(UIConstants.noImage, fit: BoxFit.cover),
+                          Assets.images.empty.image(fit: BoxFit.cover),
                       image: staticMapUrl,
                       imageCacheHeight: RestaurantInfoCell._mapImageH,
                       imageCacheWidth: RestaurantInfoCell._mapImageW,

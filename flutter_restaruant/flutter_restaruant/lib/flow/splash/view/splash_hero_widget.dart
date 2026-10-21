@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../features/foundation/style/style_barrel.dart';
+import '../../../gen/assets.gen.dart';
 
 /// 啟動頁的圓形主視覺。
 ///
@@ -19,8 +20,7 @@ class SplashHeroWidget extends StatelessWidget {
     child: Stack(
       children: <Widget>[
         ClipOval(
-          child: Image.asset(
-            'images/launch_image.png',
+          child: Assets.images.launchImage.image(
             width: ThemeSize.size200,
             height: ThemeSize.size200,
             fit: BoxFit.cover,

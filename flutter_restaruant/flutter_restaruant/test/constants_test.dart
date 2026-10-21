@@ -1,5 +1,6 @@
 import 'package:flutter_restaruant/app/constants/constants_barrel.dart';
 import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
+import 'package:flutter_restaruant/gen/assets.gen.dart';
 import 'package:flutter_test/flutter_test.dart';
 
 void main() {
@@ -18,7 +19,7 @@ void main() {
     });
 
     test('UIConstants camelCase naming and immutability', () {
-      expect(UIConstants.noImage, equals('images/empty.png'));
+      expect(Assets.images.empty.path, equals('images/empty.png'));
       expect(ThemeSize.size100, equals(100.0));
       expect(ThemeSize.size20, equals(20.0));
       expect(UIConstants.mapDefaultLocation.latitude, equals(25.048036));

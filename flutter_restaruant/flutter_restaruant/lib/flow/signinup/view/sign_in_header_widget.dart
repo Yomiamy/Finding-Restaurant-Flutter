@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../features/foundation/style/style_barrel.dart';
+import '../../../gen/assets.gen.dart';
 import '../../../generated/l10n.dart';
 
 /// 登入頁頁首品牌區塊。
@@ -19,13 +20,16 @@ class SignInHeaderWidget extends StatelessWidget {
     child: Stack(
       fit: StackFit.expand,
       children: <Widget>[
-        Image.asset('images/img_signin_header.jpg', fit: BoxFit.cover),
+        Assets.images.imgSigninHeader.image(fit: BoxFit.cover),
         const DecoratedBox(
           decoration: BoxDecoration(
             gradient: LinearGradient(
               begin: Alignment.bottomCenter,
               end: Alignment.topCenter,
-              colors: <Color>[ThemeColor.color8a000000, ThemeColor.color00000000],
+              colors: <Color>[
+                ThemeColor.color8a000000,
+                ThemeColor.color00000000,
+              ],
             ),
           ),
         ),

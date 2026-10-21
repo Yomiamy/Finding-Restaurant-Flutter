@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../../../domain/entities/entities_barrel.dart';
-import '../../../../app/constants/constants_barrel.dart';
+import '../../../../gen/assets.gen.dart';
 import '../../../foundation/extension/extension_barrel.dart';
 import '../../../foundation/style/style_barrel.dart';
 import '../../../../generated/l10n.dart';
@@ -42,15 +42,15 @@ class RestaurantItemCell extends StatelessWidget {
             child: FadeInImage.assetNetwork(
               width: ThemeSize.size110,
               height: ThemeSize.size110,
-              placeholder: UIConstants.noImage,
+              placeholder: Assets.images.empty.path,
               // FadeInImage 的 width/height 不會傳給 errorBuilder 回傳的 widget，
               // 這裡必須自行約束，否則載圖失敗時會用原圖尺寸撐爆外層 Row。
-              imageErrorBuilder: (context, error, trace) => Image.asset(
-                UIConstants.noImage,
-                width: ThemeSize.size110,
-                height: ThemeSize.size110,
-                fit: BoxFit.cover,
-              ),
+              imageErrorBuilder: (context, error, trace) =>
+                  Assets.images.empty.image(
+                    width: ThemeSize.size110,
+                    height: ThemeSize.size110,
+                    fit: BoxFit.cover,
+                  ),
               image: _summaryInfo.imageUrl ?? '',
               imageCacheHeight: ThemeSize.size110.toInt(),
               imageCacheWidth: ThemeSize.size110.toInt(),
