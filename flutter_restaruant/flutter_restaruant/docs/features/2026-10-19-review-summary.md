@@ -62,7 +62,7 @@ class ReviewSummaryEntity extends Equatable {
 
 1. **契約介面 (`lib/domain/repositories/review_summary_repository.dart`)**：
    ```dart
-   abstract class ReviewSummaryRepository {
+   abstract interface class ReviewSummaryRepository {
      Future<ReviewSummaryEntity> generateReviewSummary({
        required RestaurantDetailEntity detail,
        required List<ReviewDetailEntity> reviews,
