@@ -18,6 +18,6 @@ YelpSearchDto _$YelpSearchDtoFromJson(Map<String, dynamic> json) =>
 
 Map<String, dynamic> _$YelpSearchDtoToJson(YelpSearchDto instance) =>
     <String, dynamic>{
-      'businesses': instance.businesses,
+      'businesses': instance.businesses?.map((e) => e.toJson()).toList(),
       'total': instance.total,
     };
