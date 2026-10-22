@@ -91,6 +91,12 @@ void main() {
       final fadeInImageFinder = find.byType(FadeInImage);
       expect(fadeInImageFinder, findsOneWidget);
 
+      const expectedAssetPath = 'images/icon_static_map_plachold.png';
+      expect(
+        Assets.images.iconStaticMapPlachold.path,
+        expectedAssetPath,
+      );
+
       final fadeInImage = tester.widget<FadeInImage>(fadeInImageFinder);
       final placeholder = fadeInImage.placeholder;
       final AssetImage placeholderAssetImage;
@@ -101,7 +107,7 @@ void main() {
       }
       expect(
         placeholderAssetImage.assetName,
-        Assets.images.iconStaticMapPlachold.path,
+        expectedAssetPath,
       );
 
       final errorWidget = fadeInImage.imageErrorBuilder!(
@@ -112,7 +118,7 @@ void main() {
       final errorImageProvider = errorWidget.image as AssetImage;
       expect(
         errorImageProvider.assetName,
-        Assets.images.iconStaticMapPlachold.path,
+        expectedAssetPath,
       );
       expect(errorWidget.fit, BoxFit.cover);
     });
