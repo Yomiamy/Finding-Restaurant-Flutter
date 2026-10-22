@@ -1600,6 +1600,56 @@ class ComparisonMatrixComponent extends A2UIComponent {
   - PR #135 一併把 Yelp token 與 Static Map key 改由 Remote Config 的 `yelp_api_auth_token`、`static_map_api_key` 提供，並從 `constants.dart` 移除寫死字串。兩者為**必填**、預設空字串：Console 未設定時 Yelp 會回 401、地圖縮圖顯示佔位圖。收益是**金鑰輪替不必發版**，但不降低外洩面：值在裝置上照樣讀得出來。
   - 因此這只是過渡。兩把金鑰已進 git 歷史，仍須撤銷並輪替；要讓金鑰完全不出現在 client，長期仍須走 Server-side Broker（P0「移除硬編碼 API Key」）。
 
+#### [A-8.6] 根治 Yelp 關鍵字假搜尋缺陷：廢除本地記憶體 50 筆過濾，直通遠端 `term` 查詢
+- **優先級**：`P0` (阻擋級 / 核心搜尋邏輯缺陷)
+- **預估 Effort**：`0.5d`
+- **價值與收益**：
+  目前首頁搜尋存在「50 筆過濾假象」：`main_repo.dart:53` 將 `term` 硬編碼為 `'Restaurants'`，而 `main_repo.dart:87-104` 僅以 `summaryInfoSet.where(...)` 在手機記憶體做純字串過濾。當使用者搜尋的餐廳或菜色不在周邊前 50 筆內，將直接被判定為「查無結果」，且 Yelp 強大的全文檢索（菜單、招牌菜、短評）完全被閒置。修改為直通遠端查詢後，搜尋框可檢索 Yelp 全量資料庫，並支援換關鍵字時重置分頁。
+- **影響檔案路徑**：
+  - 修改：`lib/data_layer/repositories/main_repo.dart`（移除 `filterByKeyword` 的本地 `where`，將關鍵字傳入 `businessesSearch(term: keyword)`，重構分頁狀態重置）
+  - 修改：`lib/domain/repositories/main_repository.dart`（調整介面契約）
+  - 修改：`lib/flow/main/bloc/main_bloc.dart`（整合關鍵字變更與分頁查詢，加上 Debounce 防抖機制）
+  - 修改：`test/main_bloc_load_more_test.dart`（更新搜尋與分頁單元測試）
+- **具體實作建議**：
+  1. `MainRepo.fetchYelpSearchInfo` 增加 `String? term` 參數，若使用者有輸入則帶入 `term: keyword`，無輸入時回退至 `'Restaurants'`。
+  2. 搜尋框輸入時加入 300~500ms 的 Debounce 防抖，避免使用者每次鍵入字母都消耗 Yelp API 配額。
+  3. 換關鍵字時重置 `_offset = 0` 與 `summaryInfoSet.clear()`，清空舊結果並重新分頁加載。
+  4. 徹底刪除 `MainRepo.filterByKeyword` 中的本地記憶體比對邏輯，搜尋結果以遠端 API 為唯一事實來源。
+
+#### [A-8.7] 解除 GPS 強制綁定：搜尋 API 支援 `location` 文字地名，修正 `price` 為逗號分隔字串
+- **優先級**：`P0` (阻擋級 / 核心可用性缺陷)
+- **預估 Effort**：`0.5d`
+- **價值與收益**：
+  1. 目前專案在 `APIClz.businessesSearch` 未宣告 `location` 參數，強迫綁定手機 GPS 經緯度。一旦使用者關閉定位權限，App 直接癱瘓無法搜尋。官方支援 `location`（城市、地址、郵遞區號）與 `(latitude, longitude)` 二選一，補齊後可支援「輸入城市搜尋異地餐廳」。
+  2. `APIClz.businessesSearch` 的 `price` 參數型別錯誤地宣告為 `int?`。官方規格為逗號分隔字串（例如 `"1,2"` 同時允許一級與二級價位），修正後可支援多重價格區間複選。
+- **影響檔案路徑**：
+  - 修改：`lib/api/api_clz.dart`（`businessesSearch` 新增 `@Query('location') String? location`，`price` 改為 `@Query('price') String? price`）
+  - 生成：`lib/api/api_clz.g.dart`（透過 `build_runner` 重新生成）
+  - 修改：`lib/domain/repositories/main_repository.dart`
+  - 修改：`lib/data_layer/repositories/main_repo.dart`
+  - 修改：`lib/flow/main/bloc/main_bloc.dart`、`lib/flow/filter/`
+- **具體實作建議**：
+  1. 修改 `APIClz.businessesSearch` 宣告：`String? location` 與 `String? price`。
+  2. 在 `MainRepo` 建立回退策略：優先使用 GPS `(lat, lng)`；若 GPS 權限被拒或取不到定位，允許傳入預設或使用者輸入之 `location: "Taipei"`。
+  3. 篩選頁 `FilterConfigs` 將多選價格轉換為 `"1,2,3"` 字串傳遞給 API。
+
+#### [A-8.8] 補齊 `RestaurantDetailEntity` 與 DTO 核心缺失欄位（`id`、`price`、`url`、`display_phone`）並剔除廢棄端點
+- **優先級**：`P0` (阻擋級 / 實體完整性缺陷)
+- **預估 Effort**：`0.5d`
+- **價值與收益**：
+  1. 致命實體缺陷：`YelpRestaurantDetailDto` 與 `RestaurantDetailEntity` 竟然都沒有宣告自身的 `id` 屬性，詳情頁實體模型無法識別自身，不利於跳轉、收藏與比對。
+  2. 補齊官方已回傳但專案漏解析的欄位：`price`（價位字串）、`url`（Yelp 官方網頁跳轉連結）、`display_phone`（格式化可讀電話號碼）、`is_claimed`（已認領狀態）、`transactions`（支援外送/訂位）。
+  3. 清理死碼：刪除 `APIClz.fetchToken` (`POST /oauth2/token`)，消滅多年前官方已全面廢除的 OAuth2 介面與生成代碼。
+- **影響檔案路徑**：
+  - 修改：`lib/api/api_clz.dart`（刪除 `fetchToken`）
+  - 修改：`lib/api/dto/yelp_restaurant_detail_dto.dart`（新增 `id`, `alias`, `price`, `url`, `displayPhone`, `isClaimed`, `transactions`）
+  - 修改：`lib/domain/entities/restaurant_detail_entity.dart`（補齊 `id`, `price`, `url`, `displayPhone`）
+  - 修改：`lib/api/dto/yelp_restaurant_summary_dto.dart`（補齊 `isClosed`, `url`, `displayPhone`）
+  - 修改：`lib/features/component/cell/restaurant_detail/restaurant_info_cell.dart`（改用可讀性佳的 `displayPhone`，加入外部 Yelp 連結按鈕）
+- **具體實作建議**：
+  1. 在 DTO 與 Entity 補齊欄位，更新 `fromDto` 映射與 `@JsonSerializable`。
+  2. 移除 `APIClz.fetchToken` 宣告並執行 `make build_runner` 重新生成代碼。
+
 ---
 
 ### 8.3.2 P1 核心改進 (Core Architecture & Testing Upgrades)
@@ -1665,6 +1715,53 @@ class ComparisonMatrixComponent extends A2UIComponent {
 - **具體實作建議**：
   1. 實作 `TokenRefreshInterceptor`：攔截 401 響應，暫停請求隊列，向 Auth 服務換取新 Token 後自動重放原始請求。
   2. 實作 `ErrorHandlingInterceptor`：將 `DioExceptionType.connectionTimeout`, `badResponse` 對應為具體的 `AppException`。
+
+#### [A-8.9] 串接 Yelp Autocomplete API (`GET /v3/autocomplete`) 實現搜尋即時補全與聯想
+- **優先級**：`P1` (核心搜尋體驗增強)
+- **預估 Effort**：`0.8d`
+- **價值與收益**：
+  使用者在搜尋列打字時，即時調用官方 `/v3/autocomplete` 取得 3 大維度建議（熱門查詢詞 `terms`、符合條件店家 `businesses`、分類別名 `categories`），消除「盲搜」與打字錯誤，大幅提升搜尋流暢度。
+- **影響檔案路徑**：
+  - 修改：`lib/api/api_clz.dart`（新增 `@GET('/v3/autocomplete')`）
+  - 新增：`lib/api/dto/yelp_autocomplete_dto.dart`
+  - 新增：`lib/domain/entities/autocomplete_suggestion_entity.dart`
+  - 修改：`lib/domain/repositories/main_repository.dart`、`lib/data_layer/repositories/main_repo.dart`
+  - 修改：`lib/flow/main/`（搜尋欄下拉聯想選單 UI）
+- **具體實作建議**：
+  1. 定義 `autocomplete({@Query('text') required String text, @Query('latitude') double? latitude, @Query('longitude') double? longitude, @Query('locale') String? locale})`。
+  2. 搭配 300ms Debounce，當搜尋列聚焦且輸入 $\ge 2$ 個字元時顯示 Overlay 建議清單。
+  3. 點擊建議項目可直接填入關鍵字或直接跳轉該店家詳情。
+
+#### [A-8.10] 擴充 Yelp 搜尋進階篩選（`categories` 分類別名、`radius` 半徑、`open_now` 營業中與 1,000 筆分頁邊界防護）
+- **優先級**：`P1` (篩選維度擴充)
+- **預估 Effort**：`0.5d`
+- **價值與收益**：
+  1. 目前專案篩選頁無法指定菜系分類，亦無法調整搜尋半徑。補齊 `categories`（如 `"japanese,bars"`）與 `radius`（公尺，上限 40,000）讓搜尋條件更精準。
+  2. 增加 `open_now: bool` 快速篩選營業中。
+  3. 增加邊界防禦：官方規定 `offset + limit <= 1000`，滑動超過 20 頁會報錯 400。加入上限攔截避免 App 崩潰。
+- **影響檔案路徑**：
+  - 修改：`lib/api/api_clz.dart`
+  - 修改：`lib/data_layer/repositories/main_repo.dart`
+  - 修改：`lib/models/filter_configs.dart`
+  - 修改：`lib/flow/filter/view/filter_page.dart`
+- **具體實作建議**：
+  1. `businessesSearch` 增加 `@Query('categories') String? categories`、`@Query('radius') int? radius`、`@Query('open_now') bool? openNow`。
+  2. 在 `MainRepo` 加入檢查：若 `_offset + 50 > 1000` 則停止繼續發送請求，標記到達底端。
+
+#### [A-8.11] 健全 Yelp 鑑權標頭安全：DioClient 攔截器加入 `Bearer ` 前綴容錯與安全檢查
+- **優先級**：`P1` (防禦性架構加固)
+- **預估 Effort**：`0.2d`
+- **價值與收益**：
+  目前 `lib/api/api_clz.dart:61` 直接將 `AiModelConfig().yelpAuthToken` 賦值給 `options.headers['Authorization']`。Yelp 規範必須為 `Bearer <token>`，若 Remote Config 後台漏填 `Bearer `，全 App 所有 Yelp 呼叫將即刻全部 401 崩潰。
+- **影響檔案路徑**：
+  - 修改：`lib/api/api_clz.dart`（`DioClient` interceptor 宣告處）
+- **具體實作建議**：
+  ```dart
+  final rawToken = AiModelConfig().yelpAuthToken.trim();
+  if (rawToken.isNotEmpty) {
+    options.headers['Authorization'] = rawToken.startsWith('Bearer ') ? rawToken : 'Bearer $rawToken';
+  }
+  ```
 
 ---
 
@@ -1777,6 +1874,29 @@ class ComparisonMatrixComponent extends A2UIComponent {
   1. 上述 5 個類別改名為 `_MockXRepository`（檔內 rename，無跨檔引用）。
   2. 驗收：`rtk proxy grep -rnE "^class Mock" test/` 輸出為空。
 
+#### [A-8.12] 串接 Yelp 分類體系 API (`GET /v3/categories` 與 `/v3/categories/{alias}`) 建立全量菜系分類樹過濾
+- **優先級**：`P2` (進階搜尋維度)
+- **預估 Effort**：`1.0d`
+- **價值與收益**：
+  Yelp 擁有千種標準化餐飲層級分類（含在地化多語系稱謂）。透過串接官方分類 API 並在本地做長週期快取（或 Hive 本地保存），可於篩選頁提供階層式或標籤式「熱門菜系（日式、義式、咖啡輕食）」選單，徹底擺脫目前只能依距離/評分粗暴排序的侷限。
+- **影響檔案路徑**：
+  - 修改：`lib/api/api_clz.dart`
+  - 新增：`lib/api/dto/yelp_category_dto.dart`
+  - 新增：`lib/data_layer/repositories/category_repo.dart`
+  - 修改：`lib/flow/filter/`
+- **具體實作建議**：
+  1. 宣告 `getCategories({@Query('locale') String? locale})`。
+  2. 於本地快取繁體中文餐飲分類，供篩選頁分類 Chip 元件動態渲染。
+
+#### [A-8.13] 評估 Yelp GraphQL 聚合查詢 (`POST /v3/graphql`) 實現單次聚合請求
+- **優先級**：`P2` (網路層延遲優化)
+- **預估 Effort**：`0.8d`
+- **價值與收益**：
+  目前點擊進入餐廳詳情頁需同時併發 2 支 REST API（Business Details + Reviews）。若 API Key 具備官方 GraphQL 存取權限，可透過單一 POST GraphQL 請求同時取得店家資訊與精選評論，減少 50% 網路連線建立開銷，顯著改善詳情頁載入延遲。
+- **影響檔案路徑**：
+  - 新增：`lib/api/graphql/yelp_graphql_client.dart`
+  - 修改：`lib/data_layer/repositories/restaurant_detail_repo.dart`
+
 ---
 
 ## 8.4 與既有 Roadmap 的對齊建議 (Alignment with Existing Roadmap)
@@ -1790,10 +1910,13 @@ class ComparisonMatrixComponent extends A2UIComponent {
  Phase 1 收尾 (地基修復) ──► 納入 E-8.1 (PR CI) & E-8.3 (Makefile)
                                      │
  Phase 1.5 (體驗升級)   ──► 納入 A-8.1 (Sealed Result) & UI-8.1 (Dialog佇列) & UI-8.2 (砍死碼)
+                                     & A-8.6~A-8.8 (Yelp 假搜尋根治、GPS 解綁、實體欄位補齊)
                                      │
  Phase 2 (社群/轉化)    ──► 納入 A-8.3 (Dio攔截器) & UI-8.4 (色差校正) & UI-8.3 (語法糖)
+                                     & A-8.9~A-8.11 (Yelp Autocomplete 補全、進階篩選、鑑權容錯)
                                      │
  Phase 3 (AI M4/M5 支撐) ──► 納入 E-8.2 (mocktail測試) & E-8.4 (80%覆蓋率) & UI-8.6 (A11y)
+                                     & A-8.12~A-8.13 (Yelp 分類樹過濾與 GraphQL 聚合優化)
 ========================================================================================
 ```
 
@@ -1803,17 +1926,20 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 2. **融入 Phase 1.5 空間與視覺體驗升級**：
    - 伴隨目前正在進行的離線快取與標籤過濾開發，同步落地 **A-8.1 (Dart 3 Sealed Result 體系)**，徹底終結網路層錯誤黑洞。
+   - 優先實施 **A-8.6 (根除 50 筆假過濾直通遠端搜尋)**、**A-8.7 (支援 location 地名與價格區間)** 與 **A-8.8 (補齊 DTO/Entity 核心欄位並清理死碼)**，徹底修復專案成立以來的核心搜尋缺陷。
    - **UI-8.1 (DialogQueueManager)** 融入通知與網路異常彈窗機制，杜絕快速連點重疊。
    - **UI-8.2 (刪除 PlatformWidget 死代碼)** 已於 2026-09-26 完成 (Issue #128 / PR #129)，保持 codebase 斯巴達式簡潔。
 
 3. **融入 Phase 2 社群生態與轉化閉環**：
-   - 微訂位與候位排隊涉及敏感的使用者認證，此時引入 **A-8.3 (健全 Dio 攔截器體系：401 自動換約)** 能直接保障交易 session 的穩定。
+   - 微訂位與候位排隊涉及敏感的使用者認證，此時引入 **A-8.3 (健全 Dio 攔截器體系：401 自動換約)** 能直接保障交易 session 的穩定，搭配 **A-8.11 (鑑權標頭 Bearer 容錯防禦)**。
+   - 引入 **A-8.9 (Autocomplete 即時聯想)** 與 **A-8.10 (菜系、半徑與營業中進階篩選)** 實現對標 Google Maps 等競品的主流搜尋體驗。
    - **UI-8.4 (色差校正)** 與 **UI-8.3 (BuildContext 擴充語法糖)** 將作為視覺打磨的主力。
 
 4. **全面支撐 Phase 3 (Google AI Studio M4/M5 推進)**：
-   - 隨著 2026-09-12 PR #116 拍菜單助手 (M3) 的落地，即將展開 M4 (覓食助理) 與 M5 (行程生成)。
-   - **E-8.2 (`mocktail` 測試框架)** 已於 2026-09-27 完成 (Issue #130 / PR #131)，M4 對話式 BottomSheet 與 Function Calling 的 Mock 測試可直接沿用；後續 **E-8.6 (`blocTest` 統一)** 與 **E-8.7 (mock 命名統一)** 收齊測試寫法。
-   - **E-8.4 (核心測試覆蓋率 $\ge 80\%$)** 與 **UI-8.6 (無障礙守衛)** 將作為 M5 最終交付上線的堅實品質驗收指標。
+   - 隨著 2026-09-12 PR #116 拍菜單助手 (M3) 與 2026-10-21 PR #155 評論摘要 (M5-Review) 的落地，已進入深度 AI 賦能階段。
+   - **E-8.2 (`mocktail` 測試框架)** 已於 2026-09-27 完成 (Issue #130 / PR #131)；後續 **E-8.6 (`blocTest` 統一)** 與 **E-8.7 (mock 命名統一)** 收齊測試寫法。
+   - **E-8.4 (核心測試覆蓋率 $\ge 80\%$)** 與 **UI-8.6 (無障礙守衛)** 作為最終交付上線的堅實品質驗收指標。
+   - 長期可透過 **A-8.12 (全量菜系分類樹)** 豐富推薦維度，並藉由 **A-8.13 (GraphQL 單次聚合)** 壓低請求次數與延遲。
 
 ---
 
