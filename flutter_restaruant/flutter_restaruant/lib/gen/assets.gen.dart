@@ -21,6 +21,10 @@ class $ImagesGen {
   AssetGenImage get iconSettingIcon =>
       const AssetGenImage('images/icon_setting_icon.jpg');
 
+  /// File path: images/icon_static_map_plachold.png
+  AssetGenImage get iconStaticMapPlachold =>
+      const AssetGenImage('images/icon_static_map_plachold.png');
+
   /// File path: images/img_signin_header.jpg
   AssetGenImage get imgSigninHeader =>
       const AssetGenImage('images/img_signin_header.jpg');
@@ -33,6 +37,7 @@ class $ImagesGen {
   List<AssetGenImage> get values => [
     empty,
     iconSettingIcon,
+    iconStaticMapPlachold,
     imgSigninHeader,
     launchImage,
   ];
