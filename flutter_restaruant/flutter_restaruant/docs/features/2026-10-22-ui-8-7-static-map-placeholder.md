@@ -4,7 +4,7 @@
 - **負責角色**：Flutter & UI 元件專家
 - **狀態**：規劃中 (Draft)
 - **關聯**：
-  - 需求來源：`docs/brainstorm/2026-10-21-features-brainstorm.md` §8.3.3 `[UI-8.7]`
+  - 需求來源：`docs/brainstorm/2026-10-22-features-brainstorm.md` §8.3.3 `[UI-8.7]`
   - 關聯元件：`lib/features/component/cell/restaurant_detail/restaurant_info_cell.dart`
   - 關聯資產：`images/icon_static_map_plachold.png`
   - 效益：提升地圖載入中與錯誤回退狀態的語意傳達與視覺品質

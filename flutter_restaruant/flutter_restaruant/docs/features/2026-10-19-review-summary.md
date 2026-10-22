@@ -3,7 +3,7 @@
 > 項目編號：**M5-Review**  
 > 優先級別：**P1（AI 差異化體驗 / Phase 3）**  
 > 建立日期：2026-10-19  
-> 參考文檔：`docs/brainstorm/2026-10-21-features-brainstorm.md` §7.4 情境 3, §7.6 M5  
+> 參考文檔：`docs/brainstorm/2026-10-22-features-brainstorm.md` §7.4 情境 3, §7.6 M5  
 > 狀態：草稿（待使用者確認）
 
 ---
