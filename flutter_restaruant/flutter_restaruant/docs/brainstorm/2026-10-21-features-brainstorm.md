@@ -1898,6 +1898,23 @@ class ComparisonMatrixComponent extends A2UIComponent {
   - 新增：`lib/api/graphql/yelp_graphql_client.dart`
   - 修改：`lib/data_layer/repositories/restaurant_detail_repo.dart`
 
+#### [UI-8.7] 採用專屬靜態地圖佔位圖 (`icon_static_map_plachold.png`) 替換通用 Empty 圖示
+- **優先級**：`P2`
+- **預估 Effort**：`0.1d`
+- **來源**：詳情頁 UI 細節打磨（`RestaurantInfoCell`）。
+- **價值與收益**：目前 `RestaurantInfoCell`（`lib/features/component/cell/restaurant_detail/restaurant_info_cell.dart:72,74`）在靜態地圖載入中（`placeholder`）或載入失敗（`imageErrorBuilder`）時，皆回退至通用的空碗盤圖示 `Assets.images.empty`。這無法向使用者傳達「此處為地圖位置預覽」之語意。替換為專屬地圖佔位圖示 `images/icon_static_map_plachold.png`（需先在 `pubspec.yaml` 註冊並透過 `make fluttergen` 產生型別安全存取子 `Assets.images.iconStaticMapPlachold`）可大幅改善弱網、離線或未配置金鑰時的版面視覺體驗與語意一致性。
+- **影響檔案路徑**：
+  - 修改：`pubspec.yaml`（`flutter: assets:` 新增 `images/icon_static_map_plachold.png`）
+  - 生成：`lib/gen/assets.gen.dart`（`make fluttergen` 自動產生 `iconStaticMapPlachold` 存取子）
+  - 修改：`lib/features/component/cell/restaurant_detail/restaurant_info_cell.dart`（`FadeInImage.assetNetwork` 的 `placeholder` 與 `imageErrorBuilder` 改用 `Assets.images.iconStaticMapPlachold`）
+  - 修改：`test/component/restaurant_info_cell_test.dart`（補充靜態地圖佔位圖/錯誤圖示渲染之元件測試）
+- **具體實作建議**：
+  1. `pubspec.yaml` 的 `flutter: assets:` 區段加入 `- images/icon_static_map_plachold.png`。
+  2. 執行 `make fluttergen` 重新生成 `lib/gen/assets.gen.dart`。
+  3. 修改 `restaurant_info_cell.dart:72,74`：
+     - `placeholder: Assets.images.iconStaticMapPlachold.path`
+     - `imageErrorBuilder: (context, error, trace) => Assets.images.iconStaticMapPlachold.image(fit: BoxFit.cover)`
+  4. 執行 `flutter test test/component/restaurant_info_cell_test.dart` 驗證無迴歸。
 ---
 
 ## 8.4 與既有 Roadmap 的對齊建議 (Alignment with Existing Roadmap)
@@ -1910,7 +1927,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 ========================================================================================
  Phase 1 收尾 (地基修復) ──► 納入 E-8.1 (PR CI) & E-8.3 (Makefile)
                                      │
- Phase 1.5 (體驗升級)   ──► 納入 A-8.1 (Sealed Result) & UI-8.1 (Dialog佇列) & UI-8.2 (砍死碼)
+ Phase 1.5 (體驗升級)   ──► 納入 A-8.1 (Sealed Result) & UI-8.1 (Dialog佇列) & UI-8.2 (砍死碼) & UI-8.7 (地圖佔位圖)
                                      & A-8.6~A-8.8 (Yelp 假搜尋根治、GPS 解綁、實體欄位補齊)
                                      │
  Phase 2 (社群/轉化)    ──► 納入 A-8.3 (Dio攔截器) & UI-8.4 (色差校正) & UI-8.3 (語法糖)
@@ -1930,6 +1947,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
    - 優先實施 **A-8.6 (根除 50 筆假過濾直通遠端搜尋)**、**A-8.7 (支援 location 地名與價格區間)** 與 **A-8.8 (補齊 DTO/Entity 核心欄位並清理死碼)**，徹底修復專案成立以來的核心搜尋缺陷。
    - **UI-8.1 (DialogQueueManager)** 融入通知與網路異常彈窗機制，杜絕快速連點重疊。
    - **UI-8.2 (刪除 PlatformWidget 死代碼)** 已於 2026-09-26 完成 (Issue #128 / PR #129)，保持 codebase 斯巴達式簡潔。
+   - **UI-8.7 (靜態地圖專屬佔位圖)** 替換詳情頁地圖載入/錯誤時的通用空圖，強化位置預覽語意與視覺一致性。
 
 3. **融入 Phase 2 社群生態與轉化閉環**：
    - 微訂位與候位排隊涉及敏感的使用者認證，此時引入 **A-8.3 (健全 Dio 攔截器體系：401 自動換約)** 能直接保障交易 session 的穩定，搭配 **A-8.11 (鑑權標頭 Bearer 容錯防禦)**。
