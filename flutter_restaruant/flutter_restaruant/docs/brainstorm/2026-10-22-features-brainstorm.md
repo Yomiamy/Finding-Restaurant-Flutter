@@ -9,7 +9,7 @@
 
 本報告整合了架構審計與競品探索報告之事實與推理鏈，產出符合產業界最高標準的產品與技術發展路線圖 (Strategic Product Roadmap) 及 RICE / ICE 雙優先級評估矩陣。
 
-> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。
+> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。**2026-10-22 補記**：檔名前綴其後已再更新為 `2026-10-22`，上述 `2026-09-30` 為當時狀態。
 
 ---
 
@@ -1638,14 +1638,14 @@ class ComparisonMatrixComponent extends A2UIComponent {
 - **優先級**：`P0` (阻擋級 / 實體完整性缺陷)
 - **預估 Effort**：`0.5d`
 - **價值與收益**：
-  1. 致命實體缺陷：`YelpRestaurantDetailDto` 與 `RestaurantDetailEntity` 竟然都沒有宣告自身的 `id` 屬性，詳情頁實體模型無法識別自身，不利於跳轉、收藏與比對。
+  1. 致命實體缺陷：`YelpRestaurantDetailDto` 與 `RestaurantDetailEntity` 竟然都沒有宣告自身的 `id` 屬性，詳情頁實體模型無法識別自身，不利於跳轉、收藏與比對。（2026-10-22 實查：`YelpRestaurantSummaryDto` 已有 `id` 與 `price`（`yelp_restaurant_summary_dto.dart:13,18`），缺口僅在 Detail 側的 DTO 與 Entity。）
   2. 補齊官方已回傳但專案漏解析的欄位：`price`（價位字串）、`url`（Yelp 官方網頁跳轉連結）、`display_phone`（格式化可讀電話號碼）、`is_claimed`（已認領狀態）、`transactions`（支援外送/訂位）。
   3. 清理死碼：刪除 `APIClz.fetchToken` (`POST /oauth2/token`)，消滅多年前官方已全面廢除的 OAuth2 介面與生成代碼。
 - **影響檔案路徑**：
   - 修改：`lib/api/api_clz.dart`（刪除 `fetchToken`）
   - 修改：`lib/api/dto/yelp_restaurant_detail_dto.dart`（新增 `id`, `alias`, `price`, `url`, `displayPhone`, `isClaimed`, `transactions`）
   - 修改：`lib/domain/entities/restaurant_detail_entity.dart`（補齊 `id`, `price`, `url`, `displayPhone`）
-  - 修改：`lib/api/dto/yelp_restaurant_summary_dto.dart`（補齊 `isClosed`, `url`, `displayPhone`）
+  - 修改：`lib/api/dto/yelp_restaurant_summary_dto.dart`（補齊 `isClosed`, `url`, `displayPhone`；`id`、`price` 已存在）
   - 修改：`lib/features/component/cell/restaurant_detail/restaurant_info_cell.dart`（改用可讀性佳的 `displayPhone`，加入外部 Yelp 連結按鈕）
 - **具體實作建議**：
   1. 在 DTO 與 Entity 補齊欄位，更新 `fromDto` 映射與 `@JsonSerializable`。
@@ -1773,7 +1773,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 #### [UI-8.3] 新增 BuildContext 語法糖擴充 (`context.colorScheme`, `context.textTheme`)
 - **優先級**：`P2`
 - **預估 Effort**：`0.2d`
-- **價值與收益**：消除專案內 18+ 處冗長的 `Theme.of(context).colorScheme` 與 `Theme.of(context).textTheme` 樣板程式碼。
+- **價值與收益**：消除專案內 13 處（2026-10-22 實查；原記 18+）冗長的 `Theme.of(context).colorScheme` 與 `Theme.of(context).textTheme` 樣板程式碼。
 - **影響檔案路徑**：
   - 新增：`lib/features/foundation/extension/theme_extension.dart`
 - **具體實作建議**：
@@ -1852,7 +1852,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 - **優先級**：`P2`
 - **預估 Effort**：`0.5d`
 - **來源**：E-8.2（Issue #130 / PR #131）合併前對照誠品 monorepo 測試寫法時發現的落差。
-- **價值與收益**：flutter-styles §7.3.3 要求 BLoC 測試使用 `bloc_test`，對照組 98 個 bloc 測試檔中 93 個使用 `blocTest`；本專案 4 個 BLoC 測試檔僅 `menu_vision_bloc_test.dart` 採用，其餘仍以 `test()` 搭配 `expectLater(bloc.stream, emitsInOrder(...))` 或 `pumpEventQueue()` 手動等待，狀態序列與互動驗證分散在各 case 內。
+- **價值與收益**：flutter-styles §7.3.3 要求 BLoC 測試使用 `bloc_test`，對照組 98 個 bloc 測試檔中 93 個使用 `blocTest`；本專案 4 個 BLoC 測試檔僅 `menu_vision_bloc_test.dart` 採用（2026-10-22 實查：新增的 `review_summary_bloc_test.dart` 亦已採用，`ai_foodie_bloc_test.dart` 有 1 處 `blocTest`、其餘 13 個仍為 `test()`；`sign_in_bloc_test.dart`、`main_bloc_load_more_test.dart` 尚未採用），其餘仍以 `test()` 搭配 `expectLater(bloc.stream, emitsInOrder(...))` 或 `pumpEventQueue()` 手動等待，狀態序列與互動驗證分散在各 case 內。
 - **影響檔案路徑**：
   - 修改：`test/sign_in_bloc_test.dart`（5 個 `test`）
   - 修改：`test/main_bloc_load_more_test.dart`（4 個 `test`）
@@ -2092,8 +2092,8 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | 編號 | 項目 | 平台 | Effort（粗估） | 依賴 |
 | :--- | :--- | :---: | :---: | :--- |
 | **A-9.2** | 平台能力閘門：不支援的平台不初始化 AdMob 與推播（FCM）、不顯示廣告位／生物辨識／地圖模式；集中於**一處**判斷，呼叫點只讀結果。另含 **macOS 的 App Check provider**：改用 `AppleAppAttestWithDeviceCheckFallbackProvider`（不支援 App Attest 時退回 DeviceCheck），或僅 macOS 用 `AppleDeviceCheckProvider`；兩者都需先在 Firebase Console 登記 DeviceCheck 金鑰（PR #138 review 移入）。2026-10-09 決議採前者（見 D-9.6）。⚠️ 推論未實測：DeviceCheck／App Attest token 綁開發者 Team，macOS 目前為 ad-hoc 簽章，執行期驗證可能要等 E-9.4a。✅ **已完成**（2026-10-09）：實作為 `lib/features/utils/platform_capabilities.dart` 的 `platformCapabilities()`，回傳 `ads`／`pushNotifications`／`mapMode` 三項，僅原生 Android／iOS 為 true（macOS、Web 及其他平台一律關閉）；release 的 `providerApple` 於 macOS 改用 fallback provider，iOS 維持 App Attest。與提案落差：**生物辨識未納入閘門**（實查無任何 UI 入口）；Web 啟動期仍會經 `SignInManager` 觸發生物辨識查詢，留給 Web 線處理 | 兩者 | 0.5d | A-9.1 |
-| **A-9.3** | `flutterfire configure` 註冊 **macOS** App，重新產生 `firebase_options.dart`（`flutter create --platforms=macos .` 先產生 target）；App Check 的 macOS provider 選擇見 A-9.2，本項不改程式碼 | macOS | 0.3d | — |
-| **A-9.3b** | **Web 的 Firebase 註冊與 App Check**：註冊 Web App、App Check 改掛 **Fraud Defense（reCAPTCHA Enterprise）**。**採 Enterprise、不採 classic v3**：官方文件仍列 v3 provider，但明言新整合應採 Enterprise；2026-10-07 使用者回報「傳統版 reCAPTCHA 已淘汰，請改用 Google Cloud Fraud Defense」（reCAPTCHA 已併入 Fraud Defense）。程式碼用 `ReCaptchaEnterpriseProvider(siteKey)`（release）／`WebDebugProvider()`（debug），兩者皆**非 `const` 建構式**；`firebase_app_check ^0.4.7`（實裝 0.4.8）已內建三個 web provider，**無須升版**。**不需 Blaze**：Spark 可用 Enterprise，僅限 0.1／0.3／0.7／0.9 四個分數級距，連結 Cloud Billing 才開放全部 11 級；超出免費額度的 assessment 計費（2026-10-08 依官方 enterprise-provider 文件更正，原記「Blaze 為硬前置」有誤） | Web | 0.3d | — |
+| **A-9.3** | `flutterfire configure` 註冊 **macOS** App，重新產生 `firebase_options.dart`（`flutter create --platforms=macos .` 先產生 target）；App Check 的 macOS provider 選擇見 A-9.2，本項不改程式碼。✅ **已完成**（2026-10-22 實查回寫）：`firebase.json` 已含 macOS 平台設定，`lib/app/firebase_options.dart:76` 已產生 `macos` 的 `FirebaseOptions` | macOS | 0.3d | — |
+| **A-9.3b** | **Web 的 Firebase 註冊與 App Check**：註冊 Web App、App Check 改掛 **Fraud Defense（reCAPTCHA Enterprise）**。**採 Enterprise、不採 classic v3**：官方文件仍列 v3 provider，但明言新整合應採 Enterprise；2026-10-07 使用者回報「傳統版 reCAPTCHA 已淘汰，請改用 Google Cloud Fraud Defense」（reCAPTCHA 已併入 Fraud Defense）。程式碼用 `ReCaptchaEnterpriseProvider(siteKey)`（release）／`WebDebugProvider()`（debug），兩者皆**非 `const` 建構式**；`firebase_app_check ^0.4.7`（實裝 0.4.8）已內建三個 web provider，**無須升版**。**不需 Blaze**：Spark 可用 Enterprise，僅限 0.1／0.3／0.7／0.9 四個分數級距，連結 Cloud Billing 才開放全部 11 級；超出免費額度的 assessment 計費（2026-10-08 依官方 enterprise-provider 文件更正，原記「Blaze 為硬前置」有誤）。🟡 **部分完成**（2026-10-22 實查）：Web App 已註冊（`firebase.json` 含 web 設定、`lib/app/firebase_options.dart:65` 已產生 `web` 的 `FirebaseOptions`）；剩 App Check 的 web provider，`lib/` 尚無 `ReCaptchaEnterpriseProvider` | Web | 0.3d | — |
 | **UI-9.2** | `fluttertoast` → `SnackBar`（含 `CupertinoApp` 分支補 `ScaffoldMessenger`）。✅ **已完成**（2026-10-18，PR #153）：新增 `BuildContext.showAppSnackBar`（`SnackBarExtension`，先 `hideCurrentSnackBar` 再顯示、查無 messenger 時安全略過、鍵盤開啟時改 floating 並上移到鍵盤上方），`main.dart` 的 `appRootBuilder` 注入 `ScaffoldMessenger` 與透明根 `Scaffold`（`resizeToAvoidBottomInset: false`），登入／註冊／失敗與收藏共 4 處提示遷移，移除 `fluttertoast`。與提案落差：`ScaffoldMessenger` 兩個分支一律注入（Android 與 `MaterialApp` 自帶的那層重疊，實際生效的是內層），並多補透明根 `Scaffold`，因為 Cupertino 頁面沒有 Material `Scaffold` 可承載 SnackBar | 兩者 | 0.3d | — |
 | **UI-9.3** | 響應式版面：最大寬度、寬螢幕雙欄、`NavigationRail`、Sheet → Dialog | 兩者 | 2–3d | — |
 | **UI-9.4** | 桌面輸入：`ScrollBehavior` 滑鼠拖曳、hover 狀態、AI 對話 Enter 送出。✅ **已完成**（2026-10-18，PR #151）：新增 `AppScrollBehavior`（沿用預設 `dragDevices` 再加 mouse，保留 Voice Access 用的 `unknown`），由 `appRootBuilder` 的 `ScrollConfiguration` 注入，Material／Cupertino 兩分支皆生效；主頁列表與地圖卡片由 `GestureDetector` 改 `InkWell`，取得 hover 高亮與手型游標；AI 對話輸入欄以 Enter／numpadEnter 送出（IME 組字中或載入中不送出），改為 1–4 行多行輸入，Windows 的 IME 動作為換行。與提案落差：iOS／macOS 改用 Material 系的 behavior，macOS 的捲軸由 `CupertinoScrollbar` 變為 Material `Scrollbar` | 兩者 | 0.5d | — |
