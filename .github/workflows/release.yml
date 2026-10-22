@@ -6,17 +6,19 @@ on:
       - 'prod-v*'
       - 'prod-android-v*'
       - 'prod-ios-v*'
+      - 'dev-v*'
       - 'dev-android-v*'
       - 'dev-ios-v*'
       - 'rc/prod-v*'
       - 'rc/prod-android-v*'
       - 'rc/prod-ios-v*'
+      - 'rc/dev-v*'
       - 'rc/dev-android-v*'
       - 'rc/dev-ios-v*'
   workflow_dispatch:
     inputs:
       tag_name:
-        description: 'Tag name (e.g. prod-v2.1.0+35, rc/prod-android-v2.1.0+35, dev-android-v2.1.0+35)'
+        description: 'Tag name (e.g. prod-v2.1.0+35, rc/prod-android-v2.1.0+35, dev-v2.1.0+35, dev-android-v2.1.0+35)'
         required: true
         type: string
 
@@ -50,7 +52,7 @@ jobs:
           IS_PROD_IOS="false"
           IS_DEV_IOS="false"
 
-          # 判斷 tag 類型 (較具體的 prod-android 與 prod-ios 必須先於 prod-v 判定)
+          # 判斷 tag 類型 (較具體的 prod-android 與 prod-ios 必須先於 prod-v 判定；dev 同理)
           if [[ "$TAG" =~ ^prod-android-v ]]; then
             RELEASE_TYPE="prod-android"
             VERSION="${TAG#prod-android-v}"
@@ -78,12 +80,20 @@ jobs:
             VERSION="${TAG#dev-ios-v}"
             BUILD_IOS="true"
             IS_DEV_IOS="true"
+          elif [[ "$TAG" =~ ^dev-v ]]; then
+            RELEASE_TYPE="dev"
+            VERSION="${TAG#dev-v}"
+            BUILD_ANDROID="true"
+            BUILD_IOS="true"
+            IS_DEV_ANDROID="true"
+            IS_DEV_IOS="true"
           else
             echo "❌ 錯誤: 不支援的 tag 格式: $RAW_TAG"
             echo "請使用以下格式之一（皆可選加 rc/ 前綴，例如 rc/prod-v2.1.0+35）："
             echo "  - prod-v2.1.0+35 (正式版雙平台: Google Play + TestFlight)"
             echo "  - prod-android-v2.1.0+35 (正式版 Android: Google Play)"
             echo "  - prod-ios-v2.1.0+35 (正式版 iOS: TestFlight)"
+            echo "  - dev-v2.1.0+35 (開發版雙平台 -> Firebase App Distribution)"
             echo "  - dev-android-v2.1.0+35 (開發版 Android -> Firebase App Distribution)"
             echo "  - dev-ios-v2.1.0+35 (開發版 iOS -> Firebase App Distribution)"
             exit 1
@@ -533,6 +543,10 @@ jobs:
               ;;
             "prod-ios")
               echo "🍎 iOS: 已上傳至 Apple TestFlight"
+              ;;
+            "dev")
+              echo "🤖 Android APK: 已上傳至 Firebase App Distribution"
+              echo "🍎 iOS IPA: 已上傳至 Firebase App Distribution"
               ;;
             "dev-android")
               echo "🤖 Android APK: 已上傳至 Firebase App Distribution"
