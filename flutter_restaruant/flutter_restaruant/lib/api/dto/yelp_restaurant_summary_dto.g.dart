@@ -32,6 +32,14 @@ YelpRestaurantSummaryDto _$YelpRestaurantSummaryDtoFromJson(
       : YelpRestaurantCoordinatesDto.fromJson(
           json['coordinates'] as Map<String, dynamic>,
         ),
+  alias: json['alias'] as String?,
+  isClosed: json['is_closed'] as bool?,
+  url: json['url'] as String?,
+  transactions: (json['transactions'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
+  displayPhone: json['display_phone'] as String?,
+  attributes: json['attributes'] as Map<String, dynamic>?,
 );
 
 Map<String, dynamic> _$YelpRestaurantSummaryDtoToJson(
@@ -48,4 +56,10 @@ Map<String, dynamic> _$YelpRestaurantSummaryDtoToJson(
   'categories': instance.categories?.map((e) => e.toJson()).toList(),
   'location': instance.location?.toJson(),
   'coordinates': instance.coordinates?.toJson(),
+  'alias': ?instance.alias,
+  'is_closed': ?instance.isClosed,
+  'url': ?instance.url,
+  'transactions': ?instance.transactions,
+  'display_phone': ?instance.displayPhone,
+  'attributes': ?instance.attributes,
 };
