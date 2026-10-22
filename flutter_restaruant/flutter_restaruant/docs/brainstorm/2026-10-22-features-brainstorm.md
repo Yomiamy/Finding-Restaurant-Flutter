@@ -1651,6 +1651,21 @@ class ComparisonMatrixComponent extends A2UIComponent {
   1. 在 DTO 與 Entity 補齊欄位，更新 `fromDto` 映射與 `@JsonSerializable`。
   2. 移除 `APIClz.fetchToken` 宣告並執行 `make build_runner` 重新生成代碼。
 
+#### [A-8.11] 健全 Yelp 鑑權標頭安全：DioClient 攔截器加入 `Bearer ` 前綴容錯與安全檢查
+- **優先級**：`P0`（2026-10-22 由 P1 升級並移入本節：effort 僅 0.2d，但它擋的是「Remote Config 後台少打 `Bearer ` 就全 App Yelp 請求 401」，與 A-8.5 將 token 改由 Remote Config 下發直接相關）
+- **預估 Effort**：`0.2d`
+- **價值與收益**：
+  目前 `lib/api/api_clz.dart:61` 直接將 `AiModelConfig().yelpAuthToken` 賦值給 `options.headers['Authorization']`。Yelp 規範必須為 `Bearer <token>`，若 Remote Config 後台漏填 `Bearer `，全 App 所有 Yelp 呼叫將即刻全部 401 崩潰。
+- **影響檔案路徑**：
+  - 修改：`lib/api/api_clz.dart`（`DioClient` interceptor 宣告處）
+- **具體實作建議**：
+  ```dart
+  final rawToken = AiModelConfig().yelpAuthToken.trim();
+  if (rawToken.isNotEmpty) {
+    options.headers['Authorization'] = rawToken.startsWith('Bearer ') ? rawToken : 'Bearer $rawToken';
+  }
+  ```
+
 ---
 
 ### 8.3.2 P1 核心改進 (Core Architecture & Testing Upgrades)
@@ -1705,17 +1720,17 @@ class ComparisonMatrixComponent extends A2UIComponent {
   - 刪除：`lib/component/platform_widget.dart`
 - **落地**：除刪檔外，一併移除 `component_barrel.dart` 的匯出，以及 `docs/architecture/overview.md`、`file-reference.md`、`README-tw.md` 中對 `PlatformWidget` 的描述；`flutter_platform_widgets` 套件（`PlatformApp`）仍在使用，不受影響。
 
-#### [A-8.3] 健全 Dio 攔截器體系 (401 自動刷新、逾時重試、錯誤對應)
+#### [A-8.3] 健全 Dio 錯誤對應攔截器 (逾時、錯誤對應)
 - **優先級**：`P1`
-- **預估 Effort**：`0.5d`
-- **價值與收益**：告別寫死的靜態 Token，建立生產級網路彈性與安全性。
+- **預估 Effort**：`0.3d`（原 0.5d，移除 token 刷新後下修）
+- **🔴 範圍縮減（2026-10-22 實查）**：原提案含「401 自動刷新 Token」，但 Yelp 使用固定 API Key，**沒有刷新端點**；專案內唯一與換 token 相關的 `APIClz.fetchToken`（`POST /oauth2/token`）是官方已廢除的介面，且已排定於 A-8.8 刪除。`TokenRefreshInterceptor` 沒有 token 來源，故自本項移除，只保留錯誤對應。
+- **價值與收益**：把網路層錯誤收斂為具體型別，讓 BLoC 能分辨逾時、伺服器錯誤與鑑權失敗。
+- **依賴**：A-8.1（`AppException` 階層）
 - **影響檔案路徑**：
-  - 新增：`lib/api/interceptors/token_refresh_interceptor.dart`
   - 新增：`lib/api/interceptors/error_handling_interceptor.dart`
   - 修改：`lib/api/dio/dio_client.dart`
 - **具體實作建議**：
-  1. 實作 `TokenRefreshInterceptor`：攔截 401 響應，暫停請求隊列，向 Auth 服務換取新 Token 後自動重放原始請求。
-  2. 實作 `ErrorHandlingInterceptor`：將 `DioExceptionType.connectionTimeout`, `badResponse` 對應為具體的 `AppException`。
+  1. 實作 `ErrorHandlingInterceptor`：將 `DioExceptionType.connectionTimeout`, `badResponse` 對應為具體的 `AppException`。
 
 #### [A-8.9] 串接 Yelp Autocomplete API (`GET /v3/autocomplete`) 實現搜尋即時補全與聯想
 - **優先級**：`P1` (核心搜尋體驗增強)
@@ -1749,20 +1764,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
   1. `businessesSearch` 增加 `@Query('categories') String? categories`、`@Query('radius') int? radius`、`@Query('open_now') bool? openNow`。
   2. 在 `MainRepo` 加入檢查：若 `_offset + 50 > 1000` 則停止繼續發送請求，標記到達底端。
 
-#### [A-8.11] 健全 Yelp 鑑權標頭安全：DioClient 攔截器加入 `Bearer ` 前綴容錯與安全檢查
-- **優先級**：`P1` (防禦性架構加固)
-- **預估 Effort**：`0.2d`
-- **價值與收益**：
-  目前 `lib/api/api_clz.dart:61` 直接將 `AiModelConfig().yelpAuthToken` 賦值給 `options.headers['Authorization']`。Yelp 規範必須為 `Bearer <token>`，若 Remote Config 後台漏填 `Bearer `，全 App 所有 Yelp 呼叫將即刻全部 401 崩潰。
-- **影響檔案路徑**：
-  - 修改：`lib/api/api_clz.dart`（`DioClient` interceptor 宣告處）
-- **具體實作建議**：
-  ```dart
-  final rawToken = AiModelConfig().yelpAuthToken.trim();
-  if (rawToken.isNotEmpty) {
-    options.headers['Authorization'] = rawToken.startsWith('Bearer ') ? rawToken : 'Bearer $rawToken';
-  }
-  ```
+> **[A-8.11]** 已於 2026-10-22 升為 P0，移至 §8.3.1。
 
 ---
 
@@ -1929,10 +1931,10 @@ class ComparisonMatrixComponent extends A2UIComponent {
  Phase 1 收尾 (地基修復) ──► 納入 E-8.1 (PR CI) & E-8.3 (Makefile)
                                      │
  Phase 1.5 (體驗升級)   ──► 納入 A-8.1 (Sealed Result) & UI-8.1 (Dialog佇列) & UI-8.2 (砍死碼) & UI-8.7 (地圖佔位圖)
-                                     & A-8.6~A-8.8 (Yelp 假搜尋根治、GPS 解綁、實體欄位補齊)
+                                     & A-8.6~A-8.8 (Yelp 假搜尋根治、GPS 解綁、實體欄位補齊) & A-8.11 (鑑權容錯)
                                      │
- Phase 2 (社群/轉化)    ──► 納入 A-8.3 (Dio攔截器) & UI-8.4 (色差校正) & UI-8.3 (語法糖)
-                                     & A-8.9~A-8.11 (Yelp Autocomplete 補全、進階篩選、鑑權容錯)
+ Phase 2 (社群/轉化)    ──► 納入 A-8.3 (Dio錯誤對應) & UI-8.4 (色差校正) & UI-8.3 (語法糖)
+                                     & A-8.9~A-8.10 (Yelp Autocomplete 補全、進階篩選)
                                      │
  Phase 3 (AI M4/M5 支撐) ──► 納入 E-8.2 (mocktail測試) & E-8.4 (80%覆蓋率) & UI-8.6 (A11y)
                                      & A-8.12~A-8.13 (Yelp 分類樹過濾與 GraphQL 聚合優化)
@@ -1951,7 +1953,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
    - **UI-8.7 (靜態地圖專屬佔位圖)** 已於 2026-10-22 完成 (Issue #156 / PR #157)，替換詳情頁地圖載入/錯誤時的通用空圖，強化位置預覽語意與視覺一致性。
 
 3. **融入 Phase 2 社群生態與轉化閉環**：
-   - 微訂位與候位排隊涉及敏感的使用者認證，此時引入 **A-8.3 (健全 Dio 攔截器體系：401 自動換約)** 能直接保障交易 session 的穩定，搭配 **A-8.11 (鑑權標頭 Bearer 容錯防禦)**。
+   - 微訂位與候位排隊需要可分辨的網路錯誤，此時引入 **A-8.3 (Dio 錯誤對應攔截器)** 讓 BLoC 能區分逾時、伺服器錯誤與鑑權失敗。（原規劃的 401 自動換約已於 2026-10-22 移除：Yelp 為固定 API Key，無刷新端點；**A-8.11** 已升 P0 移至 Phase 1.5。）
    - 引入 **A-8.9 (Autocomplete 即時聯想)** 與 **A-8.10 (菜系、半徑與營業中進階篩選)** 實現對標 Google Maps 等競品的主流搜尋體驗。
    - **UI-8.4 (色差校正)** 與 **UI-8.3 (BuildContext 擴充語法糖)** 將作為視覺打磨的主力。
 
