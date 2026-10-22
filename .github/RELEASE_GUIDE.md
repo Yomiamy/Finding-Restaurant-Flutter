@@ -15,6 +15,7 @@
 | **正式版雙平台** (`prod`) | `prod-v2.0.1+33` | Android AAB<br>iOS Archive | 🤖 Google Play Console (Internal Testing)<br>🍎 Apple TestFlight |
 | **正式版 Android** (`prod-android`) | `prod-android-v2.0.1+33` | Android AAB | 🤖 Google Play Console (Internal Testing) |
 | **正式版 iOS** (`prod-ios`) | `prod-ios-v2.0.1+33` | iOS Archive | 🍎 Apple TestFlight |
+| **開發版雙平台** (`dev`) | `dev-v2.0.1+33` | Android Release APK<br>iOS Ad Hoc IPA | 🔥 Firebase App Distribution |
 | **Android 開發版** (`dev-android`) | `dev-android-v2.0.1+33` | Android Release APK | 🔥 Firebase App Distribution |
 | **iOS 開發版** (`dev-ios`) | `dev-ios-v2.0.1+33` | iOS Ad Hoc IPA | 🔥 Firebase App Distribution |
 
@@ -50,7 +51,7 @@
 | `IOS_CERTIFICATE_BASE64` | Apple Distribution 憑證與私鑰匯出檔 (`.p12`) 之 Base64 字串 | Base64 單行字串 | `base64 -i Certificates.p12 \| tr -d '\n'` |
 | `IOS_CERTIFICATE_PASSWORD` | `.p12` 憑證的保護密碼 | 明文密碼字串 | 從 macOS 鑰匙圈匯出 `.p12` 時設定之密碼 |
 | `IOS_APPSTORE_PROFILE_BASE64` | App Store 類型 Provisioning Profile 之 Base64 字串（供 `prod` 上傳 TestFlight） | Base64 單行字串 | `base64 -i AppStore.mobileprovision \| tr -d '\n'` |
-| `IOS_ADHOC_PROFILE_BASE64` | Ad Hoc 類型 Provisioning Profile 之 Base64 字串（供 `dev-ios` 匯出 Ad Hoc IPA 上傳 Firebase） | Base64 單行字串 | `base64 -i AdHoc.mobileprovision \| tr -d '\n'` |
+| `IOS_ADHOC_PROFILE_BASE64` | Ad Hoc 類型 Provisioning Profile 之 Base64 字串（供 `dev` / `dev-ios` 匯出 Ad Hoc IPA 上傳 Firebase） | Base64 單行字串 | `base64 -i AdHoc.mobileprovision \| tr -d '\n'` |
 | `APPLE_API_KEY_ID` | App Store Connect API Key ID | 10 碼字串 (如 `2X9R4HXF34`) | App Store Connect $\rightarrow$ 使用者與存取 $\rightarrow$ 整合 $\rightarrow$ 密鑰 |
 | `APPLE_API_ISSUER_ID` | App Store Connect API Issuer ID | UUID 字串 (如 `57246542-96fe-1a63-e053-0824d011072a`) | 同上頁面頂部顯示之 Issuer ID |
 | `APPLE_API_KEY_CONTENTS` | App Store Connect API 私鑰內容 (`AuthKey_*.p8`) | 純文字（含 BEGIN/END PRIVATE KEY 標籤） | 下載之 `AuthKey_*.p8` 檔案內容全文 |
@@ -128,6 +129,12 @@ git tag dev-ios-v2.0.1+33
 git push origin dev-ios-v2.0.1+33
 ```
 
+#### 方案 D：開發版雙平台（Android + iOS 同時上傳 Firebase App Distribution）
+```bash
+git tag dev-v2.0.1+33
+git push origin dev-v2.0.1+33
+```
+
 ### 步驟 4: 監看 CI/CD 執行進度
 
 1. 前往 GitHub 儲存庫的 **Actions** 分頁。
@@ -161,7 +168,7 @@ git push origin dev-ios-v2.0.1+33
 
 ### Q3: iOS 測試人員無法安裝 Firebase 的測試版本
 - **原因**：使用了 App Store Profile 匯出，或 Ad Hoc Profile 未將該裝置的 UDID 加入。
-- **解法**：確認 `dev-ios` 使用的是 `IOS_ADHOC_PROFILE_BASE64`，並在 Apple Developer 網站中將該裝置的 UDID 註冊並重新下載產生 Ad Hoc Profile。
+- **解法**：確認 `dev` / `dev-ios` 使用的是 `IOS_ADHOC_PROFILE_BASE64`，並在 Apple Developer 網站中將該裝置的 UDID 註冊並重新下載產生 Ad Hoc Profile。
 
 ### Q4: Google Play 上傳失敗 (`Google Api Error: ...`)
 - **原因**：`GOOGLE_PLAY_JSON` Service Account 權限不足，或該 App 尚未在 Play Console 建立或未手動上傳過第一次 AAB。
