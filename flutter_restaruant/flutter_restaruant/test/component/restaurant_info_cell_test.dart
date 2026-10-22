@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/features/component/cell/restaurant_detail/restaurant_info_cell.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
+import 'package:flutter_restaruant/gen/assets.gen.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -66,6 +67,54 @@ void main() {
       );
 
       expect(find.text(S.current.business_status_closed), findsOneWidget);
+    });
+
+    testWidgets('靜態地圖載入與錯誤回退使用 iconStaticMapPlachold 專屬佔位圖', (tester) async {
+      const detail = RestaurantDetailEntity(
+        name: 'Map Restaurant',
+        hours: [RestaurantHoursEntity(isOpenNow: true, open: [])],
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          theme: AppThemeData.materialLight,
+          localizationsDelegates: const [S.delegate],
+          home: const Scaffold(
+            body: RestaurantInfoCell(
+              detailInfo: detail,
+              staticMapUrl: 'https://maps.googleapis.com/maps/api/staticmap',
+            ),
+          ),
+        ),
+      );
+
+      final fadeInImageFinder = find.byType(FadeInImage);
+      expect(fadeInImageFinder, findsOneWidget);
+
+      final fadeInImage = tester.widget<FadeInImage>(fadeInImageFinder);
+      final placeholder = fadeInImage.placeholder;
+      final AssetImage placeholderAssetImage;
+      if (placeholder is ResizeImage) {
+        placeholderAssetImage = placeholder.imageProvider as AssetImage;
+      } else {
+        placeholderAssetImage = placeholder as AssetImage;
+      }
+      expect(
+        placeholderAssetImage.assetName,
+        Assets.images.iconStaticMapPlachold.path,
+      );
+
+      final errorWidget = fadeInImage.imageErrorBuilder!(
+        tester.element(fadeInImageFinder),
+        Exception('Network error'),
+        null,
+      ) as Image;
+      final errorImageProvider = errorWidget.image as AssetImage;
+      expect(
+        errorImageProvider.assetName,
+        Assets.images.iconStaticMapPlachold.path,
+      );
+      expect(errorWidget.fit, BoxFit.cover);
     });
   });
 }
