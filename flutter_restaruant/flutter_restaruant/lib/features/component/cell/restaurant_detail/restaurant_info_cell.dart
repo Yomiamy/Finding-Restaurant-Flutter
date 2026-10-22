@@ -69,9 +69,11 @@ class RestaurantInfoCell extends StatelessWidget {
                   fit: StackFit.expand,
                   children: [
                     FadeInImage.assetNetwork(
-                      placeholder: Assets.images.empty.path,
+                      placeholder: Assets.images.iconStaticMapPlachold.path,
                       imageErrorBuilder: (context, error, trace) =>
-                          Assets.images.empty.image(fit: BoxFit.cover),
+                          Assets.images.iconStaticMapPlachold.image(
+                            fit: BoxFit.cover,
+                          ),
                       image: staticMapUrl,
                       imageCacheHeight: RestaurantInfoCell._mapImageH,
                       imageCacheWidth: RestaurantInfoCell._mapImageW,
