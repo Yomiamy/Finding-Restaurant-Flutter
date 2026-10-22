@@ -504,7 +504,7 @@ lib/
   * 參照外部專案之 `release.yml` 流程，為本專案建立專屬的 GitHub Actions CI/CD 工作流。
   * **觸發機制**：依賴 Git Tag 觸發。
   * **開發版 (dev) 發布路線**：
-    * **觸發條件**: `dev-ios-{version}`, `dev-android-{version}`
+    * **觸發條件**: `dev-ios-{version}`, `dev-android-{version}`；2026-10-22 新增 `dev-v{version}`，可在單次執行中同時發布雙平台（PR #158）。tag 後綴需符合 `X.Y.Z+N` 才會進入建置，避免 tag 內容被插進 shell 執行。
     * **打包與分發**: 打包完成後，上傳至 **Firebase App Distribution** 供內部測試。
   * **正式版 (prd) 發布路線**：
     * **觸發條件**: `prd-ios-{version}`, `prd-android-{version}`
