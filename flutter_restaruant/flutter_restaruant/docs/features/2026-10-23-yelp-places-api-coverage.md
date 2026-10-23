@@ -98,7 +98,7 @@
 | 陣列 query 參數 | 序列化格式見 D-5 | `dio options.dart:728` 預設 `ListFormat.multi` |
 | 參數範圍 | client 端**不驗證** `maxLength`、`maximum`、`pattern`，違反時由 Yelp 回 400 | YAGNI |
 | DTO | `@JsonSerializable(fieldRename: FieldRename.snake)`，有巢狀物件時加 `explicitToJson: true`。欄位全部 nullable，**server 沒給就是 `null`**，不使用 `defaultValue`。欄位為 `final`，類別 `extends Equatable` | flutter-styles §X.2；`yelp_restaurant_summary_dto.dart:8-11`；`docs/features/2026-09-24-domain-entity-json-serializable.md` §3.2 |
-| 巢狀 DTO 的相等性 | **新的 Equatable DTO 不可以內嵌沒有值相等性的既有 DTO**。`YelpRestaurantCategoryDto`、`YelpRestaurantLocationDto` 沒有覆寫 `==`，`Equatable` 比到它們時會退化成 identity 比較，兩次 `fromJson` 的結果永遠不相等 | `equatable.dart:54` 以 `iterableEquals(props, …)` 逐項比較 |
+| 巢狀 DTO 的相等性 | **新的 Equatable DTO 不可以內嵌沒有值相等性的既有 DTO**。`YelpRestaurantCategoryDto`、`YelpRestaurantLocationDto` 沒有覆寫 `==`，`Equatable` 比到它們時會退化成 identity 比較，兩次 `fromJson` 的結果永遠不相等。（STAGE 0b 依使用者「不建立重複 DTO」的裁決，改由 T1 把這兩個 DTO 改成 Equatable 後直接重用，此限制對它們已解除） | `equatable.dart:54` 以 `iterableEquals(props, …)` 逐項比較 |
 
 ### 3.1 總表
 
@@ -413,6 +413,8 @@ git diff main -- lib/api/api_clz.dart | rtk proxy grep '^-[^-]'
 | (c) 新增完整的 `YelpBusinessDto` | 涵蓋 spec 全部 17 個欄位，全部 Equatable | 欄位最完整，但同一資源出現兩種型別，`RestaurantEntity.fromDto` 吃不了它。A-8.8 補欄位時兩邊都得改，日後也容易漂移 |
 
 **建議 (a)。** 這也決定了 Autocomplete 的 `categories` 元素要用 #10 新建的 Category DTO（Equatable），**不能**用 `YelpRestaurantCategoryDto`，理由見 §3.0 最後一列。
+
+> **實作結果**：使用者在 STAGE 0a 確認時裁決「不要建立重複的 DTO」，所以 T1 把 `YelpRestaurantCategoryDto` 改成 Equatable，Autocomplete 與 #10／#11 都直接重用它，沒有新建 Category DTO。
 
 ### D-5 陣列 query 參數的序列化格式
 
