@@ -2,9 +2,10 @@ import '../../api/dto/dto_barrel.dart';
 
 /// Yelp Places API 中以 Event 為主資源的端點。
 ///
-/// 所有方法失敗時原樣拋出 `DioException`，不做轉換。
+/// HTTP 失敗原樣拋出 `DioException`，不做轉換；回應格式不符時拋 `CheckedFromJsonException`。
 abstract interface class YelpEventRepository {
   /// `GET /v3/events`；[startDate]/[endDate] 為 Unix timestamp（秒）。
+  /// 不篩選時 [categories]／[excludedEvents] 傳 null，不要傳空 list（會送出空參數）。
   Future<YelpEventSearchDto> searchEvents({
     int? offset,
     int? limit,

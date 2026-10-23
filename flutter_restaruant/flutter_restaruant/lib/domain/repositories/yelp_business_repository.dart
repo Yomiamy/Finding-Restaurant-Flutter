@@ -2,7 +2,8 @@ import '../../api/dto/dto_barrel.dart';
 
 /// Yelp Places API 中以 Business 為主資源的端點。
 ///
-/// 所有方法失敗時原樣拋出 `DioException`，不做轉換。
+/// HTTP 失敗原樣拋出 `DioException`，不做轉換；回應格式不符時，
+/// #1–#3（共用 `YelpSearchDto`）拋 `TypeError`，其餘拋 `CheckedFromJsonException`。
 abstract interface class YelpBusinessRepository {
   /// `GET /v3/businesses/search/phone`；[phone] 須以 `+` 開頭並含國碼。
   Future<YelpSearchDto> searchByPhone(String phone);
@@ -29,6 +30,7 @@ abstract interface class YelpBusinessRepository {
 
   /// `GET /v3/transactions/delivery/search`；[location] 與
   /// [latitude]+[longitude] 擇一（不在 client 端驗證）。
+  /// 不篩選時 [categories]／[price] 傳 null，不要傳空 list（會送出空參數）。
   Future<YelpSearchDto> searchDelivery({
     String? location,
     double? latitude,
