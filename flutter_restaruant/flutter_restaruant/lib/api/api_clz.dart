@@ -157,6 +157,8 @@ final dioClient = () {
   final client = DioClient(
     connectionTimeout: Constants.connectionTimeout,
     receiveTimeout: Constants.receiveTimeout,
+    // release 不記錄請求 URI 與回應內容（含座標、搜尋字、電話）。
+    isLogEnabled: kDebugMode,
     interceptWraps: [
       InterceptorsWrapper(
         onRequest: (options, handler) async {
