@@ -25,7 +25,7 @@ abstract interface class YelpEventRepository {
   /// `GET /v3/events/{event_id}`。
   Future<YelpEventDto> fetchEvent(String eventId);
 
-  /// `GET /v3/events/featured`；[location] 與 [latitude]+[longitude] 擇一。
+  /// `GET /v3/events/featured`；[location] 與 [latitude]+[longitude] 擇一（不在 client 端驗證）。
   Future<YelpEventDto> fetchFeaturedEvent({
     String? location,
     double? latitude,
