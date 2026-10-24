@@ -1900,6 +1900,30 @@ class ComparisonMatrixComponent extends A2UIComponent {
   - 新增：`lib/api/graphql/yelp_graphql_client.dart`
   - 修改：`lib/data_layer/repositories/restaurant_detail_repo.dart`
 
+#### [A-8.14] Repository 改以建構子注入 `APIClz` 與 `locale`，解除 data 層對 `app/` 與全域 GetIt 的依賴
+- **優先級**：`P2`（架構衛生；無行為改變）
+- **預估 Effort**：`0.5d`
+- **來源**：2026-10-24 檢視 PR #160（Issue #159）新增的 4 個 Yelp Repository 時提出。
+- **現況（2026-10-24 實查）**：Yelp 相關的 Repository 在內部直接取用兩個全域依賴：
+  1. `Constants.locale`（`lib/app/constants/constants.dart:39`，寫死 `'zh_TW'`）：既有 `main_repo.dart:56`、`restaurant_detail_repo.dart:23,32`，以及 PR #160 新增的 `yelp_business_repo.dart`、`yelp_event_repo.dart`、`yelp_category_repo.dart`、`yelp_autocomplete_repo.dart` 都在 Repository 內塞 locale。`lib/data_layer/repositories/` 共 8 個檔案 import `app/constants`。
+  2. `GetIt.I<APIClz>()`：建構子未傳 `api` 時改從全域 service locator 取得（例：`yelp_business_repo.dart` 的 `_api = api ?? GetIt.I<APIClz>()`）。
+- **問題**：
+  - data 層往外依賴 `app/`（組裝層）。依分層規則，`app/` 應是唯一知道 `Constants` 與 GetIt 的地方，被 data 層依賴屬於反向依賴。
+  - Repository 因此無法抽成獨立 package／module：它同時綁定「App 用哪個語系」與「App 用 GetIt 管理物件」。
+  - 語系寫死在每個 Repository 內，日後要跟隨裝置語系或讓使用者切換時，必須逐一修改。
+  - 測試只能依賴全域常數，無法直接驗證其他 locale。
+- **影響檔案路徑**：
+  - 修改：`lib/data_layer/repositories/main_repo.dart`、`restaurant_detail_repo.dart`
+  - 修改：`lib/data_layer/repositories/yelp_business_repo.dart`、`yelp_event_repo.dart`、`yelp_category_repo.dart`、`yelp_autocomplete_repo.dart`（PR #160 合併後）
+  - 修改：`lib/app/di/injection.dart`（改為在此讀取 `Constants.locale` 與 `getIt<APIClz>()` 後注入）
+  - 修改：對應的 Repository 測試（改為建構時傳入 `locale`）
+- **具體實作建議**：
+  1. Repository 建構子改為 `({required APIClz api, required String locale})`，移除 `api ?? GetIt.I<APIClz>()` 的全域退路，並移除 `app/constants` 的 import。
+  2. `injection.dart` 統一注入：`YelpBusinessRepo(api: getIt<APIClz>(), locale: Constants.locale)`，其餘 Repository 同理。
+  3. 既有 3 個與新 4 個 Repository **同一個 PR 一起改**，避免專案內同時存在兩種寫法。
+  4. 純重構、無行為改變：`flutter analyze` 零警告、既有測試全過；Repository 測試以 `locale` 參數驗證轉發，不再依賴 `Constants`。
+- **非目標**：本項不改變語系來源（仍為 `Constants.locale` 的 `'zh_TW'`）；跟隨裝置語系屬另案。`favor_data_source.dart` 等非 Yelp 依賴的注入方式不在本項範圍。
+
 #### [UI-8.7] 採用專屬靜態地圖佔位圖 (`icon_static_map_plachold.png`) 替換通用 Empty 圖示
 - **優先級**：`P2`
 - **狀態**：✅ 已於 2026-10-22 完成 (Issue #156 / PR #157)
