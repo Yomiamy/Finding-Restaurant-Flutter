@@ -102,20 +102,22 @@
 
 ### 3.1 總表
 
-| # | Method | Path | 必填參數 | 回應頂層 | 存取限制 | brainstorm |
-|---|--------|------|----------|----------|----------|------------|
-| 1 | GET | `/v3/businesses/search/phone` | `phone` | `{businesses: Business[], total}` | — | — |
-| 2 | GET | `/v3/businesses/matches` | `name`, `address1`, `city`, `state`, `country` | `{businesses: BusinessMatch[]}` | — | — |
-| 3 | GET | `/v3/transactions/{transaction_type}/search` | path `transaction_type`；`location` 或 `latitude`+`longitude` 擇一 | `{businesses: Business[], total}` | — | — |
-| 4 | GET | `/v3/businesses/engagement` | `business_ids` | `{data: Engagement[]}` | **需特別權限（Yelp Insights），未開通回 403** | — |
-| 5 | GET | `/v3/businesses/{business_id_or_alias}/service_offerings` | path | `{active, eligible}` | **官方標 deprecated，且需特別權限** | — |
-| 6 | GET | `/v3/businesses/{business_id_or_alias}/review_highlights` | path | `{review_highlights: Highlight[]}` | **需 Premium Plan** | — |
-| 7 | GET | `/v3/events` | 無（`location` 或經緯度屬條件式） | `{events: Event[], total}` | — | — |
-| 8 | GET | `/v3/events/{event_id}` | path | `Event` | — | — |
-| 9 | GET | `/v3/events/featured` | `location` 或 `latitude`+`longitude` 擇一 | `Event` | — | — |
-| 10 | GET | `/v3/categories` | 無 | `{categories: Category[]}` | — | A-8.12 |
-| 11 | GET | `/v3/categories/{alias}` | path | `{category: Category}` | — | A-8.12 |
-| 12 | GET | `/v3/autocomplete` | `text` | `{categories, businesses, terms}` | — | A-8.9 |
+| # | Method | Path | 用途 | 必填參數 | 回應頂層 | 存取限制 | brainstorm |
+|---|--------|------|------|----------|----------|----------|------------|
+| 1 | GET | `/v3/businesses/search/phone` | 以電話號碼（須含國碼）查找商家，回傳符合的商家清單 | `phone` | `{businesses: Business[], total}` | — | — |
+| 2 | GET | `/v3/businesses/matches` | 以名稱＋地址精確比對 Yelp 上的商家，用於把外部資料（自家資料庫、其他平台）對應到 Yelp 商家 ID | `name`, `address1`, `city`, `state`, `country` | `{businesses: BusinessMatch[]}` | — | — |
+| 3 | GET | `/v3/transactions/{transaction_type}/search` | 搜尋支援外送（`delivery`）的商家；官方註明不回傳沒有任何評論的商家 | path `transaction_type`；`location` 或 `latitude`+`longitude` 擇一 | `{businesses: Business[], total}` | — | — |
+| 4 | GET | `/v3/businesses/engagement` | 查詢商家每週的消費者互動指標（engagement／intent／transaction 分數），屬 Yelp Insights | `business_ids` | `{data: Engagement[]}` | **需特別權限（Yelp Insights），未開通回 403** | — |
+| 5 | GET | `/v3/businesses/{business_id_or_alias}/service_offerings` | 查詢商家目前啟用（`active`）與有資格提供（`eligible`）的服務項目；官方已改由 Business Details 的 Jobs offered 取代，**僅供參照** | path | `{active, eligible}` | **官方標 deprecated，且需特別權限** | — |
+| 6 | GET | `/v3/businesses/{business_id_or_alias}/review_highlights` | 取得評論精選句：被多則評論提到的重點字句，附相關照片與提及的評論數 | path | `{review_highlights: Highlight[]}` | **需 Premium Plan** | — |
+| 7 | GET | `/v3/events` | 依地點、時間區間、分類等條件搜尋 Yelp 上的活動 | 無（`location` 或經緯度屬條件式） | `{events: Event[], total}` | — | — |
+| 8 | GET | `/v3/events/{event_id}` | 取得單一活動的詳細資訊 | path | `Event` | — | — |
+| 9 | GET | `/v3/events/featured` | 取得某地區的精選活動（單一一筆） | `location` 或 `latitude`+`longitude` 擇一 | `Event` | — | — |
+| 10 | GET | `/v3/categories` | 取得 Yelp 全部商家分類清單，可用來做菜系篩選；帶 `locale` 時只回該地區可用的分類並翻譯標題 | 無 | `{categories: Category[]}` | — | A-8.12 |
+| 11 | GET | `/v3/categories/{alias}` | 以分類別名取得單一分類的詳情（標題、上層分類、適用國家） | path | `{category: Category}` | — | A-8.12 |
+| 12 | GET | `/v3/autocomplete` | 使用者輸入文字時回傳補全建議，含關鍵字、商家、分類三類 | `text` | `{categories, businesses, terms}` | — | A-8.9 |
+
+**用途說明的來源**：依官方 reference 的端點說明與 §3.3 的回應欄位整理。其中 #5 的「改由 Jobs offered 取代」與 #3 的「不回傳無評論商家」取自官方 reference 頁的說明文字；#5 官方未說明服務項目的具體值。
 
 **存取限制的資料來源**：#4–#6 的限制來自需求 brief，由使用者提供。spec 摘錄本身**沒有** deprecated 旗標，也沒有權限或 403 說明，以 `deprecat|403|premium|insights|permission` 搜尋只命中 spec:198,756 的 `attributes` 欄位描述。標「—」的端點，brief 與 spec 摘錄都沒有提到限制。本規格不處理權限開通（Q4）。
 
