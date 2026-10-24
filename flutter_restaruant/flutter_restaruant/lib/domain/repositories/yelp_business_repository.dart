@@ -52,7 +52,8 @@ abstract interface class YelpBusinessRepository {
 
   /// `GET /v3/businesses/{id}/service_offerings`。
   ///
-  /// Yelp 已標為 deprecated，且需特別權限；未開通時拋出 `DioException`，
+  /// ⚠️ 僅供參照，新功能不要使用：Yelp 已標為 deprecated，改由 Business Details
+  /// 的 Jobs offered 取代；需特別權限，未開通時拋出 `DioException`，
   /// `response?.statusCode == 403`。
   Future<YelpServiceOfferingsDto> fetchServiceOfferings(
     String businessIdOrAlias,

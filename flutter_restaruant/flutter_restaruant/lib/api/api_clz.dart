@@ -90,6 +90,8 @@ abstract class APIClz {
     @Query('date_range_end') String? dateRangeEnd,
   });
 
+  /// ⚠️ 僅供參照：Yelp 已標為 deprecated（改由 Business Details 的 Jobs offered 取代），
+  /// 且需特別權限，一般 API Key 回 403。新功能不要使用。
   @GET('/v3/businesses/{business_id_or_alias}/service_offerings')
   Future<YelpServiceOfferingsDto> businessServiceOfferings(
     @Path('business_id_or_alias') String businessIdOrAlias,
