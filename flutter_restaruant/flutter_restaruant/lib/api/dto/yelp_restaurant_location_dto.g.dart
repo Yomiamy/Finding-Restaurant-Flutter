@@ -18,6 +18,8 @@ YelpRestaurantLocationDto _$YelpRestaurantLocationDtoFromJson(
   displayAddress: (json['display_address'] as List<dynamic>?)
       ?.map((e) => e as String)
       .toList(),
+  zipCode: json['zip_code'] as String?,
+  crossStreets: json['cross_streets'] as String?,
 );
 
 Map<String, dynamic> _$YelpRestaurantLocationDtoToJson(
@@ -30,4 +32,6 @@ Map<String, dynamic> _$YelpRestaurantLocationDtoToJson(
   'country': instance.country,
   'state': instance.state,
   'display_address': instance.displayAddress,
+  'zip_code': ?instance.zipCode,
+  'cross_streets': ?instance.crossStreets,
 };

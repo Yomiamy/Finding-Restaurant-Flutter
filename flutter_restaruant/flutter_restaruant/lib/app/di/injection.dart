@@ -37,4 +37,10 @@ void setupInjection() {
   getIt.registerLazySingleton<ReviewSummaryRepository>(
     () => ReviewSummaryRepo(),
   );
+  getIt.registerLazySingleton<YelpBusinessRepository>(() => YelpBusinessRepo());
+  getIt.registerLazySingleton<YelpEventRepository>(() => YelpEventRepo());
+  getIt.registerLazySingleton<YelpCategoryRepository>(() => YelpCategoryRepo());
+  getIt.registerLazySingleton<YelpAutocompleteRepository>(
+    () => YelpAutocompleteRepo(),
+  );
 }

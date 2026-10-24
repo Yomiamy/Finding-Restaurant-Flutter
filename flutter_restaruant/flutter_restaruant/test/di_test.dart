@@ -110,6 +110,33 @@ void main() {
       expect(repo, isA<ReviewSummaryRepository>());
     });
 
+    test('YelpBusinessRepository resolves to YelpBusinessRepository', () {
+      expect(GetIt.I.isRegistered<YelpBusinessRepository>(), isTrue);
+      final repo = GetIt.I<YelpBusinessRepository>();
+      expect(repo, isA<YelpBusinessRepository>());
+    });
+
+    test('YelpEventRepository resolves to YelpEventRepository', () {
+      expect(GetIt.I.isRegistered<YelpEventRepository>(), isTrue);
+      final repo = GetIt.I<YelpEventRepository>();
+      expect(repo, isA<YelpEventRepository>());
+    });
+
+    test('YelpCategoryRepository resolves to YelpCategoryRepository', () {
+      expect(GetIt.I.isRegistered<YelpCategoryRepository>(), isTrue);
+      final repo = GetIt.I<YelpCategoryRepository>();
+      expect(repo, isA<YelpCategoryRepository>());
+    });
+
+    test(
+      'YelpAutocompleteRepository resolves to YelpAutocompleteRepository',
+      () {
+        expect(GetIt.I.isRegistered<YelpAutocompleteRepository>(), isTrue);
+        final repo = GetIt.I<YelpAutocompleteRepository>();
+        expect(repo, isA<YelpAutocompleteRepository>());
+      },
+    );
+
     test('Lazy singletons return the same instance', () {
       final mainRepo1 = GetIt.I<MainRepository>();
       final mainRepo2 = GetIt.I<MainRepository>();
