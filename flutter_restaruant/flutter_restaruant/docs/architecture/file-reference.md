@@ -24,7 +24,7 @@
 
 > ⚠️ **本層不依賴 I/O 技術**：全目錄無 `dio`、`cloud_firestore`、`retrofit` 等 import。
 >
-> 🔴 **但有已知反向依賴**：11 個 entity 檔案全數 import `api/dto/dto_barrel.dart`（因 `fromDto`/`toDto` 寫在 Entity 上）。原本 `UserEntity` ⇄ `AccountDto` 之雙向循環 import 已透過拆分 `AccountType` / `AccountTypeModel` 解開，`AccountDto` 不再反向依賴 Domain，但 Entity 對 DTO 的依賴仍待未來抽取 Mapper 解除。5 個 Repository 介面則完全乾淨。詳見 [`overview.md`](./overview.md#-已知架構缺陷entity-反向依賴-dto)。
+> 🔴 **但有已知反向依賴**：11 個 entity 檔案全數 import `api/dto/dto_barrel.dart`（因 `fromDto`/`toDto` 寫在 Entity 上）。原本 `UserEntity` ⇄ `AccountDto` 之雙向循環 import 已透過拆分 `AccountType` / `AccountTypeModel` 解開，`AccountDto` 不再反向依賴 Domain，但 Entity 對 DTO 的依賴仍待未來抽取 Mapper 解除。Repository 介面原本完全乾淨；PR #160 新增的 4 個 Yelp 介面（`YelpBusinessRepository` 等）依設計直接回傳 DTO，因此 import `api/dto/dto_barrel.dart`。詳見 [`overview.md`](./overview.md#-已知架構缺陷entity-反向依賴-dto)。
 
 | 檔案路徑 | 關鍵類別/列舉 | 單一職責 (Single Responsibility) |
 | :--- | :--- | :--- |
@@ -35,6 +35,10 @@
 | [`lib/domain/repositories/settings_repository.dart`](../../lib/domain/repositories/settings_repository.dart) | `SettingsRepository` | 設定頁的資料契約。 |
 | [`lib/domain/repositories/menu_vision_repository.dart`](../../lib/domain/repositories/menu_vision_repository.dart) | `MenuVisionRepository` | AI 多模態菜單視覺識別契約（`abstract interface class`）。 |
 | [`lib/domain/repositories/ai_foodie_repository.dart`](../../lib/domain/repositories/ai_foodie_repository.dart) | `AiFoodieRepository` | AI 智能覓食助理對話與初始建議契約（`abstract interface class`）。 |
+| [`lib/domain/repositories/yelp_business_repository.dart`](../../lib/domain/repositories/yelp_business_repository.dart) | `YelpBusinessRepository` | Yelp Business 類端點契約：電話搜尋、商家比對、外送搜尋、engagement、service offerings、review highlights（後三者需特別權限）。直接回傳 DTO。 |
+| [`lib/domain/repositories/yelp_event_repository.dart`](../../lib/domain/repositories/yelp_event_repository.dart) | `YelpEventRepository` | Yelp 活動契約：活動搜尋、單一活動、精選活動。直接回傳 DTO。 |
+| [`lib/domain/repositories/yelp_category_repository.dart`](../../lib/domain/repositories/yelp_category_repository.dart) | `YelpCategoryRepository` | Yelp 分類契約：全部分類清單與單一分類詳情。直接回傳 DTO。 |
+| [`lib/domain/repositories/yelp_autocomplete_repository.dart`](../../lib/domain/repositories/yelp_autocomplete_repository.dart) | `YelpAutocompleteRepository` | Yelp 搜尋補全契約（關鍵字、商家、分類建議）。直接回傳 DTO。 |
 | [`lib/domain/entities/dish_item_entity.dart`](../../lib/domain/entities/dish_item_entity.dart) | `DishItemEntity` | 菜品項目業務模型（含中英菜名、價錢、過敏原與辣度標籤）。 |
 | [`lib/domain/entities/allergen_info.dart`](../../lib/domain/entities/allergen_info.dart) | `AllergenInfo` | 過敏原與飲食偏好實體（含標籤文字與嚴重度）。 |
 | [`lib/domain/entities/ai_foodie_message.dart`](../../lib/domain/entities/ai_foodie_message.dart) | `AiFoodieMessage` | 覓食助理訊息模型（包含使用者或助理身份、文字內容及 A2UIComponent 動態元件陣列）。 |
@@ -66,6 +70,10 @@
 | [`lib/data_layer/repositories/menu_vision_repo.dart`](../../lib/data_layer/repositories/menu_vision_repo.dart) | `MenuVisionRepo` | `MenuVisionRepository` 實作。串接 `FirebaseAI` 進行結構化菜單視覺辨識與過敏原解析，模型與 system instruction 由 `AiModelConfig` 提供。解析失敗直接拋出例外，由 `MenuVisionBloc` 處理。 |
 | [`lib/data_layer/repositories/ai_foodie_repo.dart`](../../lib/data_layer/repositories/ai_foodie_repo.dart) | `AiFoodieRepo` | `AiFoodieRepository` 實作。串接 `FirebaseAI` 進行自然語言意圖理解、真實候選店家比對與 GenUI 元件生成，模型、temperature 與 system instruction 由 `AiModelConfig` 提供。 |
 | [`lib/data_layer/repositories/review_summary_repo.dart`](../../lib/data_layer/repositories/review_summary_repo.dart) | `ReviewSummaryRepo` | `ReviewSummaryRepository` 實作。串接 `FirebaseAI` 提煉餐廳真實顧客短評之 Pros、Cons、Highlights 與 Summary。 |
+| [`lib/data_layer/repositories/yelp_business_repo.dart`](../../lib/data_layer/repositories/yelp_business_repo.dart) | `YelpBusinessRepo` | `YelpBusinessRepository` 實作。轉發至 `APIClz`，固定帶 `Constants.locale`、陣列參數以逗號串接、`transaction_type` 固定為 `delivery`；不 catch，`DioException` 原樣拋出。 |
+| [`lib/data_layer/repositories/yelp_event_repo.dart`](../../lib/data_layer/repositories/yelp_event_repo.dart) | `YelpEventRepo` | `YelpEventRepository` 實作，轉發至 `APIClz`（同上慣例）。 |
+| [`lib/data_layer/repositories/yelp_category_repo.dart`](../../lib/data_layer/repositories/yelp_category_repo.dart) | `YelpCategoryRepo` | `YelpCategoryRepository` 實作，轉發至 `APIClz`（同上慣例）。 |
+| [`lib/data_layer/repositories/yelp_autocomplete_repo.dart`](../../lib/data_layer/repositories/yelp_autocomplete_repo.dart) | `YelpAutocompleteRepo` | `YelpAutocompleteRepository` 實作，轉發至 `APIClz`（同上慣例）。 |
 | [`lib/data_layer/models/menu_analysis_schema.dart`](../../lib/data_layer/models/menu_analysis_schema.dart) | `menuAnalysisSchema` | Gemini API 結構化輸出 JSON Schema 規範（定義菜品清單、價格、過敏原與辣度）。 |
 | [`lib/data_layer/models/ai_foodie_schema.dart`](../../lib/data_layer/models/ai_foodie_schema.dart) | `aiFoodieResponseSchema` | Gemini 結構化輸出 JSON Schema 規範（約束 text 及 components 格式）。 |
 | [`lib/data_layer/models/review_summary_schema.dart`](../../lib/data_layer/models/review_summary_schema.dart) | `reviewSummarySchema` | Gemini 結構化輸出 JSON Schema 規範（約束 pros, cons, highlights, summary 格式）。 |
