@@ -6,3 +6,7 @@ export 'sign_in_repository.dart';
 export 'menu_vision_repository.dart';
 export 'ai_foodie_repository.dart';
 export 'review_summary_repository.dart';
+export 'yelp_business_repository.dart';
+export 'yelp_event_repository.dart';
+export 'yelp_category_repository.dart';
+export 'yelp_autocomplete_repository.dart';

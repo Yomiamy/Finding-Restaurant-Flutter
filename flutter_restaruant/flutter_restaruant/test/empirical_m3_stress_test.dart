@@ -22,7 +22,7 @@ void main() {
         expect(bizTimeEntity.end, isNull);
         expect(bizTimeEntity.day, isNull);
 
-        final catDto = YelpRestaurantCategoryDto();
+        const catDto = YelpRestaurantCategoryDto();
         final catEntity = RestaurantCategoryEntity.fromDto(catDto);
         expect(catEntity.alias, isNull);
         expect(catEntity.title, isNull);
@@ -32,7 +32,7 @@ void main() {
         expect(coordEntity.latitude, isNull);
         expect(coordEntity.longitude, isNull);
 
-        final locDto = YelpRestaurantLocationDto();
+        const locDto = YelpRestaurantLocationDto();
         final locEntity = RestaurantLocationEntity.fromDto(locDto);
         expect(locEntity.address1, isNull);
         expect(locEntity.displayAddress, isNull);
@@ -71,11 +71,11 @@ void main() {
       });
 
       test('2. Round-trip mapping: DTO -> Entity -> DTO with full data', () {
-        final catDto = YelpRestaurantCategoryDto(
+        const catDto = YelpRestaurantCategoryDto(
           alias: 'italian',
           title: 'Italian',
         );
-        final locDto = YelpRestaurantLocationDto(
+        const locDto = YelpRestaurantLocationDto(
           address1: 'Sec 1',
           city: 'Taipei',
           displayAddress: ['Sec 1, ', 'Taipei'],

@@ -23,6 +23,19 @@ class YelpRestaurantSummaryDto {
   YelpRestaurantCoordinatesDto? coordinates;
   @JsonKey(includeFromJson: false, includeToJson: false)
   bool favor = false;
+  // #1–#3 才有的欄位；RestaurantEntity 不攜帶，省略 null，最愛寫入 Firestore 的 payload 形狀不變。
+  @JsonKey(includeIfNull: false)
+  String? alias;
+  @JsonKey(includeIfNull: false)
+  bool? isClosed;
+  @JsonKey(includeIfNull: false)
+  String? url;
+  @JsonKey(includeIfNull: false)
+  List<String>? transactions;
+  @JsonKey(includeIfNull: false)
+  String? displayPhone;
+  @JsonKey(includeIfNull: false)
+  Map<String, Object?>? attributes;
 
   YelpRestaurantSummaryDto({
     this.id,
@@ -37,6 +50,12 @@ class YelpRestaurantSummaryDto {
     this.location,
     this.coordinates,
     this.favor = false,
+    this.alias,
+    this.isClosed,
+    this.url,
+    this.transactions,
+    this.displayPhone,
+    this.attributes,
   });
 
   factory YelpRestaurantSummaryDto.fromJson(Map<String, dynamic> json) =>
