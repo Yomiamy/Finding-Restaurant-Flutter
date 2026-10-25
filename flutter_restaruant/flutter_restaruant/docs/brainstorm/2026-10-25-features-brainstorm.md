@@ -1920,7 +1920,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 - **具體實作建議**：
   1. Repository 建構子改為 `({required APIClz api, required String locale})`，移除 `api ?? GetIt.I<APIClz>()` 的全域退路，並移除 `app/constants` 的 import。
   2. `injection.dart` 統一注入：`YelpBusinessRepo(api: getIt<APIClz>(), locale: Constants.locale)`，其餘 Repository 同理。
-  3. 既有 3 個與新 4 個 Repository **同一個 PR 一起改**，避免專案內同時存在兩種寫法。
+  3. 既有 2 個（`MainRepo`、`RestaurantDetailRepo`）與新 4 個 Repository **同一個 PR 一起改**，避免專案內同時存在兩種寫法。
   4. 純重構、無行為改變：`flutter analyze` 零警告、既有測試全過；Repository 測試以 `locale` 參數驗證轉發，不再依賴 `Constants`。
 - **非目標**：本項不改變語系來源（仍為 `Constants.locale` 的 `'zh_TW'`）；跟隨裝置語系屬另案。`favor_data_source.dart` 等非 Yelp 依賴的注入方式不在本項範圍。
 
