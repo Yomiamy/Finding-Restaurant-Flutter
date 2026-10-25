@@ -9,7 +9,7 @@
 
 本報告整合了架構審計與競品探索報告之事實與推理鏈，產出符合產業界最高標準的產品與技術發展路線圖 (Strategic Product Roadmap) 及 RICE / ICE 雙優先級評估矩陣。
 
-> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。**2026-10-22 補記**：檔名前綴其後已再更新為 `2026-10-22`，上述 `2026-09-30` 為當時狀態。**2026-10-25 補記**：檔名前綴再更新為 `2026-10-25`。
+> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。**2026-10-22 補記**：檔名前綴其後已再更新為 `2026-10-22`，上述 `2026-09-30` 為當時狀態。**2026-10-25 補記**：檔名前綴再更新為 `2026-10-25`。**2026-10-26 補記**：檔名前綴再更新為 `2026-10-26`。
 
 ---
 
@@ -1635,6 +1635,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
   3. 篩選頁 `FilterConfigs` 將多選價格轉換為 `"1,2,3"` 字串傳遞給 API。
 
 #### [A-8.8] 補齊 `RestaurantDetailEntity` 與 DTO 核心缺失欄位（`id`、`price`、`url`、`display_phone`）並剔除廢棄端點
+- **狀態**：🟡 部分完成（Issue #159 / PR #160，2026-10-25）。`YelpRestaurantSummaryDto` 已補上 `alias`、`is_closed`、`url`、`transactions`、`display_phone`、`attributes`（供新端點共用）；**仍未做**：`YelpRestaurantDetailDto`／`RestaurantDetailEntity` 的欄位、`restaurant_info_cell.dart` 改用 `displayPhone`、刪除 `fetchToken`。
 - **優先級**：`P0` (阻擋級 / 實體完整性缺陷)
 - **預估 Effort**：`0.5d`
 - **價值與收益**：
@@ -1733,6 +1734,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
   1. 實作 `ErrorHandlingInterceptor`：將 `DioExceptionType.connectionTimeout`, `badResponse` 對應為具體的 `AppException`。
 
 #### [A-8.9] 串接 Yelp Autocomplete API (`GET /v3/autocomplete`) 實現搜尋即時補全與聯想
+- **狀態**：🟡 API 與 Repository 已完成（Issue #159 / PR #160，2026-10-25）：`APIClz.autocomplete`、`YelpAutocompleteDto`、獨立的 `YelpAutocompleteRepository`／`YelpAutocompleteRepo`。與下方原提案的落差：未放進 `MainRepository`、未建 `autocomplete_suggestion_entity.dart`（Repository 直接回傳 DTO）。**仍未做**：Debounce、Overlay 建議清單 UI 與 BLoC。
 - **優先級**：`P1` (核心搜尋體驗增強)
 - **預估 Effort**：`0.8d`
 - **價值與收益**：
@@ -1878,6 +1880,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
   2. 驗收：`rtk proxy grep -rnE "^class Mock" test/` 輸出為空。
 
 #### [A-8.12] 串接 Yelp 分類體系 API (`GET /v3/categories` 與 `/v3/categories/{alias}`) 建立全量菜系分類樹過濾
+- **狀態**：🟡 API 與 Repository 已完成（Issue #159 / PR #160，2026-10-25）：`APIClz.categories`／`category`、外殼 `YelpCategoryListDto`／`YelpCategoryDetailDto`（元素沿用既有 `YelpRestaurantCategoryDto`，未新建 `yelp_category_dto.dart`）、`YelpCategoryRepository`／`YelpCategoryRepo`。**仍未做**：本地長週期快取、篩選頁分類 Chip UI。
 - **優先級**：`P2` (進階搜尋維度)
 - **預估 Effort**：`1.0d`
 - **價值與收益**：
