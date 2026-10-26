@@ -1071,6 +1071,74 @@ rtk proxy grep -rn -E "tel://|launchUrl\(|Utils\.openUrl\(" lib/features/compone
 - 規格與計畫檔本次修訂與 T7 程式碼一起 commit（docs 與 code 分開兩個 commit）。
 - T6 的 brainstorm `:1638` 描述「新增『在 Yelp 開啟』」需改為「店名後新增 Yelp 外開 icon」，併入 T7 的 docs commit。
 
+> ⚠️ **T7 已作廢**：使用者更正「title」指的是 `RestaurantInfoCell` 內的標題（第一行粗體地址），不是 AppBar 標題。由 T8 revert 並重做。
+
+---
+
+### T8：外開 icon 改接在 `RestaurantInfoCell` 地址標題之後（2026-10-27 追加，10 分）
+
+- **寫入檔案**：
+  - `git revert 0ecd326`（還原 T7 的 6 個檔案：刪除 `restaurant_detail_title.dart` 與其測試、還原 barrel、詳情頁、Cell 與 Cell 測試到 T5 狀態），單獨一個 revert commit。
+  - 接著修改 `lib/features/component/cell/restaurant_detail/restaurant_info_cell.dart`、`test/component/restaurant_info_cell_test.dart`，一個 feat commit。
+- **對應 AC**：AC-14（修訂版，測試對象為 Cell）
+
+**步驟 1：revert**：`git revert --no-edit 0ecd326`，確認 `flutter test` 回到 457、詳情頁與 barrel 與 T5 commit `cba9ea9` 一致（`git diff cba9ea9 HEAD -- lib test` 為空）。
+
+**步驟 2：測試先行**（`restaurant_info_cell_test.dart`）
+
+- 「url 非空時顯示「在 Yelp 開啟」」改為「url 非空時地址標題後顯示 Yelp 外開 icon」：`find.byIcon(Icons.open_in_new)`、`find.byTooltip(S.current.open_in_yelp)` 為 `findsOneWidget`，`find.text(S.current.open_in_yelp)` 為 `findsNothing`。
+- 「url 為 null 或空字串時不顯示」改為斷言 `find.byIcon(Icons.open_in_new)` 為 `findsNothing`（null 與 `''` 各 pump 一次）。
+- 其餘 test 不改。測試數不變（Cell 12 個；全量 457）。
+- 紅燈預期：第一個 test 紅（目前是文字列、無 tooltip 且有文字）；第二個 test 視 icon 是否存在可能已綠，屬回歸防護。
+
+**步驟 3：實作**
+
+- 刪除 `url` 的 `_InfoLinkRow`（Yelp 文字列）；保留 `final String url = _detailInfo.url ?? '';`。
+- 將資訊欄第一個地址 `Text` 包成：
+
+```dart
+Row(
+  crossAxisAlignment: CrossAxisAlignment.start,
+  children: <Widget>[
+    Flexible(
+      child: Text(
+        _detailInfo.location?.displayAddressStr ?? '',
+        style: theme.textTheme.titleSmall?.copyWith(
+          fontWeight: FontWeight.w700,
+        ),
+        maxLines: 2,
+        overflow: TextOverflow.ellipsis,
+      ),
+    ),
+    if (url.isNotEmpty)
+      IconButton(
+        tooltip: S.current.open_in_yelp,
+        visualDensity: VisualDensity.compact,
+        icon: Icon(
+          Icons.open_in_new,
+          size: ThemeSize.size16,
+          color: colorScheme.primary,
+        ),
+        onPressed: () => Utils.openUrl(rawUrl: url),
+      ),
+  ],
+),
+```
+
+- 地址 `Text` 的樣式、`maxLines`、`overflow` 與現行逐字相同。程式碼片段以 `dart format` 輸出為準（本檔仍適用 §2.3）。
+
+**步驟 4：驗收**
+
+```bash
+flutter analyze                                            # No issues found!
+flutter test test/component/restaurant_info_cell_test.dart # 12 個全綠
+flutter test                                               # 457
+rtk proxy grep -rn "open_in_yelp" lib --include='*.dart' --exclude-dir=generated   # 只剩 restaurant_info_cell.dart 的 tooltip 1 處
+rtk proxy grep -rn "RestaurantDetailTitle" lib test        # 無輸出
+rtk proxy grep -n -E "tel://|launchUrl\(|Utils\.openUrl\(" lib/features/component/cell/restaurant_detail/restaurant_info_cell.dart   # 4 行
+git diff --name-only --relative cba9ea9 HEAD -- lib test   # 恰為 Cell 與 Cell 測試 2 檔
+```
+
 ---
 
 ## 6. 測試計畫
@@ -1079,8 +1147,7 @@ rtk proxy grep -rn -E "tel://|launchUrl\(|Utils\.openUrl\(" lib/features/compone
 |---|---|---|---|---|
 | DTO | `test/api/dto/yelp_restaurant_detail_dto_test.dart`（新） | 7 個新欄位逐欄解析，snake_case 對應正確；缺欄位時全部是 null；既有欄位不受影響 | 2 | AC-7、AC-8 |
 | Entity | `test/domain_entity_test.dart`（新增） | `fromDto` 對應 4 欄；`toDto` 寫回 4 欄，且明確斷言有損的 3 欄是 null；空 DTO 時 4 欄是 null | 3 | AC-9～AC-11 |
-| UI | `test/component/restaurant_info_cell_test.dart`（新增） | 新行為 4 個（實作前紅）；回歸防護 5 個（實作前綠）。涵蓋 U-1 三種情況、U-2 三種情況、U-3 的顯示與隱藏，以及全欄位加上大量分類時沒有 overflow。T7 後：U-3 兩個 test 改為 1 個「cell 不再顯示 Yelp 連結」 | 9 → 8 | AC-12～AC-15 |
-| UI | `test/component/restaurant_detail/restaurant_detail_title_test.dart`（新，T7） | url 非空時店名後有外開 icon 與 tooltip；null／`''` 時只有店名 | 2 | AC-14（修訂版） |
+| UI | `test/component/restaurant_info_cell_test.dart`（新增） | 新行為 4 個（實作前紅）；回歸防護 5 個（實作前綠）。涵蓋 U-1 三種情況、U-2 三種情況、U-3 的顯示與隱藏，以及全欄位加上大量分類時沒有 overflow。T8 後：U-3 兩個 test 改為斷言地址標題後的外開 icon 與 tooltip 顯示／隱藏 | 9 | AC-12～AC-15 |
 | 既有 | 全部 | 原樣通過。`restaurant_info_cell_test.dart:36,37` 是 U-1 回退與 U-2 null 情境的回歸測試 | 0 | AC-4 |
 
 **不測**（YAGNI，或依規格決定不測）：

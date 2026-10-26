@@ -69,7 +69,7 @@
 
 1. 身為**使用者**，在詳情頁看到格式化過的電話（例如 `02 2345 6789`），點一下就能撥號。
 2. 身為**使用者**，在詳情頁的分類旁看到價位（例如 `$$ · 咖啡廳`），不必退回列表才能判斷消費程度。
-3. 身為**使用者**，在詳情頁點店名後的外開 icon，跳到該餐廳的 Yelp 官方頁面查看完整資訊。
+3. 身為**使用者**，在詳情頁資訊欄點地址標題後的外開 icon，跳到該餐廳的 Yelp 官方頁面查看完整資訊。
 4. 身為**開發者**，`RestaurantDetailEntity` 帶有自己的 `id`，日後做收藏比對或深層連結時，不必再回頭補資料層。
 5. 身為**維護者**，`APIClz` 只留下實際在用的端點，不會被已廢除的 OAuth2 介面誤導。
 
@@ -83,7 +83,7 @@
 - **Q3 成功標準**：
   - DTO 解析 7 個欄位。
   - Entity 帶 4 個欄位，`fromDto`／`toDto` 雙向對應。
-  - Cell 顯示 `displayPhone` 與 `price`，撥號仍然用 `phone`；詳情頁 AppBar 店名後提供 Yelp 外開 icon。
+  - Cell 顯示 `displayPhone` 與 `price`，撥號仍然用 `phone`；Cell 的地址標題後提供 Yelp 外開 icon。
   - 移除 `fetchToken`。
   - `flutter analyze` 零警告，既有與新增測試全過。
 - **Q4 不做**：
@@ -104,7 +104,7 @@
 | `id` | `id` | `String?` | 新增 | 新增 | 不顯示 |
 | `alias` | `alias` | `String?` | 新增 | — | 不顯示 |
 | `price` | `price` | `String?` | 新增 | 新增 | 分類列（U-2） |
-| `url` | `url` | `String?` | 新增 | 新增 | AppBar 店名後的 Yelp 外開 icon（U-3） |
+| `url` | `url` | `String?` | 新增 | 新增 | Cell 地址標題後的 Yelp 外開 icon（U-3） |
 | `display_phone` | `displayPhone` | `String?` | 新增 | 新增 | 電話列文字（U-1） |
 | `is_claimed` | `isClaimed` | `bool?` | 新增 | — | 不顯示 |
 | `transactions` | `transactions` | `List<String>?` | 新增 | — | 不顯示 |
@@ -153,12 +153,13 @@
 
 **U-3 在 Yelp 開啟**
 
-> **2026-10-27 修訂（使用者於 STAGE 2 實作完成後要求）**：拿掉「在 Yelp 開啟」文字列，改為在店家名稱（詳情頁 AppBar 標題）之後接一個外開 icon。原「電話列之下獨立一列」的設計（D-2）作廢；`RestaurantInfoCell` 不再處理 `url`。
+> **2026-10-27 修訂（使用者於 STAGE 2 實作完成後要求）**：拿掉「在 Yelp 開啟」文字列，改為在 `RestaurantInfoCell` 的標題（資訊欄第一行的粗體地址）之後接一個外開 icon。原「電話列之下獨立一列」的設計（D-2）作廢。
+>
+> 同日曾誤解為詳情頁 AppBar 標題（T7，`0ecd326`），經使用者更正後已 revert；詳情頁頁面維持不動。
 
-- 詳情頁 AppBar 標題抽成 `RestaurantDetailTitle(name, url:)`（`lib/features/component/cell/restaurant_detail/restaurant_detail_title.dart`），頁面改用它。
-- 版面：`Row(mainAxisSize: min)` = `Flexible(Text(name))` + `IconButton(Icons.open_in_new)`。店名過長時沿用 AppBar 預設的單行省略號，icon 不被擠出。店名文字樣式與現行相同（白色、`fontSize22`）。
-- `url` 非空才顯示 icon；`null` 或 `''` 時只有店名，與修訂前的標題完全相同。
-- icon 白色，`tooltip` 為 `S.current.open_in_yelp`（icon-only 按鈕的無障礙標籤，ARB key 因此保留）。
+- 標題列改為 `Row(crossAxisAlignment: start)` = `Flexible(既有地址 Text，維持 maxLines 2 與省略號)` + 外開 `IconButton`。地址過長時由地址截斷，icon 不被擠出。
+- `url` 非空才顯示 icon；`null` 或 `''` 時只有地址，與修訂前完全相同。
+- icon 為 `Icons.open_in_new`，尺寸與顏色比照電話列 icon（`ThemeSize.size16`、`colorScheme.primary`），`tooltip` 為 `S.current.open_in_yelp`（icon-only 按鈕的無障礙標籤，ARB key 因此保留）。
 - 點擊時呼叫 `Utils.openUrl(rawUrl: url)`，沿用既有 helper，開啟方式與現在的 Google Maps 連結一致。
 - 新增的 ARB key：
 
@@ -221,10 +222,9 @@ git diff main --stat -- pubspec.yaml pubspec.lock
   - `displayPhone` 非空時，畫面上找得到 `displayPhone` 的文字，找不到 `phone` 的文字。
   - `displayPhone` 為 `''` 時，顯示 `phone`。`null` 的情境由既有測試涵蓋，見 AC-4。
 - **AC-13** U-2：§3.2 價位表的前兩列都要有對應的斷言：`$$ · 咖啡廳`、`$$`。`price: ''` 搭配 `['咖啡廳']` 時，顯示 `咖啡廳`。
-- **AC-14** U-3（2026-10-27 修訂）：測試對象為 `RestaurantDetailTitle`。
-  - `url` 非空時，店名文字 `findsOneWidget`，`find.byIcon(Icons.open_in_new)` 與 `find.byTooltip(S.current.open_in_yelp)` 皆為 `findsOneWidget`。
-  - `url` 為 `null` 或 `''` 時，店名文字 `findsOneWidget`，`find.byIcon(Icons.open_in_new)` 為 `findsNothing`。
-  - `RestaurantInfoCell` 在 `url` 非空時，畫面上沒有 `S.current.open_in_yelp` 文字，也沒有 `Icons.open_in_new`。
+- **AC-14** U-3（2026-10-27 修訂）：測試對象為 `RestaurantInfoCell`。
+  - `url` 非空時，`find.byIcon(Icons.open_in_new)` 與 `find.byTooltip(S.current.open_in_yelp)` 皆為 `findsOneWidget`，`find.text(S.current.open_in_yelp)` 為 `findsNothing`（不再有文字列）。
+  - `url` 為 `null` 或 `''` 時，`find.byIcon(Icons.open_in_new)` 為 `findsNothing`。
 - **AC-15** 版面：所有新欄位都有值，並且分類多到觸發省略號時，`pumpWidget` 之後 `tester.takeException()` 為 `null`，也就是沒有 RenderFlex overflow。測試畫面使用預設的測試尺寸。
 - **AC-16** widget test **不點擊**電話列和 Yelp 外開 icon。理由見 R-1。
 
@@ -232,7 +232,7 @@ git diff main --stat -- pubspec.yaml pubspec.lock
 
 - **AC-17** 在 iOS 或 Android 其中一個平台上完成：
   - 點電話列，撥號畫面帶入的是 `phone` 的號碼。
-  - 點 AppBar 店名後的外開 icon，開啟的是該餐廳的 Yelp 頁面；順帶目視確認 iOS 置中標題的偏移可接受。
+  - 點資訊欄地址標題後的外開 icon，開啟的是該餐廳的 Yelp 頁面。
 - **AC-18** Code review 時確認：撥號 URI 由 `phone` 組成，不是 `displayPhone`；Yelp 連結走 `Utils.openUrl(rawUrl:)`，沒有新增其他的 launch 路徑。
 
 ---
@@ -243,7 +243,7 @@ git diff main --stat -- pubspec.yaml pubspec.lock
 
 - `YelpRestaurantDetailDto` 新增 7 個欄位，重新產生 `.g.dart`。
 - `RestaurantDetailEntity` 新增 4 個欄位，更新 `fromDto`／`toDto`。
-- `RestaurantInfoCell` 實作 U-1、U-2；U-3 由新增的 `RestaurantDetailTitle`（詳情頁 AppBar 標題）實作。
+- `RestaurantInfoCell` 實作 U-1～U-3（U-3 為地址標題後的外開 icon）。
 - 新增 ARB key `open_in_yelp`，重新產生 `lib/generated/`。
 - 刪除 `APIClz.fetchToken`，重新產生 `api_clz.g.dart`。
 - §4 列出的新增測試。
@@ -253,7 +253,7 @@ git diff main --stat -- pubspec.yaml pubspec.lock
 
 - **不顯示**：`isClaimed`、`transactions`、`alias`、`id`。前兩者只在 DTO 解析，不進 Entity。
 - **`id` 的用途**：不接收藏、深層連結或比對（A-9.4）。這次只讓 Entity 帶有 `id`。
-- **資料流**：詳情頁仍然由傳入的 `RestaurantEntity.id` 觸發 `business(id)`，不改 BLoC、Repository。頁面只改 AppBar 標題（改用 `RestaurantDetailTitle`，見 U-3 修訂）。
+- **資料流**：詳情頁仍然由傳入的 `RestaurantEntity.id` 觸發 `business(id)`，不改 BLoC、Repository、頁面。
 - **Summary DTO**：不動，PR #160 已經完成。
 - **Detail DTO 的型別風格**：不把它改成 `final` + `Equatable`。理由見 D-4。
 - **AI 評論摘要**：`ReviewSummaryRepo.formatPrompt`（`review_summary_repo.dart:78-101`）不加入價位或電話。
@@ -270,7 +270,7 @@ git diff main --stat -- pubspec.yaml pubspec.lock
 | R-1 | 點擊行為無法用 widget test 驗證：`Utils.openUrl` 內部是 unawaited 的 `launchUrlString`，測試環境沒有 url_launcher 的 platform 實作，點擊會產生 uncaught 的非同步錯誤。要替換 `UrlLauncherPlatform`，就得新增 `url_launcher_platform_interface` 作為 dev 相依，違反 AC-6 | 撥號目標、Yelp 連結目標沒有自動化測試 | 交給 AC-17 的人工驗收和 AC-18 的 code review。顯示與隱藏的邏輯由 AC-12～AC-14 自動化測試 |
 | R-2 | `url` 是 Yelp 回傳的外部字串，沒有檢查 scheme 就交給 `launchUrlString` | 理論上可能開啟非預期的 URL | 這個值和已經直接載入的 `image_url`、`photos` 來自同一個已認證的 Yelp 回應，屬於既有的信任範圍；開啟動作也是交給 OS 處理。接受這個風險，不做白名單 |
 | R-3 | `make gen` 因為產生器版本漂移，在無關的 `.g.dart` 產生 diff | review 雜訊，甚至夾帶非預期的行為改動 | AC-1 限定 diff 範圍 |
-| R-4 | （2026-10-27 起 Yelp 連結移至 AppBar，資訊欄不再多一列；原風險僅剩電話列換行）文字欄的高度可能超過左側 140 高的地圖 | 版面變高。`Row` 外層是 `ListView`，所以不會 overflow | AC-15 鎖住 overflow |
+| R-4 | （2026-10-27 起 Yelp 連結改為地址標題後的 icon，資訊欄不再多一列；原風險僅剩電話列換行）文字欄的高度可能超過左側 140 高的地圖 | 版面變高。`Row` 外層是 `ListView`，所以不會 overflow | AC-15 鎖住 overflow |
 | R-5 | 價位放在分類列前面，分類太多時，尾端的分類會更早被省略號截掉 | 少看到一兩個分類 | 接受。價位比尾端的分類更有資訊量 |
 
 ---
