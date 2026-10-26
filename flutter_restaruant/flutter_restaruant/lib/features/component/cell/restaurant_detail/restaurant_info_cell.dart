@@ -28,12 +28,14 @@ class RestaurantInfoCell extends StatelessWidget {
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
     final colorScheme = theme.colorScheme;
-    final String category =
-        _detailInfo.categories
-            ?.map((category) => category.title ?? '')
-            .where((title) => title.isNotEmpty)
-            .join(' · ') ??
-        '';
+    final String phone = _detailInfo.phone ?? '';
+    final String displayPhone = _detailInfo.displayPhone ?? '';
+    final String url = _detailInfo.url ?? '';
+    // 價位放最前面：分類列 maxLines 為 1，尾端的分類會先被截掉。
+    final String category = [
+      _detailInfo.price ?? '',
+      ...?_detailInfo.categories?.map((category) => category.title ?? ''),
+    ].where((part) => part.isNotEmpty).join(' · ');
     final bool isOpen =
         (_detailInfo.hours != null && _detailInfo.hours!.isNotEmpty)
         ? (_detailInfo.hours![0].isOpenNow ?? false)
@@ -120,39 +122,18 @@ class RestaurantInfoCell extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
                   const SizedBox(height: ThemeSize.space4),
-                  if ((_detailInfo.phone ?? '').isNotEmpty)
-                    InkWell(
-                      onTap: () {
-                        final phoneStr = _detailInfo.phone ?? '';
-                        if (phoneStr.isNotEmpty) {
-                          launchUrl(Uri.parse('tel://$phoneStr'));
-                        }
-                      },
-                      borderRadius: BorderRadius.circular(ThemeSize.radius8),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          vertical: ThemeSize.space3,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: <Widget>[
-                            Icon(
-                              Icons.phone_outlined,
-                              size: ThemeSize.size16,
-                              color: colorScheme.primary,
-                            ),
-                            const SizedBox(width: ThemeSize.space5),
-                            Text(
-                              _detailInfo.phone ?? '',
-                              style: TextStyle(
-                                color: colorScheme.primary,
-                                fontWeight: FontWeight.w600,
-                                fontSize: ThemeFontSize.fontSize14,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                  if (phone.isNotEmpty)
+                    _InfoLinkRow(
+                      icon: Icons.phone_outlined,
+                      // 撥號一律用 phone；displayPhone 含空白與括號，只負責顯示。
+                      label: displayPhone.isEmpty ? phone : displayPhone,
+                      onTap: () => launchUrl(Uri.parse('tel://$phone')),
+                    ),
+                  if (url.isNotEmpty)
+                    _InfoLinkRow(
+                      icon: Icons.open_in_new,
+                      label: S.current.open_in_yelp,
+                      onTap: () => Utils.openUrl(rawUrl: url),
                     ),
                   if (category.isNotEmpty) ...[
                     const SizedBox(height: ThemeSize.space3),
@@ -263,4 +244,46 @@ class RestaurantInfoCell extends StatelessWidget {
       ),
     ],
   );
+}
+
+class _InfoLinkRow extends StatelessWidget {
+  final IconData icon;
+  final String label;
+  final VoidCallback onTap;
+
+  const _InfoLinkRow({
+    required this.icon,
+    required this.label,
+    required this.onTap,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    return InkWell(
+      onTap: onTap,
+      borderRadius: BorderRadius.circular(ThemeSize.radius8),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: ThemeSize.space3),
+        child: Row(
+          mainAxisSize: MainAxisSize.min,
+          children: <Widget>[
+            Icon(icon, size: ThemeSize.size16, color: colorScheme.primary),
+            const SizedBox(width: ThemeSize.space5),
+            // 窄螢幕下較長的 displayPhone 改為換行，避免 Row 溢出。
+            Flexible(
+              child: Text(
+                label,
+                style: TextStyle(
+                  color: colorScheme.primary,
+                  fontWeight: FontWeight.w600,
+                  fontSize: ThemeFontSize.fontSize14,
+                ),
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
 }
