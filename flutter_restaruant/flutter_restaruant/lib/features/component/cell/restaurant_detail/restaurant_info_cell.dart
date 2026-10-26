@@ -129,7 +129,14 @@ class RestaurantInfoCell extends StatelessWidget {
                       if (url.isNotEmpty)
                         IconButton(
                           tooltip: S.current.open_in_yelp,
-                          visualDensity: VisualDensity.compact,
+                          // 縮到 icon 本身大小，避免 40dp 按鈕撐高標題列、icon 低於文字。
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: ThemeSize.space4,
+                          ),
+                          constraints: const BoxConstraints(),
+                          style: const ButtonStyle(
+                            tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                          ),
                           icon: Icon(
                             Icons.open_in_new,
                             size: ThemeSize.size16,
