@@ -14,7 +14,7 @@
 
 1. `YelpRestaurantDetailDto` 新增 7 欄：`id`、`alias`、`price`、`url`、`displayPhone`、`isClaimed`、`transactions`。
 2. `RestaurantDetailEntity` 新增 4 欄：`id`、`price`、`url`、`displayPhone`，`fromDto`／`toDto` 雙向對應。
-3. `RestaurantInfoCell` 實作 U-1（電話顯示 `displayPhone`，撥號仍用 `phone`）、U-2（價位併入分類列最前面）、U-3（「在 Yelp 開啟」列）。
+3. `RestaurantInfoCell` 實作 U-1（電話顯示 `displayPhone`，撥號仍用 `phone`）、U-2（價位併入分類列最前面）、U-3（地址標題後的 Yelp 外開 icon；原「在 Yelp 開啟」列已於 T8 改掉）。
 4. ARB 新增 `open_in_yelp`。
 5. 刪除 `APIClz.fetchToken`。
 
@@ -37,6 +37,8 @@
 ### 2.2 Cell 的「可點擊連結列」怎麼寫
 
 U-3 要求「樣式比照電話列」，所以畫面上會有兩列結構完全相同的 `InkWell → Padding → Row(Icon, SizedBox, Text)`。
+
+> **T8 後註記**：Yelp 列已改為地址標題後的 icon，`_InfoLinkRow` 只剩電話列使用，下表「兩列共用」的理由已不成立。仍保留它：改回 inline 會讓已約 185 行的 `build` 再多約 35 行，與 flutter-styles「Widget 提取」方向相反。
 
 | 選項 | 作法 | 評估 |
 |---|---|---|
@@ -108,7 +110,7 @@ U-3 要求「樣式比照電話列」，所以畫面上會有兩列結構完全�
 | `id` | `String? id` | `final String? id` | 無 |
 | `alias` | `String? alias` | — | 無 |
 | `price` | `String? price` | `final String? price` | 分類列的第一個元素（U-2） |
-| `url` | `String? url` | `final String? url` | 「在 Yelp 開啟」列（U-3） |
+| `url` | `String? url` | `final String? url` | 地址標題後的 Yelp 外開 icon（U-3） |
 | `display_phone` | `String? displayPhone` | `final String? displayPhone` | 電話列的顯示文字（U-1） |
 | `is_claimed` | `bool? isClaimed` | — | 無 |
 | `transactions` | `List<String>? transactions` | — | 無 |
@@ -967,7 +969,7 @@ sed -n '1638p' docs/brainstorm/2026-10-26-features-brainstorm.md | rtk proxy gre
 
 - **AC-17**：在 iOS 或 Android 其中一個平台上完成以下兩項：
   - 點電話列，撥號畫面帶入的是 `phone` 的號碼。
-  - 點「在 Yelp 開啟」，開啟的是該餐廳的 Yelp 頁面。
+  - 點資訊欄地址標題後的外開 icon，開啟的是該餐廳的 Yelp 頁面。
   - 這一步會以真實的 API Key 載入詳情頁，所以同時也是 R-C 的實機抽查。詳情頁能正常顯示，就代表該餐廳的 `/v3/businesses/{id}` 回應已經成功解析這 7 個新欄位。
 - **AC-18**：code review 時確認以下兩點。T5 步驟 3 的 grep 已經做過機械預檢。
   - 撥號用的是 `'tel://$phone'`。
@@ -1113,7 +1115,11 @@ Row(
     if (url.isNotEmpty)
       IconButton(
         tooltip: S.current.open_in_yelp,
-        visualDensity: VisualDensity.compact,
+        padding: const EdgeInsets.symmetric(horizontal: ThemeSize.space4),
+        constraints: const BoxConstraints(minHeight: ThemeSize.size20),
+        style: const ButtonStyle(
+          tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+        ),
         icon: Icon(
           Icons.open_in_new,
           size: ThemeSize.size16,
@@ -1126,6 +1132,7 @@ Row(
 ```
 
 - 地址 `Text` 的樣式、`maxLines`、`overflow` 與現行逐字相同。程式碼片段以 `dart format` 輸出為準（本檔仍適用 §2.3）。
+- **按鈕尺寸修訂紀錄**：初版（`e1e5a5a`）用 `visualDensity: VisualDensity.compact`，按鈕 40×40 撐高標題列、icon 低於文字 10dp（verifier 實測）；`5b19198` 縮為 icon 大小（24×16）；STAGE 3 審查後 `cf4ec10` 加 `minHeight: size20`，最終 24×20、與單行行高一致、垂直偏移 0。上方片段為最終版。
 
 **步驟 4：驗收**
 
@@ -1164,7 +1171,7 @@ git diff --name-only --relative cba9ea9 HEAD -- lib test   # 恰為 Cell 與 Cel
 | # | 風險 | 影響 | 緩解 |
 |---|---|---|---|
 | R-3（規格） | `make gen` 因為產生器版本漂移，在無關的 `.g.dart` 產生 diff | review 雜訊，甚至夾帶非預期的行為改動 | T0 先確認 `make gen` 和 `make intl` 在基線都是 no-op，有 diff 就停止。T1、T3 用 `--numstat` 鎖住生成碼的新增或刪除方向，T3 再以 `-U0` 逐行比對新增內容。T6 的步驟 1-2 鎖住整體範圍 |
-| R-4（規格） | 資訊欄多一列，文字欄可能比左側 140 高的地圖還高 | 版面變高；外層是 `ListView`，所以不會 overflow | T5 的 overflow 測試（AC-15） |
+| R-4（規格） | （T8 後資訊欄不再多一列；Yelp icon 不撐高標題列）電話列換行時，文字欄可能比左側 140 高的地圖還高 | 版面變高；外層是 `ListView`，所以不會 overflow | T5 的 overflow 測試（AC-15） |
 | R-A | `_InfoLinkRow` 改寫了電話列的 widget 結構 | 若有測試或程式以 widget 結構定位電話列，會因此失敗 | 已確認沒有任何測試用 `InkWell`、`Icons.phone_outlined` 定位電話列，既有斷言都是 `find.text`。樣式參數逐項搬移，唯一新增的是 `Flexible`；寬度足夠時版面不變（§2.2） |
 | R-B | `restaurant_info_cell.dart` 與它的測試在基線就不符合格式 | 若執行者整檔執行 `dart format`，會把無關的 hunk 帶進 diff | §2.3 明訂不整檔格式化，只有新增的 hunk 採用 formatter 的結果。T5 以 diff hunk 檢查 |
 | R-C | `/v3/businesses/{id}` 的正式解析路徑會多解析 7 欄。Yelp 回傳的型別若不符（例如 `transactions` 的元素不是字串），詳情頁會解析失敗 | 詳情頁壞掉 | 7 欄的型別都依 Yelp 官方 schema 定義。其中 6 欄在 Summary DTO 有相同型別的宣告可以對照：`id`、`price`（`yelp_restaurant_summary_dto.dart:13,18`），`alias`、`url`、`transactions`、`displayPhone`（`:28-36`）。**`is_claimed` 沒有先例**，只依 schema 宣告為 `bool?`。PR #160 在 2026-10-25 才合併，這些欄位**還不能算是已經在正式環境驗證過**，所以改由 T6 步驟 3 的 AC-17 實機操作順帶抽查一次真實回應 |

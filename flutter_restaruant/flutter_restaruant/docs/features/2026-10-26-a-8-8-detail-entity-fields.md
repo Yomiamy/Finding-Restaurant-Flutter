@@ -1,7 +1,7 @@
 # 功能規格：A-8.8 補齊 Detail DTO／Entity 欄位、資訊欄顯示 displayPhone／price／Yelp 連結、刪除 `fetchToken`
 
 - **日期**：2026-10-26
-- **狀態**：草稿（STAGE 0a）。§7 的設計決策已有建議，STAGE 0b 可以推翻，但推翻時要一併改 §4 的驗收條件
+- **狀態**：已實作（Issue #161，2026-10-27）。U-3 於 STAGE 2 依使用者要求修訂，見 §3.2 U-3 與 §7 D-2
 - **實查基線**：`main` @ `b78a332`
 - **需求來源**：gen-grill brief Q1–Q5，已放行（摘要見 §2.2）
 - **相關 brainstorm 項目**：`docs/brainstorm/2026-10-26-features-brainstorm.md` §8.3.1 [A-8.8]（L1637-1653）。Summary 側已由 Issue #159／PR #160 完成，本規格只處理剩下的部分
@@ -59,7 +59,7 @@
   - `displayPhone` 只決定顯示文字，電話列是否顯示仍然只看 `phone`（D-3）。
 - **最大破壞風險**：
   - 刪除 `fetchToken` 後重新產生 `api_clz.g.dart`，產生器版本漂移可能帶進無關的 diff。AC-1 鎖住這一點。
-  - 資訊欄多一列，會改變 Cell 的高度。AC-15 鎖住不能出現 overflow。
+  - 地址標題後多一個 icon，地址可用寬度少約 24dp；標題列高度不變（按鈕高度對齊單行行高）。AC-15 鎖住不能出現 overflow。
 
 ---
 
@@ -160,6 +160,7 @@
 - 標題列改為 `Row(crossAxisAlignment: start)` = `Flexible(既有地址 Text，維持 maxLines 2 與省略號)` + 外開 `IconButton`。地址過長時由地址截斷，icon 不被擠出。
 - `url` 非空才顯示 icon；`null` 或 `''` 時只有地址，與修訂前完全相同。
 - icon 為 `Icons.open_in_new`，尺寸與顏色比照電話列 icon（`ThemeSize.size16`、`colorScheme.primary`），`tooltip` 為 `S.current.open_in_yelp`（icon-only 按鈕的無障礙標籤，ARB key 因此保留）。
+- 按鈕尺寸：`padding` 水平 `space4`、`constraints: BoxConstraints(minHeight: size20)`、`tapTargetSize: shrinkWrap`，實測 24×20，高度等於地址單行行高，icon 與第一行垂直置中，標題列不被撐高。**點擊區刻意小於 Material 建議的 48dp**：預設尺寸（40～48dp）會撐高標題列、icon 低於文字約 10dp；同欄電話列本就只有約 26dp 高，且 icon 周圍無其他可點元素，誤點不會觸發錯誤動作。
 - 點擊時呼叫 `Utils.openUrl(rawUrl: url)`，沿用既有 helper，開啟方式與現在的 Google Maps 連結一致。
 - 新增的 ARB key：
 
@@ -286,6 +287,8 @@ git diff main --stat -- pubspec.yaml pubspec.lock
 | (c) 放在 `RestaurantHeadCell`，用 `summaryInfo.price` | 不需要 Detail 欄位 | 違背 Q3「`RestaurantInfoCell` 顯示 `price`」，也讓 Detail 的 `price` 欄位變成沒有消費端 |
 
 ### D-2 Yelp 連結的入口
+
+> ⚠️ **已作廢（2026-10-27）**：下表的 (a) 已由使用者否決，最終採用「`RestaurantInfoCell` 地址標題後的外開 icon」（不在原選項中），見 §3.2 U-3。下表保留作為當時的取捨紀錄。
 
 | 選項 | 內容 | 評估 |
 |------|------|------|
