@@ -160,7 +160,7 @@
 - 標題列改為 `Row(crossAxisAlignment: start)` = `Flexible(既有地址 Text，維持 maxLines 2 與省略號)` + 外開 `IconButton`。地址過長時由地址截斷，icon 不被擠出。
 - `url` 非空才顯示 icon；`null` 或 `''` 時只有地址，與修訂前完全相同。
 - icon 為 `Icons.open_in_new`，尺寸與顏色比照電話列 icon（`ThemeSize.size16`、`colorScheme.primary`），`tooltip` 為 `S.current.open_in_yelp`（icon-only 按鈕的無障礙標籤，ARB key 因此保留）。
-- 按鈕尺寸：`padding` 水平 `space4`、`constraints: BoxConstraints(minHeight: size20)`、`tapTargetSize: shrinkWrap`，實測 24×20，高度等於地址單行行高，icon 與第一行垂直置中，標題列不被撐高。**點擊區刻意小於 Material 建議的 48dp**：預設尺寸（40～48dp）會撐高標題列、icon 低於文字約 10dp；同欄電話列本就只有約 26dp 高，且 icon 周圍無其他可點元素，誤點不會觸發錯誤動作。
+- 按鈕尺寸：`padding` 水平 `space4`、`constraints: BoxConstraints(minHeight: size20)`、`tapTargetSize: shrinkWrap`，實測 24×20，高度等於地址單行行高，系統字級 1.0 時 icon 與第一行垂直置中（字級放大時按鈕高度固定，icon 會略高於行中心，例如 1.3 倍時約 3dp），標題列不被撐高。**點擊區刻意小於 Material 建議的 48dp**：預設尺寸（40～48dp）會撐高標題列、icon 低於文字約 10dp；同欄電話列本就只有約 26dp 高。按鈕下方 4dp 即為電話列，誤觸最多開啟撥號畫面，不會直接撥出。
 - 點擊時呼叫 `Utils.openUrl(rawUrl: url)`，沿用既有 helper，開啟方式與現在的 Google Maps 連結一致。
 - 新增的 ARB key：
 

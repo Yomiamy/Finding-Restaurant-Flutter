@@ -4,7 +4,7 @@
 > 建立日期：2026-10-26
 > 關聯規格：[`docs/features/2026-10-26-a-8-8-detail-entity-fields.md`](../features/2026-10-26-a-8-8-detail-entity-fields.md)（下稱「規格」，§、AC、D、R 編號沿用規格）
 > 實查基線：`main` @ `b78a332`
-> 狀態：草稿（STAGE 0b，第 1 次修正：回應 plan-verifier 初審的非阻擋觀察，並把 `_InfoLinkRow` 的 `Text` 改用 `Flexible` 包住）。規格 §7 的 D-1～D-4 已由使用者確認，本計畫不重新討論，只處理「怎麼做」
+> 狀態：已執行完畢（Issue #161，2026-10-27；T0～T8，T7 已作廢由 T8 取代）。STAGE 0b 曾修正 1 次：回應 plan-verifier 初審的非阻擋觀察，並把 `_InfoLinkRow` 的 `Text` 改用 `Flexible` 包住。規格 §7 的 D-1～D-4 已由使用者確認，本計畫不重新討論，只處理「怎麼做」
 
 ---
 
