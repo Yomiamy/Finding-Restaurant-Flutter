@@ -990,6 +990,89 @@ sed -n '1638p' docs/brainstorm/2026-10-26-features-brainstorm.md | rtk proxy gre
 
 ---
 
+### T7：Yelp 外開 icon 移到店家名稱之後（2026-10-27 追加，10 分）
+
+- **來源**：使用者於 T6 完成後要求「拿掉『在 Yelp 開啟』字眼，外開 icon 接在店家 title 之後」。規格 U-3／AC-14 已同步修訂。
+- **寫入檔案**：
+  - 新增 `lib/features/component/cell/restaurant_detail/restaurant_detail_title.dart`
+  - `lib/features/component/cell/restaurant_detail/restaurant_detail_barrel.dart`（匯出新檔）
+  - `lib/flow/restaurant/view/restaurant_detail_page.dart`（AppBar `title` 的 `Success` 分支改用新 widget）
+  - `lib/features/component/cell/restaurant_detail/restaurant_info_cell.dart`（移除 `url` 變數與 Yelp 的 `_InfoLinkRow`）
+  - `test/component/restaurant_info_cell_test.dart`（改寫 Yelp 兩個 test，見步驟 1）
+  - 新增 `test/component/restaurant_detail/restaurant_detail_title_test.dart`
+- **對應 AC**：AC-14（修訂版）
+
+**為何抽成 widget**：詳情頁整頁的 widget test 要準備 route arguments、`RestaurantDetailBloc` 與廣告能力，成本遠高於這個改動；標題抽成 `StatelessWidget` 才能直接測 icon 的顯示與隱藏，也符合 flutter-styles「Widget 提取」。
+
+**步驟 1：測試先行**
+
+- `restaurant_info_cell_test.dart`：
+  - 「url 非空時顯示「在 Yelp 開啟」」改為「url 非空時 cell 不再顯示 Yelp 連結」：`url: _Data.yelpUrl` 時 `find.text(S.current.open_in_yelp)` 與 `find.byIcon(Icons.open_in_new)` 皆 `findsNothing`。
+  - 刪除「url 為 null 或空字串時不顯示」（Cell 已不處理 `url`，此情境失去意義）。
+  - 「新欄位全有值…不 overflow」保留不改。
+- `restaurant_detail_title_test.dart`（2 個 test，測資放 `_Data`）：
+  - url 非空：店名 `findsOneWidget`、`find.byIcon(Icons.open_in_new)` 與 `find.byTooltip(S.current.open_in_yelp)` 為 `findsOneWidget`。
+  - url 為 `null` 與 `''`：店名 `findsOneWidget`、`find.byIcon(Icons.open_in_new)` 為 `findsNothing`。
+  - pump 時包在 `MaterialApp(home: Scaffold(appBar: AppBar(title: RestaurantDetailTitle(...))))`，以 AppBar 實際環境驗證。
+- 紅燈預期：title 測試編譯失敗（類別不存在）；cell 改寫後的 test 為紅（Yelp 列仍在）。
+
+**步驟 2：實作**
+
+```dart
+class RestaurantDetailTitle extends StatelessWidget {
+  final String name;
+  final String? url;
+
+  const RestaurantDetailTitle(this.name, {super.key, this.url});
+
+  @override
+  Widget build(BuildContext context) {
+    final String link = url ?? '';
+    return Row(
+      mainAxisSize: MainAxisSize.min,
+      children: <Widget>[
+        Flexible(
+          child: Text(
+            name,
+            style: const TextStyle(
+              color: ThemeColor.colorffffff,
+              fontSize: ThemeFontSize.fontSize22,
+            ),
+          ),
+        ),
+        if (link.isNotEmpty)
+          IconButton(
+            tooltip: S.current.open_in_yelp,
+            icon: const Icon(Icons.open_in_new, color: ThemeColor.colorffffff),
+            onPressed: () => Utils.openUrl(rawUrl: link),
+          ),
+      ],
+    );
+  }
+}
+```
+
+- 頁面：`Success` 分支改為 `RestaurantDetailTitle(state.detailInfo.name ?? '', url: state.detailInfo.url)`；其他分支不動。
+- Cell：刪除 `final String url = ...` 與 `if (url.isNotEmpty) _InfoLinkRow(...)`；`_InfoLinkRow` 仍供電話列使用，保留。
+- import 依既有 barrel 慣例；程式碼片段以 `dart format` 輸出為準（`restaurant_info_cell.dart` 與其測試檔仍適用 §2.3，只驗新增／修改 hunk）。
+
+**步驟 3：驗收**
+
+```bash
+flutter analyze                                            # No issues found!
+flutter test test/component/restaurant_info_cell_test.dart test/component/restaurant_detail/restaurant_detail_title_test.dart
+flutter test                                               # 457 - 1 + 2 = 458
+rtk proxy grep -rn "open_in_yelp" lib --exclude-dir=generated   # 預期：只剩 restaurant_detail_title.dart 一處
+rtk proxy grep -rn -E "tel://|launchUrl\(|Utils\.openUrl\(" lib/features/component/cell/restaurant_detail/restaurant_info_cell.dart lib/features/component/cell/restaurant_detail/restaurant_detail_title.dart
+# 預期 4 行：cell 的 tel:// 1 行、Google Maps 2 行；title 的 Utils.openUrl 1 行
+{ git diff --name-only --relative HEAD; git ls-files --others --exclude-standard; } | sort   # 恰為上列 6 檔
+```
+
+- 規格與計畫檔本次修訂與 T7 程式碼一起 commit（docs 與 code 分開兩個 commit）。
+- T6 的 brainstorm `:1638` 描述「新增『在 Yelp 開啟』」需改為「店名後新增 Yelp 外開 icon」，併入 T7 的 docs commit。
+
+---
+
 ## 6. 測試計畫
 
 | 層 | 檔案 | 驗什麼 | 新增 test 數 | 對應 AC |

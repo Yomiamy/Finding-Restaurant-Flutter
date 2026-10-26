@@ -153,8 +153,12 @@
 
 **U-3 在 Yelp 開啟**
 
-- `url` 非空時，才在電話列之下顯示一列，文字是 `S.current.open_in_yelp`。`null` 或 `''` 時不顯示。
-- 樣式比照電話列：可點擊的列、前置 icon（建議 `Icons.open_in_new`）、`colorScheme.primary` 的文字色。
+> **2026-10-27 修訂（使用者於 STAGE 2 實作完成後要求）**：拿掉「在 Yelp 開啟」文字列，改為在店家名稱（詳情頁 AppBar 標題）之後接一個外開 icon。原「電話列之下獨立一列」的設計（D-2）作廢；`RestaurantInfoCell` 不再處理 `url`。
+
+- 詳情頁 AppBar 標題抽成 `RestaurantDetailTitle(name:, url:)`（`lib/features/component/cell/restaurant_detail/restaurant_detail_title.dart`），頁面改用它。
+- 版面：`Row(mainAxisSize: min)` = `Flexible(Text(name))` + `IconButton(Icons.open_in_new)`。店名過長時沿用 AppBar 預設的單行省略號，icon 不被擠出。店名文字樣式與現行相同（白色、`fontSize22`）。
+- `url` 非空才顯示 icon；`null` 或 `''` 時只有店名，與修訂前的標題完全相同。
+- icon 白色，`tooltip` 為 `S.current.open_in_yelp`（icon-only 按鈕的無障礙標籤，ARB key 因此保留）。
 - 點擊時呼叫 `Utils.openUrl(rawUrl: url)`，沿用既有 helper，開啟方式與現在的 Google Maps 連結一致。
 - 新增的 ARB key：
 
@@ -217,9 +221,10 @@ git diff main --stat -- pubspec.yaml pubspec.lock
   - `displayPhone` 非空時，畫面上找得到 `displayPhone` 的文字，找不到 `phone` 的文字。
   - `displayPhone` 為 `''` 時，顯示 `phone`。`null` 的情境由既有測試涵蓋，見 AC-4。
 - **AC-13** U-2：§3.2 價位表的前兩列都要有對應的斷言：`$$ · 咖啡廳`、`$$`。`price: ''` 搭配 `['咖啡廳']` 時，顯示 `咖啡廳`。
-- **AC-14** U-3：
-  - `url` 非空時，`find.text(S.current.open_in_yelp)` 是 `findsOneWidget`。
-  - `url` 為 `null` 或 `''` 時，是 `findsNothing`。
+- **AC-14** U-3（2026-10-27 修訂）：測試對象為 `RestaurantDetailTitle`。
+  - `url` 非空時，店名文字 `findsOneWidget`，`find.byIcon(Icons.open_in_new)` 與 `find.byTooltip(S.current.open_in_yelp)` 皆為 `findsOneWidget`。
+  - `url` 為 `null` 或 `''` 時，店名文字 `findsOneWidget`，`find.byIcon(Icons.open_in_new)` 為 `findsNothing`。
+  - `RestaurantInfoCell` 在 `url` 非空時，畫面上沒有 `S.current.open_in_yelp` 文字，也沒有 `Icons.open_in_new`。
 - **AC-15** 版面：所有新欄位都有值，並且分類多到觸發省略號時，`pumpWidget` 之後 `tester.takeException()` 為 `null`，也就是沒有 RenderFlex overflow。測試畫面使用預設的測試尺寸。
 - **AC-16** widget test **不點擊**電話列和 Yelp 列。理由見 R-1。
 
@@ -248,7 +253,7 @@ git diff main --stat -- pubspec.yaml pubspec.lock
 
 - **不顯示**：`isClaimed`、`transactions`、`alias`、`id`。前兩者只在 DTO 解析，不進 Entity。
 - **`id` 的用途**：不接收藏、深層連結或比對（A-9.4）。這次只讓 Entity 帶有 `id`。
-- **資料流**：詳情頁仍然由傳入的 `RestaurantEntity.id` 觸發 `business(id)`，不改 BLoC、Repository、頁面。
+- **資料流**：詳情頁仍然由傳入的 `RestaurantEntity.id` 觸發 `business(id)`，不改 BLoC、Repository。頁面只改 AppBar 標題（改用 `RestaurantDetailTitle`，見 U-3 修訂）。
 - **Summary DTO**：不動，PR #160 已經完成。
 - **Detail DTO 的型別風格**：不把它改成 `final` + `Equatable`。理由見 D-4。
 - **AI 評論摘要**：`ReviewSummaryRepo.formatPrompt`（`review_summary_repo.dart:78-101`）不加入價位或電話。
