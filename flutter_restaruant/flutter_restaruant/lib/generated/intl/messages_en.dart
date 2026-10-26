@@ -287,6 +287,7 @@ class MessageLookup extends MessageLookupByLibrary {
     "navigation_choice": MessageLookupByLibrary.simpleMessage(
       "Navigation Choice",
     ),
+    "open_in_yelp": MessageLookupByLibrary.simpleMessage("Open in Yelp"),
     "passwd_invalid_hint_msg": MessageLookupByLibrary.simpleMessage(
       "Please input password",
     ),

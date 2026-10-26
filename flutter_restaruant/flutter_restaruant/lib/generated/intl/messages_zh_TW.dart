@@ -231,6 +231,7 @@ class MessageLookup extends MessageLookupByLibrary {
       "從相簿選取",
     ),
     "navigation_choice": MessageLookupByLibrary.simpleMessage("請選擇導覽方式"),
+    "open_in_yelp": MessageLookupByLibrary.simpleMessage("在 Yelp 開啟"),
     "passwd_invalid_hint_msg": MessageLookupByLibrary.simpleMessage("請輸入密碼"),
     "passwd_invalid_hint_title": MessageLookupByLibrary.simpleMessage("密碼"),
     "photo_viewer_title": MessageLookupByLibrary.simpleMessage("預覽"),
