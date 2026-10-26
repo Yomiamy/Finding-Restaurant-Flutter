@@ -34,6 +34,15 @@ YelpRestaurantDetailDto _$YelpRestaurantDetailDtoFromJson(
   hours: (json['hours'] as List<dynamic>?)
       ?.map((e) => YelpRestaurantHoursDto.fromJson(e as Map<String, dynamic>))
       .toList(),
+  id: json['id'] as String?,
+  alias: json['alias'] as String?,
+  price: json['price'] as String?,
+  url: json['url'] as String?,
+  displayPhone: json['display_phone'] as String?,
+  isClaimed: json['is_claimed'] as bool?,
+  transactions: (json['transactions'] as List<dynamic>?)
+      ?.map((e) => e as String)
+      .toList(),
 );
 
 Map<String, dynamic> _$YelpRestaurantDetailDtoToJson(
@@ -50,4 +59,11 @@ Map<String, dynamic> _$YelpRestaurantDetailDtoToJson(
   'coordinates': instance.coordinates,
   'photos': instance.photos,
   'hours': instance.hours,
+  'id': instance.id,
+  'alias': instance.alias,
+  'price': instance.price,
+  'url': instance.url,
+  'display_phone': instance.displayPhone,
+  'is_claimed': instance.isClaimed,
+  'transactions': instance.transactions,
 };
