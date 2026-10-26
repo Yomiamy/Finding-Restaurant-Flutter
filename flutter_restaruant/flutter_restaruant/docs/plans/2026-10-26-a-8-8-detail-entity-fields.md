@@ -1062,7 +1062,7 @@ class RestaurantDetailTitle extends StatelessWidget {
 flutter analyze                                            # No issues found!
 flutter test test/component/restaurant_info_cell_test.dart test/component/restaurant_detail/restaurant_detail_title_test.dart
 flutter test                                               # 457 - 1 + 2 = 458
-rtk proxy grep -rn "open_in_yelp" lib --exclude-dir=generated   # 預期：只剩 restaurant_detail_title.dart 一處
+rtk proxy grep -rn "open_in_yelp" lib --exclude-dir=generated   # 預期 3 行：兩個 ARB 的 key 定義（刻意保留）＋ restaurant_detail_title.dart 的 tooltip
 rtk proxy grep -rn -E "tel://|launchUrl\(|Utils\.openUrl\(" lib/features/component/cell/restaurant_detail/restaurant_info_cell.dart lib/features/component/cell/restaurant_detail/restaurant_detail_title.dart
 # 預期 4 行：cell 的 tel:// 1 行、Google Maps 2 行；title 的 Utils.openUrl 1 行
 { git diff --name-only --relative HEAD; git ls-files --others --exclude-standard; } | sort   # 恰為上列 6 檔
@@ -1079,7 +1079,8 @@ rtk proxy grep -rn -E "tel://|launchUrl\(|Utils\.openUrl\(" lib/features/compone
 |---|---|---|---|---|
 | DTO | `test/api/dto/yelp_restaurant_detail_dto_test.dart`（新） | 7 個新欄位逐欄解析，snake_case 對應正確；缺欄位時全部是 null；既有欄位不受影響 | 2 | AC-7、AC-8 |
 | Entity | `test/domain_entity_test.dart`（新增） | `fromDto` 對應 4 欄；`toDto` 寫回 4 欄，且明確斷言有損的 3 欄是 null；空 DTO 時 4 欄是 null | 3 | AC-9～AC-11 |
-| UI | `test/component/restaurant_info_cell_test.dart`（新增） | 新行為 4 個（實作前紅）；回歸防護 5 個（實作前綠）。涵蓋 U-1 三種情況、U-2 三種情況、U-3 的顯示與隱藏，以及全欄位加上大量分類時沒有 overflow | 9 | AC-12～AC-15 |
+| UI | `test/component/restaurant_info_cell_test.dart`（新增） | 新行為 4 個（實作前紅）；回歸防護 5 個（實作前綠）。涵蓋 U-1 三種情況、U-2 三種情況、U-3 的顯示與隱藏，以及全欄位加上大量分類時沒有 overflow。T7 後：U-3 兩個 test 改為 1 個「cell 不再顯示 Yelp 連結」 | 9 → 8 | AC-12～AC-15 |
+| UI | `test/component/restaurant_detail/restaurant_detail_title_test.dart`（新，T7） | url 非空時店名後有外開 icon 與 tooltip；null／`''` 時只有店名 | 2 | AC-14（修訂版） |
 | 既有 | 全部 | 原樣通過。`restaurant_info_cell_test.dart:36,37` 是 U-1 回退與 U-2 null 情境的回歸測試 | 0 | AC-4 |
 
 **不測**（YAGNI，或依規格決定不測）：
