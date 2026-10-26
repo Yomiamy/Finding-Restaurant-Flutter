@@ -16,6 +16,10 @@ class RestaurantDetailEntity {
   final RestaurantCoordinatesEntity? coordinates;
   final List<String>? photos;
   final List<RestaurantHoursEntity>? hours;
+  final String? id;
+  final String? price;
+  final String? url;
+  final String? displayPhone;
 
   const RestaurantDetailEntity({
     this.name,
@@ -29,6 +33,10 @@ class RestaurantDetailEntity {
     this.coordinates,
     this.photos,
     this.hours,
+    this.id,
+    this.price,
+    this.url,
+    this.displayPhone,
   });
 
   factory RestaurantDetailEntity.fromDto(YelpRestaurantDetailDto dto) =>
@@ -50,6 +58,10 @@ class RestaurantDetailEntity {
             : null,
         photos: dto.photos,
         hours: dto.hours?.map((e) => RestaurantHoursEntity.fromDto(e)).toList(),
+        id: dto.id,
+        price: dto.price,
+        url: dto.url,
+        displayPhone: dto.displayPhone,
       );
 
   YelpRestaurantDetailDto get toDto => YelpRestaurantDetailDto(
@@ -64,5 +76,9 @@ class RestaurantDetailEntity {
     coordinates: coordinates?.toDto,
     photos: photos,
     hours: hours?.map((e) => e.toDto).toList(),
+    id: id,
+    price: price,
+    url: url,
+    displayPhone: displayPhone,
   );
 }

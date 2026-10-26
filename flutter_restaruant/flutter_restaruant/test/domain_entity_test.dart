@@ -3,6 +3,15 @@ import 'package:flutter_restaruant/api/dto/dto_barrel.dart';
 import 'package:flutter_restaruant/data_layer/models/model_barrel.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 
+class _Data {
+  static const String id = 'bistro-101-id';
+  static const String alias = 'bistro-101';
+  static const String price = '\$\$';
+  static const String url = 'https://www.yelp.com/biz/bistro-101';
+  static const String displayPhone = '(02) 2345-6789';
+  static const List<String> transactions = ['delivery'];
+}
+
 void main() {
   group('Domain Entities & DTO Separation Tests', () {
     test('RestaurantEntity equality check is null-safe', () {
@@ -62,6 +71,54 @@ void main() {
       expect(detailEntity.name, 'Bistro 101');
       expect(detailEntity.isClosed, false);
       expect(detailEntity.rating, 4.8);
+    });
+
+    test('RestaurantDetailEntity.fromDto maps id/price/url/displayPhone', () {
+      final entity = RestaurantDetailEntity.fromDto(
+        YelpRestaurantDetailDto(
+          id: _Data.id,
+          price: _Data.price,
+          url: _Data.url,
+          displayPhone: _Data.displayPhone,
+        ),
+      );
+
+      expect(entity.id, _Data.id);
+      expect(entity.price, _Data.price);
+      expect(entity.url, _Data.url);
+      expect(entity.displayPhone, _Data.displayPhone);
+    });
+
+    test('RestaurantDetailEntity.toDto writes back the 4 fields only', () {
+      final dto = RestaurantDetailEntity.fromDto(
+        YelpRestaurantDetailDto(
+          id: _Data.id,
+          alias: _Data.alias,
+          price: _Data.price,
+          url: _Data.url,
+          displayPhone: _Data.displayPhone,
+          isClaimed: true,
+          transactions: _Data.transactions,
+        ),
+      ).toDto;
+
+      expect(dto.id, _Data.id);
+      expect(dto.price, _Data.price);
+      expect(dto.url, _Data.url);
+      expect(dto.displayPhone, _Data.displayPhone);
+      // 刻意有損（規格 §3.1）：Entity 不攜帶這 3 欄。
+      expect(dto.alias, isNull);
+      expect(dto.isClaimed, isNull);
+      expect(dto.transactions, isNull);
+    });
+
+    test('Empty DTO leaves the 4 new entity fields null', () {
+      final entity = RestaurantDetailEntity.fromDto(YelpRestaurantDetailDto());
+
+      expect(entity.id, isNull);
+      expect(entity.price, isNull);
+      expect(entity.url, isNull);
+      expect(entity.displayPhone, isNull);
     });
 
     test('YelpReviewDto to ReviewEntity mapping', () {
