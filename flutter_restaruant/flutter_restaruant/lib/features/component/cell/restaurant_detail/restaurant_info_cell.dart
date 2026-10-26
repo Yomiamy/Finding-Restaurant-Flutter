@@ -30,6 +30,7 @@ class RestaurantInfoCell extends StatelessWidget {
     final colorScheme = theme.colorScheme;
     final String phone = _detailInfo.phone ?? '';
     final String displayPhone = _detailInfo.displayPhone ?? '';
+    final String url = _detailInfo.url ?? '';
     // 價位放最前面：分類列 maxLines 為 1，尾端的分類會先被截掉。
     final String category = [
       _detailInfo.price ?? '',
@@ -127,6 +128,12 @@ class RestaurantInfoCell extends StatelessWidget {
                       // 撥號一律用 phone；displayPhone 含空白與括號，只負責顯示。
                       label: displayPhone.isEmpty ? phone : displayPhone,
                       onTap: () => launchUrl(Uri.parse('tel://$phone')),
+                    ),
+                  if (url.isNotEmpty)
+                    _InfoLinkRow(
+                      icon: Icons.open_in_new,
+                      label: S.current.open_in_yelp,
+                      onTap: () => Utils.openUrl(rawUrl: url),
                     ),
                   if (category.isNotEmpty) ...[
                     const SizedBox(height: ThemeSize.space3),
