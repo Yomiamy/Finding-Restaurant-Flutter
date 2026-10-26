@@ -70,12 +70,9 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
           bloc: _bloc,
           builder: (context, state) {
             if (state is Success) {
-              return Text(
+              return RestaurantDetailTitle(
                 state.detailInfo.name ?? '',
-                style: const TextStyle(
-                  color: ThemeColor.colorffffff,
-                  fontSize: ThemeFontSize.fontSize22,
-                ),
+                url: state.detailInfo.url,
               );
             } else {
               return const Text('');
