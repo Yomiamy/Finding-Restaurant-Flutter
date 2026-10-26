@@ -15,14 +15,6 @@ part 'api_clz.g.dart';
 abstract class APIClz {
   factory APIClz(Dio dio, {String? baseUrl}) = _APIClz;
 
-  @POST('/oauth2/token')
-  @FormUrlEncoded()
-  Future<String> fetchToken(
-    @Field('grant_type') String? grantType,
-    @Field('client_id') String? clientId,
-    @Field('client_secret') String? clientSecret,
-  );
-
   @GET('/v3/businesses/search')
   Future<YelpSearchDto> businessesSearch({
     @Query('term') String? term,
