@@ -113,13 +113,31 @@ class RestaurantInfoCell extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: <Widget>[
-                  Text(
-                    _detailInfo.location?.displayAddressStr ?? '',
-                    style: theme.textTheme.titleSmall?.copyWith(
-                      fontWeight: FontWeight.w700,
-                    ),
-                    maxLines: 2,
-                    overflow: TextOverflow.ellipsis,
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: <Widget>[
+                      Flexible(
+                        child: Text(
+                          _detailInfo.location?.displayAddressStr ?? '',
+                          style: theme.textTheme.titleSmall?.copyWith(
+                            fontWeight: FontWeight.w700,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                      if (url.isNotEmpty)
+                        IconButton(
+                          tooltip: S.current.open_in_yelp,
+                          visualDensity: VisualDensity.compact,
+                          icon: Icon(
+                            Icons.open_in_new,
+                            size: ThemeSize.size16,
+                            color: colorScheme.primary,
+                          ),
+                          onPressed: () => Utils.openUrl(rawUrl: url),
+                        ),
+                    ],
                   ),
                   const SizedBox(height: ThemeSize.space4),
                   if (phone.isNotEmpty)
@@ -128,12 +146,6 @@ class RestaurantInfoCell extends StatelessWidget {
                       // 撥號一律用 phone；displayPhone 含空白與括號，只負責顯示。
                       label: displayPhone.isEmpty ? phone : displayPhone,
                       onTap: () => launchUrl(Uri.parse('tel://$phone')),
-                    ),
-                  if (url.isNotEmpty)
-                    _InfoLinkRow(
-                      icon: Icons.open_in_new,
-                      label: S.current.open_in_yelp,
-                      onTap: () => Utils.openUrl(rawUrl: url),
                     ),
                   if (category.isNotEmpty) ...[
                     const SizedBox(height: ThemeSize.space3),

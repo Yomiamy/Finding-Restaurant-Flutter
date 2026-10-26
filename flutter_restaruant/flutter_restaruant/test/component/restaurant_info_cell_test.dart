@@ -193,18 +193,20 @@ void main() {
       expect(find.text(_Data.cafe), findsOneWidget);
     });
 
-    testWidgets('url 非空時顯示「在 Yelp 開啟」', (tester) async {
+    testWidgets('url 非空時地址標題後顯示 Yelp 外開 icon', (tester) async {
       await _pumpCell(tester, const RestaurantDetailEntity(url: _Data.yelpUrl));
 
-      expect(find.text(S.current.open_in_yelp), findsOneWidget);
+      expect(find.byIcon(Icons.open_in_new), findsOneWidget);
+      expect(find.byTooltip(S.current.open_in_yelp), findsOneWidget);
+      expect(find.text(S.current.open_in_yelp), findsNothing);
     });
 
-    testWidgets('url 為 null 或空字串時不顯示「在 Yelp 開啟」', (tester) async {
+    testWidgets('url 為 null 或空字串時不顯示 Yelp 外開 icon', (tester) async {
       await _pumpCell(tester, const RestaurantDetailEntity());
-      expect(find.text(S.current.open_in_yelp), findsNothing);
+      expect(find.byIcon(Icons.open_in_new), findsNothing);
 
       await _pumpCell(tester, const RestaurantDetailEntity(url: ''));
-      expect(find.text(S.current.open_in_yelp), findsNothing);
+      expect(find.byIcon(Icons.open_in_new), findsNothing);
     });
 
     testWidgets('新欄位全有值且分類多到截斷時不 overflow', (tester) async {
