@@ -1,7 +1,4 @@
-import 'package:get_it/get_it.dart';
-
 import '../../api/api_barrel.dart';
-import '../../app/constants/constants_barrel.dart';
 import '../../domain/repositories/yelp_business_repository.dart';
 
 class YelpBusinessRepo implements YelpBusinessRepository {
@@ -11,12 +8,15 @@ class YelpBusinessRepo implements YelpBusinessRepository {
   static const String _listSeparator = ',';
 
   final APIClz _api;
+  final String _locale;
 
-  YelpBusinessRepo({APIClz? api}) : _api = api ?? GetIt.I<APIClz>();
+  YelpBusinessRepo({required APIClz api, required String locale})
+    : _api = api,
+      _locale = locale;
 
   @override
   Future<YelpSearchDto> searchByPhone(String phone) =>
-      _api.businessesSearchByPhone(phone, Constants.locale);
+      _api.businessesSearchByPhone(phone, _locale);
 
   @override
   Future<YelpSearchDto> matchBusinesses({
@@ -83,7 +83,7 @@ class YelpBusinessRepo implements YelpBusinessRepository {
   @override
   Future<YelpServiceOfferingsDto> fetchServiceOfferings(
     String businessIdOrAlias,
-  ) => _api.businessServiceOfferings(businessIdOrAlias, Constants.locale);
+  ) => _api.businessServiceOfferings(businessIdOrAlias, _locale);
 
   @override
   Future<YelpReviewHighlightsDto> fetchReviewHighlights(
@@ -92,6 +92,6 @@ class YelpBusinessRepo implements YelpBusinessRepository {
   }) => _api.businessReviewHighlights(
     businessIdOrAlias,
     count: count,
-    locale: Constants.locale,
+    locale: _locale,
   );
 }
