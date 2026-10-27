@@ -1635,7 +1635,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
   3. 篩選頁 `FilterConfigs` 將多選價格轉換為 `"1,2,3"` 字串傳遞給 API。
 
 #### [A-8.8] 補齊 `RestaurantDetailEntity` 與 DTO 核心缺失欄位（`id`、`price`、`url`、`display_phone`）並剔除廢棄端點
-- **狀態**：✅ 已於 2026-10-27 完成 (Issue #161)。Summary 側先前已於 Issue #159 / PR #160 完成；本次完成 Detail 側：`YelpRestaurantDetailDto` 補上 `id`、`alias`、`price`、`url`、`display_phone`、`is_claimed`、`transactions`；`RestaurantDetailEntity` 補上 `id`、`price`、`url`、`displayPhone`；`RestaurantInfoCell` 電話改顯示 `displayPhone`（撥號仍用 `phone`）、價位併入分類列最前面；地址標題後新增 Yelp 外開 icon；刪除 `APIClz.fetchToken`。`isClaimed`／`transactions` 只在 DTO 解析、不進 Entity；`id` 尚未接上收藏或深層連結（A-9.4）。
+- **狀態**：✅ 已於 2026-10-27 完成 (Issue #161 / PR #162)。Summary 側先前已於 Issue #159 / PR #160 完成；本次完成 Detail 側：`YelpRestaurantDetailDto` 補上 `id`、`alias`、`price`、`url`、`display_phone`、`is_claimed`、`transactions`；`RestaurantDetailEntity` 補上 `id`、`price`、`url`、`displayPhone`；`RestaurantInfoCell` 電話改顯示 `displayPhone`（撥號仍用 `phone`）、價位併入分類列最前面；地址標題後新增 Yelp 外開 icon；刪除 `APIClz.fetchToken`。`isClaimed`／`transactions` 只在 DTO 解析、不進 Entity；`id` 尚未接上收藏或深層連結（A-9.4）。
 - **優先級**：`P0` (阻擋級 / 實體完整性缺陷)
 - **預估 Effort**：`0.5d`
 - **價值與收益**：
