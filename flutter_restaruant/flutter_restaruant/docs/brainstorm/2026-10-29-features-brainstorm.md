@@ -1865,7 +1865,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
   3. 只改寫測試結構，不刪除、不放寬任何斷言；遷移前後測試數量一致。
   4. 無法以狀態序列表達的斷言（如 `ai_foodie_bloc_test` 對 `history` 的 `captured` 檢查）可保留 `test()`，不強求全數轉換。
 
-#### [E-8.7] 檔內 mock 替身命名統一為 `_Mock` 前綴
+#### [E-8.7] 檔內 mock 替身命名統一為 `_Mock` 前綴 — ✅ 已完成 (Issue #163 / PR #164, 2026-10-27)
 - **優先級**：`P2`
 - **預估 Effort**：`0.1d`
 - **來源**：同 E-8.6。
