@@ -4,7 +4,7 @@
 > 建立日期：2026-10-27
 > 關聯規格：[`docs/features/2026-10-27-repo-constructor-injection.md`](../features/2026-10-27-repo-constructor-injection.md)（下稱「規格」，§、AC、D、R 編號沿用規格）
 > 實查基線：`new-main/main` @ `b78a332`
-> 狀態：待執行。STAGE 0b 修正過 1 次，回應 plan-verifier 初審：修正執行目錄、範圍檢查改加 `--relative`、比對基準改用 merge-base，並補上停止條件與檢查。規格 §7 的 D-1～D-3 已由使用者確認，本計畫只處理「怎麼做」
+> 狀態：✅ 已完成（T0～T3）。STAGE 3 審查後依使用者要求追加 T4（新增 `test/data_layer/main_repo_test.dart`、`restaurant_detail_repo_test.dart` 驗證轉發）與 T5（`yelp_category_repository.dart` 註解、`injection.dart` import 空行、規格／計畫／brainstorm 狀態），§9 第 3、4 點的「測試數 = N0」「`lib/domain` 無變動」因此放寬。STAGE 0b 修正過 1 次，回應 plan-verifier 初審：修正執行目錄、範圍檢查改加 `--relative`、比對基準改用 merge-base，並補上停止條件與檢查。規格 §7 的 D-1～D-3 已由使用者確認，本計畫只處理「怎麼做」
 
 ---
 
@@ -43,7 +43,7 @@
 - `yelp_business_repo_test.dart`、`yelp_event_repo_test.dart` **沒有**在 scratch 實測；它們的改法與另外兩個 Yelp 測試相同。
 - `app_theme_platform_test` 印出的 `[FlutterInspector] notification init failed: LateInitializationError…` 在基線就有，與本次改動無關。
 - `flutter pub get` 不會改動 `pubspec.lock`（該檔有進版控）。
-- `lib/domain/repositories/yelp_category_repository.dart:7` 的 doc comment 寫著「固定帶 `Constants.locale`」。**不改**：注入的值仍是 `Constants.locale`，敘述仍然成立；而且 AC-6 禁止改動 `lib/domain`。
+- `lib/domain/repositories/yelp_category_repository.dart:7` 的 doc comment 寫著「固定帶 `Constants.locale`」。**不改**：注入的值仍是 `Constants.locale`，敘述仍然成立；而且 AC-6 禁止改動 `lib/domain`。（STAGE 3 後依使用者要求已改，見狀態列）
 
 ---
 

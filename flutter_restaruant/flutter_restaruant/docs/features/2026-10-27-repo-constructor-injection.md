@@ -1,7 +1,7 @@
 # 功能規格：A-8.14 Repository 改以建構子注入 `APIClz` 與 `locale`，解除 data 層對 `app/` 與全域 GetIt 的依賴
 
 - **日期**：2026-10-27
-- **狀態**：規劃中
+- **狀態**：✅ 已完成（Issue #165）。STAGE 3 審查後依使用者要求追加：Main／Detail 轉發測試、`lib/domain/repositories/yelp_category_repository.dart` 註解改寫（AC-6「`lib/domain` 不動」對此一行註解放寬）、`injection.dart` import 分組空行
 - **實查基線**：`new-main/main` @ `b78a332`
 - **需求來源**：gen-grill brief Q1–Q5，已放行（摘要見 §2.2）
 - **相關 brainstorm 項目**：`docs/brainstorm/2026-10-26-features-brainstorm.md` §8.3 [A-8.14]（L1906-1928）
