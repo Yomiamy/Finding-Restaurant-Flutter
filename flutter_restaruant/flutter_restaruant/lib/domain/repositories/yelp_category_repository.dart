@@ -4,7 +4,7 @@ import '../../api/dto/dto_barrel.dart';
 ///
 /// HTTP 失敗原樣拋出 `DioException`，不做轉換；回應格式不符時拋 `CheckedFromJsonException`。
 abstract interface class YelpCategoryRepository {
-  /// `GET /v3/categories`；固定帶 `Constants.locale`，
+  /// `GET /v3/categories`；帶建構時注入的 locale，
   /// Yelp 只回傳該 locale 可用的分類並翻譯標題。
   Future<YelpCategoryListDto> fetchCategories();
 
