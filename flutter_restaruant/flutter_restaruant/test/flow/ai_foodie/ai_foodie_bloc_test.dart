@@ -8,7 +8,7 @@ import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockAiFoodieRepository extends Mock implements AiFoodieRepository {}
+class _MockAiFoodieRepository extends Mock implements AiFoodieRepository {}
 
 class _Data {
   static final List<AiFoodieMessage> welcome = [
@@ -54,12 +54,12 @@ class _Data {
 
 void main() {
   group('AiFoodieBloc Tests', () {
-    late MockAiFoodieRepository repository;
+    late _MockAiFoodieRepository repository;
     late AiFoodieBloc bloc;
 
     setUp(() async {
       await S.load(const Locale('zh', 'TW'));
-      repository = MockAiFoodieRepository();
+      repository = _MockAiFoodieRepository();
       when(
         () => repository.getInitialSuggestions(),
       ).thenAnswer((_) async => _Data.welcome);

@@ -5,17 +5,17 @@ import 'package:flutter_restaruant/flow/signinup/bloc/bloc_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockSignInRepository extends Mock implements SignInRepository {}
+class _MockSignInRepository extends Mock implements SignInRepository {}
 
 void main() {
   setUpAll(() => registerFallbackValue(AccountTypeModel.none));
 
   group('SignInBloc Tests', () {
-    late MockSignInRepository mockRepo;
+    late _MockSignInRepository mockRepo;
     late SignInBloc bloc;
 
     setUp(() {
-      mockRepo = MockSignInRepository();
+      mockRepo = _MockSignInRepository();
       bloc = SignInBloc(repository: mockRepo);
     });
 
