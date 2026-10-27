@@ -1,7 +1,15 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_restaruant/api/api_barrel.dart';
 import 'package:flutter_restaruant/data_layer/repositories/repositories_barrel.dart';
 import 'package:flutter_restaruant/domain/repositories/repositories_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:mocktail/mocktail.dart';
+
+class _MockAPIClz extends Mock implements APIClz {}
+
+class _Data {
+  static const String locale = 'en_US';
+}
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -26,7 +34,7 @@ void main() {
     });
 
     test('MainRepository implements MainRepository', () {
-      final repo = MainRepo();
+      final repo = MainRepo(api: _MockAPIClz(), locale: _Data.locale);
       expect(repo, isA<MainRepository>());
       expect(repo.summaryInfoSet, isEmpty);
       repo.reset();
@@ -41,7 +49,10 @@ void main() {
     test(
       'RestaurantDetailRepository implements RestaurantDetailRepository',
       () {
-        final repo = RestaurantDetailRepo();
+        final repo = RestaurantDetailRepo(
+          api: _MockAPIClz(),
+          locale: _Data.locale,
+        );
         expect(repo, isA<RestaurantDetailRepository>());
       },
     );

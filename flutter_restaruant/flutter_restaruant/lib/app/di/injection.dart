@@ -23,10 +23,18 @@ void setupInjection() {
 
   // Repositories
   getIt.registerLazySingleton<MainRepository>(
-    () => MainRepo(favorDataSource: getIt<FavorDataSource>()),
+    () => MainRepo(
+      api: getIt<APIClz>(),
+      locale: Constants.locale,
+      favorDataSource: getIt<FavorDataSource>(),
+    ),
   );
   getIt.registerLazySingleton<RestaurantDetailRepository>(
-    () => RestaurantDetailRepo(favorDataSource: getIt<FavorDataSource>()),
+    () => RestaurantDetailRepo(
+      api: getIt<APIClz>(),
+      locale: Constants.locale,
+      favorDataSource: getIt<FavorDataSource>(),
+    ),
   );
   getIt.registerLazySingleton<FavorRepository>(
     () => FavorRepo(favorDataSource: getIt<FavorDataSource>()),
