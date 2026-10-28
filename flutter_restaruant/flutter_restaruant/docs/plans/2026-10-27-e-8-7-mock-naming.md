@@ -141,13 +141,18 @@ flutter analyze 2>&1 | tail -n 3
 flutter test 2>&1 | tail -n 3
 ```
 
-**步驟 4：核對 diff 範圍**
+**步驟 4：核對 diff 範圍（僅限 5 個實作測試檔；完整 PR 另含規格、計畫與 brainstorm 文件）**
 
 ```bash
-rtk git diff --stat
+rtk git diff --stat -- \
+  test/sign_in_bloc_test.dart \
+  test/main_bloc_load_more_test.dart \
+  test/flow/ai_foodie/ai_foodie_bloc_test.dart \
+  test/flow/menu_vision/menu_vision_bloc_test.dart \
+  test/flow/menu_vision/menu_vision_sheet_test.dart
 ```
 
-預期只列出 §3 的 5 個檔案，共 18 insertions(+) / 18 deletions(-)。
+預期在上述 5 個檔案中，共 18 insertions(+) / 18 deletions(-)。
 
 > commit 不在本計畫範圍。要 commit 必須先取得使用者明確授權；若獲授權，建議訊息為 `test(e-8.7): prefix in-file mocktail doubles with underscore`。
 
@@ -160,7 +165,7 @@ rtk git diff --stat
 3. 5 個檔案的測試數量不變（5 / 4 / 14 / 9 / 8，合計 40）。
 4. `flutter analyze` 的 issue 數與基準相同，沒有新增。
 5. `flutter test` 全部通過，總測試數與基準相同。
-6. `git diff --stat` 只涉及 5 個檔案，共 18 行替換。
+6. `git diff --stat -- test/` 只涉及 5 個測試檔案，共 18 行替換（完整 PR 另含 3 個規格與規劃文件）。
 
 ---
 
