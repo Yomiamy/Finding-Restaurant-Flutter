@@ -7,7 +7,7 @@ import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockMenuVisionRepository extends Mock implements MenuVisionRepository {}
+class _MockMenuVisionRepository extends Mock implements MenuVisionRepository {}
 
 void main() {
   setUpAll(() async {
@@ -124,12 +124,12 @@ void main() {
   });
 
   group('MenuVisionSheet Widget Tests', () {
-    late MockMenuVisionRepository mockRepo;
+    late _MockMenuVisionRepository mockRepo;
     late MenuVisionBloc bloc;
 
     setUp(() async {
       await S.load(const Locale('zh', 'TW'));
-      mockRepo = MockMenuVisionRepository();
+      mockRepo = _MockMenuVisionRepository();
       bloc = MenuVisionBloc(repository: mockRepo);
     });
 

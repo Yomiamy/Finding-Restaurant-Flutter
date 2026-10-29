@@ -5,7 +5,7 @@ import 'package:flutter_restaruant/flow/main/bloc/bloc_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockMainRepository extends Mock implements MainRepository {}
+class _MockMainRepository extends Mock implements MainRepository {}
 
 class _Data {
   static const RestaurantEntity existing = RestaurantEntity(
@@ -53,13 +53,13 @@ void main() {
   });
 
   group('MainBloc load-more state sequence', () {
-    late MockMainRepository mockRepo;
+    late _MockMainRepository mockRepo;
     late MainBloc bloc;
 
     tearDown(() => bloc.close());
 
     test('首次載入（無既有資料）發出 InProgress → Success', () async {
-      mockRepo = MockMainRepository();
+      mockRepo = _MockMainRepository();
       when(() => mockRepo.summaryInfoSet).thenReturn(<RestaurantEntity>{});
       when(
         () => mockRepo.fetchYelpSearchInfo(any(), any(), any(), any(), any()),
@@ -75,7 +75,7 @@ void main() {
     });
 
     test('已有資料時再載入發出 LoadMoreInProgress → LoadMoreSuccess', () async {
-      mockRepo = MockMainRepository();
+      mockRepo = _MockMainRepository();
       when(() => mockRepo.summaryInfoSet).thenReturn({_Data.existing});
       when(
         () => mockRepo.fetchYelpSearchInfo(any(), any(), any(), any(), any()),
@@ -93,7 +93,7 @@ void main() {
     test('關鍵字過濾中載入更多：LoadMoreInProgress 不得把被過濾掉的項目撈回來', () async {
       // repository 的 set 有 2 筆，但畫面因關鍵字過濾只顯示 1 筆。
       // 載入中若改讀 summaryInfoSet，畫面會從 1 筆突然跳成 2 筆。
-      mockRepo = MockMainRepository();
+      mockRepo = _MockMainRepository();
       when(
         () => mockRepo.summaryInfoSet,
       ).thenReturn({_Data.existing, _Data.nextPage.first});
@@ -116,7 +116,7 @@ void main() {
     });
 
     test('LoadMoreInProgress 攜帶當前已載入清單供 UI 續繪', () async {
-      mockRepo = MockMainRepository();
+      mockRepo = _MockMainRepository();
       when(() => mockRepo.summaryInfoSet).thenReturn({_Data.existing});
       when(
         () => mockRepo.fetchYelpSearchInfo(any(), any(), any(), any(), any()),

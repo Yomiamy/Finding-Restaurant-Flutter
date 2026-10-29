@@ -9,7 +9,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:mocktail/mocktail.dart';
 
-class MockMenuVisionRepository extends Mock implements MenuVisionRepository {}
+class _MockMenuVisionRepository extends Mock implements MenuVisionRepository {}
 
 class _Data {
   static final Uint8List sampleBytes = Uint8List.fromList([1, 2, 3, 4]);
@@ -34,11 +34,11 @@ void main() {
   );
 
   group('MenuVisionBloc Tests', () {
-    late MockMenuVisionRepository mockRepo;
+    late _MockMenuVisionRepository mockRepo;
 
     setUp(() async {
       await S.load(const Locale('zh', 'TW'));
-      mockRepo = MockMenuVisionRepository();
+      mockRepo = _MockMenuVisionRepository();
     });
 
     blocTest<MenuVisionBloc, MenuVisionState>(
