@@ -23,48 +23,6 @@ class _APIClz implements APIClz {
   final ParseErrorLogger? errorLogger;
 
   @override
-  Future<String> fetchToken(
-    String? grantType,
-    String? clientId,
-    String? clientSecret,
-  ) async {
-    final _extra = <String, dynamic>{};
-    final queryParameters = <String, dynamic>{};
-    queryParameters.removeWhere((k, v) => v == null);
-    final _headers = <String, dynamic>{};
-    final _data = {
-      'grant_type': grantType,
-      'client_id': clientId,
-      'client_secret': clientSecret,
-    };
-    _data.removeWhere((k, v) => v == null);
-    final _options = _setStreamType<String>(
-      Options(
-            method: 'POST',
-            headers: _headers,
-            extra: _extra,
-            contentType: 'application/x-www-form-urlencoded',
-          )
-          .compose(
-            _dio.options,
-            '/oauth2/token',
-            queryParameters: queryParameters,
-            data: _data,
-          )
-          .copyWith(baseUrl: _combineBaseUrls(_dio.options.baseUrl, baseUrl)),
-    );
-    final _result = await _dio.fetch<String>(_options);
-    late String _value;
-    try {
-      _value = _result.data!;
-    } on Object catch (e, s) {
-      errorLogger?.logError(e, s, _options, response: _result);
-      rethrow;
-    }
-    return _value;
-  }
-
-  @override
   Future<YelpSearchDto> businessesSearch({
     String? term,
     double? latitude,

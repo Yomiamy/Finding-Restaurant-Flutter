@@ -19,6 +19,13 @@ class YelpRestaurantDetailDto {
   YelpRestaurantCoordinatesDto? coordinates;
   List<String>? photos;
   List<YelpRestaurantHoursDto>? hours;
+  String? id;
+  String? alias;
+  String? price;
+  String? url;
+  String? displayPhone;
+  bool? isClaimed;
+  List<String>? transactions;
 
   YelpRestaurantDetailDto({
     this.name,
@@ -32,6 +39,13 @@ class YelpRestaurantDetailDto {
     this.coordinates,
     this.photos,
     this.hours,
+    this.id,
+    this.alias,
+    this.price,
+    this.url,
+    this.displayPhone,
+    this.isClaimed,
+    this.transactions,
   });
 
   factory YelpRestaurantDetailDto.fromJson(Map<String, dynamic> json) =>

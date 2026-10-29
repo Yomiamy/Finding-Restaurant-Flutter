@@ -147,5 +147,6 @@
   "review_summary_highlights": "Highlights",
   "review_summary_retry": "Retry",
   "review_summary_failed": "Failed to generate AI review summary",
-  "review_summary_empty": "No review summary available"
+  "review_summary_empty": "No review summary available",
+  "open_in_yelp": "Open in Yelp"
 }

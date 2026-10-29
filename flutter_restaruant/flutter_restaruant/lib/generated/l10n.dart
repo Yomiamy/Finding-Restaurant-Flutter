@@ -1419,6 +1419,16 @@ class S {
       args: [],
     );
   }
+
+  /// `Open in Yelp`
+  String get open_in_yelp {
+    return Intl.message(
+      'Open in Yelp',
+      name: 'open_in_yelp',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
