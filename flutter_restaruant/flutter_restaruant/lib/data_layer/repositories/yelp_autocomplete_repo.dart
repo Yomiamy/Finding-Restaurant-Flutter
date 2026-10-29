@@ -1,13 +1,13 @@
-import 'package:get_it/get_it.dart';
-
 import '../../api/api_barrel.dart';
-import '../../app/constants/constants_barrel.dart';
 import '../../domain/repositories/yelp_autocomplete_repository.dart';
 
 class YelpAutocompleteRepo implements YelpAutocompleteRepository {
   final APIClz _api;
+  final String _locale;
 
-  YelpAutocompleteRepo({APIClz? api}) : _api = api ?? GetIt.I<APIClz>();
+  YelpAutocompleteRepo({required APIClz api, required String locale})
+    : _api = api,
+      _locale = locale;
 
   @override
   Future<YelpAutocompleteDto> autocomplete(
@@ -16,7 +16,7 @@ class YelpAutocompleteRepo implements YelpAutocompleteRepository {
     double? longitude,
   }) => _api.autocomplete(
     text,
-    locale: Constants.locale,
+    locale: _locale,
     latitude: latitude,
     longitude: longitude,
   );

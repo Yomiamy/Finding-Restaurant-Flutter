@@ -1,6 +1,5 @@
 import 'package:dio/dio.dart';
 import 'package:flutter_restaruant/api/api_barrel.dart';
-import 'package:flutter_restaruant/app/constants/constants_barrel.dart';
 import 'package:flutter_restaruant/data_layer/repositories/yelp_business_repo.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -8,6 +7,8 @@ import 'package:mocktail/mocktail.dart';
 class _MockAPIClz extends Mock implements APIClz {}
 
 class _Data {
+  // 刻意不等於正式值 'zh_TW'，才分辨得出轉發的是注入值。
+  static const String locale = 'en_US';
   static const String phone = '+14157492060';
   static const String businessId = 'north-india-restaurant-san-francisco';
 
@@ -40,13 +41,13 @@ void main() {
 
   setUp(() {
     api = _MockAPIClz();
-    repo = YelpBusinessRepo(api: api);
+    repo = YelpBusinessRepo(api: api, locale: _Data.locale);
   });
 
   group('參數轉發與原樣回傳', () {
-    test('searchByPhone 帶入 Constants.locale', () async {
+    test('searchByPhone 帶入注入的 locale', () async {
       Future<YelpSearchDto> apiCall() =>
-          api.businessesSearchByPhone(_Data.phone, Constants.locale);
+          api.businessesSearchByPhone(_Data.phone, _Data.locale);
       when(apiCall).thenAnswer((_) async => _Data.byPhone);
 
       final result = await repo.searchByPhone(_Data.phone);
@@ -138,9 +139,9 @@ void main() {
       verify(apiCall).called(1);
     });
 
-    test('fetchServiceOfferings 帶入 Constants.locale', () async {
+    test('fetchServiceOfferings 帶入注入的 locale', () async {
       Future<YelpServiceOfferingsDto> apiCall() =>
-          api.businessServiceOfferings(_Data.businessId, Constants.locale);
+          api.businessServiceOfferings(_Data.businessId, _Data.locale);
       when(apiCall).thenAnswer((_) async => _Data.offerings);
 
       final result = await repo.fetchServiceOfferings(_Data.businessId);
@@ -149,11 +150,11 @@ void main() {
       verify(apiCall).called(1);
     });
 
-    test('fetchReviewHighlights 帶入 count 與 Constants.locale', () async {
+    test('fetchReviewHighlights 帶入 count 與注入的 locale', () async {
       Future<YelpReviewHighlightsDto> apiCall() => api.businessReviewHighlights(
         _Data.businessId,
         count: 3,
-        locale: Constants.locale,
+        locale: _Data.locale,
       );
       when(apiCall).thenAnswer((_) async => _Data.highlights);
 
@@ -170,7 +171,7 @@ void main() {
   group('403 原樣拋出 DioException', () {
     test('searchByPhone', () async {
       when(
-        () => api.businessesSearchByPhone(_Data.phone, Constants.locale),
+        () => api.businessesSearchByPhone(_Data.phone, _Data.locale),
       ).thenAnswer((_) async => throw _Data.forbidden());
 
       await expectLater(repo.searchByPhone(_Data.phone), _throwsForbidden);
@@ -190,7 +191,7 @@ void main() {
 
     test('fetchServiceOfferings', () async {
       when(
-        () => api.businessServiceOfferings(_Data.businessId, Constants.locale),
+        () => api.businessServiceOfferings(_Data.businessId, _Data.locale),
       ).thenAnswer((_) async => throw _Data.forbidden());
 
       await expectLater(
@@ -204,7 +205,7 @@ void main() {
         () => api.businessReviewHighlights(
           _Data.businessId,
           count: null,
-          locale: Constants.locale,
+          locale: _Data.locale,
         ),
       ).thenAnswer((_) async => throw _Data.forbidden());
 

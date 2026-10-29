@@ -1,7 +1,4 @@
-import 'package:get_it/get_it.dart';
-
 import '../../api/api_barrel.dart';
-import '../../app/constants/constants_barrel.dart';
 import '../../domain/repositories/yelp_event_repository.dart';
 
 class YelpEventRepo implements YelpEventRepository {
@@ -9,8 +6,11 @@ class YelpEventRepo implements YelpEventRepository {
   static const String _listSeparator = ',';
 
   final APIClz _api;
+  final String _locale;
 
-  YelpEventRepo({APIClz? api}) : _api = api ?? GetIt.I<APIClz>();
+  YelpEventRepo({required APIClz api, required String locale})
+    : _api = api,
+      _locale = locale;
 
   @override
   Future<YelpEventSearchDto> searchEvents({
@@ -28,7 +28,7 @@ class YelpEventRepo implements YelpEventRepository {
     double? longitude,
     int? radius,
   }) => _api.eventsSearch(
-    locale: Constants.locale,
+    locale: _locale,
     offset: offset,
     limit: limit,
     sortBy: sortBy,
@@ -46,7 +46,7 @@ class YelpEventRepo implements YelpEventRepository {
 
   @override
   Future<YelpEventDto> fetchEvent(String eventId) =>
-      _api.event(eventId, Constants.locale);
+      _api.event(eventId, _locale);
 
   @override
   Future<YelpEventDto> fetchFeaturedEvent({
@@ -54,7 +54,7 @@ class YelpEventRepo implements YelpEventRepository {
     double? latitude,
     double? longitude,
   }) => _api.featuredEvent(
-    locale: Constants.locale,
+    locale: _locale,
     location: location,
     latitude: latitude,
     longitude: longitude,

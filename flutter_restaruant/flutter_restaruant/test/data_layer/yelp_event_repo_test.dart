@@ -1,5 +1,4 @@
 import 'package:flutter_restaruant/api/api_barrel.dart';
-import 'package:flutter_restaruant/app/constants/constants_barrel.dart';
 import 'package:flutter_restaruant/data_layer/repositories/yelp_event_repo.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -7,6 +6,8 @@ import 'package:mocktail/mocktail.dart';
 class _MockAPIClz extends Mock implements APIClz {}
 
 class _Data {
+  // 刻意不等於正式值 'zh_TW'，才分辨得出轉發的是注入值。
+  static const String locale = 'en_US';
   static const String eventId = 'oakland-saucy-restaurant-pop-up';
 
   // 內容各不相同，same() 才分辨得出是不是同一個物件。
@@ -21,13 +22,13 @@ void main() {
 
   setUp(() {
     api = _MockAPIClz();
-    repo = YelpEventRepo(api: api);
+    repo = YelpEventRepo(api: api, locale: _Data.locale);
   });
 
   group('參數轉發與原樣回傳', () {
-    test('searchEvents 帶入 Constants.locale，兩個 List 以逗號串接', () async {
+    test('searchEvents 帶入注入的 locale，兩個 List 以逗號串接', () async {
       Future<YelpEventSearchDto> apiCall() => api.eventsSearch(
-        locale: Constants.locale,
+        locale: _Data.locale,
         offset: 20,
         limit: 10,
         sortBy: 'asc',
@@ -66,7 +67,7 @@ void main() {
 
     test('searchEvents 未傳的參數（含兩個 List）原樣傳成 null', () async {
       Future<YelpEventSearchDto> apiCall() => api.eventsSearch(
-        locale: Constants.locale,
+        locale: _Data.locale,
         offset: null,
         limit: null,
         sortBy: null,
@@ -89,9 +90,8 @@ void main() {
       verify(apiCall).called(1);
     });
 
-    test('fetchEvent 帶入 Constants.locale', () async {
-      Future<YelpEventDto> apiCall() =>
-          api.event(_Data.eventId, Constants.locale);
+    test('fetchEvent 帶入注入的 locale', () async {
+      Future<YelpEventDto> apiCall() => api.event(_Data.eventId, _Data.locale);
       when(apiCall).thenAnswer((_) async => _Data.event);
 
       final result = await repo.fetchEvent(_Data.eventId);
@@ -100,9 +100,9 @@ void main() {
       verify(apiCall).called(1);
     });
 
-    test('fetchFeaturedEvent 帶入 Constants.locale', () async {
+    test('fetchFeaturedEvent 帶入注入的 locale', () async {
       Future<YelpEventDto> apiCall() => api.featuredEvent(
-        locale: Constants.locale,
+        locale: _Data.locale,
         location: 'San Francisco',
         latitude: 37.78,
         longitude: -122.41,

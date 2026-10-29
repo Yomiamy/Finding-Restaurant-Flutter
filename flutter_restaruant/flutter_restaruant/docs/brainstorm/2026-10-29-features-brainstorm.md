@@ -1903,7 +1903,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
   - 新增：`lib/api/graphql/yelp_graphql_client.dart`
   - 修改：`lib/data_layer/repositories/restaurant_detail_repo.dart`
 
-#### [A-8.14] Repository 改以建構子注入 `APIClz` 與 `locale`，解除 data 層對 `app/` 與全域 GetIt 的依賴
+#### [A-8.14] Repository 改以建構子注入 `APIClz` 與 `locale`，解除 data 層對 `app/` 與全域 GetIt 的依賴 — ✅ 已完成 (Issue #165, 2026-10-28)
 - **優先級**：`P2`（架構衛生；無行為改變）
 - **預估 Effort**：`0.5d`
 - **來源**：2026-10-24 檢視 PR #160（Issue #159）新增的 4 個 Yelp Repository 時提出。

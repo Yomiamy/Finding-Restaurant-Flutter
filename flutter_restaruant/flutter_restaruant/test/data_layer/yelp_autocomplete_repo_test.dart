@@ -1,5 +1,4 @@
 import 'package:flutter_restaruant/api/api_barrel.dart';
-import 'package:flutter_restaruant/app/constants/constants_barrel.dart';
 import 'package:flutter_restaruant/data_layer/repositories/yelp_autocomplete_repo.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -7,6 +6,8 @@ import 'package:mocktail/mocktail.dart';
 class _MockAPIClz extends Mock implements APIClz {}
 
 class _Data {
+  // 刻意不等於正式值 'zh_TW'，才分辨得出轉發的是注入值。
+  static const String locale = 'en_US';
   static const String text = 'piz';
 
   static const YelpAutocompleteDto suggestions = YelpAutocompleteDto(
@@ -20,14 +21,14 @@ void main() {
 
   setUp(() {
     api = _MockAPIClz();
-    repo = YelpAutocompleteRepo(api: api);
+    repo = YelpAutocompleteRepo(api: api, locale: _Data.locale);
   });
 
   group('參數轉發與原樣回傳', () {
-    test('autocomplete 帶入 text、Constants.locale 與座標', () async {
+    test('autocomplete 帶入 text、注入的 locale 與座標', () async {
       Future<YelpAutocompleteDto> apiCall() => api.autocomplete(
         _Data.text,
-        locale: Constants.locale,
+        locale: _Data.locale,
         latitude: 25.03,
         longitude: 121.56,
       );

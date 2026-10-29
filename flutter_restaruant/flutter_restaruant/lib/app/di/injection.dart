@@ -1,9 +1,11 @@
 import 'package:get_it/get_it.dart';
+
 import '../../api/api_barrel.dart';
 import '../../data_layer/datasources/datasources_barrel.dart';
 import '../../data_layer/repositories/repositories_barrel.dart';
 import '../../domain/repositories/repositories_barrel.dart';
 import '../../features/manager/manager_barrel.dart';
+import '../constants/constants_barrel.dart';
 
 final getIt = GetIt.instance;
 
@@ -22,10 +24,18 @@ void setupInjection() {
 
   // Repositories
   getIt.registerLazySingleton<MainRepository>(
-    () => MainRepo(favorDataSource: getIt<FavorDataSource>()),
+    () => MainRepo(
+      api: getIt<APIClz>(),
+      locale: Constants.locale,
+      favorDataSource: getIt<FavorDataSource>(),
+    ),
   );
   getIt.registerLazySingleton<RestaurantDetailRepository>(
-    () => RestaurantDetailRepo(favorDataSource: getIt<FavorDataSource>()),
+    () => RestaurantDetailRepo(
+      api: getIt<APIClz>(),
+      locale: Constants.locale,
+      favorDataSource: getIt<FavorDataSource>(),
+    ),
   );
   getIt.registerLazySingleton<FavorRepository>(
     () => FavorRepo(favorDataSource: getIt<FavorDataSource>()),
@@ -37,10 +47,16 @@ void setupInjection() {
   getIt.registerLazySingleton<ReviewSummaryRepository>(
     () => ReviewSummaryRepo(),
   );
-  getIt.registerLazySingleton<YelpBusinessRepository>(() => YelpBusinessRepo());
-  getIt.registerLazySingleton<YelpEventRepository>(() => YelpEventRepo());
-  getIt.registerLazySingleton<YelpCategoryRepository>(() => YelpCategoryRepo());
+  getIt.registerLazySingleton<YelpBusinessRepository>(
+    () => YelpBusinessRepo(api: getIt<APIClz>(), locale: Constants.locale),
+  );
+  getIt.registerLazySingleton<YelpEventRepository>(
+    () => YelpEventRepo(api: getIt<APIClz>(), locale: Constants.locale),
+  );
+  getIt.registerLazySingleton<YelpCategoryRepository>(
+    () => YelpCategoryRepo(api: getIt<APIClz>(), locale: Constants.locale),
+  );
   getIt.registerLazySingleton<YelpAutocompleteRepository>(
-    () => YelpAutocompleteRepo(),
+    () => YelpAutocompleteRepo(api: getIt<APIClz>(), locale: Constants.locale),
   );
 }

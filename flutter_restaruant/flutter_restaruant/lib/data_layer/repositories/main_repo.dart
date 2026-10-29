@@ -1,17 +1,16 @@
 import 'dart:async';
 
-import 'package:get_it/get_it.dart';
-
 import '../../api/api_barrel.dart';
 import '../../domain/entities/entities_barrel.dart';
 import '../../domain/repositories/repositories_barrel.dart';
-import '../../app/constants/constants_barrel.dart';
 import '../../models/model_barrel.dart';
 import '../datasources/datasources_barrel.dart';
 
 class MainRepo implements MainRepository {
   static const int _maxItemsCountInList = 50;
 
+  final APIClz _api;
+  final String _locale;
   final FavorDataSource _favorDataSource;
 
   @override
@@ -20,8 +19,13 @@ class MainRepo implements MainRepository {
   String _keyword = '';
   bool _isLoading = false;
 
-  MainRepo({FavorDataSource? favorDataSource})
-    : _favorDataSource = favorDataSource ?? FavorDataSource() {
+  MainRepo({
+    required APIClz api,
+    required String locale,
+    FavorDataSource? favorDataSource,
+  }) : _api = api,
+       _locale = locale,
+       _favorDataSource = favorDataSource ?? FavorDataSource() {
     reset();
   }
 
@@ -49,11 +53,11 @@ class MainRepo implements MainRepository {
 
     _isLoading = true;
     try {
-      YelpSearchDto searchDto = await GetIt.I<APIClz>().businessesSearch(
+      YelpSearchDto searchDto = await _api.businessesSearch(
         term: 'Restaurants',
         latitude: lat,
         longitude: lng,
-        locale: Constants.locale,
+        locale: _locale,
         price: price,
         openAt: openAt,
         sortBy: sortByStr,
