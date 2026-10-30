@@ -10,9 +10,12 @@ abstract interface class MainRepository {
     double lng,
     int? price,
     int? openAt,
-    String? sortByStr,
-  );
+    String? sortByStr, {
+    String? term,
+  });
 
+  /// @deprecated 請改用 [fetchYelpSearchInfo] 的 `term` 參數進行遠端搜尋。
+  @deprecated
   Future<List<RestaurantEntity>> filterByKeyword(
     String keyword,
     String? sortByStr,

@@ -44,17 +44,26 @@ class MainRepo implements MainRepository {
     double lng,
     int? price,
     int? openAt,
-    String? sortByStr,
-  ) async {
+    String? sortByStr, {
+    String? term,
+  }) async {
     if (_isLoading) {
       // If new items is loading, then don't handle new fetching request until the old one completed.
-      return await filterByKeyword(_keyword, sortByStr);
+      return _getSortedInfoList(sortByStr, summaryInfoSet.toList());
     }
 
     _isLoading = true;
     try {
+      if (term != null && term.trim() != _keyword) {
+        _offset = 0;
+        _keyword = term.trim();
+        summaryInfoSet.clear();
+      }
+
+      final String queryTerm = _keyword.isNotEmpty ? _keyword : 'Restaurants';
+
       YelpSearchDto searchDto = await _api.businessesSearch(
-        term: 'Restaurants',
+        term: queryTerm,
         latitude: lat,
         longitude: lng,
         locale: _locale,
@@ -78,7 +87,7 @@ class MainRepo implements MainRepository {
 
       _offset += MainRepo._maxItemsCountInList;
 
-      return await filterByKeyword(_keyword, sortByStr);
+      return _getSortedInfoList(sortByStr, summaryInfoSet.toList());
     } on Exception catch (e, st) {
       logger.e('fetchYelpSearchInfo 發生異常', error: e, stackTrace: st);
       rethrow;
@@ -88,23 +97,13 @@ class MainRepo implements MainRepository {
   }
 
   @override
+  @deprecated
   Future<List<RestaurantEntity>> filterByKeyword(
     String keyword,
     String? sortByStr,
   ) async {
-    _keyword = keyword;
-
-    if (keyword.isNotEmpty) {
-      List<RestaurantEntity> filteredList = summaryInfoSet.where((element) {
-        return (element.name?.contains(keyword) ?? false) ||
-            (element.categoriesStr.contains(keyword)) ||
-            (element.location?.displayAddressStr.contains(keyword) ?? false);
-      }).toList();
-
-      return _getSortedInfoList(sortByStr, filteredList);
-    } else {
-      return _getSortedInfoList(sortByStr, summaryInfoSet.toList());
-    }
+    _keyword = keyword.trim();
+    return _getSortedInfoList(sortByStr, summaryInfoSet.toList());
   }
 
   List<RestaurantEntity> _getSortedInfoList(
