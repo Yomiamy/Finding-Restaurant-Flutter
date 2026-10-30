@@ -39,13 +39,14 @@ class MainRepo implements MainRepository {
   }
 
   @override
-  Future<List<RestaurantEntity>> fetchYelpSearchInfo(
-    double lat,
-    double lng,
-    int? price,
+  Future<List<RestaurantEntity>> fetchYelpSearchInfo({
+    double? lat,
+    double? lng,
+    String? location,
+    String? price,
     int? openAt,
     String? sortByStr,
-  ) async {
+  }) async {
     if (_isLoading) {
       // If new items is loading, then don't handle new fetching request until the old one completed.
       return await filterByKeyword(_keyword, sortByStr);
@@ -53,10 +54,16 @@ class MainRepo implements MainRepository {
 
     _isLoading = true;
     try {
+      final bool hasCoordinates = lat != null && lng != null;
+      final String? resolvedLocation = hasCoordinates
+          ? null
+          : (location != null && location.isNotEmpty ? location : 'Taipei');
+
       YelpSearchDto searchDto = await _api.businessesSearch(
         term: 'Restaurants',
-        latitude: lat,
-        longitude: lng,
+        latitude: hasCoordinates ? lat : null,
+        longitude: hasCoordinates ? lng : null,
+        location: resolvedLocation,
         locale: _locale,
         price: price,
         openAt: openAt,

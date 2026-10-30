@@ -15,7 +15,7 @@ class _Data {
   // lat/lng、price/openAt 型別相同，值刻意互不相同，對調才會被抓到。
   static const double lat = 25.033;
   static const double lng = 121.5654;
-  static const int price = 2;
+  static const String price = '2';
   static const int openAt = 1761600000;
   static const String sortBy = 'distance';
 
@@ -37,12 +37,13 @@ void main() {
     );
   });
 
-  group('參數轉發', () {
-    test('fetchYelpSearchInfo 帶入座標、篩選條件與注入的 locale', () async {
+  group('參數轉發與 location 回退', () {
+    test('fetchYelpSearchInfo 帶入座標、篩選條件與注入的 locale（location 為 null）', () async {
       Future<YelpSearchDto> apiCall() => api.businessesSearch(
         term: 'Restaurants',
         latitude: _Data.lat,
         longitude: _Data.lng,
+        location: null,
         locale: _Data.locale,
         price: _Data.price,
         openAt: _Data.openAt,
@@ -56,11 +57,70 @@ void main() {
       ).thenAnswer((_) async => <String>{});
 
       await repo.fetchYelpSearchInfo(
-        _Data.lat,
-        _Data.lng,
-        _Data.price,
-        _Data.openAt,
-        _Data.sortBy,
+        lat: _Data.lat,
+        lng: _Data.lng,
+        price: _Data.price,
+        openAt: _Data.openAt,
+        sortByStr: _Data.sortBy,
+      );
+
+      verify(apiCall).called(1);
+    });
+
+    test('fetchYelpSearchInfo 座標為 null 時回退至預設地名 Taipei', () async {
+      Future<YelpSearchDto> apiCall() => api.businessesSearch(
+        term: 'Restaurants',
+        latitude: null,
+        longitude: null,
+        location: 'Taipei',
+        locale: _Data.locale,
+        price: _Data.price,
+        openAt: _Data.openAt,
+        sortBy: _Data.sortBy,
+        limit: 50,
+        offset: 0,
+      );
+      when(apiCall).thenAnswer((_) async => _Data.empty);
+      when(
+        () => favorDataSource.fetchFavorIds(),
+      ).thenAnswer((_) async => <String>{});
+
+      await repo.fetchYelpSearchInfo(
+        lat: null,
+        lng: null,
+        price: _Data.price,
+        openAt: _Data.openAt,
+        sortByStr: _Data.sortBy,
+      );
+
+      verify(apiCall).called(1);
+    });
+
+    test('fetchYelpSearchInfo 座標為 null 且指定 location 時使用傳入之 location', () async {
+      Future<YelpSearchDto> apiCall() => api.businessesSearch(
+        term: 'Restaurants',
+        latitude: null,
+        longitude: null,
+        location: 'Tainan',
+        locale: _Data.locale,
+        price: _Data.price,
+        openAt: _Data.openAt,
+        sortBy: _Data.sortBy,
+        limit: 50,
+        offset: 0,
+      );
+      when(apiCall).thenAnswer((_) async => _Data.empty);
+      when(
+        () => favorDataSource.fetchFavorIds(),
+      ).thenAnswer((_) async => <String>{});
+
+      await repo.fetchYelpSearchInfo(
+        lat: null,
+        lng: null,
+        location: 'Tainan',
+        price: _Data.price,
+        openAt: _Data.openAt,
+        sortByStr: _Data.sortBy,
       );
 
       verify(apiCall).called(1);
