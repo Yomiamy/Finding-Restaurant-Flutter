@@ -25,6 +25,7 @@ class _APIClz implements APIClz {
   @override
   Future<YelpSearchDto> businessesSearch({
     String? term,
+    String? location,
     double? latitude,
     double? longitude,
     String? locale,
@@ -32,11 +33,12 @@ class _APIClz implements APIClz {
     int? offset,
     int? openAt,
     String? sortBy,
-    int? price,
+    String? price,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
       r'term': term,
+      r'location': location,
       r'latitude': latitude,
       r'longitude': longitude,
       r'locale': locale,
