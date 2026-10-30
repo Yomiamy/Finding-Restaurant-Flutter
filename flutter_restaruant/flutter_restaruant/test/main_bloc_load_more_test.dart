@@ -133,5 +133,62 @@ void main() {
       expect(first, isA<LoadMoreInProgress>());
       expect((first as LoadMoreInProgress).summaryInfos, [_Data.existing]);
     });
+
+    test('FilterListByKeyword 直通遠端搜尋發出 InProgress → Success 並傳遞 term', () async {
+      mockRepo = _MockMainRepository();
+      when(
+        () => mockRepo.fetchYelpSearchInfo(
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          term: any(named: 'term'),
+        ),
+      ).thenAnswer((_) async => _Data.nextPage);
+      bloc = MainBloc(repository: mockRepo);
+
+      bloc.add(
+        const FilterListByKeyword(keyword: 'Ramen', sortByStr: 'best_match'),
+      );
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder([isA<InProgress>(), isA<Success>()]),
+      );
+
+      verify(
+        () => mockRepo.fetchYelpSearchInfo(
+          25.0,
+          121.5,
+          null,
+          null,
+          'best_match',
+          term: 'Ramen',
+        ),
+      ).called(1);
+    });
+
+    test('FilterListByKeyword 發生例外時發出 InProgress → Failure', () async {
+      mockRepo = _MockMainRepository();
+      when(
+        () => mockRepo.fetchYelpSearchInfo(
+          any(),
+          any(),
+          any(),
+          any(),
+          any(),
+          term: any(named: 'term'),
+        ),
+      ).thenThrow(Exception('Network error'));
+      bloc = MainBloc(repository: mockRepo);
+
+      bloc.add(const FilterListByKeyword(keyword: 'Ramen'));
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder([isA<InProgress>(), isA<Failure>()]),
+      );
+    });
   });
 }
