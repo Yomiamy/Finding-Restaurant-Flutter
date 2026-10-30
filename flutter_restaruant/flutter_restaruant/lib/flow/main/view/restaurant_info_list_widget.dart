@@ -75,7 +75,7 @@ class _RestaurantInfoListWidgetState extends State<RestaurantInfoListWidget> {
         if (notification.depth == 0 &&
             notification.metrics.extentAfter == 0 &&
             !_isLoadingMore) {
-          int? price = _configs.price;
+          String? price = _configs.price;
           int? openAt = _configs.openAtInSec;
           String? sortBy = _configs.sortBy;
 
