@@ -51,11 +51,11 @@
 
 ---
 
-## 📌 進度覆核摘要 (Progress Review — 2026-09-16 更新)
+## 📌 進度覆核摘要 (Progress Review — 2026-10-30 更新)
 
-初版報告產出於 2026-07-26，歷經多次迭代覆核。本次依 2026-09-13 實際落地的變更（PR #118，Android Built-in Kotlin 遷移落地）覆核全文。**覆核方式為直接檢視當前程式碼，而非採信 commit 訊息**。
+初版報告產出於 2026-07-26，歷經多次迭代覆核。本次依 2026-10-30 實際落地的變更（PR #160 Yelp Places API、PR #162 Detail Entity Yelp 欄位、PR #164 Mock 命名私有化、PR #168 Repo 建構子注入）覆核全文。**覆核方式為直接檢視當前程式碼，而非採信 commit 訊息**。
 
-**✅ 已落地（17 項）**
+**✅ 已落地（21 項）**
 
 | 項目 | 驗證依據 |
 | :--- | :--- |
@@ -79,6 +79,10 @@
 | **AI 多模態 Vision 菜單翻譯 (F-3.1)** | ✅ **已於 2026-09-12 完成 (Issue #115 / PR #116)**：以 `firebase_ai` + `gemini-3.5-flash-lite` 實現結構化 JSON 菜單辨識與過敏原標註，架構落地於 `lib/domain/`、`lib/data_layer/` 與 `lib/flow/menu_vision/`（34 測試全過零警告，獲 Linus 🟢 好品味與 Production-Ready 裁決；揭露 2 項架構微調 Action Items） |
 | **AI 智能覓食助理與 GenUI 決策畫布 (F-3.2 / M4)** | ✅ **已於 2026-09-22 完成 (Issue #123 / PR #124)**：以 `firebase_ai` + `gemini-3.5-flash-lite` 實現自然語言覓食對話、候選店家 Grounding、動態卡片（`comparison_matrix`、`decision_roulette`、`action_chips`）與轉盤隨機挑選抽籤，架構落地於 `lib/domain/`、`lib/data_layer/` 與 `lib/flow/ai_foodie/`；連帶重構多語系 ARB 抽取與認證錯誤解耦（`AuthFailureReason`）。 |
 | **AI 餐廳評論智慧摘要與關鍵亮點 (F-3.3 / M5-Review)** | ✅ **已於 2026-10-21 完成 (Issue #154 / PR #155)**：以 `firebase_ai` + `gemini-3.8-flash` 實現真實顧客短評之 Pros、Cons、Highlights 與 Summary 結構化提煉，架構落地於 `lib/domain/`、`lib/data_layer/` 與 `lib/flow/restaurant/`；包含防注入安全隔離標籤、零評論短路、獨立 ReviewSummaryBloc 狀態機、ReviewSummaryCard 骨架屏與重試機制（單元與 Widget 測試全數通過）。 |
+| **Detail 核心欄位補齊與廢棄端點刪除 (A-8.8)** | ✅ **已於 2026-10-27 完成 (Issue #161 / PR #162)**：`YelpRestaurantDetailDto` 補齊 `id`、`price`、`url`、`display_phone` 等；`RestaurantDetailEntity` 補齊對應屬性；UI 改用 `displayPhone` 並加入 Yelp 外跳連結；刪除已廢除之 `APIClz.fetchToken`。 |
+| **測試 Mock 替身命名統一為 `_Mock` (E-8.7)** | ✅ **已於 2026-10-27 完成 (Issue #163 / PR #164)**：全專案單元測試檔內宣告之 mock 類別統一遵循 `_Mock` 前綴私有命名規範，與大型專案測試風格對齊。 |
+| **Repository 建構子注入解除全域 GetIt 依賴 (A-8.14)** | ✅ **已於 2026-10-29 完成 (Issue #165 / PR #168)**：全面為 `MainRepo`、`RestaurantDetailRepo` 及 4 個 Yelp Repository 改用具名建構子注入 `APIClz` 與 `locale`，消滅 data 層對 `app/` 與全域 GetIt 的隱性反向依賴。 |
+| **Yelp Autocomplete 與 Categories API 基礎建設 (A-8.9 / A-8.12 部分)** | 🟡 **已於 2026-10-25 完成 (Issue #159 / PR #160)**：串接 `/v3/autocomplete` 與 `/v3/categories` API 及獨立 Repository；剩餘 Autocomplete UI/Debounce/BLoC 與 Categories 本地快取/Chip UI 待辦。 |
 
 **🔴 仍未解決與新納入阻擋項（全數為 P0 最高優先，AdMob 合規為絕對最高阻擋項）**
 
@@ -1634,7 +1638,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
   2. 在 `MainRepo` 建立回退策略：優先使用 GPS `(lat, lng)`；若 GPS 權限被拒或取不到定位，允許傳入預設或使用者輸入之 `location: "Taipei"`。
   3. 篩選頁 `FilterConfigs` 將多選價格轉換為 `"1,2,3"` 字串傳遞給 API。
 
-#### [A-8.8] 補齊 `RestaurantDetailEntity` 與 DTO 核心缺失欄位（`id`、`price`、`url`、`display_phone`）並剔除廢棄端點
+#### [A-8.8] 補齊 `RestaurantDetailEntity` 與 DTO 核心缺失欄位（`id`、`price`、`url`、`display_phone`）並剔除廢棄端點 — ✅ 已完成 (Issue #161 / PR #162, 2026-10-27)
 - **狀態**：✅ 已於 2026-10-27 完成 (Issue #161 / PR #162)。Summary 側先前已於 Issue #159 / PR #160 完成；本次完成 Detail 側：`YelpRestaurantDetailDto` 補上 `id`、`alias`、`price`、`url`、`display_phone`、`is_claimed`、`transactions`；`RestaurantDetailEntity` 補上 `id`、`price`、`url`、`displayPhone`；`RestaurantInfoCell` 電話改顯示 `displayPhone`（撥號仍用 `phone`）、價位併入分類列最前面；地址標題後新增 Yelp 外開 icon；刪除 `APIClz.fetchToken`。`isClaimed`／`transactions` 只在 DTO 解析、不進 Entity；`id` 尚未接上收藏或深層連結（A-9.4）。
 - **優先級**：`P0` (阻擋級 / 實體完整性缺陷)
 - **預估 Effort**：`0.5d`
@@ -1733,10 +1737,10 @@ class ComparisonMatrixComponent extends A2UIComponent {
 - **具體實作建議**：
   1. 實作 `ErrorHandlingInterceptor`：將 `DioExceptionType.connectionTimeout`, `badResponse` 對應為具體的 `AppException`。
 
-#### [A-8.9] 串接 Yelp Autocomplete API (`GET /v3/autocomplete`) 實現搜尋即時補全與聯想
+#### [A-8.9] 串接 Yelp Autocomplete API (`GET /v3/autocomplete`) 實現搜尋即時補全與聯想 — 🟡 API/Repo 已完成 (Issue #159 / PR #160)，剩餘 UI/Debounce/BLoC
 - **狀態**：🟡 API 與 Repository 已完成（Issue #159 / PR #160，2026-10-25）：`APIClz.autocomplete`、`YelpAutocompleteDto`、獨立的 `YelpAutocompleteRepository`／`YelpAutocompleteRepo`。與下方原提案的落差：未放進 `MainRepository`、未建 `autocomplete_suggestion_entity.dart`（Repository 直接回傳 DTO）。**仍未做**：Debounce、Overlay 建議清單 UI 與 BLoC。
 - **優先級**：`P1` (核心搜尋體驗增強)
-- **預估 Effort**：`0.8d`
+- **預估 Effort**：`0.5d`（原 0.8d，底層 API 與 Repo 落地後下修）
 - **價值與收益**：
   使用者在搜尋列打字時，即時調用官方 `/v3/autocomplete` 取得 3 大維度建議（熱門查詢詞 `terms`、符合條件店家 `businesses`、分類別名 `categories`），消除「盲搜」與打字錯誤，大幅提升搜尋流暢度。
 - **影響檔案路徑**：
@@ -1866,6 +1870,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
   4. 無法以狀態序列表達的斷言（如 `ai_foodie_bloc_test` 對 `history` 的 `captured` 檢查）可保留 `test()`，不強求全數轉換。
 
 #### [E-8.7] 檔內 mock 替身命名統一為 `_Mock` 前綴 — ✅ 已完成 (Issue #163 / PR #164, 2026-10-27)
+- **狀態**：✅ 已於 2026-10-27 完成 (Issue #163 / PR #164)。全專案單元測試檔內宣告之 mock 替身全面改名為 `_Mock` 前綴（如 `_MockSignInRepository`、`_MockMainRepository` 等），統一遵循私有命名慣例，消除與 public mock 混用的技術債。
 - **優先級**：`P2`
 - **預估 Effort**：`0.1d`
 - **來源**：同 E-8.6。
@@ -1879,10 +1884,10 @@ class ComparisonMatrixComponent extends A2UIComponent {
   1. 上述 5 個類別改名為 `_MockXRepository`（檔內 rename，無跨檔引用）。
   2. 驗收：`rtk proxy grep -rnE "^class Mock" test/` 輸出為空。
 
-#### [A-8.12] 串接 Yelp 分類體系 API (`GET /v3/categories` 與 `/v3/categories/{alias}`) 建立全量菜系分類樹過濾
+#### [A-8.12] 串接 Yelp 分類體系 API (`GET /v3/categories` 與 `/v3/categories/{alias}`) 建立全量菜系分類樹過濾 — 🟡 API/Repo 已完成 (Issue #159 / PR #160)，剩餘 Cache/Filter UI
 - **狀態**：🟡 API 與 Repository 已完成（Issue #159 / PR #160，2026-10-25）：`APIClz.categories`／`category`、外殼 `YelpCategoryListDto`／`YelpCategoryDetailDto`（元素沿用既有 `YelpRestaurantCategoryDto`，未新建 `yelp_category_dto.dart`）、`YelpCategoryRepository`／`YelpCategoryRepo`。**仍未做**：本地長週期快取、篩選頁分類 Chip UI。
 - **優先級**：`P2` (進階搜尋維度)
-- **預估 Effort**：`1.0d`
+- **預估 Effort**：`0.5d`（原 1.0d，底層 API 與 Repo 落地後下修）
 - **價值與收益**：
   Yelp 擁有千種標準化餐飲層級分類（含在地化多語系稱謂）。透過串接官方分類 API 並在本地做長週期快取（或 Hive 本地保存），可於篩選頁提供階層式或標籤式「熱門菜系（日式、義式、咖啡輕食）」選單，徹底擺脫目前只能依距離/評分粗暴排序的侷限。
 - **影響檔案路徑**：
@@ -1903,7 +1908,8 @@ class ComparisonMatrixComponent extends A2UIComponent {
   - 新增：`lib/api/graphql/yelp_graphql_client.dart`
   - 修改：`lib/data_layer/repositories/restaurant_detail_repo.dart`
 
-#### [A-8.14] Repository 改以建構子注入 `APIClz` 與 `locale`，解除 data 層對 `app/` 與全域 GetIt 的依賴 — ✅ 已完成 (Issue #165, 2026-10-28)
+#### [A-8.14] Repository 改以建構子注入 `APIClz` 與 `locale`，解除 data 層對 `app/` 與全域 GetIt 的依賴 — ✅ 已完成 (Issue #165 / PR #168, 2026-10-29)
+- **狀態**：✅ 已於 2026-10-29 完成 (Issue #165 / PR #168)。全面為 `MainRepo`、`RestaurantDetailRepo` 及 4 個 Yelp Repository 改用具名建構子注入 `APIClz` 與 `locale`，移除對 `GetIt.I<APIClz>()` 與 `Constants.locale` 的隱性取用，解除 data 層對 `app/` 的反向依賴；統一由 `lib/app/di/injection.dart` 注入。
 - **優先級**：`P2`（架構衛生；無行為改變）
 - **預估 Effort**：`0.5d`
 - **來源**：2026-10-24 檢視 PR #160（Issue #159）新增的 4 個 Yelp Repository 時提出。
@@ -1957,14 +1963,14 @@ class ComparisonMatrixComponent extends A2UIComponent {
 ========================================================================================
  Phase 1 收尾 (地基修復) ──► 納入 E-8.1 (PR CI) & E-8.3 (Makefile)
                                      │
- Phase 1.5 (體驗升級)   ──► 納入 A-8.1 (Sealed Result) & UI-8.1 (Dialog佇列) & UI-8.2 (砍死碼) & UI-8.7 (地圖佔位圖)
-                                     & A-8.6~A-8.8 (Yelp 假搜尋根治、GPS 解綁、實體欄位補齊) & A-8.11 (鑑權容錯)
+ Phase 1.5 (體驗升級)   ──► 納入 A-8.1 (Sealed Result) & UI-8.1 (Dialog佇列) & UI-8.2 (砍死碼 ✅) & UI-8.7 (地圖佔位圖 ✅)
+                                     & A-8.6~A-8.7 (Yelp 假搜尋根治、GPS 解綁) & A-8.8 (實體欄位補齊 ✅) & A-8.11 (鑑權容錯)
                                      │
  Phase 2 (社群/轉化)    ──► 納入 A-8.3 (Dio錯誤對應) & UI-8.4 (色差校正) & UI-8.3 (語法糖)
-                                     & A-8.9~A-8.10 (Yelp Autocomplete 補全、進階篩選)
+                                     & A-8.9 (Autocomplete 補全 🟡) & A-8.10 (進階篩選)
                                      │
- Phase 3 (AI M4/M5 支撐) ──► 納入 E-8.2 (mocktail測試) & E-8.4 (80%覆蓋率) & UI-8.6 (A11y)
-                                     & A-8.12~A-8.13 (Yelp 分類樹過濾與 GraphQL 聚合優化)
+ Phase 3 (AI M4/M5 支撐) ──► 納入 E-8.2 (mocktail測試 ✅) & E-8.7 (mock命名 ✅) & A-8.14 (Repo注入 ✅) & E-8.6 (blocTest) & E-8.4 (80%覆蓋率) & UI-8.6 (A11y)
+                                     & A-8.12 (Yelp 分類樹 🟡) & A-8.13 (GraphQL 聚合優化)
 ========================================================================================
 ```
 
@@ -1974,21 +1980,21 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 2. **融入 Phase 1.5 空間與視覺體驗升級**：
    - 伴隨目前正在進行的離線快取與標籤過濾開發，同步落地 **A-8.1 (Dart 3 Sealed Result 體系)**，徹底終結網路層錯誤黑洞。
-   - 優先實施 **A-8.6 (根除 50 筆假過濾直通遠端搜尋)**、**A-8.7 (支援 location 地名與價格區間)** 與 **A-8.8 (補齊 DTO/Entity 核心欄位並清理死碼)**，徹底修復專案成立以來的核心搜尋缺陷。
+   - 優先實施 **A-8.6 (根除 50 筆假過濾直通遠端搜尋)**、**A-8.7 (支援 location 地名與價格區間)**；**A-8.8 (補齊 DTO/Entity 核心欄位並清理死碼)** 已於 2026-10-27 完成 (Issue #161 / PR #162)。
    - **UI-8.1 (DialogQueueManager)** 融入通知與網路異常彈窗機制，杜絕快速連點重疊。
    - **UI-8.2 (刪除 PlatformWidget 死代碼)** 已於 2026-09-26 完成 (Issue #128 / PR #129)，保持 codebase 斯巴達式簡潔。
    - **UI-8.7 (靜態地圖專屬佔位圖)** 已於 2026-10-22 完成 (Issue #156 / PR #157)，替換詳情頁地圖載入/錯誤時的通用空圖，強化位置預覽語意與視覺一致性。
 
 3. **融入 Phase 2 社群生態與轉化閉環**：
    - 微訂位與候位排隊需要可分辨的網路錯誤，此時引入 **A-8.3 (Dio 錯誤對應攔截器)** 讓 BLoC 能區分逾時、伺服器錯誤與鑑權失敗。（原規劃的 401 自動換約已於 2026-10-22 移除：Yelp 為固定 API Key，無刷新端點；**A-8.11** 已升 P0 移至 Phase 1.5。）
-   - 引入 **A-8.9 (Autocomplete 即時聯想)** 與 **A-8.10 (菜系、半徑與營業中進階篩選)** 實現對標 Google Maps 等競品的主流搜尋體驗。
+   - 引入 **A-8.9 (Autocomplete 即時聯想)**（API/Repo 已於 2026-10-25 隨 PR #160 完成，剩餘 UI/Debounce/BLoC）與 **A-8.10 (菜系、半徑與營業中進階篩選)** 實現對標 Google Maps 等競品的主流搜尋體驗。
    - **UI-8.4 (色差校正)** 與 **UI-8.3 (BuildContext 擴充語法糖)** 將作為視覺打磨的主力。
 
 4. **全面支撐 Phase 3 (Google AI Studio M4/M5 推進)**：
    - 隨著 2026-09-12 PR #116 拍菜單助手 (M3) 與 2026-10-21 PR #155 評論摘要 (M5-Review) 的落地，已進入深度 AI 賦能階段。
-   - **E-8.2 (`mocktail` 測試框架)** 已於 2026-09-27 完成 (Issue #130 / PR #131)；後續 **E-8.6 (`blocTest` 統一)** 與 **E-8.7 (mock 命名統一)** 收齊測試寫法。
+   - **E-8.2 (`mocktail` 測試框架)** 已於 2026-09-27 完成 (Issue #130 / PR #131)；**E-8.7 (mock 命名統一為 `_Mock`)** 已於 2026-10-27 完成 (Issue #163 / PR #164)；**A-8.14 (Repository 建構子注入解耦)** 已於 2026-10-29 完成 (Issue #165 / PR #168)，消除 data 層對全域 GetIt 的隱性依賴；後續由 **E-8.6 (`blocTest` 統一)** 收齊測試寫法。
    - **E-8.4 (核心測試覆蓋率 $\ge 80\%$)** 與 **UI-8.6 (無障礙守衛)** 作為最終交付上線的堅實品質驗收指標。
-   - 長期可透過 **A-8.12 (全量菜系分類樹)** 豐富推薦維度，並藉由 **A-8.13 (GraphQL 單次聚合)** 壓低請求次數與延遲。
+   - 長期可透過 **A-8.12 (全量菜系分類樹)**（API/Repo 已於 2026-10-25 隨 PR #160 完成，剩餘本地快取與篩選 UI）豐富推薦維度，並藉由 **A-8.13 (GraphQL 單次聚合)** 壓低請求次數與延遲。
 
 ---
 
