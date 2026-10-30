@@ -185,6 +185,7 @@ void main() {
           price: any(named: 'price'),
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -204,6 +205,7 @@ void main() {
           price: null,
           openAt: null,
           sortByStr: null,
+          term: null,
         ),
       ).called(1);
     });
@@ -219,6 +221,7 @@ void main() {
           price: any(named: 'price'),
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -238,8 +241,70 @@ void main() {
           price: '1,2',
           openAt: null,
           sortByStr: null,
+          term: null,
         ),
       ).called(1);
+    });
+
+    test('FilterListByKeyword 直通遠端搜尋發出 InProgress → Success 並傳遞 term', () async {
+      mockRepo = _MockMainRepository();
+      when(
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: any(named: 'lat'),
+          lng: any(named: 'lng'),
+          location: any(named: 'location'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
+        ),
+      ).thenAnswer((_) async => _Data.nextPage);
+      bloc = MainBloc(repository: mockRepo);
+
+      bloc.add(
+        const FilterListByKeyword(keyword: 'Ramen', sortByStr: 'best_match'),
+      );
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder([isA<InProgress>(), isA<Success>()]),
+      );
+
+      verify(
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: 25.0,
+          lng: 121.5,
+          location: null,
+          price: null,
+          openAt: null,
+          sortByStr: 'best_match',
+          term: 'Ramen',
+        ),
+      ).called(1);
+    });
+
+    test('FilterListByKeyword 發生例外時發出 InProgress → Failure', () async {
+      mockRepo = _MockMainRepository();
+      when(
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: any(named: 'lat'),
+          lng: any(named: 'lng'),
+          location: any(named: 'location'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
+        ),
+      ).thenThrow(Exception('Network error'));
+      bloc = MainBloc(repository: mockRepo);
+
+      bloc.add(const FilterListByKeyword(keyword: 'Ramen'));
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder([isA<InProgress>(), isA<Failure>()]),
+      );
+    });
     });
   });
 }

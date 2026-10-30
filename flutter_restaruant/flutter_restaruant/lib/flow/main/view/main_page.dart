@@ -164,6 +164,8 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
               FilterListByKeyword(
                 keyword: _filterKeyword,
                 sortByStr: _configs.sortBy,
+                price: _configs.price,
+                openAt: _configs.openAtInSec,
               ),
             );
             _filterKeyword = '';
