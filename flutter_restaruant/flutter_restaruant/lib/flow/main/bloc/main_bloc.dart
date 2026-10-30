@@ -20,11 +20,22 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       super(const MainInitial()) {
     on<FetchSearchInfo>((event, emit) async {
       try {
-        final Position currentPos = await Utils.getCurrentPosition();
-        double lat = currentPos.latitude;
-        double lng = currentPos.longitude;
+        double? lat;
+        double? lng;
+        String? location = event.location;
+
+        if (location == null || location.isEmpty) {
+          try {
+            final Position currentPos = await Utils.getCurrentPosition();
+            lat = currentPos.latitude;
+            lng = currentPos.longitude;
+          } catch (_) {
+            location = 'Taipei';
+          }
+        }
+
         bool isLoadMore = _mainRepository.summaryInfoSet.isNotEmpty;
-        int? price = event.price;
+        String? price = event.price;
         int? openAt = event.openAt;
         String? sortBy = event.sortBy;
 
@@ -46,7 +57,14 @@ class MainBloc extends Bloc<MainEvent, MainState> {
           emit(const InProgress());
         }
         final List<RestaurantEntity> summaryInfos = await _mainRepository
-            .fetchYelpSearchInfo(lat, lng, price, openAt, sortBy);
+            .fetchYelpSearchInfo(
+              lat: lat,
+              lng: lng,
+              location: location,
+              price: price,
+              openAt: openAt,
+              sortByStr: sortBy,
+            );
 
         if (isLoadMore) {
           emit(LoadMoreSuccess(summaryInfos: summaryInfos));

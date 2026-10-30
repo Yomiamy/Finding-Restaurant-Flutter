@@ -20,7 +20,7 @@ class FilterTagsWidget extends StatelessWidget {
           .getSortingRuleDispStr(_filterConfigs.sortBy!);
     }
 
-    if (_filterConfigs.price != null && _filterConfigs.price! > 0) {
+    if (_filterConfigs.price != null && _filterConfigs.price!.isNotEmpty) {
       _filterConfigsMap[FilterConfigType.price] = _filterConfigs
           .getPriceDispStr(_filterConfigs.price!);
     }
