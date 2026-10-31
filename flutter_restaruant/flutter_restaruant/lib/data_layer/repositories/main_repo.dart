@@ -97,7 +97,7 @@ class MainRepo implements MainRepository {
   }
 
   @override
-  @deprecated
+  @Deprecated('Use fetchYelpSearchInfo with term parameter instead.')
   Future<List<RestaurantEntity>> filterByKeyword(
     String keyword,
     String? sortByStr,

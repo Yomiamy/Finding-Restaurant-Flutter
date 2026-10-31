@@ -14,8 +14,7 @@ abstract interface class MainRepository {
     String? term,
   });
 
-  /// @deprecated 請改用 [fetchYelpSearchInfo] 的 `term` 參數進行遠端搜尋。
-  @deprecated
+  @Deprecated('Use fetchYelpSearchInfo with term parameter instead.')
   Future<List<RestaurantEntity>> filterByKeyword(
     String keyword,
     String? sortByStr,
