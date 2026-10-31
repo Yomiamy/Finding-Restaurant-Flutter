@@ -79,6 +79,8 @@ class MainRepo implements MainRepository {
           ? null
           : (location != null && location.isNotEmpty ? location : 'Taipei');
 
+      final int? effectiveOpenAt = (openNow == true) ? null : openAt;
+
       YelpSearchDto searchDto = await _api.businessesSearch(
         term: queryTerm,
         latitude: hasCoordinates ? lat : null,
@@ -86,7 +88,7 @@ class MainRepo implements MainRepository {
         location: resolvedLocation,
         locale: _locale,
         price: price,
-        openAt: openAt,
+        openAt: effectiveOpenAt,
         sortBy: sortByStr,
         categories: categories,
         radius: radius,

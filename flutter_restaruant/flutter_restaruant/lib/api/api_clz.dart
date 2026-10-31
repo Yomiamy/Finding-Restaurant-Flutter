@@ -15,6 +15,11 @@ part 'api_clz.g.dart';
 abstract class APIClz {
   factory APIClz(Dio dio, {String? baseUrl}) = _APIClz;
 
+  /// 搜尋 Yelp 餐廳與店家清單。
+  ///
+  /// [categories] 逗號分隔的 Yelp 分類別名（例如 "japanese,bars"）。
+  /// [radius] 搜尋半徑（公尺，上限 40,000）。
+  /// [openNow] 是否僅搜尋目前營業中（與 [openAt] 互斥）。
   @GET('/v3/businesses/search')
   Future<YelpSearchDto> businessesSearch({
     @Query('term') String? term,

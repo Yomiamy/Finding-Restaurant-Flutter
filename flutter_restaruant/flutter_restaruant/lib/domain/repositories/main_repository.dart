@@ -5,6 +5,11 @@ abstract interface class MainRepository {
 
   void reset();
 
+  /// 查詢 Yelp 搜尋結果清單。
+  ///
+  /// [categories] 逗號分隔的 Yelp 分類別名。
+  /// [radius] 搜尋半徑（公尺，上限 40,000）。
+  /// [openNow] 是否僅搜尋目前營業中（若為 true 則不帶 openAt）。
   Future<List<RestaurantEntity>> fetchYelpSearchInfo({
     double? lat,
     double? lng,

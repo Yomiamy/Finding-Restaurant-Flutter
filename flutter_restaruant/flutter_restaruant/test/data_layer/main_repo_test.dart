@@ -430,7 +430,7 @@ void main() {
         longitude: _Data.lng,
         locale: _Data.locale,
         price: _Data.price,
-        openAt: _Data.openAt,
+        openAt: null,
         sortBy: _Data.sortBy,
         categories: 'japanese,bars',
         radius: 5000,
@@ -512,6 +512,54 @@ void main() {
           offset: any(named: 'offset'),
         ),
       ).called(20);
+    });
+
+    test('openNow 與 openAt 同時提供時，優先使用 openNow 並將 openAt 置為 null', () async {
+      when(
+        () => api.businessesSearch(
+          term: any(named: 'term'),
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+          locale: any(named: 'locale'),
+          price: any(named: 'price'),
+          openAt: null,
+          sortBy: any(named: 'sortBy'),
+          categories: any(named: 'categories'),
+          radius: any(named: 'radius'),
+          openNow: true,
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+        ),
+      ).thenAnswer((_) async => _Data.empty);
+      when(
+        () => favorDataSource.fetchFavorIds(),
+      ).thenAnswer((_) async => <String>{});
+
+      await repo.fetchYelpSearchInfo(
+        _Data.lat,
+        _Data.lng,
+        _Data.price,
+        12345,
+        _Data.sortBy,
+        openNow: true,
+      );
+
+      verify(
+        () => api.businessesSearch(
+          term: 'Restaurants',
+          latitude: _Data.lat,
+          longitude: _Data.lng,
+          locale: _Data.locale,
+          price: _Data.price,
+          openAt: null,
+          sortBy: _Data.sortBy,
+          categories: null,
+          radius: null,
+          openNow: true,
+          limit: 50,
+          offset: 0,
+        ),
+      ).called(1);
     });
   });
 }

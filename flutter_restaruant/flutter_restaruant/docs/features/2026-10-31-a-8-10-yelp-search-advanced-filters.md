@@ -14,14 +14,14 @@
 ### 1.1 現況（實查）
 
 1. **API 定義缺乏進階篩選維度**：
-   - [`lib/api/api_clz.dart:18-29`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/lib/api/api_clz.dart#L18-L29) 之 `businessesSearch` 僅支援 `term`、`latitude`、`longitude`、`locale`、`limit`、`offset`、`open_at`、`sort_by`、`price`。
+   - [`lib/api/api_clz.dart:18-29`](../../lib/api/api_clz.dart#L18-L29) 之 `businessesSearch` 僅支援 `term`、`latitude`、`longitude`、`locale`、`limit`、`offset`、`open_at`、`sort_by`、`price`。
    - 官方 Yelp Fusion API 支援 `categories`（逗號分隔分類別名，如 `"japanese,bars"`）、`radius`（整數公尺，上限 40,000）、以及 `open_now`（布林值）。
 2. **Repository 缺乏參數支援與 1,000 筆邊界防護**：
-   - [`lib/data_layer/repositories/main_repo.dart:42-88`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/lib/data_layer/repositories/main_repo.dart#L42-L88) 與 [`lib/domain/repositories/main_repository.dart:8-14`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/lib/domain/repositories/main_repository.dart#L8-L14) 之 `fetchYelpSearchInfo` 僅支援舊有參數。
+   - [`lib/data_layer/repositories/main_repo.dart:42-88`](../../lib/data_layer/repositories/main_repo.dart#L42-L88) 與 [`lib/domain/repositories/main_repository.dart:8-14`](../../lib/domain/repositories/main_repository.dart#L8-L14) 之 `fetchYelpSearchInfo` 僅支援舊有參數。
    - 分頁累積時直接執行 `_offset += MainRepo._maxItemsCountInList`。當滑動加載累積達 20 頁（`offset >= 1000`）時，Yelp API 會直接報錯 `400 Bad Request`，導致未處理例外與使用者介面呈現 `Failure` 崩潰。
 3. **Model 與 UI 缺乏配置**：
-   - [`lib/models/filter_configs.dart`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/lib/models/filter_configs.dart) 僅有 `price`、`openAt`、`sortBy` 三種維度，未包含 `categories`、`radius`、`openNow`。
-   - [`lib/flow/main/bloc/main_event.dart`](file:///Users/yomiry/StudioWorkspace/Finding-Restaurant-Flutter/flutter_restaruant/flutter_restaruant/lib/flow/main/bloc/main_event.dart) 之 `FetchSearchInfo` 未攜帶新維度。
+   - [`lib/models/filter_configs.dart`](../../lib/models/filter_configs.dart) 僅有 `price`、`openAt`、`sortBy` 三種維度，未包含 `categories`、`radius`、`openNow`。
+   - [`lib/flow/main/bloc/main_event.dart`](../../lib/flow/main/bloc/main_event.dart) 之 `FetchSearchInfo` 未攜帶新維度。
 
 ### 1.2 為什麼是問題
 
