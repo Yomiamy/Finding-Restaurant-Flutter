@@ -50,6 +50,13 @@ class _Data {
       ),
     ],
   );
+
+  static final seededUserMessage = AiFoodieMessage.user('測試');
+
+  static const fixedPriorMessages = [
+    AiFoodieMessage(id: 'msg_fixed_1', isUser: true, text: '第一句'),
+    AiFoodieMessage(id: 'msg_fixed_2', isUser: false, text: '為您找到好吃的餐廳：第一句'),
+  ];
 }
 
 void main() {
@@ -114,7 +121,7 @@ void main() {
             .having((s) => s.messages[0].isUser, 'isUser', isTrue)
             .having((s) => s.messages[0].text, 'text', '4人吃居酒屋')
             .having((s) => s.messages[1].isUser, 'isUser', isFalse)
-            .having((s) => s.messages[1].text, 'text', contains('為您找到好吃的餐廳')),
+            .having((s) => s.messages[1].text, 'text', '為您找到好吃的餐廳：4人吃居酒屋'),
       ],
     );
 
@@ -197,8 +204,18 @@ void main() {
         isA<AiFoodieState>()
             .having((s) => s.isLoading, 'isLoading', isFalse)
             .having((s) => s.messages.length, 'messages.length', 2)
-            .having((s) => s.messages[0].text, 'text', '推薦浪漫約會小館'),
+            .having((s) => s.messages[0].text, 'text', '推薦浪漫約會小館')
+            .having((s) => s.messages[1].text, 'text', '為您找到好吃的餐廳：推薦浪漫約會小館'),
       ],
+      verify: (_) {
+        verify(
+          () => repository.askAssistant(
+            '推薦浪漫約會小館',
+            history: any(named: 'history'),
+            candidateRestaurants: any(named: 'candidateRestaurants'),
+          ),
+        ).called(1);
+      },
     );
 
     blocTest<AiFoodieBloc, AiFoodieState>(
@@ -230,7 +247,7 @@ void main() {
     blocTest<AiFoodieBloc, AiFoodieState>(
       'ResetAiFoodie 正確重置狀態並重新載入初始建議',
       build: () => AiFoodieBloc(repository: repository),
-      seed: () => AiFoodieState(messages: [AiFoodieMessage.user('測試')]),
+      seed: () => AiFoodieState(messages: [_Data.seededUserMessage]),
       act: (bloc) => bloc.add(const ResetAiFoodie()),
       expect: () => [
         AiFoodieState.initial(),
@@ -265,6 +282,7 @@ void main() {
         bloc.add(const SendUserPrompt('延遲提問'));
         bloc.add(const ResetAiFoodie());
       },
+      wait: const Duration(milliseconds: 100),
       expect: () => [
         isA<AiFoodieState>()
             .having((s) => s.isLoading, 'isLoading', isTrue)
@@ -286,6 +304,12 @@ void main() {
       'messageModels 與 messages 同步',
       build: () => AiFoodieBloc(repository: repository),
       act: (bloc) => bloc.add(const LoadInitialSuggestions()),
+      expect: () => [
+        isA<AiFoodieState>().having((s) => s.isLoading, 'isLoading', isTrue),
+        isA<AiFoodieState>()
+            .having((s) => s.isLoading, 'isLoading', isFalse)
+            .having((s) => s.messages.length, 'messages.length', 1),
+      ],
       verify: (bloc) {
         expect(
           bloc.state.messageModels.single.text,
@@ -318,15 +342,10 @@ void main() {
       errors: () => [isA<StateError>()],
     );
 
-    const fixedPriorMessages = [
-      AiFoodieMessage(id: 'msg_fixed_1', isUser: true, text: '第一句'),
-      AiFoodieMessage(id: 'msg_fixed_2', isUser: false, text: '為您找到好吃的餐廳：第一句'),
-    ];
-
     blocTest<AiFoodieBloc, AiFoodieState>(
       'history 是送出前的 state.messages（entity）',
       build: () => AiFoodieBloc(repository: repository),
-      seed: () => const AiFoodieState(messages: fixedPriorMessages),
+      seed: () => const AiFoodieState(messages: _Data.fixedPriorMessages),
       act: (bloc) => bloc.add(const SendUserPrompt('第二句')),
       verify: (_) {
         final captured = verify(
@@ -336,7 +355,7 @@ void main() {
             candidateRestaurants: any(named: 'candidateRestaurants'),
           ),
         ).captured;
-        expect(captured.single, fixedPriorMessages);
+        expect(captured.single, _Data.fixedPriorMessages);
       },
     );
   });
