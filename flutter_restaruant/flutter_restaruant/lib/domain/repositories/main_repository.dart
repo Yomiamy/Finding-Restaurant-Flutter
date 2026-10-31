@@ -10,8 +10,11 @@ abstract interface class MainRepository {
     double lng,
     int? price,
     int? openAt,
-    String? sortByStr,
-  );
+    String? sortByStr, {
+    String? categories,
+    int? radius,
+    bool? openNow,
+  });
 
   Future<List<RestaurantEntity>> filterByKeyword(
     String keyword,
