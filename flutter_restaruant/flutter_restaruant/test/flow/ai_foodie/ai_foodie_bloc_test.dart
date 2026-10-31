@@ -55,7 +55,6 @@ class _Data {
 void main() {
   group('AiFoodieBloc Tests', () {
     late _MockAiFoodieRepository repository;
-    late AiFoodieBloc bloc;
 
     setUp(() async {
       await S.load(const Locale('zh', 'TW'));
@@ -72,135 +71,228 @@ void main() {
       ).thenAnswer(
         (inv) async => _Data.reply(inv.positionalArguments.first as String),
       );
-      bloc = AiFoodieBloc(repository: repository);
-    });
-
-    tearDown(() {
-      bloc.close();
     });
 
     test('初始狀態為空 messages 且 isLoading 為 false', () {
+      final bloc = AiFoodieBloc(repository: repository);
       expect(bloc.state.messages, isEmpty);
       expect(bloc.state.isLoading, isFalse);
+      bloc.close();
     });
 
-    test('LoadInitialSuggestions 成功載入歡迎訊息', () async {
-      bloc.add(const LoadInitialSuggestions());
-      await pumpEventQueue();
+    blocTest<AiFoodieBloc, AiFoodieState>(
+      'LoadInitialSuggestions 成功載入歡迎訊息',
+      build: () => AiFoodieBloc(repository: repository),
+      act: (bloc) => bloc.add(const LoadInitialSuggestions()),
+      expect: () => [
+        isA<AiFoodieState>().having((s) => s.isLoading, 'isLoading', isTrue),
+        isA<AiFoodieState>()
+            .having((s) => s.isLoading, 'isLoading', isFalse)
+            .having((s) => s.messages.length, 'messages.length', 1)
+            .having(
+              (s) => s.messages.first.text,
+              'messages.first.text',
+              contains('歡迎使用'),
+            ),
+      ],
+      verify: (_) => verify(() => repository.getInitialSuggestions()).called(1),
+    );
 
-      expect(bloc.state.isLoading, isFalse);
-      expect(bloc.state.messages.length, 1);
-      expect(bloc.state.messages.first.text, contains('歡迎使用'));
-    });
+    blocTest<AiFoodieBloc, AiFoodieState>(
+      'SendUserPrompt 依序追加使用者訊息與助理回應',
+      build: () => AiFoodieBloc(repository: repository),
+      act: (bloc) => bloc.add(const SendUserPrompt('4人吃居酒屋')),
+      expect: () => [
+        isA<AiFoodieState>()
+            .having((s) => s.isLoading, 'isLoading', isTrue)
+            .having((s) => s.messages.length, 'messages.length', 1)
+            .having((s) => s.messages[0].isUser, 'isUser', isTrue)
+            .having((s) => s.messages[0].text, 'text', '4人吃居酒屋'),
+        isA<AiFoodieState>()
+            .having((s) => s.isLoading, 'isLoading', isFalse)
+            .having((s) => s.messages.length, 'messages.length', 2)
+            .having((s) => s.messages[0].isUser, 'isUser', isTrue)
+            .having((s) => s.messages[0].text, 'text', '4人吃居酒屋')
+            .having((s) => s.messages[1].isUser, 'isUser', isFalse)
+            .having((s) => s.messages[1].text, 'text', contains('為您找到好吃的餐廳')),
+      ],
+    );
 
-    test('SendUserPrompt 依序追加使用者訊息與助理回應', () async {
-      bloc.add(const SendUserPrompt('4人吃居酒屋'));
-      await pumpEventQueue();
+    blocTest<AiFoodieBloc, AiFoodieState>(
+      'SendUserPrompt 空字串直接被忽略',
+      build: () => AiFoodieBloc(repository: repository),
+      act: (bloc) => bloc.add(const SendUserPrompt('   ')),
+      expect: () => <AiFoodieState>[],
+      verify: (bloc) {
+        expect(bloc.state.messages, isEmpty);
+        expect(bloc.state.isLoading, isFalse);
+      },
+    );
 
-      expect(bloc.state.isLoading, isFalse);
-      expect(bloc.state.messages.length, 2);
-      expect(bloc.state.messages[0].isUser, isTrue);
-      expect(bloc.state.messages[0].text, '4人吃居酒屋');
-      expect(bloc.state.messages[1].isUser, isFalse);
-      expect(bloc.state.messages[1].text, contains('為您找到好吃的餐廳'));
-    });
+    blocTest<AiFoodieBloc, AiFoodieState>(
+      'LoadInitialSuggestions 錯誤時更新 errorMessage',
+      build: () {
+        when(
+          () => repository.getInitialSuggestions(),
+        ).thenAnswer((_) async => throw Exception('模擬建議取得失敗'));
+        return AiFoodieBloc(repository: repository);
+      },
+      act: (bloc) => bloc.add(const LoadInitialSuggestions()),
+      expect: () => [
+        isA<AiFoodieState>().having((s) => s.isLoading, 'isLoading', isTrue),
+        isA<AiFoodieState>()
+            .having((s) => s.isLoading, 'isLoading', isFalse)
+            .having(
+              (s) => s.errorMessage,
+              'errorMessage',
+              contains('模擬建議取得失敗'),
+            ),
+      ],
+    );
 
-    test('SendUserPrompt 空字串直接被忽略', () async {
-      bloc.add(const SendUserPrompt('   '));
-      await pumpEventQueue();
+    blocTest<AiFoodieBloc, AiFoodieState>(
+      'SendUserPrompt 錯誤時更新 errorMessage',
+      build: () {
+        when(
+          () => repository.askAssistant(
+            any(),
+            history: any(named: 'history'),
+            candidateRestaurants: any(named: 'candidateRestaurants'),
+          ),
+        ).thenAnswer((_) async => throw Exception('模擬對話連線失敗'));
+        return AiFoodieBloc(repository: repository);
+      },
+      act: (bloc) => bloc.add(const SendUserPrompt('4人聚餐')),
+      expect: () => [
+        isA<AiFoodieState>()
+            .having((s) => s.isLoading, 'isLoading', isTrue)
+            .having((s) => s.messages.length, 'messages.length', 1),
+        isA<AiFoodieState>()
+            .having((s) => s.isLoading, 'isLoading', isFalse)
+            .having(
+              (s) => s.errorMessage,
+              'errorMessage',
+              contains('連線助理時發生錯誤'),
+            ),
+      ],
+    );
 
-      expect(bloc.state.messages, isEmpty);
-      expect(bloc.state.isLoading, isFalse);
-    });
-
-    test('LoadInitialSuggestions 錯誤時更新 errorMessage', () async {
-      when(
-        () => repository.getInitialSuggestions(),
-      ).thenAnswer((_) async => throw Exception('模擬建議取得失敗'));
-      bloc.add(const LoadInitialSuggestions());
-      await pumpEventQueue();
-
-      expect(bloc.state.isLoading, isFalse);
-      expect(bloc.state.errorMessage, contains('模擬建議取得失敗'));
-    });
-
-    test('SendUserPrompt 錯誤時更新 errorMessage', () async {
-      when(
-        () => repository.askAssistant(
-          any(),
-          history: any(named: 'history'),
-          candidateRestaurants: any(named: 'candidateRestaurants'),
+    blocTest<AiFoodieBloc, AiFoodieState>(
+      'TriggerActionChip query 動作正確觸發送出 Prompt',
+      build: () => AiFoodieBloc(repository: repository),
+      act: (bloc) => bloc.add(
+        const TriggerActionChip(
+          ActionChipModel(
+            label: '約會餐廳',
+            action: 'query',
+            payload: {'prompt': '推薦浪漫約會小館'},
+          ),
         ),
-      ).thenAnswer((_) async => throw Exception('模擬對話連線失敗'));
-      bloc.add(const SendUserPrompt('4人聚餐'));
-      await pumpEventQueue();
+      ),
+      expect: () => [
+        isA<AiFoodieState>()
+            .having((s) => s.isLoading, 'isLoading', isTrue)
+            .having((s) => s.messages.length, 'messages.length', 1)
+            .having((s) => s.messages[0].text, 'text', '推薦浪漫約會小館'),
+        isA<AiFoodieState>()
+            .having((s) => s.isLoading, 'isLoading', isFalse)
+            .having((s) => s.messages.length, 'messages.length', 2)
+            .having((s) => s.messages[0].text, 'text', '推薦浪漫約會小館'),
+      ],
+    );
 
-      expect(bloc.state.isLoading, isFalse);
-      expect(bloc.state.errorMessage, contains('連線助理時發生錯誤'));
-    });
+    blocTest<AiFoodieBloc, AiFoodieState>(
+      'OpenRoulette 與 SpinRouletteWinnerSelected 狀態流轉正確',
+      build: () => AiFoodieBloc(repository: repository),
+      act: (bloc) {
+        bloc.add(const OpenRoulette(title: '轉盤抽籤', options: ['餐廳 A', '餐廳 B']));
+        bloc.add(const SpinRouletteWinnerSelected('餐廳 A'));
+      },
+      expect: () => [
+        isA<AiFoodieState>()
+            .having((s) => s.isRouletteVisible, 'isRouletteVisible', isTrue)
+            .having((s) => s.rouletteTitle, 'rouletteTitle', '轉盤抽籤')
+            .having((s) => s.rouletteOptions, 'rouletteOptions', [
+              '餐廳 A',
+              '餐廳 B',
+            ]),
+        isA<AiFoodieState>()
+            .having((s) => s.isRouletteVisible, 'isRouletteVisible', isFalse)
+            .having(
+              (s) => s.selectedRouletteWinner,
+              'selectedRouletteWinner',
+              '餐廳 A',
+            )
+            .having((s) => s.messages.last.text, 'last.text', contains('餐廳 A')),
+      ],
+    );
 
-    test('TriggerActionChip query 動作正確觸發送出 Prompt', () async {
-      const chip = ActionChipModel(
-        label: '約會餐廳',
-        action: 'query',
-        payload: {'prompt': '推薦浪漫約會小館'},
-      );
+    blocTest<AiFoodieBloc, AiFoodieState>(
+      'ResetAiFoodie 正確重置狀態並重新載入初始建議',
+      build: () => AiFoodieBloc(repository: repository),
+      seed: () => AiFoodieState(messages: [AiFoodieMessage.user('測試')]),
+      act: (bloc) => bloc.add(const ResetAiFoodie()),
+      expect: () => [
+        AiFoodieState.initial(),
+        isA<AiFoodieState>().having((s) => s.isLoading, 'isLoading', isTrue),
+        isA<AiFoodieState>()
+            .having((s) => s.messages.length, 'messages.length', 1)
+            .having(
+              (s) => s.messages.first.text,
+              'messages.first.text',
+              contains('歡迎使用'),
+            )
+            .having((s) => s.isLoading, 'isLoading', isFalse),
+      ],
+    );
 
-      bloc.add(const TriggerActionChip(chip));
-      await pumpEventQueue();
+    blocTest<AiFoodieBloc, AiFoodieState>(
+      'ResetAiFoodie 會作廢先前的非同步請求避免覆蓋重設狀態',
+      build: () {
+        when(
+          () => repository.askAssistant(
+            any(),
+            history: any(named: 'history'),
+            candidateRestaurants: any(named: 'candidateRestaurants'),
+          ),
+        ).thenAnswer((_) async {
+          await Future<void>.delayed(const Duration(milliseconds: 50));
+          return _Data.reply('延遲提問');
+        });
+        return AiFoodieBloc(repository: repository);
+      },
+      act: (bloc) {
+        bloc.add(const SendUserPrompt('延遲提問'));
+        bloc.add(const ResetAiFoodie());
+      },
+      expect: () => [
+        isA<AiFoodieState>()
+            .having((s) => s.isLoading, 'isLoading', isTrue)
+            .having((s) => s.messages.length, 'messages.length', 1),
+        AiFoodieState.initial(),
+        isA<AiFoodieState>().having((s) => s.isLoading, 'isLoading', isTrue),
+        isA<AiFoodieState>()
+            .having((s) => s.messages.length, 'messages.length', 1)
+            .having(
+              (s) => s.messages.first.text,
+              'messages.first.text',
+              contains('歡迎使用'),
+            )
+            .having((s) => s.isLoading, 'isLoading', isFalse),
+      ],
+    );
 
-      expect(bloc.state.messages.length, 2);
-      expect(bloc.state.messages[0].text, '推薦浪漫約會小館');
-    });
-
-    test('OpenRoulette 與 SpinRouletteWinnerSelected 狀態流轉正確', () async {
-      bloc.add(const OpenRoulette(title: '轉盤抽籤', options: ['餐廳 A', '餐廳 B']));
-      await pumpEventQueue();
-
-      expect(bloc.state.isRouletteVisible, isTrue);
-      expect(bloc.state.rouletteTitle, '轉盤抽籤');
-      expect(bloc.state.rouletteOptions, ['餐廳 A', '餐廳 B']);
-
-      bloc.add(const SpinRouletteWinnerSelected('餐廳 A'));
-      await pumpEventQueue();
-
-      expect(bloc.state.isRouletteVisible, isFalse);
-      expect(bloc.state.selectedRouletteWinner, '餐廳 A');
-      expect(bloc.state.messages.last.text, contains('餐廳 A'));
-    });
-
-    test('ResetAiFoodie 正確重置狀態並重新載入初始建議', () async {
-      bloc.add(const SendUserPrompt('測試'));
-      await pumpEventQueue();
-      expect(bloc.state.messages.isNotEmpty, isTrue);
-
-      bloc.add(const ResetAiFoodie());
-      await pumpEventQueue();
-
-      expect(bloc.state.messages.length, 1);
-      expect(bloc.state.messages.first.text, contains('歡迎使用'));
-      expect(bloc.state.isLoading, isFalse);
-    });
-
-    test('ResetAiFoodie 會作廢先前的非同步請求避免覆蓋重設狀態', () async {
-      bloc.add(const SendUserPrompt('延遲提問'));
-      bloc.add(const ResetAiFoodie());
-      await pumpEventQueue();
-
-      expect(bloc.state.messages.length, 1);
-      expect(bloc.state.messages.first.text, contains('歡迎使用'));
-      expect(bloc.state.isLoading, isFalse);
-    });
-
-    test('messageModels 與 messages 同步', () async {
-      bloc.add(const LoadInitialSuggestions());
-      await pumpEventQueue();
-
-      expect(
-        bloc.state.messageModels.single.text,
-        bloc.state.messages.single.text,
-      );
-    });
+    blocTest<AiFoodieBloc, AiFoodieState>(
+      'messageModels 與 messages 同步',
+      build: () => AiFoodieBloc(repository: repository),
+      act: (bloc) => bloc.add(const LoadInitialSuggestions()),
+      verify: (bloc) {
+        expect(
+          bloc.state.messageModels.single.text,
+          bloc.state.messages.single.text,
+        );
+      },
+    );
 
     test('messageModels 由建構式傳入的 messages 衍生', () {
       final state = AiFoodieState(messages: [AiFoodieMessage.user('hi')]);
@@ -226,22 +318,26 @@ void main() {
       errors: () => [isA<StateError>()],
     );
 
-    test('history 是送出前的 state.messages（entity）', () async {
-      bloc.add(const SendUserPrompt('第一句'));
-      await pumpEventQueue();
-      final priorMessages = bloc.state.messages;
+    const fixedPriorMessages = [
+      AiFoodieMessage(id: 'msg_fixed_1', isUser: true, text: '第一句'),
+      AiFoodieMessage(id: 'msg_fixed_2', isUser: false, text: '為您找到好吃的餐廳：第一句'),
+    ];
 
-      bloc.add(const SendUserPrompt('第二句'));
-      await pumpEventQueue();
-
-      final captured = verify(
-        () => repository.askAssistant(
-          '第二句',
-          history: captureAny(named: 'history'),
-          candidateRestaurants: any(named: 'candidateRestaurants'),
-        ),
-      ).captured;
-      expect(captured.single, priorMessages);
-    });
+    blocTest<AiFoodieBloc, AiFoodieState>(
+      'history 是送出前的 state.messages（entity）',
+      build: () => AiFoodieBloc(repository: repository),
+      seed: () => const AiFoodieState(messages: fixedPriorMessages),
+      act: (bloc) => bloc.add(const SendUserPrompt('第二句')),
+      verify: (_) {
+        final captured = verify(
+          () => repository.askAssistant(
+            '第二句',
+            history: captureAny(named: 'history'),
+            candidateRestaurants: any(named: 'candidateRestaurants'),
+          ),
+        ).captured;
+        expect(captured.single, fixedPriorMessages);
+      },
+    );
   });
 }
