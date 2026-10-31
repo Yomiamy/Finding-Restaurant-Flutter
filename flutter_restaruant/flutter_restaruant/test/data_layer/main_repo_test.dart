@@ -65,5 +65,96 @@ void main() {
 
       verify(apiCall).called(1);
     });
+
+    test('fetchYelpSearchInfo 帶入進階篩選 categories、radius、openNow', () async {
+      Future<YelpSearchDto> apiCall() => api.businessesSearch(
+        term: 'Restaurants',
+        latitude: _Data.lat,
+        longitude: _Data.lng,
+        locale: _Data.locale,
+        price: _Data.price,
+        openAt: _Data.openAt,
+        sortBy: _Data.sortBy,
+        categories: 'japanese,bars',
+        radius: 5000,
+        openNow: true,
+        limit: 50,
+        offset: 0,
+      );
+      when(apiCall).thenAnswer((_) async => _Data.empty);
+      when(
+        () => favorDataSource.fetchFavorIds(),
+      ).thenAnswer((_) async => <String>{});
+
+      await repo.fetchYelpSearchInfo(
+        _Data.lat,
+        _Data.lng,
+        _Data.price,
+        _Data.openAt,
+        _Data.sortBy,
+        categories: 'japanese,bars',
+        radius: 5000,
+        openNow: true,
+      );
+
+      verify(apiCall).called(1);
+    });
+
+    test('fetchYelpSearchInfo 在 _offset >= 1000 時主動攔截不再呼叫 API', () async {
+      when(
+        () => api.businessesSearch(
+          term: any(named: 'term'),
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+          locale: any(named: 'locale'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortBy: any(named: 'sortBy'),
+          categories: any(named: 'categories'),
+          radius: any(named: 'radius'),
+          openNow: any(named: 'openNow'),
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+        ),
+      ).thenAnswer((_) async => _Data.empty);
+      when(
+        () => favorDataSource.fetchFavorIds(),
+      ).thenAnswer((_) async => <String>{});
+
+      for (int i = 0; i < 20; i++) {
+        await repo.fetchYelpSearchInfo(
+          _Data.lat,
+          _Data.lng,
+          _Data.price,
+          _Data.openAt,
+          _Data.sortBy,
+        );
+      }
+
+      await repo.fetchYelpSearchInfo(
+        _Data.lat,
+        _Data.lng,
+        _Data.price,
+        _Data.openAt,
+        _Data.sortBy,
+      );
+
+      verify(
+        () => api.businessesSearch(
+          term: any(named: 'term'),
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+          locale: any(named: 'locale'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortBy: any(named: 'sortBy'),
+          categories: any(named: 'categories'),
+          radius: any(named: 'radius'),
+          openNow: any(named: 'openNow'),
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+        ),
+      ).called(20);
+    });
   });
 }

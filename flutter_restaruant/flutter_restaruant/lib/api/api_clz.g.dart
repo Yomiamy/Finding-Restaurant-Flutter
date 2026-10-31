@@ -33,6 +33,9 @@ class _APIClz implements APIClz {
     int? openAt,
     String? sortBy,
     int? price,
+    String? categories,
+    int? radius,
+    bool? openNow,
   }) async {
     final _extra = <String, dynamic>{};
     final queryParameters = <String, dynamic>{
@@ -45,6 +48,9 @@ class _APIClz implements APIClz {
       r'open_at': openAt,
       r'sort_by': sortBy,
       r'price': price,
+      r'categories': categories,
+      r'radius': radius,
+      r'open_now': openNow,
     };
     queryParameters.removeWhere((k, v) => v == null);
     final _headers = <String, dynamic>{};
