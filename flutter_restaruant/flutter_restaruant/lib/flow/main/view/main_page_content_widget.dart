@@ -41,6 +41,7 @@ class _MainPageContentWidgetState extends State<MainPageContentWidget> {
               price: widget.filterConfigs.price,
               openAt: widget.filterConfigs.openAtInSec,
               sortBy: widget.filterConfigs.sortBy,
+              categories: widget.filterConfigs.categories,
             ),
           );
         }

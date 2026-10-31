@@ -51,6 +51,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         price: _configs.price,
         openAt: _configs.openAtInSec,
         sortBy: _configs.sortBy,
+        categories: _configs.categories,
       ),
     );
 

@@ -44,8 +44,9 @@ class MainRepo implements MainRepository {
     double lng,
     int? price,
     int? openAt,
-    String? sortByStr,
-  ) async {
+    String? sortByStr, {
+    String? categories,
+  }) async {
     if (_isLoading) {
       // If new items is loading, then don't handle new fetching request until the old one completed.
       return await filterByKeyword(_keyword, sortByStr);
@@ -61,6 +62,7 @@ class MainRepo implements MainRepository {
         price: price,
         openAt: openAt,
         sortBy: sortByStr,
+        categories: categories,
         limit: MainRepo._maxItemsCountInList,
         offset: _offset,
       );

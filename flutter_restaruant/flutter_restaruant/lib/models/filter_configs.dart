@@ -4,7 +4,7 @@ import 'package:intl/intl.dart';
 
 import '../generated/l10n.dart';
 
-enum FilterConfigType { price, openAt, sortingRule }
+enum FilterConfigType { price, openAt, sortingRule, categories }
 
 enum SortBy {
   bestMatch('best_match'),
@@ -55,12 +55,16 @@ class FilterConfigs {
     }
   }
 
-  FilterConfigs();
+  // Categories
+  String? categories;
+
+  FilterConfigs({this.price, this.openAt, this.sortBy, this.categories});
 
   FilterConfigs.fromUI({
     required int priceIndex,
     required DateTime openAtDate,
     required int sortingRuleIndex,
+    this.categories,
   }) {
     price = priceIndex + 1;
     openAt = openAtDate.millisecondsSinceEpoch;
@@ -77,6 +81,9 @@ class FilterConfigs {
         break;
       case FilterConfigType.sortingRule:
         sortBy = null;
+        break;
+      case FilterConfigType.categories:
+        categories = null;
         break;
     }
   }

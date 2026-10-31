@@ -81,7 +81,12 @@ class _RestaurantInfoListWidgetState extends State<RestaurantInfoListWidget> {
 
           // Load more when scrolling reach the edge of ListView
           mainBloc.add(
-            FetchSearchInfo(price: price, openAt: openAt, sortBy: sortBy),
+            FetchSearchInfo(
+              price: price,
+              openAt: openAt,
+              sortBy: sortBy,
+              categories: _configs.categories,
+            ),
           );
         }
         return true;

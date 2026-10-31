@@ -26,6 +26,7 @@ abstract class APIClz {
     @Query('open_at') int? openAt,
     @Query('sort_by') String? sortBy,
     @Query('price') int? price,
+    @Query('categories') String? categories,
   });
 
   @GET('/v3/businesses/{id}')

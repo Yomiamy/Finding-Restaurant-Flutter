@@ -46,7 +46,14 @@ class MainBloc extends Bloc<MainEvent, MainState> {
           emit(const InProgress());
         }
         final List<RestaurantEntity> summaryInfos = await _mainRepository
-            .fetchYelpSearchInfo(lat, lng, price, openAt, sortBy);
+            .fetchYelpSearchInfo(
+              lat,
+              lng,
+              price,
+              openAt,
+              sortBy,
+              categories: event.categories,
+            );
 
         if (isLoadMore) {
           emit(LoadMoreSuccess(summaryInfos: summaryInfos));
