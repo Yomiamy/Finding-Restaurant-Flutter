@@ -195,6 +195,10 @@ class MessageLookup extends MessageLookupByLibrary {
     "filter_business_hour": MessageLookupByLibrary.simpleMessage(
       "Business Hour",
     ),
+    "filter_cuisine_all": MessageLookupByLibrary.simpleMessage("All"),
+    "filter_cuisine_category": MessageLookupByLibrary.simpleMessage(
+      "Cuisine Category",
+    ),
     "filter_price": MessageLookupByLibrary.simpleMessage("Price Rule"),
     "filter_price_level1": MessageLookupByLibrary.simpleMessage("\$"),
     "filter_price_level2": MessageLookupByLibrary.simpleMessage("\$\$"),

@@ -195,6 +195,21 @@ class S {
     );
   }
 
+  /// `Cuisine Category`
+  String get filter_cuisine_category {
+    return Intl.message(
+      'Cuisine Category',
+      name: 'filter_cuisine_category',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `All`
+  String get filter_cuisine_all {
+    return Intl.message('All', name: 'filter_cuisine_all', desc: '', args: []);
+  }
+
   /// `FindRestaurant`
   String get main_page_title {
     return Intl.message(
