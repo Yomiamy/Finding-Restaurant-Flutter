@@ -1,3 +1,4 @@
+import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_restaruant/domain/repositories/repositories_barrel.dart';
 import 'package:flutter_restaruant/features/utils/utils_barrel.dart';
@@ -12,123 +13,121 @@ void main() {
 
   group('SignInBloc Tests', () {
     late _MockSignInRepository mockRepo;
-    late SignInBloc bloc;
 
     setUp(() {
       mockRepo = _MockSignInRepository();
-      bloc = SignInBloc(repository: mockRepo);
     });
 
-    tearDown(() {
-      bloc.close();
-    });
-
-    test('GoogleSignInEvent passes correct parameters to repository', () async {
-      const account = UserEntity(type: AccountTypeModel.google, uid: '123');
-      when(
-        () => mockRepo.signInUp(
-          accountType: any(named: 'accountType'),
-          isSignUp: any(named: 'isSignUp'),
-          mail: any(named: 'mail'),
-          passwd: any(named: 'passwd'),
+    blocTest<SignInBloc, SignInState>(
+      'GoogleSignInEvent passes correct parameters to repository',
+      build: () {
+        const account = UserEntity(type: AccountTypeModel.google, uid: '123');
+        when(
+          () => mockRepo.signInUp(
+            accountType: any(named: 'accountType'),
+            isSignUp: any(named: 'isSignUp'),
+            mail: any(named: 'mail'),
+            passwd: any(named: 'passwd'),
+          ),
+        ).thenAnswer((_) async => const Tuple2(account, null));
+        return SignInBloc(repository: mockRepo);
+      },
+      act: (bloc) => bloc.add(GoogleSignInEvent()),
+      expect: () => [
+        const InProgress(),
+        const SignInSuccess(
+          userEntity: UserEntity(type: AccountTypeModel.google, uid: '123'),
         ),
-      ).thenAnswer((_) async => const Tuple2(account, null));
+      ],
+      verify: (_) {
+        verify(
+          () => mockRepo.signInUp(
+            accountType: AccountTypeModel.google,
+            isSignUp: false,
+            mail: '',
+            passwd: '',
+          ),
+        ).called(1);
+      },
+    );
 
-      bloc.add(GoogleSignInEvent());
-
-      await expectLater(
-        bloc.stream,
-        emitsInOrder([
-          const InProgress(),
-          const SignInSuccess(userEntity: account),
-        ]),
-      );
-
-      verify(
-        () => mockRepo.signInUp(
-          accountType: AccountTypeModel.google,
-          isSignUp: false,
-          mail: '',
-          passwd: '',
+    blocTest<SignInBloc, SignInState>(
+      'MailSignUpEvent passes correct parameters to repository',
+      build: () {
+        const account = UserEntity(type: AccountTypeModel.mail, uid: '456');
+        when(
+          () => mockRepo.signInUp(
+            accountType: any(named: 'accountType'),
+            isSignUp: any(named: 'isSignUp'),
+            mail: any(named: 'mail'),
+            passwd: any(named: 'passwd'),
+          ),
+        ).thenAnswer((_) async => const Tuple2(account, null));
+        return SignInBloc(repository: mockRepo);
+      },
+      act: (bloc) => bloc.add(
+        const MailSignUpEvent(mail: 'test@mail.com', passwd: 'secret'),
+      ),
+      expect: () => [
+        const InProgress(),
+        const SignUpSuccess(
+          userEntity: UserEntity(type: AccountTypeModel.mail, uid: '456'),
         ),
-      ).called(1);
-    });
+      ],
+      verify: (_) {
+        verify(
+          () => mockRepo.signInUp(
+            accountType: AccountTypeModel.mail,
+            isSignUp: true,
+            mail: 'test@mail.com',
+            passwd: 'secret',
+          ),
+        ).called(1);
+      },
+    );
 
-    test('MailSignUpEvent passes correct parameters to repository', () async {
-      const account = UserEntity(type: AccountTypeModel.mail, uid: '456');
-      when(
-        () => mockRepo.signInUp(
-          accountType: any(named: 'accountType'),
-          isSignUp: any(named: 'isSignUp'),
-          mail: any(named: 'mail'),
-          passwd: any(named: 'passwd'),
-        ),
-      ).thenAnswer((_) async => const Tuple2(account, null));
+    blocTest<SignInBloc, SignInState>(
+      'AutoSignInEvent failure emits SignInInitial, not Failure',
+      build: () {
+        when(
+          () => mockRepo.signInUp(
+            accountType: any(named: 'accountType'),
+            isSignUp: any(named: 'isSignUp'),
+            mail: any(named: 'mail'),
+            passwd: any(named: 'passwd'),
+          ),
+        ).thenAnswer((_) async => const Tuple2(null, null));
+        return SignInBloc(repository: mockRepo);
+      },
+      act: (bloc) => bloc.add(AutoSignInEvent()),
+      expect: () => [const InProgress(), isA<SignInInitial>()],
+    );
 
-      bloc.add(const MailSignUpEvent(mail: 'test@mail.com', passwd: 'secret'));
+    blocTest<SignInBloc, SignInState>(
+      'SignIn failure emits Failure state',
+      build: () {
+        when(
+          () => mockRepo.signInUp(
+            accountType: any(named: 'accountType'),
+            isSignUp: any(named: 'isSignUp'),
+            mail: any(named: 'mail'),
+            passwd: any(named: 'passwd'),
+          ),
+        ).thenAnswer(
+          (_) async => const Tuple2(null, AuthFailureReason.signInFailed),
+        );
+        return SignInBloc(repository: mockRepo);
+      },
+      act: (bloc) => bloc.add(GoogleSignInEvent()),
+      expect: () => [
+        const InProgress(),
+        const Failure(reason: AuthFailureReason.signInFailed),
+      ],
+    );
 
-      await expectLater(
-        bloc.stream,
-        emitsInOrder([
-          const InProgress(),
-          const SignUpSuccess(userEntity: account),
-        ]),
-      );
-
-      verify(
-        () => mockRepo.signInUp(
-          accountType: AccountTypeModel.mail,
-          isSignUp: true,
-          mail: 'test@mail.com',
-          passwd: 'secret',
-        ),
-      ).called(1);
-    });
-
-    test('AutoSignInEvent failure emits SignInInitial, not Failure', () async {
-      when(
-        () => mockRepo.signInUp(
-          accountType: any(named: 'accountType'),
-          isSignUp: any(named: 'isSignUp'),
-          mail: any(named: 'mail'),
-          passwd: any(named: 'passwd'),
-        ),
-      ).thenAnswer((_) async => const Tuple2(null, null));
-
-      bloc.add(AutoSignInEvent());
-
-      await expectLater(
-        bloc.stream,
-        emitsInOrder([const InProgress(), isA<SignInInitial>()]),
-      );
-    });
-
-    test('SignIn failure emits Failure state', () async {
-      when(
-        () => mockRepo.signInUp(
-          accountType: any(named: 'accountType'),
-          isSignUp: any(named: 'isSignUp'),
-          mail: any(named: 'mail'),
-          passwd: any(named: 'passwd'),
-        ),
-      ).thenAnswer(
-        (_) async => const Tuple2(null, AuthFailureReason.signInFailed),
-      );
-
-      bloc.add(GoogleSignInEvent());
-
-      await expectLater(
-        bloc.stream,
-        emitsInOrder([
-          const InProgress(),
-          const Failure(reason: AuthFailureReason.signInFailed),
-        ]),
-      );
-    });
-
-    test(
+    blocTest<SignInBloc, SignInState>(
       'MailSignIn wrong password emits Failure with wrongPassword reason',
-      () async {
+      build: () {
         when(
           () => mockRepo.signInUp(
             accountType: any(named: 'accountType'),
@@ -139,19 +138,15 @@ void main() {
         ).thenAnswer(
           (_) async => const Tuple2(null, AuthFailureReason.wrongPassword),
         );
-
-        bloc.add(
-          const MailSignInEvent(mail: 'user@example.com', passwd: 'bad'),
-        );
-
-        await expectLater(
-          bloc.stream,
-          emitsInOrder([
-            const InProgress(),
-            const Failure(reason: AuthFailureReason.wrongPassword),
-          ]),
-        );
+        return SignInBloc(repository: mockRepo);
       },
+      act: (bloc) => bloc.add(
+        const MailSignInEvent(mail: 'user@example.com', passwd: 'bad'),
+      ),
+      expect: () => [
+        const InProgress(),
+        const Failure(reason: AuthFailureReason.wrongPassword),
+      ],
     );
   });
 }
