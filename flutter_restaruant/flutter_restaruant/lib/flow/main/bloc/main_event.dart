@@ -14,6 +14,9 @@ class FetchSearchInfo extends MainEvent {
   final int? openAt;
   final String? sortBy;
   final String? term;
+  final String? categories;
+  final int? radius;
+  final bool? openNow;
 
   const FetchSearchInfo({
     this.location,
@@ -21,10 +24,22 @@ class FetchSearchInfo extends MainEvent {
     this.openAt,
     this.sortBy,
     this.term,
+    this.categories,
+    this.radius,
+    this.openNow,
   });
 
   @override
-  List<Object?> get props => [location, price, openAt, sortBy, term];
+  List<Object?> get props => [
+    location,
+    price,
+    openAt,
+    sortBy,
+    term,
+    categories,
+    radius,
+    openNow,
+  ];
 
   @override
   String toString() => 'Fetch search info event.';

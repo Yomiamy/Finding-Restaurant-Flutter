@@ -13,6 +13,9 @@ abstract interface class MainRepository {
     int? openAt,
     String? sortByStr,
     String? term,
+    String? categories,
+    int? radius,
+    bool? openNow,
   });
 
   /// Returns the persisted entity so callers adopt the new favor value

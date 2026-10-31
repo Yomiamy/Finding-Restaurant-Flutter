@@ -49,6 +49,9 @@ class MainRepo implements MainRepository {
     int? openAt,
     String? sortByStr,
     String? term,
+    String? categories,
+    int? radius,
+    bool? openNow,
   }) async {
     final bool isNewSearch = term != null;
     if (isNewSearch) {
@@ -57,6 +60,12 @@ class MainRepo implements MainRepository {
       summaryInfoSet.clear();
     } else if (_isLoading) {
       // If new items is loading, then don't handle new fetching request until the old one completed.
+      return _getSortedInfoList(sortByStr, summaryInfoSet.toList());
+    }
+
+    // Yelp Fusion API: offset + limit <= 1000. 超出時 Yelp 回傳 400 Bad Request。
+    // 當 offset 達到 1000 時主動停發，直接返回既有資料，消滅 400 崩潰邊界。
+    if (_offset >= 1000) {
       return _getSortedInfoList(sortByStr, summaryInfoSet.toList());
     }
 
@@ -79,6 +88,9 @@ class MainRepo implements MainRepository {
         price: price,
         openAt: openAt,
         sortBy: sortByStr,
+        categories: categories,
+        radius: radius,
+        openNow: openNow,
         limit: MainRepo._maxItemsCountInList,
         offset: _offset,
       );
