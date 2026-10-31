@@ -18,6 +18,7 @@ class MainRepo implements MainRepository {
   int _offset = 0;
   String _keyword = '';
   bool _isLoading = false;
+  int _activeRequestId = 0;
 
   MainRepo({
     required APIClz api,
@@ -31,6 +32,7 @@ class MainRepo implements MainRepository {
 
   @override
   void reset() {
+    _activeRequestId++;
     _offset = 0;
     _keyword = '';
     _isLoading = false;
@@ -48,19 +50,19 @@ class MainRepo implements MainRepository {
     String? sortByStr,
     String? term,
   }) async {
-    if (_isLoading) {
+    final bool isNewSearch = term != null;
+    if (isNewSearch) {
+      _offset = 0;
+      _keyword = term.trim();
+      summaryInfoSet.clear();
+    } else if (_isLoading) {
       // If new items is loading, then don't handle new fetching request until the old one completed.
       return _getSortedInfoList(sortByStr, summaryInfoSet.toList());
     }
 
+    final int currentRequestId = ++_activeRequestId;
     _isLoading = true;
     try {
-      if (term != null && term.trim() != _keyword) {
-        _offset = 0;
-        _keyword = term.trim();
-        summaryInfoSet.clear();
-      }
-
       final String queryTerm = _keyword.isNotEmpty ? _keyword : 'Restaurants';
 
       final bool hasCoordinates = lat != null && lng != null;
@@ -81,7 +83,15 @@ class MainRepo implements MainRepository {
         offset: _offset,
       );
 
+      if (currentRequestId != _activeRequestId) {
+        return _getSortedInfoList(sortByStr, summaryInfoSet.toList());
+      }
+
       Set<String> favorIds = await _favorDataSource.fetchFavorIds();
+
+      if (currentRequestId != _activeRequestId) {
+        return _getSortedInfoList(sortByStr, summaryInfoSet.toList());
+      }
 
       List<RestaurantEntity> fetchedEntities = (searchDto.businesses ?? []).map(
         (dto) {
@@ -99,7 +109,9 @@ class MainRepo implements MainRepository {
       logger.e('fetchYelpSearchInfo 發生異常', error: e, stackTrace: st);
       rethrow;
     } finally {
-      _isLoading = false;
+      if (currentRequestId == _activeRequestId) {
+        _isLoading = false;
+      }
     }
   }
 

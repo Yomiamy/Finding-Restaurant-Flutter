@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter_restaruant/api/api_barrel.dart';
 import 'package:flutter_restaruant/data_layer/datasources/datasources_barrel.dart';
 import 'package:flutter_restaruant/data_layer/repositories/main_repo.dart';
@@ -293,6 +295,153 @@ void main() {
       ).called(1);
 
       expect(repo.summaryInfoSet.map((e) => e.id), ['r1', 'r2']);
+    });
+
+    test('再次以相同 term 查詢時應重置 offset 為 0 並清空 summaryInfoSet 而非繼續翻頁', () async {
+      final dto1 = YelpRestaurantSummaryDto(id: 'r1', name: 'Ramen 1');
+      final dto2 = YelpRestaurantSummaryDto(id: 'r2', name: 'Ramen 2');
+      final dto3 = YelpRestaurantSummaryDto(
+        id: 'r1_fresh',
+        name: 'Ramen Fresh',
+      );
+
+      when(
+        () => api.businessesSearch(
+          term: 'Ramen',
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+          locale: any(named: 'locale'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortBy: any(named: 'sortBy'),
+          limit: any(named: 'limit'),
+          offset: 0,
+        ),
+      ).thenAnswer((_) async => YelpSearchDto(businesses: [dto1]));
+
+      when(
+        () => api.businessesSearch(
+          term: 'Ramen',
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+          locale: any(named: 'locale'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortBy: any(named: 'sortBy'),
+          limit: any(named: 'limit'),
+          offset: 50,
+        ),
+      ).thenAnswer((_) async => YelpSearchDto(businesses: [dto2]));
+
+      when(
+        () => favorDataSource.fetchFavorIds(),
+      ).thenAnswer((_) async => <String>{});
+
+      // 載入第一頁
+      await repo.fetchYelpSearchInfo(
+        _Data.lat,
+        _Data.lng,
+        null,
+        null,
+        null,
+        term: 'Ramen',
+      );
+      // 載入第二頁
+      await repo.fetchYelpSearchInfo(_Data.lat, _Data.lng, null, null, null);
+      expect(repo.summaryInfoSet.length, 2);
+
+      // 當再次傳入相同 term 重新搜尋，模擬回傳新第一頁
+      when(
+        () => api.businessesSearch(
+          term: 'Ramen',
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+          locale: any(named: 'locale'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortBy: any(named: 'sortBy'),
+          limit: any(named: 'limit'),
+          offset: 0,
+        ),
+      ).thenAnswer((_) async => YelpSearchDto(businesses: [dto3]));
+
+      final res = await repo.fetchYelpSearchInfo(
+        _Data.lat,
+        _Data.lng,
+        null,
+        null,
+        null,
+        term: 'Ramen',
+      );
+      expect(res.map((e) => e.id), ['r1_fresh']);
+      expect(repo.summaryInfoSet.map((e) => e.id), ['r1_fresh']);
+    });
+
+    test('新搜尋請求發起時應使在途中舊請求失效避免結果混雜', () async {
+      final completerOld = Completer<YelpSearchDto>();
+      final dtoOld = YelpRestaurantSummaryDto(id: 'old1', name: 'Old 1');
+      final dtoNew = YelpRestaurantSummaryDto(id: 'new1', name: 'New 1');
+
+      when(
+        () => api.businessesSearch(
+          term: 'Restaurants',
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+          locale: any(named: 'locale'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortBy: any(named: 'sortBy'),
+          limit: any(named: 'limit'),
+          offset: 0,
+        ),
+      ).thenAnswer((_) => completerOld.future);
+
+      when(
+        () => api.businessesSearch(
+          term: 'Burger',
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+          locale: any(named: 'locale'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortBy: any(named: 'sortBy'),
+          limit: any(named: 'limit'),
+          offset: 0,
+        ),
+      ).thenAnswer((_) async => YelpSearchDto(businesses: [dtoNew]));
+
+      when(
+        () => favorDataSource.fetchFavorIds(),
+      ).thenAnswer((_) async => <String>{});
+
+      // 發起第一個請求（仍在途中）
+      final future1 = repo.fetchYelpSearchInfo(
+        _Data.lat,
+        _Data.lng,
+        null,
+        null,
+        null,
+      );
+
+      // 使用者立刻發起新關鍵字搜尋 Burger
+      final future2 = repo.fetchYelpSearchInfo(
+        _Data.lat,
+        _Data.lng,
+        null,
+        null,
+        null,
+        term: 'Burger',
+      );
+
+      final res2 = await future2;
+      expect(res2.map((e) => e.id), ['new1']);
+      expect(repo.summaryInfoSet.map((e) => e.id), ['new1']);
+
+      // 稍後舊請求才完成，不應污染當前結果
+      completerOld.complete(YelpSearchDto(businesses: [dtoOld]));
+      await future1;
+
+      expect(repo.summaryInfoSet.map((e) => e.id), ['new1']);
     });
   });
 }

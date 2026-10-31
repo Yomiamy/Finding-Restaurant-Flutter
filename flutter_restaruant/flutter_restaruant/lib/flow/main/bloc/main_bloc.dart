@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:logger/logger.dart';
 
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../domain/repositories/repositories_barrel.dart';
@@ -13,6 +14,7 @@ part 'main_state.dart';
 
 class MainBloc extends Bloc<MainEvent, MainState> {
   static const tag = 'MainBloc';
+  final _logger = Logger();
   final MainRepository _mainRepository;
 
   MainBloc({required MainRepository repository})
@@ -72,7 +74,8 @@ class MainBloc extends Bloc<MainEvent, MainState> {
         } else {
           emit(Success(summaryInfos: summaryInfos));
         }
-      } on Exception catch (_) {
+      } on Exception catch (e, st) {
+        _logger.e('FetchSearchInfo 發生異常', error: e, stackTrace: st);
         emit(const Failure());
       }
     });
@@ -101,7 +104,8 @@ class MainBloc extends Bloc<MainEvent, MainState> {
             );
 
         emit(Success(summaryInfos: summaryInfos));
-      } on Exception catch (_) {
+      } on Exception catch (e, st) {
+        _logger.e('FilterListByKeyword 發生異常', error: e, stackTrace: st);
         emit(const Failure());
       }
     });
