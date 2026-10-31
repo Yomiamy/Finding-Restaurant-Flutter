@@ -46,7 +46,14 @@ class MainBloc extends Bloc<MainEvent, MainState> {
           emit(const InProgress());
         }
         final List<RestaurantEntity> summaryInfos = await _mainRepository
-            .fetchYelpSearchInfo(lat, lng, price, openAt, sortBy);
+            .fetchYelpSearchInfo(
+              lat,
+              lng,
+              price,
+              openAt,
+              sortBy,
+              term: event.term,
+            );
 
         if (isLoadMore) {
           emit(LoadMoreSuccess(summaryInfos: summaryInfos));
@@ -64,15 +71,26 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     });
 
     on<FilterListByKeyword>((event, emit) async {
-      emit(const InProgress());
+      try {
+        emit(const InProgress());
 
-      final List<RestaurantEntity> filterInfos = await _mainRepository
-          .filterByKeyword(event.keyword, event.sortByStr);
+        final Position currentPos = await Utils.getCurrentPosition();
+        final double lat = currentPos.latitude;
+        final double lng = currentPos.longitude;
 
-      if (filterInfos.isNotEmpty) {
-        emit(Success(summaryInfos: filterInfos));
-      } else {
-        emit(const Success(summaryInfos: []));
+        final List<RestaurantEntity> summaryInfos = await _mainRepository
+            .fetchYelpSearchInfo(
+              lat,
+              lng,
+              event.price,
+              event.openAt,
+              event.sortByStr,
+              term: event.keyword,
+            );
+
+        emit(Success(summaryInfos: summaryInfos));
+      } on Exception catch (_) {
+        emit(const Failure());
       }
     });
 

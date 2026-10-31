@@ -10,9 +10,11 @@ abstract interface class MainRepository {
     double lng,
     int? price,
     int? openAt,
-    String? sortByStr,
-  );
+    String? sortByStr, {
+    String? term,
+  });
 
+  @Deprecated('Use fetchYelpSearchInfo with term parameter instead.')
   Future<List<RestaurantEntity>> filterByKeyword(
     String keyword,
     String? sortByStr,
