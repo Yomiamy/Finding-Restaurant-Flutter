@@ -3,7 +3,6 @@ import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 
 import '../../../api/dto/yelp_restaurant_category_dto.dart';
-import '../../../data_layer/repositories/yelp_category_repo.dart';
 import '../../../domain/repositories/yelp_category_repository.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
@@ -59,7 +58,7 @@ class _FilterPageState extends State<FilterPage> {
     if (repo == null) {
       if (mounted) {
         setState(() {
-          _cuisineCategories = YelpCategoryRepo.defaultCuisines;
+          _cuisineCategories = YelpCategoryRepository.fallbackCuisines;
           _isLoadingCuisines = false;
         });
       }
@@ -74,10 +73,10 @@ class _FilterPageState extends State<FilterPage> {
           _isLoadingCuisines = false;
         });
       }
-    } catch (_) {
+    } on Exception {
       if (mounted) {
         setState(() {
-          _cuisineCategories = YelpCategoryRepo.defaultCuisines;
+          _cuisineCategories = repo.defaultCuisines;
           _isLoadingCuisines = false;
         });
       }

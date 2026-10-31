@@ -1,5 +1,3 @@
-import 'package:dio/dio.dart';
-
 import '../../api/api_barrel.dart';
 import '../../domain/repositories/yelp_category_repository.dart';
 
@@ -9,8 +7,9 @@ class YelpCategoryRepo implements YelpCategoryRepository {
 
   List<YelpRestaurantCategoryDto>? _cachedCategories;
   List<YelpRestaurantCategoryDto>? _cachedCuisineCategories;
+  Future<YelpCategoryListDto>? _inFlightFetch;
 
-  static const List<YelpRestaurantCategoryDto> defaultCuisines = [
+  static const List<YelpRestaurantCategoryDto> defaultCuisinesZh = [
     YelpRestaurantCategoryDto(alias: 'taiwanese', title: '台灣小吃'),
     YelpRestaurantCategoryDto(alias: 'japanese', title: '日式料理'),
     YelpRestaurantCategoryDto(alias: 'italian', title: '義式料理'),
@@ -23,6 +22,23 @@ class YelpCategoryRepo implements YelpCategoryRepository {
     YelpRestaurantCategoryDto(alias: 'bars', title: '酒吧餐酒館'),
   ];
 
+  static const List<YelpRestaurantCategoryDto> defaultCuisinesEn = [
+    YelpRestaurantCategoryDto(alias: 'taiwanese', title: 'Taiwanese'),
+    YelpRestaurantCategoryDto(alias: 'japanese', title: 'Japanese'),
+    YelpRestaurantCategoryDto(alias: 'italian', title: 'Italian'),
+    YelpRestaurantCategoryDto(alias: 'chinese', title: 'Chinese'),
+    YelpRestaurantCategoryDto(alias: 'korean', title: 'Korean'),
+    YelpRestaurantCategoryDto(alias: 'tradamerican', title: 'American'),
+    YelpRestaurantCategoryDto(alias: 'hotpot', title: 'Hot Pot'),
+    YelpRestaurantCategoryDto(alias: 'cafes', title: 'Cafes'),
+    YelpRestaurantCategoryDto(alias: 'desserts', title: 'Desserts'),
+    YelpRestaurantCategoryDto(alias: 'bars', title: 'Bars & Pubs'),
+  ];
+
+  @override
+  List<YelpRestaurantCategoryDto> get defaultCuisines =>
+      _locale.startsWith('en') ? defaultCuisinesEn : defaultCuisinesZh;
+
   YelpCategoryRepo({required APIClz api, required String locale})
     : _api = api,
       _locale = locale;
@@ -31,19 +47,35 @@ class YelpCategoryRepo implements YelpCategoryRepository {
   Future<YelpCategoryListDto> fetchCategories({
     bool forceRefresh = false,
   }) async {
-    if (!forceRefresh && _cachedCategories != null) {
+    if (forceRefresh) {
+      _cachedCategories = null;
+      _cachedCuisineCategories = null;
+    } else if (_cachedCategories != null) {
       return YelpCategoryListDto(categories: _cachedCategories);
     }
-    final dto = await _api.categories(_locale);
-    _cachedCategories = dto.categories;
-    return dto;
+
+    if (_inFlightFetch != null) {
+      return _inFlightFetch!;
+    }
+
+    final future = _api.categories(_locale);
+    _inFlightFetch = future;
+    try {
+      final dto = await future;
+      _cachedCategories = dto.categories;
+      return dto;
+    } finally {
+      _inFlightFetch = null;
+    }
   }
 
   @override
   Future<List<YelpRestaurantCategoryDto>> fetchCuisineCategories({
     bool forceRefresh = false,
   }) async {
-    if (!forceRefresh && _cachedCuisineCategories != null) {
+    if (forceRefresh) {
+      _cachedCuisineCategories = null;
+    } else if (_cachedCuisineCategories != null) {
       return _cachedCuisineCategories!;
     }
 
@@ -57,17 +89,13 @@ class YelpCategoryRepo implements YelpCategoryRepository {
       }).toList();
 
       if (cuisines.isEmpty) {
-        _cachedCuisineCategories = defaultCuisines;
-      } else {
-        _cachedCuisineCategories = cuisines;
+        return defaultCuisines;
       }
+      _cachedCuisineCategories = cuisines;
       return _cachedCuisineCategories!;
-    } on DioException {
-      _cachedCuisineCategories = defaultCuisines;
-      return _cachedCuisineCategories!;
-    } catch (_) {
-      _cachedCuisineCategories = defaultCuisines;
-      return _cachedCuisineCategories!;
+    } on Exception {
+      // 網路或 API 例外時優雅降級為 defaultCuisines，不賦值給快取以利後續重試
+      return defaultCuisines;
     }
   }
 

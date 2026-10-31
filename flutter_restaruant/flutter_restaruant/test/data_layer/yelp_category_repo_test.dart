@@ -125,7 +125,7 @@ void main() {
 
       final cuisines = await repo.fetchCuisineCategories();
 
-      expect(cuisines, YelpCategoryRepo.defaultCuisines);
+      expect(cuisines, repo.defaultCuisines);
       expect(cuisines.isNotEmpty, isTrue);
     });
 
@@ -135,7 +135,21 @@ void main() {
 
       final cuisines = await repo.fetchCuisineCategories();
 
-      expect(cuisines, YelpCategoryRepo.defaultCuisines);
+      expect(cuisines, repo.defaultCuisines);
+    });
+  });
+
+  group('defaultCuisines 多語系兜底', () {
+    test('en 語系回傳英文標題', () {
+      final enRepo = YelpCategoryRepo(api: api, locale: 'en_US');
+      expect(enRepo.defaultCuisines, YelpCategoryRepo.defaultCuisinesEn);
+      expect(enRepo.defaultCuisines.first.title, 'Taiwanese');
+    });
+
+    test('zh 或其他語系回傳繁中標題', () {
+      final zhRepo = YelpCategoryRepo(api: api, locale: 'zh_TW');
+      expect(zhRepo.defaultCuisines, YelpCategoryRepo.defaultCuisinesZh);
+      expect(zhRepo.defaultCuisines.first.title, '台灣小吃');
     });
   });
 }
