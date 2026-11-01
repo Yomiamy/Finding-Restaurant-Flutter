@@ -137,6 +137,29 @@ void main() {
 
       expect(cuisines, repo.defaultCuisines);
     });
+
+    test('API 回應解析拋出 TypeError 時優雅降級為 defaultCuisines', () async {
+      Future<YelpCategoryListDto> apiCall() => api.categories(_Data.locale);
+      when(apiCall).thenAnswer((_) => throw TypeError());
+
+      final cuisines = await repo.fetchCuisineCategories();
+
+      expect(cuisines, repo.defaultCuisines);
+    });
+
+    test('在途請求進行中若傳入 forceRefresh: true，應發起新請求而非返回舊請求', () async {
+      int callCount = 0;
+      when(() => api.categories(_Data.locale)).thenAnswer((_) async {
+        callCount++;
+        return _Data.mixedList;
+      });
+
+      final first = repo.fetchCategories();
+      final forced = repo.fetchCategories(forceRefresh: true);
+
+      await Future.wait([first, forced]);
+      expect(callCount, 2);
+    });
   });
 
   group('defaultCuisines 多語系兜底', () {

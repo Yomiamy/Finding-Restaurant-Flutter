@@ -50,12 +50,13 @@ class YelpCategoryRepo implements YelpCategoryRepository {
     if (forceRefresh) {
       _cachedCategories = null;
       _cachedCuisineCategories = null;
-    } else if (_cachedCategories != null) {
-      return YelpCategoryListDto(categories: _cachedCategories);
-    }
-
-    if (_inFlightFetch != null) {
-      return _inFlightFetch!;
+    } else {
+      if (_cachedCategories != null) {
+        return YelpCategoryListDto(categories: _cachedCategories);
+      }
+      if (_inFlightFetch != null) {
+        return _inFlightFetch!;
+      }
     }
 
     final future = _api.categories(_locale);
@@ -95,6 +96,9 @@ class YelpCategoryRepo implements YelpCategoryRepository {
       return _cachedCuisineCategories!;
     } on Exception {
       // 網路或 API 例外時優雅降級為 defaultCuisines，不賦值給快取以利後續重試
+      return defaultCuisines;
+    } on TypeError {
+      // API 回應空 body 或資料欄位型別不合時優雅降級為 defaultCuisines
       return defaultCuisines;
     }
   }
