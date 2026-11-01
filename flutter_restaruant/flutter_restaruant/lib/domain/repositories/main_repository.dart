@@ -5,13 +5,14 @@ abstract interface class MainRepository {
 
   void reset();
 
-  Future<List<RestaurantEntity>> fetchYelpSearchInfo(
-    double lat,
-    double lng,
-    int? price,
+  Future<List<RestaurantEntity>> fetchYelpSearchInfo({
+    double? lat,
+    double? lng,
+    String? location,
+    String? price,
     int? openAt,
     String? sortByStr,
-  );
+  });
 
   Future<List<RestaurantEntity>> filterByKeyword(
     String keyword,

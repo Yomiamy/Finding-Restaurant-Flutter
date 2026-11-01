@@ -62,7 +62,14 @@ void main() {
       mockRepo = _MockMainRepository();
       when(() => mockRepo.summaryInfoSet).thenReturn(<RestaurantEntity>{});
       when(
-        () => mockRepo.fetchYelpSearchInfo(any(), any(), any(), any(), any()),
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: any(named: 'lat'),
+          lng: any(named: 'lng'),
+          location: any(named: 'location'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortByStr: any(named: 'sortByStr'),
+        ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
 
@@ -78,7 +85,14 @@ void main() {
       mockRepo = _MockMainRepository();
       when(() => mockRepo.summaryInfoSet).thenReturn({_Data.existing});
       when(
-        () => mockRepo.fetchYelpSearchInfo(any(), any(), any(), any(), any()),
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: any(named: 'lat'),
+          lng: any(named: 'lng'),
+          location: any(named: 'location'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortByStr: any(named: 'sortByStr'),
+        ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
 
@@ -98,7 +112,14 @@ void main() {
         () => mockRepo.summaryInfoSet,
       ).thenReturn({_Data.existing, _Data.nextPage.first});
       when(
-        () => mockRepo.fetchYelpSearchInfo(any(), any(), any(), any(), any()),
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: any(named: 'lat'),
+          lng: any(named: 'lng'),
+          location: any(named: 'location'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortByStr: any(named: 'sortByStr'),
+        ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
 
@@ -119,7 +140,14 @@ void main() {
       mockRepo = _MockMainRepository();
       when(() => mockRepo.summaryInfoSet).thenReturn({_Data.existing});
       when(
-        () => mockRepo.fetchYelpSearchInfo(any(), any(), any(), any(), any()),
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: any(named: 'lat'),
+          lng: any(named: 'lng'),
+          location: any(named: 'location'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortByStr: any(named: 'sortByStr'),
+        ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
 
@@ -132,6 +160,86 @@ void main() {
 
       expect(first, isA<LoadMoreInProgress>());
       expect((first as LoadMoreInProgress).summaryInfos, [_Data.existing]);
+    });
+
+    test('GPS 定位失敗時平滑回退至 location Taipei，不發出 Failure', () async {
+      const MethodChannel channel = MethodChannel(
+        'flutter.baseflow.com/geolocator',
+      );
+      // 模擬 GPS 拋錯（權限被拒）
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+            throw PlatformException(
+              code: 'PERMISSION_DENIED',
+              message: 'Location permissions are denied',
+            );
+          });
+
+      mockRepo = _MockMainRepository();
+      when(() => mockRepo.summaryInfoSet).thenReturn(<RestaurantEntity>{});
+      when(
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: any(named: 'lat'),
+          lng: any(named: 'lng'),
+          location: any(named: 'location'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortByStr: any(named: 'sortByStr'),
+        ),
+      ).thenAnswer((_) async => _Data.nextPage);
+      bloc = MainBloc(repository: mockRepo);
+
+      bloc.add(const FetchSearchInfo());
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder([isA<InProgress>(), isA<Success>()]),
+      );
+
+      verify(
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: null,
+          lng: null,
+          location: 'Taipei',
+          price: null,
+          openAt: null,
+          sortByStr: null,
+        ),
+      ).called(1);
+    });
+
+    test('若 FetchSearchInfo 已指定 location 則優先採用且不查詢 GPS', () async {
+      mockRepo = _MockMainRepository();
+      when(() => mockRepo.summaryInfoSet).thenReturn(<RestaurantEntity>{});
+      when(
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: any(named: 'lat'),
+          lng: any(named: 'lng'),
+          location: any(named: 'location'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortByStr: any(named: 'sortByStr'),
+        ),
+      ).thenAnswer((_) async => _Data.nextPage);
+      bloc = MainBloc(repository: mockRepo);
+
+      bloc.add(const FetchSearchInfo(location: 'Tainan', price: '1,2'));
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder([isA<InProgress>(), isA<Success>()]),
+      );
+
+      verify(
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: null,
+          lng: null,
+          location: 'Tainan',
+          price: '1,2',
+          openAt: null,
+          sortByStr: null,
+        ),
+      ).called(1);
     });
   });
 }

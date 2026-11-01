@@ -18,6 +18,7 @@ abstract class APIClz {
   @GET('/v3/businesses/search')
   Future<YelpSearchDto> businessesSearch({
     @Query('term') String? term,
+    @Query('location') String? location,
     @Query('latitude') double? latitude,
     @Query('longitude') double? longitude,
     @Query('locale') String? locale,
@@ -25,7 +26,7 @@ abstract class APIClz {
     @Query('offset') int? offset,
     @Query('open_at') int? openAt,
     @Query('sort_by') String? sortBy,
-    @Query('price') int? price,
+    @Query('price') String? price,
   });
 
   @GET('/v3/businesses/{id}')

@@ -20,8 +20,12 @@ enum SortBy {
 
 class FilterConfigs {
   // Price
-  int? price;
-  int get priceIndex => (price == null || price! < 1) ? 0 : (price! - 1);
+  String? price;
+  int get priceIndex {
+    if (price == null || price!.isEmpty) return 0;
+    final first = int.tryParse(price!.split(',').first.trim());
+    return (first == null || first < 1) ? 0 : first - 1;
+  }
 
   // Business hours
   int? openAt;
@@ -62,7 +66,7 @@ class FilterConfigs {
     required DateTime openAtDate,
     required int sortingRuleIndex,
   }) {
-    price = priceIndex + 1;
+    price = '${priceIndex + 1}';
     openAt = openAtDate.millisecondsSinceEpoch;
     sortBy = mapSortingRuleByIndex(sortingRuleIndex);
   }
@@ -81,7 +85,27 @@ class FilterConfigs {
     }
   }
 
-  String getPriceDispStr(int price) {
+  String getPriceDispStr(Object price) {
+    if (price is int) {
+      return _priceLevelToString(price);
+    }
+    if (price is String) {
+      if (price.contains(',')) {
+        return price
+            .split(',')
+            .map((s) => int.tryParse(s.trim()))
+            .whereType<int>()
+            .map(_priceLevelToString)
+            .where((s) => s.isNotEmpty)
+            .join(', ');
+      }
+      final p = int.tryParse(price.trim());
+      if (p != null) return _priceLevelToString(p);
+    }
+    return '';
+  }
+
+  static String _priceLevelToString(int price) {
     switch (price) {
       case 1:
         return '\$';

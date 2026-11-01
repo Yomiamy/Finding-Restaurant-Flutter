@@ -14,7 +14,7 @@ void main() {
     WidgetTester tester,
   ) async {
     final filterConfigs = FilterConfigs()
-      ..price = 2
+      ..price = '2'
       ..sortBy = 'rating';
 
     await tester.pumpWidget(
