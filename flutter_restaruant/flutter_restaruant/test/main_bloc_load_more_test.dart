@@ -69,6 +69,7 @@ void main() {
           price: any(named: 'price'),
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -92,6 +93,7 @@ void main() {
           price: any(named: 'price'),
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -119,6 +121,7 @@ void main() {
           price: any(named: 'price'),
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -147,6 +150,7 @@ void main() {
           price: any(named: 'price'),
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);

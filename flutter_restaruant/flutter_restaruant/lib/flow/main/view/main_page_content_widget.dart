@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../features/component/component_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
+import '../../../generated/l10n.dart';
 import '../../../models/model_barrel.dart';
 import '../bloc/bloc_barrel.dart';
 import 'map_widget.dart';
@@ -52,6 +53,8 @@ class _MainPageContentWidgetState extends State<MainPageContentWidget> {
           _summaryInfos = state.summaryInfos;
         } else if (state is LoadMoreInProgress) {
           _summaryInfos = state.summaryInfos;
+        } else if (state is Failure) {
+          _summaryInfos = const [];
         }
 
         if (state is InProgress ||
@@ -63,6 +66,14 @@ class _MainPageContentWidgetState extends State<MainPageContentWidget> {
                   itemBuilder: (_, __) => const RestaurantItemSkeleton(),
                 )
               : const Center(child: LoadingWidget());
+        }
+
+        if (state is Failure) {
+          return EmptyDataWidget(
+            icon: Icons.error_outline,
+            title: S.of(context).error,
+            subtitle: S.of(context).error_and_retry,
+          );
         }
 
         if (_summaryInfos.isEmpty) {

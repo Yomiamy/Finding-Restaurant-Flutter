@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_restaruant/features/component/component_barrel.dart';
 import 'package:flutter_restaruant/flow/main/bloc/bloc_barrel.dart';
 import 'package:flutter_restaruant/flow/main/view/view_barrel.dart';
@@ -88,6 +89,47 @@ void main() {
       );
 
       expect(find.byType(EmptyDataWidget), findsOneWidget);
+      await tester.pumpWidget(const SizedBox());
+      await bloc.close();
+    },
+  );
+
+  testWidgets(
+    'MainPageContentWidget clears old results and renders error when state is Failure',
+    (WidgetTester tester) async {
+      final bloc = _FakeMainBloc(
+        const Success(
+          summaryInfos: [
+            RestaurantEntity(id: '1', name: 'Old Restaurant'),
+          ],
+        ),
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [S.delegate],
+          supportedLocales: S.delegate.supportedLocales,
+          home: BlocProvider<MainBloc>.value(
+            value: bloc,
+            child: Scaffold(
+              body: MainPageContentWidget(
+                filterConfigs: FilterConfigs(),
+                isListMode: true,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Old Restaurant'), findsOneWidget);
+
+      bloc.emit(const Failure());
+      await tester.pump();
+
+      expect(find.text('Old Restaurant'), findsNothing);
+      expect(find.byType(EmptyDataWidget), findsOneWidget);
+      expect(find.byIcon(Icons.error_outline), findsOneWidget);
+
       await tester.pumpWidget(const SizedBox());
       await bloc.close();
     },
