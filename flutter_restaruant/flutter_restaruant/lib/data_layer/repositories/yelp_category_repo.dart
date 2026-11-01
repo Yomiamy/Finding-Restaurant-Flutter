@@ -100,8 +100,11 @@ class YelpCategoryRepo implements YelpCategoryRepository {
       if (cuisines.isEmpty) {
         return defaultCuisines;
       }
-      _cachedCuisineCategories = cuisines;
-      return _cachedCuisineCategories!;
+      if (_cachedCategories != null &&
+          identical(_cachedCategories, allCategories)) {
+        _cachedCuisineCategories = cuisines;
+      }
+      return _cachedCuisineCategories ?? cuisines;
     } on Exception {
       // 網路或 API 例外時優雅降級為 defaultCuisines，不賦值給快取以利後續重試
       return defaultCuisines;

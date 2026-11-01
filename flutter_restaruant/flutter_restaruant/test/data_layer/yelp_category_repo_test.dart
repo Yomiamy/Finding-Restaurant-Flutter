@@ -205,6 +205,39 @@ void main() {
       expect(cachedResult.categories, _Data.mixedList.categories);
       expect(forcedResult.categories, _Data.mixedList.categories);
     });
+
+    test('較早發起之 fetchCuisineCategories 較晚完成時，不覆蓋 forceRefresh 之菜系快取', () async {
+      final slowCompleter = Completer<YelpCategoryListDto>();
+      final fastCompleter = Completer<YelpCategoryListDto>();
+
+      int callIndex = 0;
+      when(() => api.categories(_Data.locale)).thenAnswer((_) {
+        callIndex++;
+        if (callIndex == 1) {
+          return slowCompleter.future;
+        }
+        return fastCompleter.future;
+      });
+
+      final slowFetch = repo.fetchCuisineCategories();
+      final forcedFetch = repo.fetchCuisineCategories(forceRefresh: true);
+
+      // 強制重整先完成（回傳 mixedList，過濾後包含 japanese, desserts）
+      fastCompleter.complete(_Data.mixedList);
+      final forcedResult = await forcedFetch;
+
+      // 舊請求後完成（回傳空清單，若覆蓋快取將變成 defaultCuisines）
+      slowCompleter.complete(_Data.emptyList);
+      await slowFetch;
+
+      // 再次取得快取應仍為 forcedResult 而非被舊請求覆蓋
+      final cachedResult = await repo.fetchCuisineCategories();
+      expect(cachedResult, same(forcedResult));
+      expect(
+        cachedResult.map((e) => e.alias),
+        containsAll(['japanese', 'desserts']),
+      );
+    });
   });
 
   group('defaultCuisines 多語系兜底', () {
