@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
@@ -55,7 +57,22 @@ class _Data {
 
   static const fixedPriorMessages = [
     AiFoodieMessage(id: 'msg_fixed_1', isUser: true, text: '第一句'),
-    AiFoodieMessage(id: 'msg_fixed_2', isUser: false, text: '為您找到好吃的餐廳：第一句'),
+    AiFoodieMessage(
+      id: 'msg_fixed_2',
+      isUser: false,
+      text: '為您找到好吃的餐廳：第一句',
+      components: [
+        ActionChipGroupComponent(
+          chips: [
+            ActionChipItem(
+              label: '更多熱門',
+              action: 'query',
+              payload: {'prompt': '還有其他推薦嗎？'},
+            ),
+          ],
+        ),
+      ],
+    ),
   ];
 }
 
@@ -263,26 +280,29 @@ void main() {
       ],
     );
 
+    late Completer<AiFoodieMessage> delayedCompleter;
+
     blocTest<AiFoodieBloc, AiFoodieState>(
       'ResetAiFoodie 會作廢先前的非同步請求避免覆蓋重設狀態',
       build: () {
+        delayedCompleter = Completer<AiFoodieMessage>();
         when(
           () => repository.askAssistant(
             any(),
             history: any(named: 'history'),
             candidateRestaurants: any(named: 'candidateRestaurants'),
           ),
-        ).thenAnswer((_) async {
-          await Future<void>.delayed(const Duration(milliseconds: 50));
-          return _Data.reply('延遲提問');
-        });
+        ).thenAnswer((_) => delayedCompleter.future);
         return AiFoodieBloc(repository: repository);
       },
-      act: (bloc) {
+      act: (bloc) async {
         bloc.add(const SendUserPrompt('延遲提問'));
+        await pumpEventQueue();
         bloc.add(const ResetAiFoodie());
+        await pumpEventQueue();
+        delayedCompleter.complete(_Data.reply('延遲提問'));
+        await pumpEventQueue();
       },
-      wait: const Duration(milliseconds: 100),
       expect: () => [
         isA<AiFoodieState>()
             .having((s) => s.isLoading, 'isLoading', isTrue)
