@@ -536,11 +536,11 @@ void main() {
       ).thenAnswer((_) async => <String>{});
 
       await repo.fetchYelpSearchInfo(
-        _Data.lat,
-        _Data.lng,
-        _Data.price,
-        12345,
-        _Data.sortBy,
+        lat: _Data.lat,
+        lng: _Data.lng,
+        price: _Data.price,
+        openAt: 12345,
+        sortByStr: _Data.sortBy,
         openNow: true,
       );
 
