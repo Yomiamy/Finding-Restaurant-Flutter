@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:dio/dio.dart';
 import 'package:flutter_restaruant/api/api_barrel.dart';
 import 'package:flutter_restaruant/data_layer/repositories/yelp_category_repo.dart';
@@ -159,6 +161,49 @@ void main() {
 
       await Future.wait([first, forced]);
       expect(callCount, 2);
+    });
+
+    test('遠端回傳空列表時不快取空結果，後續呼叫仍重新請求 API', () async {
+      int callCount = 0;
+      when(() => api.categories(_Data.locale)).thenAnswer((_) async {
+        callCount++;
+        return _Data.emptyList;
+      });
+
+      await repo.fetchCategories();
+      await repo.fetchCategories();
+
+      expect(callCount, 2);
+    });
+
+    test('較早發起之請求較晚完成時，不覆蓋 forceRefresh 之更新快取', () async {
+      final slowCompleter = Completer<YelpCategoryListDto>();
+      final fastCompleter = Completer<YelpCategoryListDto>();
+
+      int callIndex = 0;
+      when(() => api.categories(_Data.locale)).thenAnswer((_) {
+        callIndex++;
+        if (callIndex == 1) {
+          return slowCompleter.future;
+        }
+        return fastCompleter.future;
+      });
+
+      final slowFetch = repo.fetchCategories();
+      final forcedFetch = repo.fetchCategories(forceRefresh: true);
+
+      // 強制重整先完成
+      fastCompleter.complete(_Data.mixedList);
+      final forcedResult = await forcedFetch;
+
+      // 舊請求後完成
+      slowCompleter.complete(_Data.emptyList);
+      await slowFetch;
+
+      // 再次取得快取應為 mixedList 而非被舊請求覆蓋
+      final cachedResult = await repo.fetchCategories();
+      expect(cachedResult.categories, _Data.mixedList.categories);
+      expect(forcedResult.categories, _Data.mixedList.categories);
     });
   });
 

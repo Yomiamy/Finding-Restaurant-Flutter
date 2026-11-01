@@ -8,6 +8,7 @@ class YelpCategoryRepo implements YelpCategoryRepository {
   List<YelpRestaurantCategoryDto>? _cachedCategories;
   List<YelpRestaurantCategoryDto>? _cachedCuisineCategories;
   Future<YelpCategoryListDto>? _inFlightFetch;
+  int _fetchGeneration = 0;
 
   static const List<YelpRestaurantCategoryDto> defaultCuisinesZh = [
     YelpRestaurantCategoryDto(alias: 'taiwanese', title: '台灣小吃'),
@@ -59,14 +60,21 @@ class YelpCategoryRepo implements YelpCategoryRepository {
       }
     }
 
+    final generation = ++_fetchGeneration;
     final future = _api.categories(_locale);
     _inFlightFetch = future;
     try {
       final dto = await future;
-      _cachedCategories = dto.categories;
+      if (generation == _fetchGeneration &&
+          dto.categories != null &&
+          dto.categories!.isNotEmpty) {
+        _cachedCategories = dto.categories;
+      }
       return dto;
     } finally {
-      _inFlightFetch = null;
+      if (generation == _fetchGeneration) {
+        _inFlightFetch = null;
+      }
     }
   }
 
