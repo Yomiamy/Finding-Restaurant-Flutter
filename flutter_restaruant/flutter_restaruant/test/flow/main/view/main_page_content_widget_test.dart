@@ -134,4 +134,57 @@ void main() {
       await bloc.close();
     },
   );
+
+  testWidgets(
+    'MainPageContentWidget preserves existing list when Failure occurs during LoadMore',
+    (WidgetTester tester) async {
+      final bloc = _FakeMainBloc(
+        const Success(
+          summaryInfos: [
+            RestaurantEntity(id: '1', name: 'Existing Restaurant'),
+          ],
+        ),
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [S.delegate],
+          supportedLocales: S.delegate.supportedLocales,
+          home: BlocProvider<MainBloc>.value(
+            value: bloc,
+            child: Scaffold(
+              body: MainPageContentWidget(
+                filterConfigs: FilterConfigs(),
+                isListMode: true,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      expect(find.text('Existing Restaurant'), findsOneWidget);
+
+      // 觸發載入更多
+      bloc.emit(
+        const LoadMoreInProgress(
+          summaryInfos: [
+            RestaurantEntity(id: '1', name: 'Existing Restaurant'),
+          ],
+        ),
+      );
+      await tester.pump();
+      expect(find.text('Existing Restaurant'), findsOneWidget);
+
+      // 分頁請求失敗
+      bloc.emit(const Failure());
+      await tester.pump();
+
+      // 原本已載入之餐廳仍應保留於畫面上，不變為全空錯誤畫面
+      expect(find.text('Existing Restaurant'), findsOneWidget);
+      expect(find.byType(EmptyDataWidget), findsNothing);
+
+      await tester.pumpWidget(const SizedBox());
+      await bloc.close();
+    },
+  );
 }
