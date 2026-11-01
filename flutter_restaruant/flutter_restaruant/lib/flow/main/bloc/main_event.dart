@@ -47,7 +47,7 @@ class LoadMore extends MainEvent {
 class FilterListByKeyword extends MainEvent {
   final String keyword;
   final String? sortByStr;
-  final int? price;
+  final String? price;
   final int? openAt;
 
   const FilterListByKeyword({

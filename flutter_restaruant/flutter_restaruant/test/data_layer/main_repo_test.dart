@@ -147,11 +147,11 @@ void main() {
       ).thenAnswer((_) async => <String>{});
 
       await repo.fetchYelpSearchInfo(
-        _Data.lat,
-        _Data.lng,
-        _Data.price,
-        _Data.openAt,
-        _Data.sortBy,
+        lat: _Data.lat,
+        lng: _Data.lng,
+        price: _Data.price,
+        openAt: _Data.openAt,
+        sortByStr: _Data.sortBy,
         term: 'Ramen',
       );
 
@@ -208,11 +208,8 @@ void main() {
 
       // 首次以 Ramen 查詢
       final list1 = await repo.fetchYelpSearchInfo(
-        _Data.lat,
-        _Data.lng,
-        null,
-        null,
-        null,
+        lat: _Data.lat,
+        lng: _Data.lng,
         term: 'Ramen',
       );
       expect(list1.map((e) => e.id), ['r1']);
@@ -220,11 +217,8 @@ void main() {
 
       // 切換為 Sushi 查詢，應重置清單與 offset
       final list2 = await repo.fetchYelpSearchInfo(
-        _Data.lat,
-        _Data.lng,
-        null,
-        null,
-        null,
+        lat: _Data.lat,
+        lng: _Data.lng,
         term: 'Sushi',
       );
       expect(list2.map((e) => e.id), ['s1']);
@@ -269,16 +263,13 @@ void main() {
 
       // 第一頁
       await repo.fetchYelpSearchInfo(
-        _Data.lat,
-        _Data.lng,
-        null,
-        null,
-        null,
+        lat: _Data.lat,
+        lng: _Data.lng,
         term: 'Ramen',
       );
 
       // 第二頁（分頁載入，term 為 null）
-      await repo.fetchYelpSearchInfo(_Data.lat, _Data.lng, null, null, null);
+      await repo.fetchYelpSearchInfo(lat: _Data.lat, lng: _Data.lng);
 
       verify(
         () => api.businessesSearch(
@@ -339,15 +330,12 @@ void main() {
 
       // 載入第一頁
       await repo.fetchYelpSearchInfo(
-        _Data.lat,
-        _Data.lng,
-        null,
-        null,
-        null,
+        lat: _Data.lat,
+        lng: _Data.lng,
         term: 'Ramen',
       );
       // 載入第二頁
-      await repo.fetchYelpSearchInfo(_Data.lat, _Data.lng, null, null, null);
+      await repo.fetchYelpSearchInfo(lat: _Data.lat, lng: _Data.lng);
       expect(repo.summaryInfoSet.length, 2);
 
       // 當再次傳入相同 term 重新搜尋，模擬回傳新第一頁
@@ -366,11 +354,8 @@ void main() {
       ).thenAnswer((_) async => YelpSearchDto(businesses: [dto3]));
 
       final res = await repo.fetchYelpSearchInfo(
-        _Data.lat,
-        _Data.lng,
-        null,
-        null,
-        null,
+        lat: _Data.lat,
+        lng: _Data.lng,
         term: 'Ramen',
       );
       expect(res.map((e) => e.id), ['r1_fresh']);
@@ -416,20 +401,14 @@ void main() {
 
       // 發起第一個請求（仍在途中）
       final future1 = repo.fetchYelpSearchInfo(
-        _Data.lat,
-        _Data.lng,
-        null,
-        null,
-        null,
+        lat: _Data.lat,
+        lng: _Data.lng,
       );
 
       // 使用者立刻發起新關鍵字搜尋 Burger
       final future2 = repo.fetchYelpSearchInfo(
-        _Data.lat,
-        _Data.lng,
-        null,
-        null,
-        null,
+        lat: _Data.lat,
+        lng: _Data.lng,
         term: 'Burger',
       );
 

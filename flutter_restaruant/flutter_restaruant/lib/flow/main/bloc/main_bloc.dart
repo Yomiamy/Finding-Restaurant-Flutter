@@ -95,11 +95,11 @@ class MainBloc extends Bloc<MainEvent, MainState> {
 
         final List<RestaurantEntity> summaryInfos = await _mainRepository
             .fetchYelpSearchInfo(
-              lat,
-              lng,
-              event.price,
-              event.openAt,
-              event.sortByStr,
+              lat: lat,
+              lng: lng,
+              price: event.price,
+              openAt: event.openAt,
+              sortByStr: event.sortByStr,
               term: event.keyword,
             );
 

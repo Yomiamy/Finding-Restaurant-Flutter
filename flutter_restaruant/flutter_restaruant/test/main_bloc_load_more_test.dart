@@ -19,37 +19,41 @@ class _Data {
   ];
 }
 
+void _setMockGeolocator() {
+  const MethodChannel channel = MethodChannel(
+    'flutter.baseflow.com/geolocator',
+  );
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+        switch (methodCall.method) {
+          case 'checkPermission':
+          case 'requestPermission':
+            return 3; // LocationPermission.whileInUse
+          case 'getCurrentPosition':
+            return <String, dynamic>{
+              'latitude': 25.0,
+              'longitude': 121.5,
+              'timestamp': 0,
+              'accuracy': 1.0,
+              'altitude': 0.0,
+              'altitude_accuracy': 0.0,
+              'heading': 0.0,
+              'heading_accuracy': 0.0,
+              'speed': 0.0,
+              'speed_accuracy': 0.0,
+            };
+          default:
+            return null;
+        }
+      });
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() {
     // geolocator 走 platform channel，測試環境需攔截，否則 getCurrentPosition 會拋錯
-    const MethodChannel channel = MethodChannel(
-      'flutter.baseflow.com/geolocator',
-    );
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-          switch (methodCall.method) {
-            case 'checkPermission':
-            case 'requestPermission':
-              return 3; // LocationPermission.whileInUse
-            case 'getCurrentPosition':
-              return <String, dynamic>{
-                'latitude': 25.0,
-                'longitude': 121.5,
-                'timestamp': 0,
-                'accuracy': 1.0,
-                'altitude': 0.0,
-                'altitude_accuracy': 0.0,
-                'heading': 0.0,
-                'heading_accuracy': 0.0,
-                'speed': 0.0,
-                'speed_accuracy': 0.0,
-              };
-            default:
-              return null;
-          }
-        });
+    _setMockGeolocator();
   });
 
   group('MainBloc load-more state sequence', () {
@@ -167,6 +171,7 @@ void main() {
     });
 
     test('GPS 定位失敗時平滑回退至 location Taipei，不發出 Failure', () async {
+      addTearDown(_setMockGeolocator);
       const MethodChannel channel = MethodChannel(
         'flutter.baseflow.com/geolocator',
       );
@@ -308,7 +313,6 @@ void main() {
         bloc.stream,
         emitsInOrder([isA<InProgress>(), isA<Failure>()]),
       );
-    });
     });
   });
 }
