@@ -9,7 +9,7 @@
 
 本報告整合了架構審計與競品探索報告之事實與推理鏈，產出符合產業界最高標準的產品與技術發展路線圖 (Strategic Product Roadmap) 及 RICE / ICE 雙優先級評估矩陣。
 
-> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。**2026-10-22 補記**：檔名前綴其後已再更新為 `2026-10-22`，上述 `2026-09-30` 為當時狀態。**2026-10-25 補記**：檔名前綴再更新為 `2026-10-25`。**2026-10-26 補記**：檔名前綴再更新為 `2026-10-26`。
+> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。**2026-10-22 補記**：檔名前綴其後已再更新為 `2026-10-22`，上述 `2026-09-30` 為當時狀態。**2026-10-25 補記**：檔名前綴再更新為 `2026-10-25`。**2026-10-26 補記**：檔名前綴再更新為 `2026-10-26`。**2026-11-01 補記**：檔名前綴再更新為 `2026-11-01`。A-8.7 解除 GPS 強制綁定與價格字串過濾已完成 (Issue #169 / PR #170)。
 
 ---
 
@@ -1621,7 +1621,11 @@ class ComparisonMatrixComponent extends A2UIComponent {
   3. 換關鍵字時重置 `_offset = 0` 與 `summaryInfoSet.clear()`，清空舊結果並重新分頁加載。
   4. 徹底刪除 `MainRepo.filterByKeyword` 中的本地記憶體比對邏輯，搜尋結果以遠端 API 為唯一事實來源。
 
-#### [A-8.7] 解除 GPS 強制綁定：搜尋 API 支援 `location` 文字地名，修正 `price` 為逗號分隔字串
+#### [A-8.7] 解除 GPS 強制綁定：搜尋 API 支援 `location` 文字地名，修正 `price` 為逗號分隔字串 — ✅ 已完成 (Issue #169 / PR #170, 2026-11-01)
+- **狀態**：✅ 已於 2026-11-01 完成 (Issue #169 / PR #170)。
+  1. `APIClz.businessesSearch` 新增 `String? location` 支援城市/地名查詢，`price` 改為 `String? price`（支援逗號分隔字串 `"1,2"`）。
+  2. `MainRepo.fetchYelpSearchInfo` 改造為 Named Parameters 介面，當無 GPS 座標時支援回退使用 `location`（預設台北市中心），解除 GPS 強制綁定。
+  3. `FilterConfigs` 將價格陣列序列化為逗號分隔字串，並更新對應單元測試與 Mocktail 驗證。
 - **優先級**：`P0` (阻擋級 / 核心可用性缺陷)
 - **預估 Effort**：`0.5d`
 - **價值與收益**：
@@ -1964,7 +1968,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
  Phase 1 收尾 (地基修復) ──► 納入 E-8.1 (PR CI) & E-8.3 (Makefile)
                                      │
  Phase 1.5 (體驗升級)   ──► 納入 A-8.1 (Sealed Result) & UI-8.1 (Dialog佇列) & UI-8.2 (砍死碼 ✅) & UI-8.7 (地圖佔位圖 ✅)
-                                     & A-8.6~A-8.7 (Yelp 假搜尋根治、GPS 解綁) & A-8.8 (實體欄位補齊 ✅) & A-8.11 (鑑權容錯)
+                                     & A-8.6 (Yelp 假搜尋根治) & A-8.7 (GPS 解綁 ✅) & A-8.8 (實體欄位補齊 ✅) & A-8.11 (鑑權容錯)
                                      │
  Phase 2 (社群/轉化)    ──► 納入 A-8.3 (Dio錯誤對應) & UI-8.4 (色差校正) & UI-8.3 (語法糖)
                                      & A-8.9 (Autocomplete 補全 🟡) & A-8.10 (進階篩選)
@@ -1980,7 +1984,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 2. **融入 Phase 1.5 空間與視覺體驗升級**：
    - 伴隨目前正在進行的離線快取與標籤過濾開發，同步落地 **A-8.1 (Dart 3 Sealed Result 體系)**，徹底終結網路層錯誤黑洞。
-   - 優先實施 **A-8.6 (根除 50 筆假過濾直通遠端搜尋)**、**A-8.7 (支援 location 地名與價格區間)**；**A-8.8 (補齊 DTO/Entity 核心欄位並清理死碼)** 已於 2026-10-27 完成 (Issue #161 / PR #162)。
+   - 優先實施 **A-8.6 (根除 50 筆假過濾直通遠端搜尋)**；**A-8.7 (支援 location 地名與價格區間)** 已於 2026-11-01 完成 (Issue #169 / PR #170)；**A-8.8 (補齊 DTO/Entity 核心欄位並清理死碼)** 已於 2026-10-27 完成 (Issue #161 / PR #162)。
    - **UI-8.1 (DialogQueueManager)** 融入通知與網路異常彈窗機制，杜絕快速連點重疊。
    - **UI-8.2 (刪除 PlatformWidget 死代碼)** 已於 2026-09-26 完成 (Issue #128 / PR #129)，保持 codebase 斯巴達式簡潔。
    - **UI-8.7 (靜態地圖專屬佔位圖)** 已於 2026-10-22 完成 (Issue #156 / PR #157)，替換詳情頁地圖載入/錯誤時的通用空圖，強化位置預覽語意與視覺一致性。
