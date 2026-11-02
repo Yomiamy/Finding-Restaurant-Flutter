@@ -292,6 +292,56 @@ void main() {
       ).called(1);
     });
 
+    test('FilterListByKeyword 在 GPS 定位失敗時平滑回退至 location Taipei 並發送 term', () async {
+      addTearDown(_setMockGeolocator);
+      const MethodChannel channel = MethodChannel(
+        'flutter.baseflow.com/geolocator',
+      );
+      // 模擬 GPS 拋錯（權限被拒）
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+            throw PlatformException(
+              code: 'PERMISSION_DENIED',
+              message: 'Location permissions are denied',
+            );
+          });
+
+      mockRepo = _MockMainRepository();
+      when(
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: any(named: 'lat'),
+          lng: any(named: 'lng'),
+          location: any(named: 'location'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
+        ),
+      ).thenAnswer((_) async => _Data.nextPage);
+      bloc = MainBloc(repository: mockRepo);
+
+      bloc.add(
+        const FilterListByKeyword(keyword: 'Ramen', sortByStr: 'best_match'),
+      );
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder([isA<InProgress>(), isA<Success>()]),
+      );
+
+      verify(
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: null,
+          lng: null,
+          location: 'Taipei',
+          price: null,
+          openAt: null,
+          sortByStr: 'best_match',
+          term: 'Ramen',
+        ),
+      ).called(1);
+    });
+
     test('FilterListByKeyword 發生例外時發出 InProgress → Failure', () async {
       mockRepo = _MockMainRepository();
       when(

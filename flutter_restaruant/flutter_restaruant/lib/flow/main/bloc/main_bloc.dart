@@ -22,19 +22,9 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       super(const MainInitial()) {
     on<FetchSearchInfo>((event, emit) async {
       try {
-        double? lat;
-        double? lng;
-        String? location = event.location;
-
-        if (location == null || location.isEmpty) {
-          try {
-            final Position currentPos = await Utils.getCurrentPosition();
-            lat = currentPos.latitude;
-            lng = currentPos.longitude;
-          } catch (_) {
-            location = 'Taipei';
-          }
-        }
+        final (:lat, :lng, :location) = await _resolveLocation(
+          location: event.location,
+        );
 
         bool isLoadMore = _mainRepository.summaryInfoSet.isNotEmpty;
         String? price = event.price;
@@ -89,14 +79,13 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       try {
         emit(const InProgress());
 
-        final Position currentPos = await Utils.getCurrentPosition();
-        final double lat = currentPos.latitude;
-        final double lng = currentPos.longitude;
+        final (:lat, :lng, :location) = await _resolveLocation();
 
         final List<RestaurantEntity> summaryInfos = await _mainRepository
             .fetchYelpSearchInfo(
               lat: lat,
               lng: lng,
+              location: location,
               price: event.price,
               openAt: event.openAt,
               sortByStr: event.sortByStr,
@@ -129,5 +118,23 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       String fcmToken = await fcmManager.fcmToken;
       debugPrint('$tag, fcm Token is $fcmToken');
     });
+  }
+
+  Future<({double? lat, double? lng, String? location})> _resolveLocation({
+    String? location,
+  }) async {
+    if (location != null && location.isNotEmpty) {
+      return (lat: null, lng: null, location: location);
+    }
+    try {
+      final Position currentPos = await Utils.getCurrentPosition();
+      return (
+        lat: currentPos.latitude,
+        lng: currentPos.longitude,
+        location: null,
+      );
+    } catch (_) {
+      return (lat: null, lng: null, location: 'Taipei');
+    }
   }
 }
