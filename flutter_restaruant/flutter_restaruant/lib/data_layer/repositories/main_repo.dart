@@ -115,16 +115,6 @@ class MainRepo implements MainRepository {
     }
   }
 
-  @override
-  @Deprecated('Use fetchYelpSearchInfo with term parameter instead.')
-  Future<List<RestaurantEntity>> filterByKeyword(
-    String keyword,
-    String? sortByStr,
-  ) async {
-    _keyword = keyword.trim();
-    return _getSortedInfoList(sortByStr, summaryInfoSet.toList());
-  }
-
   List<RestaurantEntity> _getSortedInfoList(
     String? sortByStr,
     List<RestaurantEntity> summaryInfos,

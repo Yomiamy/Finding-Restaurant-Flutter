@@ -15,12 +15,6 @@ abstract interface class MainRepository {
     String? term,
   });
 
-  @Deprecated('Use fetchYelpSearchInfo with term parameter instead.')
-  Future<List<RestaurantEntity>> filterByKeyword(
-    String keyword,
-    String? sortByStr,
-  );
-
   /// Returns the persisted entity so callers adopt the new favor value
   /// instead of deriving it a second time.
   Future<RestaurantEntity> toggleFavor(RestaurantEntity summaryInfo);
