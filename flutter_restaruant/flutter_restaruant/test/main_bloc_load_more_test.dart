@@ -19,37 +19,41 @@ class _Data {
   ];
 }
 
+void _setMockGeolocator() {
+  const MethodChannel channel = MethodChannel(
+    'flutter.baseflow.com/geolocator',
+  );
+  TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+      .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+        switch (methodCall.method) {
+          case 'checkPermission':
+          case 'requestPermission':
+            return 3; // LocationPermission.whileInUse
+          case 'getCurrentPosition':
+            return <String, dynamic>{
+              'latitude': 25.0,
+              'longitude': 121.5,
+              'timestamp': 0,
+              'accuracy': 1.0,
+              'altitude': 0.0,
+              'altitude_accuracy': 0.0,
+              'heading': 0.0,
+              'heading_accuracy': 0.0,
+              'speed': 0.0,
+              'speed_accuracy': 0.0,
+            };
+          default:
+            return null;
+        }
+      });
+}
+
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
 
   setUpAll(() {
     // geolocator 走 platform channel，測試環境需攔截，否則 getCurrentPosition 會拋錯
-    const MethodChannel channel = MethodChannel(
-      'flutter.baseflow.com/geolocator',
-    );
-    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-        .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-          switch (methodCall.method) {
-            case 'checkPermission':
-            case 'requestPermission':
-              return 3; // LocationPermission.whileInUse
-            case 'getCurrentPosition':
-              return <String, dynamic>{
-                'latitude': 25.0,
-                'longitude': 121.5,
-                'timestamp': 0,
-                'accuracy': 1.0,
-                'altitude': 0.0,
-                'altitude_accuracy': 0.0,
-                'heading': 0.0,
-                'heading_accuracy': 0.0,
-                'speed': 0.0,
-                'speed_accuracy': 0.0,
-              };
-            default:
-              return null;
-          }
-        });
+    _setMockGeolocator();
   });
 
   group('MainBloc load-more state sequence', () {
@@ -69,6 +73,7 @@ void main() {
           price: any(named: 'price'),
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -92,6 +97,7 @@ void main() {
           price: any(named: 'price'),
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -119,6 +125,7 @@ void main() {
           price: any(named: 'price'),
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -147,6 +154,7 @@ void main() {
           price: any(named: 'price'),
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -163,6 +171,7 @@ void main() {
     });
 
     test('GPS 定位失敗時平滑回退至 location Taipei，不發出 Failure', () async {
+      addTearDown(_setMockGeolocator);
       const MethodChannel channel = MethodChannel(
         'flutter.baseflow.com/geolocator',
       );
@@ -185,6 +194,7 @@ void main() {
           price: any(named: 'price'),
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -204,6 +214,7 @@ void main() {
           price: null,
           openAt: null,
           sortByStr: null,
+          term: null,
         ),
       ).called(1);
     });
@@ -219,6 +230,7 @@ void main() {
           price: any(named: 'price'),
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -238,8 +250,119 @@ void main() {
           price: '1,2',
           openAt: null,
           sortByStr: null,
+          term: null,
         ),
       ).called(1);
+    });
+
+    test('FilterListByKeyword 直通遠端搜尋發出 InProgress → Success 並傳遞 term', () async {
+      mockRepo = _MockMainRepository();
+      when(
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: any(named: 'lat'),
+          lng: any(named: 'lng'),
+          location: any(named: 'location'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
+        ),
+      ).thenAnswer((_) async => _Data.nextPage);
+      bloc = MainBloc(repository: mockRepo);
+
+      bloc.add(
+        const FilterListByKeyword(keyword: 'Ramen', sortByStr: 'best_match'),
+      );
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder([isA<InProgress>(), isA<Success>()]),
+      );
+
+      verify(
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: 25.0,
+          lng: 121.5,
+          location: null,
+          price: null,
+          openAt: null,
+          sortByStr: 'best_match',
+          term: 'Ramen',
+        ),
+      ).called(1);
+    });
+
+    test('FilterListByKeyword 在 GPS 定位失敗時平滑回退至 location Taipei 並發送 term', () async {
+      addTearDown(_setMockGeolocator);
+      const MethodChannel channel = MethodChannel(
+        'flutter.baseflow.com/geolocator',
+      );
+      // 模擬 GPS 拋錯（權限被拒）
+      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+            throw PlatformException(
+              code: 'PERMISSION_DENIED',
+              message: 'Location permissions are denied',
+            );
+          });
+
+      mockRepo = _MockMainRepository();
+      when(
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: any(named: 'lat'),
+          lng: any(named: 'lng'),
+          location: any(named: 'location'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
+        ),
+      ).thenAnswer((_) async => _Data.nextPage);
+      bloc = MainBloc(repository: mockRepo);
+
+      bloc.add(
+        const FilterListByKeyword(keyword: 'Ramen', sortByStr: 'best_match'),
+      );
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder([isA<InProgress>(), isA<Success>()]),
+      );
+
+      verify(
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: null,
+          lng: null,
+          location: 'Taipei',
+          price: null,
+          openAt: null,
+          sortByStr: 'best_match',
+          term: 'Ramen',
+        ),
+      ).called(1);
+    });
+
+    test('FilterListByKeyword 發生例外時發出 InProgress → Failure', () async {
+      mockRepo = _MockMainRepository();
+      when(
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: any(named: 'lat'),
+          lng: any(named: 'lng'),
+          location: any(named: 'location'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
+        ),
+      ).thenThrow(Exception('Network error'));
+      bloc = MainBloc(repository: mockRepo);
+
+      bloc.add(const FilterListByKeyword(keyword: 'Ramen'));
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder([isA<InProgress>(), isA<Failure>()]),
+      );
     });
   });
 }

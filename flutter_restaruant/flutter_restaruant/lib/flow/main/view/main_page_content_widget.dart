@@ -3,6 +3,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../features/component/component_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
+import '../../../generated/l10n.dart';
 import '../../../models/model_barrel.dart';
 import '../bloc/bloc_barrel.dart';
 import 'map_widget.dart';
@@ -28,6 +29,7 @@ class MainPageContentWidget extends StatefulWidget {
 
 class _MainPageContentWidgetState extends State<MainPageContentWidget> {
   List<RestaurantEntity> _summaryInfos = const [];
+  bool _wasLoadingMore = false;
 
   @override
   Widget build(BuildContext context) {
@@ -48,10 +50,20 @@ class _MainPageContentWidgetState extends State<MainPageContentWidget> {
       builder: (context, state) {
         if (state is Success) {
           _summaryInfos = state.summaryInfos;
+          _wasLoadingMore = false;
         } else if (state is LoadMoreSuccess) {
           _summaryInfos = state.summaryInfos;
+          _wasLoadingMore = false;
         } else if (state is LoadMoreInProgress) {
           _summaryInfos = state.summaryInfos;
+          _wasLoadingMore = true;
+        } else if (state is InProgress) {
+          _wasLoadingMore = false;
+        } else if (state is Failure) {
+          if (!_wasLoadingMore) {
+            _summaryInfos = const [];
+          }
+          _wasLoadingMore = false;
         }
 
         if (state is InProgress ||
@@ -63,6 +75,14 @@ class _MainPageContentWidgetState extends State<MainPageContentWidget> {
                   itemBuilder: (_, __) => const RestaurantItemSkeleton(),
                 )
               : const Center(child: LoadingWidget());
+        }
+
+        if (state is Failure && _summaryInfos.isEmpty) {
+          return EmptyDataWidget(
+            icon: Icons.error_outline,
+            title: S.of(context).error,
+            subtitle: S.of(context).error_and_retry,
+          );
         }
 
         if (_summaryInfos.isEmpty) {

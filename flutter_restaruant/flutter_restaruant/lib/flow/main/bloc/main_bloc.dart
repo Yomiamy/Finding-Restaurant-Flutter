@@ -2,6 +2,7 @@ import 'package:bloc/bloc.dart';
 import 'package:equatable/equatable.dart';
 import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:logger/logger.dart';
 
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../domain/repositories/repositories_barrel.dart';
@@ -13,6 +14,7 @@ part 'main_state.dart';
 
 class MainBloc extends Bloc<MainEvent, MainState> {
   static const tag = 'MainBloc';
+  final _logger = Logger();
   final MainRepository _mainRepository;
 
   MainBloc({required MainRepository repository})
@@ -20,19 +22,9 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       super(const MainInitial()) {
     on<FetchSearchInfo>((event, emit) async {
       try {
-        double? lat;
-        double? lng;
-        String? location = event.location;
-
-        if (location == null || location.isEmpty) {
-          try {
-            final Position currentPos = await Utils.getCurrentPosition();
-            lat = currentPos.latitude;
-            lng = currentPos.longitude;
-          } catch (_) {
-            location = 'Taipei';
-          }
-        }
+        final (:lat, :lng, :location) = await _resolveLocation(
+          location: event.location,
+        );
 
         bool isLoadMore = _mainRepository.summaryInfoSet.isNotEmpty;
         String? price = event.price;
@@ -64,6 +56,7 @@ class MainBloc extends Bloc<MainEvent, MainState> {
               price: price,
               openAt: openAt,
               sortByStr: sortBy,
+              term: event.term,
             );
 
         if (isLoadMore) {
@@ -71,7 +64,8 @@ class MainBloc extends Bloc<MainEvent, MainState> {
         } else {
           emit(Success(summaryInfos: summaryInfos));
         }
-      } on Exception catch (_) {
+      } on Exception catch (e, st) {
+        _logger.e('FetchSearchInfo 發生異常', error: e, stackTrace: st);
         emit(const Failure());
       }
     });
@@ -82,15 +76,26 @@ class MainBloc extends Bloc<MainEvent, MainState> {
     });
 
     on<FilterListByKeyword>((event, emit) async {
-      emit(const InProgress());
+      try {
+        emit(const InProgress());
 
-      final List<RestaurantEntity> filterInfos = await _mainRepository
-          .filterByKeyword(event.keyword, event.sortByStr);
+        final (:lat, :lng, :location) = await _resolveLocation();
 
-      if (filterInfos.isNotEmpty) {
-        emit(Success(summaryInfos: filterInfos));
-      } else {
-        emit(const Success(summaryInfos: []));
+        final List<RestaurantEntity> summaryInfos = await _mainRepository
+            .fetchYelpSearchInfo(
+              lat: lat,
+              lng: lng,
+              location: location,
+              price: event.price,
+              openAt: event.openAt,
+              sortByStr: event.sortByStr,
+              term: event.keyword,
+            );
+
+        emit(Success(summaryInfos: summaryInfos));
+      } on Exception catch (e, st) {
+        _logger.e('FilterListByKeyword 發生異常', error: e, stackTrace: st);
+        emit(const Failure());
       }
     });
 
@@ -113,5 +118,23 @@ class MainBloc extends Bloc<MainEvent, MainState> {
       String fcmToken = await fcmManager.fcmToken;
       debugPrint('$tag, fcm Token is $fcmToken');
     });
+  }
+
+  Future<({double? lat, double? lng, String? location})> _resolveLocation({
+    String? location,
+  }) async {
+    if (location != null && location.isNotEmpty) {
+      return (lat: null, lng: null, location: location);
+    }
+    try {
+      final Position currentPos = await Utils.getCurrentPosition();
+      return (
+        lat: currentPos.latitude,
+        lng: currentPos.longitude,
+        location: null,
+      );
+    } catch (_) {
+      return (lat: null, lng: null, location: 'Taipei');
+    }
   }
 }

@@ -12,12 +12,8 @@ abstract interface class MainRepository {
     String? price,
     int? openAt,
     String? sortByStr,
+    String? term,
   });
-
-  Future<List<RestaurantEntity>> filterByKeyword(
-    String keyword,
-    String? sortByStr,
-  );
 
   /// Returns the persisted entity so callers adopt the new favor value
   /// instead of deriving it a second time.

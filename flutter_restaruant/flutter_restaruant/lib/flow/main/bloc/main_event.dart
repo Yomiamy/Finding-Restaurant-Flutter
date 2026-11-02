@@ -5,7 +5,7 @@ abstract class MainEvent extends Equatable {
   const MainEvent();
 
   @override
-  List<Object> get props => [];
+  List<Object?> get props => [];
 }
 
 class FetchSearchInfo extends MainEvent {
@@ -13,8 +13,18 @@ class FetchSearchInfo extends MainEvent {
   final String? price;
   final int? openAt;
   final String? sortBy;
+  final String? term;
 
-  const FetchSearchInfo({this.location, this.price, this.openAt, this.sortBy});
+  const FetchSearchInfo({
+    this.location,
+    this.price,
+    this.openAt,
+    this.sortBy,
+    this.term,
+  });
+
+  @override
+  List<Object?> get props => [location, price, openAt, sortBy, term];
 
   @override
   String toString() => 'Fetch search info event.';
@@ -37,8 +47,18 @@ class LoadMore extends MainEvent {
 class FilterListByKeyword extends MainEvent {
   final String keyword;
   final String? sortByStr;
+  final String? price;
+  final int? openAt;
 
-  const FilterListByKeyword({this.keyword = '', this.sortByStr});
+  const FilterListByKeyword({
+    this.keyword = '',
+    this.sortByStr,
+    this.price,
+    this.openAt,
+  });
+
+  @override
+  List<Object?> get props => [keyword, sortByStr, price, openAt];
 
   @override
   String toString() => 'FilterListByKeyword event.';

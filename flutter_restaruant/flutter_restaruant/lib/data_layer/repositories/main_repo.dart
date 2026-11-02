@@ -18,6 +18,7 @@ class MainRepo implements MainRepository {
   int _offset = 0;
   String _keyword = '';
   bool _isLoading = false;
+  int _activeRequestId = 0;
 
   MainRepo({
     required APIClz api,
@@ -31,6 +32,7 @@ class MainRepo implements MainRepository {
 
   @override
   void reset() {
+    _activeRequestId++;
     _offset = 0;
     _keyword = '';
     _isLoading = false;
@@ -46,21 +48,30 @@ class MainRepo implements MainRepository {
     String? price,
     int? openAt,
     String? sortByStr,
+    String? term,
   }) async {
-    if (_isLoading) {
+    final bool isNewSearch = term != null;
+    if (isNewSearch) {
+      _offset = 0;
+      _keyword = term.trim();
+      summaryInfoSet.clear();
+    } else if (_isLoading) {
       // If new items is loading, then don't handle new fetching request until the old one completed.
-      return await filterByKeyword(_keyword, sortByStr);
+      return _getSortedInfoList(sortByStr, summaryInfoSet.toList());
     }
 
+    final int currentRequestId = ++_activeRequestId;
     _isLoading = true;
     try {
+      final String queryTerm = _keyword.isNotEmpty ? _keyword : 'Restaurants';
+
       final bool hasCoordinates = lat != null && lng != null;
       final String? resolvedLocation = hasCoordinates
           ? null
           : (location != null && location.isNotEmpty ? location : 'Taipei');
 
       YelpSearchDto searchDto = await _api.businessesSearch(
-        term: 'Restaurants',
+        term: queryTerm,
         latitude: hasCoordinates ? lat : null,
         longitude: hasCoordinates ? lng : null,
         location: resolvedLocation,
@@ -72,7 +83,15 @@ class MainRepo implements MainRepository {
         offset: _offset,
       );
 
+      if (currentRequestId != _activeRequestId) {
+        return _getSortedInfoList(sortByStr, summaryInfoSet.toList());
+      }
+
       Set<String> favorIds = await _favorDataSource.fetchFavorIds();
+
+      if (currentRequestId != _activeRequestId) {
+        return _getSortedInfoList(sortByStr, summaryInfoSet.toList());
+      }
 
       List<RestaurantEntity> fetchedEntities = (searchDto.businesses ?? []).map(
         (dto) {
@@ -85,32 +104,14 @@ class MainRepo implements MainRepository {
 
       _offset += MainRepo._maxItemsCountInList;
 
-      return await filterByKeyword(_keyword, sortByStr);
+      return _getSortedInfoList(sortByStr, summaryInfoSet.toList());
     } on Exception catch (e, st) {
       logger.e('fetchYelpSearchInfo 發生異常', error: e, stackTrace: st);
       rethrow;
     } finally {
-      _isLoading = false;
-    }
-  }
-
-  @override
-  Future<List<RestaurantEntity>> filterByKeyword(
-    String keyword,
-    String? sortByStr,
-  ) async {
-    _keyword = keyword;
-
-    if (keyword.isNotEmpty) {
-      List<RestaurantEntity> filteredList = summaryInfoSet.where((element) {
-        return (element.name?.contains(keyword) ?? false) ||
-            (element.categoriesStr.contains(keyword)) ||
-            (element.location?.displayAddressStr.contains(keyword) ?? false);
-      }).toList();
-
-      return _getSortedInfoList(sortByStr, filteredList);
-    } else {
-      return _getSortedInfoList(sortByStr, summaryInfoSet.toList());
+      if (currentRequestId == _activeRequestId) {
+        _isLoading = false;
+      }
     }
   }
 
