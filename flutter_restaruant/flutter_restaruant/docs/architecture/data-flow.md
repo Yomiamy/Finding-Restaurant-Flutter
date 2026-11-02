@@ -162,15 +162,20 @@ List<RestaurantEntity> fetchedEntities = (searchDto.businesses ?? []).map((dto) 
 
 > 🔴 **但 import 層級並未隔離**：`fromDto` / `toDto` 是寫在 **Entity 自己身上**的成員（11 個 entity 皆然），因此 `domain/entities/` 反向 import 了 `api/dto/`。執行期的資料不會外洩，編譯期的依賴卻已經反向。詳見 [`overview.md` 的架構缺陷章節](./overview.md#-已知架構缺陷entity-反向依賴-dto)。
 
-### 關鍵細節：`_isLoading` 重入守衛
+### 關鍵細節：`_isLoading` 重入守衛與 `_activeRequestId` 競態防護
 
 ```dart
-if (_isLoading) {
-  return await filterByKeyword(_keyword, sortByStr);  // 改走本地資料
+final bool isNewSearch = term != null;
+if (isNewSearch) {
+  _offset = 0;
+  _keyword = term.trim();
+  summaryInfoSet.clear();
+} else if (_isLoading) {
+  return _getSortedInfoList(sortByStr, summaryInfoSet.toList());
 }
 ```
 
-使用者快速滑動觸發連續 `FetchSearchInfo` 時，若不擋下，`_offset` 會被重複遞增造成**分頁跳號**（漏掉整頁資料）。守衛的做法不是丟棄請求，而是**降級為本地過濾**——使用者仍會看到列表更新，不會覺得 App 沒反應。`_isLoading` 在 `finally` 中還原，確保例外路徑不會永久卡死。
+使用者快速滑動觸發連續分頁請求時，若不擋下，`_offset` 會被重複遞增造成**分頁跳號**（漏掉整頁資料）。守衛的做法不是丟棄請求，而是**直接返回目前快取的排序清單**——使用者仍會看到列表更新，不會覺得 App 沒反應；若傳入新關鍵字搜尋（`term != null`）則強制重置分頁與快取。此外，透過單調遞增的 `_activeRequestId` 序號檢查，非同步請求返回時若小於當前序號即判定過期丟棄，徹底杜絕競態覆蓋。`_isLoading` 在 `finally` 中於符合當前請求序號時還原，確保例外路徑不會永久卡死。
 
 ### 關鍵細節：載入更多為何不 emit `InProgress`
 
