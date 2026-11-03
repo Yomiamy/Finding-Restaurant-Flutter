@@ -428,6 +428,7 @@ void main() {
         term: 'Restaurants',
         latitude: _Data.lat,
         longitude: _Data.lng,
+        location: null,
         locale: _Data.locale,
         price: _Data.price,
         openAt: null,
@@ -461,6 +462,7 @@ void main() {
       when(
         () => api.businessesSearch(
           term: any(named: 'term'),
+          location: any(named: 'location'),
           latitude: any(named: 'latitude'),
           longitude: any(named: 'longitude'),
           locale: any(named: 'locale'),
@@ -499,6 +501,7 @@ void main() {
       verify(
         () => api.businessesSearch(
           term: any(named: 'term'),
+          location: any(named: 'location'),
           latitude: any(named: 'latitude'),
           longitude: any(named: 'longitude'),
           locale: any(named: 'locale'),
@@ -518,6 +521,7 @@ void main() {
       when(
         () => api.businessesSearch(
           term: any(named: 'term'),
+          location: any(named: 'location'),
           latitude: any(named: 'latitude'),
           longitude: any(named: 'longitude'),
           locale: any(named: 'locale'),
@@ -547,6 +551,7 @@ void main() {
       verify(
         () => api.businessesSearch(
           term: 'Restaurants',
+          location: null,
           latitude: _Data.lat,
           longitude: _Data.lng,
           locale: _Data.locale,

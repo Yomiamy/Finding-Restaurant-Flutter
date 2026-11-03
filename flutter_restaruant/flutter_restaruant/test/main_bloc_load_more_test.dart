@@ -74,6 +74,9 @@ void main() {
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
           term: any(named: 'term'),
+          categories: any(named: 'categories'),
+          radius: any(named: 'radius'),
+          openNow: any(named: 'openNow'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -98,6 +101,9 @@ void main() {
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
           term: any(named: 'term'),
+          categories: any(named: 'categories'),
+          radius: any(named: 'radius'),
+          openNow: any(named: 'openNow'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -126,6 +132,9 @@ void main() {
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
           term: any(named: 'term'),
+          categories: any(named: 'categories'),
+          radius: any(named: 'radius'),
+          openNow: any(named: 'openNow'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -155,6 +164,9 @@ void main() {
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
           term: any(named: 'term'),
+          categories: any(named: 'categories'),
+          radius: any(named: 'radius'),
+          openNow: any(named: 'openNow'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
