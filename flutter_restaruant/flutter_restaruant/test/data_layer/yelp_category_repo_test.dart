@@ -226,9 +226,20 @@ void main() {
       fastCompleter.complete(_Data.mixedList);
       final forcedResult = await forcedFetch;
 
-      // 舊請求後完成（回傳空清單，若覆蓋快取將變成 defaultCuisines）
-      slowCompleter.complete(_Data.emptyList);
-      await slowFetch;
+      // 舊請求後完成（回傳過期的非空清單，驗證 identical 防護不會覆蓋 _cachedCuisineCategories）
+      slowCompleter.complete(
+        const YelpCategoryListDto(
+          categories: [
+            YelpRestaurantCategoryDto(
+              alias: 'japanese',
+              title: '日式料理',
+              parentAliases: ['restaurants'],
+            ),
+          ],
+        ),
+      );
+      final slowResult = await slowFetch;
+      expect(slowResult, same(forcedResult));
 
       // 再次取得快取應仍為 forcedResult 而非被舊請求覆蓋
       final cachedResult = await repo.fetchCuisineCategories();
