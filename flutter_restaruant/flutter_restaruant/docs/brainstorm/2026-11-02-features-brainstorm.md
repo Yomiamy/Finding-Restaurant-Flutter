@@ -9,7 +9,7 @@
 
 本報告整合了架構審計與競品探索報告之事實與推理鏈，產出符合產業界最高標準的產品與技術發展路線圖 (Strategic Product Roadmap) 及 RICE / ICE 雙優先級評估矩陣。
 
-> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。**2026-10-22 補記**：檔名前綴其後已再更新為 `2026-10-22`，上述 `2026-09-30` 為當時狀態。**2026-10-25 補記**：檔名前綴再更新為 `2026-10-25`。**2026-10-26 補記**：檔名前綴再更新為 `2026-10-26`。**2026-11-01 補記**：檔名前綴再更新為 `2026-11-01`。A-8.7 解除 GPS 強制綁定與價格字串過濾已完成 (Issue #169 / PR #170)。**2026-11-02 補記**：檔名前綴再更新為 `2026-11-02`。A-8.6 根治 Yelp 關鍵字假搜尋缺陷：廢除本地記憶體 50 筆過濾，直通遠端 `term` 查詢已完成 (Issue #171 / PR #172)。**2026-11-04 補記**：A-8.10 擴充 Yelp 搜尋進階篩選（`categories`、`radius`、`open_now` 與 1,000 筆分頁邊界防護）已完成 (Issue #173 / PR #174)。
+> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。**2026-10-22 補記**：檔名前綴其後已再更新為 `2026-10-22`，上述 `2026-09-30` 為當時狀態。**2026-10-25 補記**：檔名前綴再更新為 `2026-10-25`。**2026-10-26 補記**：檔名前綴再更新為 `2026-10-26`。**2026-11-01 補記**：檔名前綴再更新為 `2026-11-01`。A-8.7 解除 GPS 強制綁定與價格字串過濾已完成 (Issue #169 / PR #170)。**2026-11-02 補記**：檔名前綴再更新為 `2026-11-02`。A-8.6 根治 Yelp 關鍵字假搜尋缺陷：廢除本地記憶體 50 筆過濾，直通遠端 `term` 查詢已完成 (Issue #171 / PR #172)。**2026-11-04 補記**：A-8.10 擴充 Yelp 搜尋進階篩選（`categories`、`radius`、`open_now` 與 1,000 筆分頁邊界防護）已完成 (Issue #173 / PR #174)。**2026-11-04 補記 (二)**：E-8.6 BLoC 測試統一改用 `blocTest` 宣告式結構已完成 (Issue #175 / PR #176)。
 
 ---
 
@@ -1864,7 +1864,8 @@ class ComparisonMatrixComponent extends A2UIComponent {
   3. 在兩個 BLoC 測試各補一個案例：repo 拋出 `Error`（例如 `StateError`）時，事件處理會往外拋出，而不是 emit 失敗狀態。
   4. `menu_vision_bloc.dart` 的 2 處 `on Exception catch (e)` 改為 `catch (e, st)` 同時綁定 stack trace，再補上 `Logger().e(..., error: e, stackTrace: st)`，與 `ai_foodie_repo.dart` 一致。
 
-#### [E-8.6] BLoC 測試統一改用 `blocTest`
+#### [E-8.6] BLoC 測試統一改用 `blocTest` — ✅ 已完成 (Issue #175 / PR #176, 2026-11-04)
+- **狀態**：✅ **已完成**（2026-11-04，Issue #175 / PR #176，將 `sign_in_bloc_test.dart`、`main_bloc_load_more_test.dart`、`ai_foodie_bloc_test.dart` 全面改寫為 `blocTest` 宣告式五段式結構，消除手動 `tearDown` 與 `pumpEventQueue`）。
 - **優先級**：`P2`
 - **預估 Effort**：`0.5d`
 - **來源**：E-8.2（Issue #130 / PR #131）合併前對照誠品 monorepo 測試寫法時發現的落差。
@@ -1979,7 +1980,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
  Phase 2 (社群/轉化)    ──► 納入 A-8.3 (Dio錯誤對應) & UI-8.4 (色差校正) & UI-8.3 (語法糖)
                                      & A-8.9 (Autocomplete 補全 🟡) & A-8.10 (進階篩選)
                                      │
- Phase 3 (AI M4/M5 支撐) ──► 納入 E-8.2 (mocktail測試 ✅) & E-8.7 (mock命名 ✅) & A-8.14 (Repo注入 ✅) & E-8.6 (blocTest) & E-8.4 (80%覆蓋率) & UI-8.6 (A11y)
+ Phase 3 (AI M4/M5 支撐) ──► 納入 E-8.2 (mocktail測試 ✅) & E-8.7 (mock命名 ✅) & A-8.14 (Repo注入 ✅) & E-8.6 (blocTest ✅) & E-8.4 (80%覆蓋率) & UI-8.6 (A11y)
                                      & A-8.12 (Yelp 分類樹 🟡) & A-8.13 (GraphQL 聚合優化)
 ========================================================================================
 ```
@@ -2002,7 +2003,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 4. **全面支撐 Phase 3 (Google AI Studio M4/M5 推進)**：
    - 隨著 2026-09-12 PR #116 拍菜單助手 (M3) 與 2026-10-21 PR #155 評論摘要 (M5-Review) 的落地，已進入深度 AI 賦能階段。
-   - **E-8.2 (`mocktail` 測試框架)** 已於 2026-09-27 完成 (Issue #130 / PR #131)；**E-8.7 (mock 命名統一為 `_Mock`)** 已於 2026-10-27 完成 (Issue #163 / PR #164)；**A-8.14 (Repository 建構子注入解耦)** 已於 2026-10-29 完成 (Issue #165 / PR #168)，消除 data 層對全域 GetIt 的隱性依賴；後續由 **E-8.6 (`blocTest` 統一)** 收齊測試寫法。
+   - **E-8.2 (`mocktail` 測試框架)** 已於 2026-09-27 完成 (Issue #130 / PR #131)；**E-8.7 (mock 命名統一為 `_Mock`)** 已於 2026-10-27 完成 (Issue #163 / PR #164)；**A-8.14 (Repository 建構子注入解耦)** 已於 2026-10-29 完成 (Issue #165 / PR #168)，消除 data 層對全域 GetIt 的隱性依賴；後續由 **E-8.6 (`blocTest` 統一 ✅，Issue #175 / PR #176)** 收齊測試寫法。
    - **E-8.4 (核心測試覆蓋率 $\ge 80\%$)** 與 **UI-8.6 (無障礙守衛)** 作為最終交付上線的堅實品質驗收指標。
    - 長期可透過 **A-8.12 (全量菜系分類樹)**（API/Repo 已於 2026-10-25 隨 PR #160 完成，剩餘本地快取與篩選 UI）豐富推薦維度，並藉由 **A-8.13 (GraphQL 單次聚合)** 壓低請求次數與延遲。
 
