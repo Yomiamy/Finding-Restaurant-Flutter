@@ -1,3 +1,4 @@
+import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_restaruant/domain/repositories/repositories_barrel.dart';
@@ -58,386 +59,335 @@ void main() {
 
   group('MainBloc load-more state sequence', () {
     late _MockMainRepository mockRepo;
-    late MainBloc bloc;
 
-    tearDown(() => bloc.close());
-
-    test('首次載入（無既有資料）發出 InProgress → Success', () async {
+    setUp(() {
       mockRepo = _MockMainRepository();
-      when(() => mockRepo.summaryInfoSet).thenReturn(<RestaurantEntity>{});
-      when(
-        () => mockRepo.fetchYelpSearchInfo(
-          lat: any(named: 'lat'),
-          lng: any(named: 'lng'),
-          location: any(named: 'location'),
-          price: any(named: 'price'),
-          openAt: any(named: 'openAt'),
-          sortByStr: any(named: 'sortByStr'),
-          term: any(named: 'term'),
-          categories: any(named: 'categories'),
-          radius: any(named: 'radius'),
-          openNow: any(named: 'openNow'),
-        ),
-      ).thenAnswer((_) async => _Data.nextPage);
-      bloc = MainBloc(repository: mockRepo);
-
-      bloc.add(const FetchSearchInfo());
-
-      await expectLater(
-        bloc.stream,
-        emitsInOrder([isA<InProgress>(), isA<Success>()]),
-      );
     });
 
-    test('已有資料時再載入發出 LoadMoreInProgress → LoadMoreSuccess', () async {
-      mockRepo = _MockMainRepository();
-      when(() => mockRepo.summaryInfoSet).thenReturn({_Data.existing});
-      when(
-        () => mockRepo.fetchYelpSearchInfo(
-          lat: any(named: 'lat'),
-          lng: any(named: 'lng'),
-          location: any(named: 'location'),
-          price: any(named: 'price'),
-          openAt: any(named: 'openAt'),
-          sortByStr: any(named: 'sortByStr'),
-          term: any(named: 'term'),
-          categories: any(named: 'categories'),
-          radius: any(named: 'radius'),
-          openNow: any(named: 'openNow'),
+    blocTest<MainBloc, MainState>(
+      '首次載入（無既有資料）發出 InProgress → Success',
+      build: () {
+        when(() => mockRepo.summaryInfoSet).thenReturn(<RestaurantEntity>{});
+        when(
+          () => mockRepo.fetchYelpSearchInfo(
+            lat: any(named: 'lat'),
+            lng: any(named: 'lng'),
+            location: any(named: 'location'),
+            price: any(named: 'price'),
+            openAt: any(named: 'openAt'),
+            sortByStr: any(named: 'sortByStr'),
+            term: any(named: 'term'),
+            categories: any(named: 'categories'),
+            radius: any(named: 'radius'),
+            openNow: any(named: 'openNow'),
+          ),
+        ).thenAnswer((_) async => _Data.nextPage);
+        return MainBloc(repository: mockRepo);
+      },
+      act: (bloc) => bloc.add(const FetchSearchInfo()),
+      expect: () => [isA<InProgress>(), isA<Success>()],
+    );
+
+    blocTest<MainBloc, MainState>(
+      '已有資料時再載入發出 LoadMoreInProgress → LoadMoreSuccess',
+      build: () {
+        when(() => mockRepo.summaryInfoSet).thenReturn({_Data.existing});
+        when(
+          () => mockRepo.fetchYelpSearchInfo(
+            lat: any(named: 'lat'),
+            lng: any(named: 'lng'),
+            location: any(named: 'location'),
+            price: any(named: 'price'),
+            openAt: any(named: 'openAt'),
+            sortByStr: any(named: 'sortByStr'),
+            term: any(named: 'term'),
+            categories: any(named: 'categories'),
+            radius: any(named: 'radius'),
+            openNow: any(named: 'openNow'),
+          ),
+        ).thenAnswer((_) async => _Data.nextPage);
+        return MainBloc(repository: mockRepo);
+      },
+      act: (bloc) => bloc.add(const FetchSearchInfo()),
+      expect: () => [isA<LoadMoreInProgress>(), isA<LoadMoreSuccess>()],
+    );
+
+    blocTest<MainBloc, MainState>(
+      '關鍵字過濾中載入更多：LoadMoreInProgress 不得把被過濾掉的項目撈回來',
+      build: () {
+        when(
+          () => mockRepo.summaryInfoSet,
+        ).thenReturn({_Data.existing, _Data.nextPage.first});
+        when(
+          () => mockRepo.fetchYelpSearchInfo(
+            lat: any(named: 'lat'),
+            lng: any(named: 'lng'),
+            location: any(named: 'location'),
+            price: any(named: 'price'),
+            openAt: any(named: 'openAt'),
+            sortByStr: any(named: 'sortByStr'),
+            term: any(named: 'term'),
+            categories: any(named: 'categories'),
+            radius: any(named: 'radius'),
+            openNow: any(named: 'openNow'),
+          ),
+        ).thenAnswer((_) async => _Data.nextPage);
+        return MainBloc(repository: mockRepo);
+      },
+      seed: () => const Success(summaryInfos: [_Data.existing]),
+      act: (bloc) => bloc.add(const FetchSearchInfo()),
+      expect: () => [
+        isA<LoadMoreInProgress>().having(
+          (s) => s.summaryInfos,
+          'summaryInfos',
+          [_Data.existing],
         ),
-      ).thenAnswer((_) async => _Data.nextPage);
-      bloc = MainBloc(repository: mockRepo);
+        isA<LoadMoreSuccess>(),
+      ],
+    );
 
-      bloc.add(const FetchSearchInfo());
-
-      await expectLater(
-        bloc.stream,
-        emitsInOrder([isA<LoadMoreInProgress>(), isA<LoadMoreSuccess>()]),
-      );
-    });
-
-    test('關鍵字過濾中載入更多：LoadMoreInProgress 不得把被過濾掉的項目撈回來', () async {
-      // repository 的 set 有 2 筆，但畫面因關鍵字過濾只顯示 1 筆。
-      // 載入中若改讀 summaryInfoSet，畫面會從 1 筆突然跳成 2 筆。
-      mockRepo = _MockMainRepository();
-      when(
-        () => mockRepo.summaryInfoSet,
-      ).thenReturn({_Data.existing, _Data.nextPage.first});
-      when(
-        () => mockRepo.fetchYelpSearchInfo(
-          lat: any(named: 'lat'),
-          lng: any(named: 'lng'),
-          location: any(named: 'location'),
-          price: any(named: 'price'),
-          openAt: any(named: 'openAt'),
-          sortByStr: any(named: 'sortByStr'),
-          term: any(named: 'term'),
-          categories: any(named: 'categories'),
-          radius: any(named: 'radius'),
-          openNow: any(named: 'openNow'),
+    blocTest<MainBloc, MainState>(
+      'LoadMoreInProgress 攜帶當前已載入清單供 UI 續繪',
+      build: () {
+        when(() => mockRepo.summaryInfoSet).thenReturn({_Data.existing});
+        when(
+          () => mockRepo.fetchYelpSearchInfo(
+            lat: any(named: 'lat'),
+            lng: any(named: 'lng'),
+            location: any(named: 'location'),
+            price: any(named: 'price'),
+            openAt: any(named: 'openAt'),
+            sortByStr: any(named: 'sortByStr'),
+            term: any(named: 'term'),
+            categories: any(named: 'categories'),
+            radius: any(named: 'radius'),
+            openNow: any(named: 'openNow'),
+          ),
+        ).thenAnswer((_) async => _Data.nextPage);
+        return MainBloc(repository: mockRepo);
+      },
+      seed: () => const Success(summaryInfos: [_Data.existing]),
+      act: (bloc) => bloc.add(const FetchSearchInfo()),
+      expect: () => [
+        isA<LoadMoreInProgress>().having(
+          (s) => s.summaryInfos,
+          'summaryInfos',
+          [_Data.existing],
         ),
-      ).thenAnswer((_) async => _Data.nextPage);
-      bloc = MainBloc(repository: mockRepo);
+        isA<LoadMoreSuccess>(),
+      ],
+    );
 
-      // 先讓畫面進入「只顯示 1 筆」的過濾後狀態
-      bloc.emit(const Success(summaryInfos: [_Data.existing]));
+    blocTest<MainBloc, MainState>(
+      'GPS 定位失敗時平滑回退至 location Taipei，不發出 Failure',
+      setUp: () {
+        addTearDown(_setMockGeolocator);
+        const MethodChannel channel = MethodChannel(
+          'flutter.baseflow.com/geolocator',
+        );
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+              throw PlatformException(
+                code: 'PERMISSION_DENIED',
+                message: 'Location permissions are denied',
+              );
+            });
+      },
+      build: () {
+        when(() => mockRepo.summaryInfoSet).thenReturn(<RestaurantEntity>{});
+        when(
+          () => mockRepo.fetchYelpSearchInfo(
+            lat: any(named: 'lat'),
+            lng: any(named: 'lng'),
+            location: any(named: 'location'),
+            price: any(named: 'price'),
+            openAt: any(named: 'openAt'),
+            sortByStr: any(named: 'sortByStr'),
+            term: any(named: 'term'),
+            categories: any(named: 'categories'),
+            radius: any(named: 'radius'),
+            openNow: any(named: 'openNow'),
+          ),
+        ).thenAnswer((_) async => _Data.nextPage);
+        return MainBloc(repository: mockRepo);
+      },
+      act: (bloc) => bloc.add(const FetchSearchInfo()),
+      expect: () => [isA<InProgress>(), isA<Success>()],
+      verify: (_) {
+        verify(
+          () => mockRepo.fetchYelpSearchInfo(
+            lat: null,
+            lng: null,
+            location: 'Taipei',
+            price: null,
+            openAt: null,
+            sortByStr: null,
+            term: null,
+            categories: null,
+            radius: null,
+            openNow: null,
+          ),
+        ).called(1);
+      },
+    );
 
-      bloc.add(const FetchSearchInfo());
+    blocTest<MainBloc, MainState>(
+      '若 FetchSearchInfo 已指定 location 則優先採用且不查詢 GPS',
+      build: () {
+        when(() => mockRepo.summaryInfoSet).thenReturn(<RestaurantEntity>{});
+        when(
+          () => mockRepo.fetchYelpSearchInfo(
+            lat: any(named: 'lat'),
+            lng: any(named: 'lng'),
+            location: any(named: 'location'),
+            price: any(named: 'price'),
+            openAt: any(named: 'openAt'),
+            sortByStr: any(named: 'sortByStr'),
+            term: any(named: 'term'),
+            categories: any(named: 'categories'),
+            radius: any(named: 'radius'),
+            openNow: any(named: 'openNow'),
+          ),
+        ).thenAnswer((_) async => _Data.nextPage);
+        return MainBloc(repository: mockRepo);
+      },
+      act: (bloc) =>
+          bloc.add(const FetchSearchInfo(location: 'Tainan', price: '1,2')),
+      expect: () => [isA<InProgress>(), isA<Success>()],
+      verify: (_) {
+        verify(
+          () => mockRepo.fetchYelpSearchInfo(
+            lat: null,
+            lng: null,
+            location: 'Tainan',
+            price: '1,2',
+            openAt: null,
+            sortByStr: null,
+            term: null,
+            categories: null,
+            radius: null,
+            openNow: null,
+          ),
+        ).called(1);
+      },
+    );
 
-      final MainState first = await bloc.stream.first;
-
-      expect(first, isA<LoadMoreInProgress>());
-      expect((first as LoadMoreInProgress).summaryInfos, [
-        _Data.existing,
-      ], reason: '載入中應沿用畫面當前清單，而非 repository 的全量 set');
-    });
-
-    test('LoadMoreInProgress 攜帶當前已載入清單供 UI 續繪', () async {
-      mockRepo = _MockMainRepository();
-      when(() => mockRepo.summaryInfoSet).thenReturn({_Data.existing});
-      when(
-        () => mockRepo.fetchYelpSearchInfo(
-          lat: any(named: 'lat'),
-          lng: any(named: 'lng'),
-          location: any(named: 'location'),
-          price: any(named: 'price'),
-          openAt: any(named: 'openAt'),
-          sortByStr: any(named: 'sortByStr'),
-          term: any(named: 'term'),
-          categories: any(named: 'categories'),
-          radius: any(named: 'radius'),
-          openNow: any(named: 'openNow'),
-        ),
-      ).thenAnswer((_) async => _Data.nextPage);
-      bloc = MainBloc(repository: mockRepo);
-
-      // 真實流程中，畫面有資料必然來自前一次 Success/LoadMoreSuccess
-      bloc.emit(const Success(summaryInfos: [_Data.existing]));
-
-      bloc.add(const FetchSearchInfo());
-
-      final MainState first = await bloc.stream.first;
-
-      expect(first, isA<LoadMoreInProgress>());
-      expect((first as LoadMoreInProgress).summaryInfos, [_Data.existing]);
-    });
-
-    test('GPS 定位失敗時平滑回退至 location Taipei，不發出 Failure', () async {
-      addTearDown(_setMockGeolocator);
-      const MethodChannel channel = MethodChannel(
-        'flutter.baseflow.com/geolocator',
-      );
-      // 模擬 GPS 拋錯（權限被拒）
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-            throw PlatformException(
-              code: 'PERMISSION_DENIED',
-              message: 'Location permissions are denied',
-            );
-          });
-
-      mockRepo = _MockMainRepository();
-      when(() => mockRepo.summaryInfoSet).thenReturn(<RestaurantEntity>{});
-      when(
-        () => mockRepo.fetchYelpSearchInfo(
-          lat: any(named: 'lat'),
-          lng: any(named: 'lng'),
-          location: any(named: 'location'),
-          price: any(named: 'price'),
-          openAt: any(named: 'openAt'),
-          sortByStr: any(named: 'sortByStr'),
-          term: any(named: 'term'),
-          categories: any(named: 'categories'),
-          radius: any(named: 'radius'),
-          openNow: any(named: 'openNow'),
-        ),
-      ).thenAnswer((_) async => _Data.nextPage);
-      bloc = MainBloc(repository: mockRepo);
-
-      bloc.add(const FetchSearchInfo());
-
-      await expectLater(
-        bloc.stream,
-        emitsInOrder([isA<InProgress>(), isA<Success>()]),
-      );
-
-      verify(
-        () => mockRepo.fetchYelpSearchInfo(
-          lat: null,
-          lng: null,
-          location: 'Taipei',
-          price: null,
-          openAt: null,
-          sortByStr: null,
-          term: null,
-          categories: null,
-          radius: null,
-          openNow: null,
-        ),
-      ).called(1);
-    });
-
-    test('若 FetchSearchInfo 已指定 location 則優先採用且不查詢 GPS', () async {
-      mockRepo = _MockMainRepository();
-      when(() => mockRepo.summaryInfoSet).thenReturn(<RestaurantEntity>{});
-      when(
-        () => mockRepo.fetchYelpSearchInfo(
-          lat: any(named: 'lat'),
-          lng: any(named: 'lng'),
-          location: any(named: 'location'),
-          price: any(named: 'price'),
-          openAt: any(named: 'openAt'),
-          sortByStr: any(named: 'sortByStr'),
-          term: any(named: 'term'),
-          categories: any(named: 'categories'),
-          radius: any(named: 'radius'),
-          openNow: any(named: 'openNow'),
-        ),
-      ).thenAnswer((_) async => _Data.nextPage);
-      bloc = MainBloc(repository: mockRepo);
-
-      bloc.add(const FetchSearchInfo(location: 'Tainan', price: '1,2'));
-
-      await expectLater(
-        bloc.stream,
-        emitsInOrder([isA<InProgress>(), isA<Success>()]),
-      );
-
-      verify(
-        () => mockRepo.fetchYelpSearchInfo(
-          lat: null,
-          lng: null,
-          location: 'Tainan',
-          price: '1,2',
-          openAt: null,
-          sortByStr: null,
-          term: null,
-          categories: null,
-          radius: null,
-          openNow: null,
-        ),
-      ).called(1);
-    });
-
-    test('FetchSearchInfo 轉發進階篩選條件至 repository', () async {
-      mockRepo = _MockMainRepository();
-      when(() => mockRepo.summaryInfoSet).thenReturn(<RestaurantEntity>{});
-      when(
-        () => mockRepo.fetchYelpSearchInfo(
-          lat: any(named: 'lat'),
-          lng: any(named: 'lng'),
-          location: any(named: 'location'),
-          price: any(named: 'price'),
-          openAt: any(named: 'openAt'),
-          sortByStr: any(named: 'sortByStr'),
-          term: any(named: 'term'),
-          categories: any(named: 'categories'),
-          radius: any(named: 'radius'),
-          openNow: any(named: 'openNow'),
-        ),
-      ).thenAnswer((_) async => _Data.nextPage);
-      bloc = MainBloc(repository: mockRepo);
-
-      bloc.add(
-        const FetchSearchInfo(
-          categories: 'japanese,bars',
-          radius: 3000,
-          openNow: true,
-        ),
-      );
-
-      await expectLater(
-        bloc.stream,
-        emitsInOrder([
-          const InProgress(),
-          const Success(summaryInfos: _Data.nextPage),
-        ]),
-      );
-
-      verify(
-        () => mockRepo.fetchYelpSearchInfo(
-          lat: 25.0,
-          lng: 121.5,
-          location: null,
-          price: null,
-          openAt: null,
-          sortByStr: null,
-          term: null,
-          categories: 'japanese,bars',
-          radius: 3000,
-          openNow: true,
-        ),
-      ).called(1);
-    });
-
-    test('FilterListByKeyword 直通遠端搜尋發出 InProgress → Success 並傳遞 term', () async {
-      mockRepo = _MockMainRepository();
-      when(
-        () => mockRepo.fetchYelpSearchInfo(
-          lat: any(named: 'lat'),
-          lng: any(named: 'lng'),
-          location: any(named: 'location'),
-          price: any(named: 'price'),
-          openAt: any(named: 'openAt'),
-          sortByStr: any(named: 'sortByStr'),
-          term: any(named: 'term'),
-        ),
-      ).thenAnswer((_) async => _Data.nextPage);
-      bloc = MainBloc(repository: mockRepo);
-
-      bloc.add(
+    blocTest<MainBloc, MainState>(
+      'FilterListByKeyword 直通遠端搜尋發出 InProgress → Success 並傳遞 term',
+      build: () {
+        when(
+          () => mockRepo.fetchYelpSearchInfo(
+            lat: any(named: 'lat'),
+            lng: any(named: 'lng'),
+            location: any(named: 'location'),
+            price: any(named: 'price'),
+            openAt: any(named: 'openAt'),
+            sortByStr: any(named: 'sortByStr'),
+            term: any(named: 'term'),
+            categories: any(named: 'categories'),
+            radius: any(named: 'radius'),
+            openNow: any(named: 'openNow'),
+          ),
+        ).thenAnswer((_) async => _Data.nextPage);
+        return MainBloc(repository: mockRepo);
+      },
+      act: (bloc) => bloc.add(
         const FilterListByKeyword(keyword: 'Ramen', sortByStr: 'best_match'),
-      );
+      ),
+      expect: () => [isA<InProgress>(), isA<Success>()],
+      verify: (_) {
+        verify(
+          () => mockRepo.fetchYelpSearchInfo(
+            lat: 25.0,
+            lng: 121.5,
+            location: null,
+            price: null,
+            openAt: null,
+            sortByStr: 'best_match',
+            term: 'Ramen',
+            categories: null,
+            radius: null,
+            openNow: null,
+          ),
+        ).called(1);
+      },
+    );
 
-      await expectLater(
-        bloc.stream,
-        emitsInOrder([isA<InProgress>(), isA<Success>()]),
-      );
-
-      verify(
-        () => mockRepo.fetchYelpSearchInfo(
-          lat: 25.0,
-          lng: 121.5,
-          location: null,
-          price: null,
-          openAt: null,
-          sortByStr: 'best_match',
-          term: 'Ramen',
-        ),
-      ).called(1);
-    });
-
-    test('FilterListByKeyword 在 GPS 定位失敗時平滑回退至 location Taipei 並發送 term', () async {
-      addTearDown(_setMockGeolocator);
-      const MethodChannel channel = MethodChannel(
-        'flutter.baseflow.com/geolocator',
-      );
-      // 模擬 GPS 拋錯（權限被拒）
-      TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
-          .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
-            throw PlatformException(
-              code: 'PERMISSION_DENIED',
-              message: 'Location permissions are denied',
-            );
-          });
-
-      mockRepo = _MockMainRepository();
-      when(
-        () => mockRepo.fetchYelpSearchInfo(
-          lat: any(named: 'lat'),
-          lng: any(named: 'lng'),
-          location: any(named: 'location'),
-          price: any(named: 'price'),
-          openAt: any(named: 'openAt'),
-          sortByStr: any(named: 'sortByStr'),
-          term: any(named: 'term'),
-        ),
-      ).thenAnswer((_) async => _Data.nextPage);
-      bloc = MainBloc(repository: mockRepo);
-
-      bloc.add(
+    blocTest<MainBloc, MainState>(
+      'FilterListByKeyword 在 GPS 定位失敗時平滑回退至 location Taipei 並發送 term',
+      setUp: () {
+        addTearDown(_setMockGeolocator);
+        const MethodChannel channel = MethodChannel(
+          'flutter.baseflow.com/geolocator',
+        );
+        TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+            .setMockMethodCallHandler(channel, (MethodCall methodCall) async {
+              throw PlatformException(
+                code: 'PERMISSION_DENIED',
+                message: 'Location permissions are denied',
+              );
+            });
+      },
+      build: () {
+        when(
+          () => mockRepo.fetchYelpSearchInfo(
+            lat: any(named: 'lat'),
+            lng: any(named: 'lng'),
+            location: any(named: 'location'),
+            price: any(named: 'price'),
+            openAt: any(named: 'openAt'),
+            sortByStr: any(named: 'sortByStr'),
+            term: any(named: 'term'),
+            categories: any(named: 'categories'),
+            radius: any(named: 'radius'),
+            openNow: any(named: 'openNow'),
+          ),
+        ).thenAnswer((_) async => _Data.nextPage);
+        return MainBloc(repository: mockRepo);
+      },
+      act: (bloc) => bloc.add(
         const FilterListByKeyword(keyword: 'Ramen', sortByStr: 'best_match'),
-      );
+      ),
+      expect: () => [isA<InProgress>(), isA<Success>()],
+      verify: (_) {
+        verify(
+          () => mockRepo.fetchYelpSearchInfo(
+            lat: null,
+            lng: null,
+            location: 'Taipei',
+            price: null,
+            openAt: null,
+            sortByStr: 'best_match',
+            term: 'Ramen',
+            categories: null,
+            radius: null,
+            openNow: null,
+          ),
+        ).called(1);
+      },
+    );
 
-      await expectLater(
-        bloc.stream,
-        emitsInOrder([isA<InProgress>(), isA<Success>()]),
-      );
-
-      verify(
-        () => mockRepo.fetchYelpSearchInfo(
-          lat: null,
-          lng: null,
-          location: 'Taipei',
-          price: null,
-          openAt: null,
-          sortByStr: 'best_match',
-          term: 'Ramen',
-        ),
-      ).called(1);
-    });
-
-    test('FilterListByKeyword 發生例外時發出 InProgress → Failure', () async {
-      mockRepo = _MockMainRepository();
-      when(
-        () => mockRepo.fetchYelpSearchInfo(
-          lat: any(named: 'lat'),
-          lng: any(named: 'lng'),
-          location: any(named: 'location'),
-          price: any(named: 'price'),
-          openAt: any(named: 'openAt'),
-          sortByStr: any(named: 'sortByStr'),
-          term: any(named: 'term'),
-        ),
-      ).thenThrow(Exception('Network error'));
-      bloc = MainBloc(repository: mockRepo);
-
-      bloc.add(const FilterListByKeyword(keyword: 'Ramen'));
-
-      await expectLater(
-        bloc.stream,
-        emitsInOrder([isA<InProgress>(), isA<Failure>()]),
-      );
-    });
+    blocTest<MainBloc, MainState>(
+      'FilterListByKeyword 發生例外時發出 InProgress → Failure',
+      build: () {
+        when(
+          () => mockRepo.fetchYelpSearchInfo(
+            lat: any(named: 'lat'),
+            lng: any(named: 'lng'),
+            location: any(named: 'location'),
+            price: any(named: 'price'),
+            openAt: any(named: 'openAt'),
+            sortByStr: any(named: 'sortByStr'),
+            term: any(named: 'term'),
+            categories: any(named: 'categories'),
+            radius: any(named: 'radius'),
+            openNow: any(named: 'openNow'),
+          ),
+        ).thenThrow(Exception('Network error'));
+        return MainBloc(repository: mockRepo);
+      },
+      act: (bloc) => bloc.add(const FilterListByKeyword(keyword: 'Ramen')),
+      expect: () => [isA<InProgress>(), isA<Failure>()],
+    );
   });
 }
