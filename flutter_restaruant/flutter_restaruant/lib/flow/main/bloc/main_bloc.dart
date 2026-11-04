@@ -57,6 +57,9 @@ class MainBloc extends Bloc<MainEvent, MainState> {
               openAt: openAt,
               sortByStr: sortBy,
               term: event.term,
+              categories: event.categories,
+              radius: event.radius,
+              openNow: event.openNow,
             );
 
         if (isLoadMore) {

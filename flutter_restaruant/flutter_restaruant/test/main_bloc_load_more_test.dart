@@ -74,6 +74,9 @@ void main() {
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
           term: any(named: 'term'),
+          categories: any(named: 'categories'),
+          radius: any(named: 'radius'),
+          openNow: any(named: 'openNow'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -98,6 +101,9 @@ void main() {
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
           term: any(named: 'term'),
+          categories: any(named: 'categories'),
+          radius: any(named: 'radius'),
+          openNow: any(named: 'openNow'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -126,6 +132,9 @@ void main() {
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
           term: any(named: 'term'),
+          categories: any(named: 'categories'),
+          radius: any(named: 'radius'),
+          openNow: any(named: 'openNow'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -155,6 +164,9 @@ void main() {
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
           term: any(named: 'term'),
+          categories: any(named: 'categories'),
+          radius: any(named: 'radius'),
+          openNow: any(named: 'openNow'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -195,6 +207,9 @@ void main() {
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
           term: any(named: 'term'),
+          categories: any(named: 'categories'),
+          radius: any(named: 'radius'),
+          openNow: any(named: 'openNow'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -215,6 +230,9 @@ void main() {
           openAt: null,
           sortByStr: null,
           term: null,
+          categories: null,
+          radius: null,
+          openNow: null,
         ),
       ).called(1);
     });
@@ -231,6 +249,9 @@ void main() {
           openAt: any(named: 'openAt'),
           sortByStr: any(named: 'sortByStr'),
           term: any(named: 'term'),
+          categories: any(named: 'categories'),
+          radius: any(named: 'radius'),
+          openNow: any(named: 'openNow'),
         ),
       ).thenAnswer((_) async => _Data.nextPage);
       bloc = MainBloc(repository: mockRepo);
@@ -251,6 +272,60 @@ void main() {
           openAt: null,
           sortByStr: null,
           term: null,
+          categories: null,
+          radius: null,
+          openNow: null,
+        ),
+      ).called(1);
+    });
+
+    test('FetchSearchInfo 轉發進階篩選條件至 repository', () async {
+      mockRepo = _MockMainRepository();
+      when(() => mockRepo.summaryInfoSet).thenReturn(<RestaurantEntity>{});
+      when(
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: any(named: 'lat'),
+          lng: any(named: 'lng'),
+          location: any(named: 'location'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortByStr: any(named: 'sortByStr'),
+          term: any(named: 'term'),
+          categories: any(named: 'categories'),
+          radius: any(named: 'radius'),
+          openNow: any(named: 'openNow'),
+        ),
+      ).thenAnswer((_) async => _Data.nextPage);
+      bloc = MainBloc(repository: mockRepo);
+
+      bloc.add(
+        const FetchSearchInfo(
+          categories: 'japanese,bars',
+          radius: 3000,
+          openNow: true,
+        ),
+      );
+
+      await expectLater(
+        bloc.stream,
+        emitsInOrder([
+          const InProgress(),
+          const Success(summaryInfos: _Data.nextPage),
+        ]),
+      );
+
+      verify(
+        () => mockRepo.fetchYelpSearchInfo(
+          lat: 25.0,
+          lng: 121.5,
+          location: null,
+          price: null,
+          openAt: null,
+          sortByStr: null,
+          term: null,
+          categories: 'japanese,bars',
+          radius: 3000,
+          openNow: true,
         ),
       ).called(1);
     });

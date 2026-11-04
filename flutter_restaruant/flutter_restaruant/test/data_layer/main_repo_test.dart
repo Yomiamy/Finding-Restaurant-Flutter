@@ -422,5 +422,149 @@ void main() {
 
       expect(repo.summaryInfoSet.map((e) => e.id), ['new1']);
     });
+
+    test('fetchYelpSearchInfo 帶入進階篩選 categories、radius、openNow', () async {
+      Future<YelpSearchDto> apiCall() => api.businessesSearch(
+        term: 'Restaurants',
+        latitude: _Data.lat,
+        longitude: _Data.lng,
+        location: null,
+        locale: _Data.locale,
+        price: _Data.price,
+        openAt: null,
+        sortBy: _Data.sortBy,
+        categories: 'japanese,bars',
+        radius: 5000,
+        openNow: true,
+        limit: 50,
+        offset: 0,
+      );
+      when(apiCall).thenAnswer((_) async => _Data.empty);
+      when(
+        () => favorDataSource.fetchFavorIds(),
+      ).thenAnswer((_) async => <String>{});
+
+      await repo.fetchYelpSearchInfo(
+        lat: _Data.lat,
+        lng: _Data.lng,
+        price: _Data.price,
+        openAt: _Data.openAt,
+        sortByStr: _Data.sortBy,
+        categories: 'japanese,bars',
+        radius: 5000,
+        openNow: true,
+      );
+
+      verify(apiCall).called(1);
+    });
+
+    test('fetchYelpSearchInfo 在 _offset >= 1000 時主動攔截不再呼叫 API', () async {
+      when(
+        () => api.businessesSearch(
+          term: any(named: 'term'),
+          location: any(named: 'location'),
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+          locale: any(named: 'locale'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortBy: any(named: 'sortBy'),
+          categories: any(named: 'categories'),
+          radius: any(named: 'radius'),
+          openNow: any(named: 'openNow'),
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+        ),
+      ).thenAnswer((_) async => _Data.empty);
+      when(
+        () => favorDataSource.fetchFavorIds(),
+      ).thenAnswer((_) async => <String>{});
+
+      for (int i = 0; i < 20; i++) {
+        await repo.fetchYelpSearchInfo(
+          lat: _Data.lat,
+          lng: _Data.lng,
+          price: _Data.price,
+          openAt: _Data.openAt,
+          sortByStr: _Data.sortBy,
+        );
+      }
+
+      await repo.fetchYelpSearchInfo(
+        lat: _Data.lat,
+        lng: _Data.lng,
+        price: _Data.price,
+        openAt: _Data.openAt,
+        sortByStr: _Data.sortBy,
+      );
+
+      verify(
+        () => api.businessesSearch(
+          term: any(named: 'term'),
+          location: any(named: 'location'),
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+          locale: any(named: 'locale'),
+          price: any(named: 'price'),
+          openAt: any(named: 'openAt'),
+          sortBy: any(named: 'sortBy'),
+          categories: any(named: 'categories'),
+          radius: any(named: 'radius'),
+          openNow: any(named: 'openNow'),
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+        ),
+      ).called(20);
+    });
+
+    test('openNow 與 openAt 同時提供時，優先使用 openNow 並將 openAt 置為 null', () async {
+      when(
+        () => api.businessesSearch(
+          term: any(named: 'term'),
+          location: any(named: 'location'),
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+          locale: any(named: 'locale'),
+          price: any(named: 'price'),
+          openAt: null,
+          sortBy: any(named: 'sortBy'),
+          categories: any(named: 'categories'),
+          radius: any(named: 'radius'),
+          openNow: true,
+          limit: any(named: 'limit'),
+          offset: any(named: 'offset'),
+        ),
+      ).thenAnswer((_) async => _Data.empty);
+      when(
+        () => favorDataSource.fetchFavorIds(),
+      ).thenAnswer((_) async => <String>{});
+
+      await repo.fetchYelpSearchInfo(
+        lat: _Data.lat,
+        lng: _Data.lng,
+        price: _Data.price,
+        openAt: 12345,
+        sortByStr: _Data.sortBy,
+        openNow: true,
+      );
+
+      verify(
+        () => api.businessesSearch(
+          term: 'Restaurants',
+          location: null,
+          latitude: _Data.lat,
+          longitude: _Data.lng,
+          locale: _Data.locale,
+          price: _Data.price,
+          openAt: null,
+          sortBy: _Data.sortBy,
+          categories: null,
+          radius: null,
+          openNow: true,
+          limit: 50,
+          offset: 0,
+        ),
+      ).called(1);
+    });
   });
 }

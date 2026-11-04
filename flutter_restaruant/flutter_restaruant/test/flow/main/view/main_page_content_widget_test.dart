@@ -12,6 +12,20 @@ class _FakeMainBloc extends Bloc<MainEvent, MainState> implements MainBloc {
   _FakeMainBloc([super.initialState = const MainInitial()]);
 }
 
+class _ResetTestMainBloc extends Bloc<MainEvent, MainState> implements MainBloc {
+  _ResetTestMainBloc() : super(const MainInitial()) {
+    on<MainEvent>((_, __) {});
+  }
+
+  final List<MainEvent> dispatched = [];
+
+  @override
+  void onEvent(MainEvent event) {
+    super.onEvent(event);
+    dispatched.add(event);
+  }
+}
+
 void main() {
   testWidgets(
     'MainPageContentWidget renders skeletons when state is MainInitial and list mode',
@@ -185,6 +199,56 @@ void main() {
 
       await tester.pumpWidget(const SizedBox());
       await bloc.close();
+    },
+  );
+
+  testWidgets(
+    'MainPageContentWidget forwards all filter configs on ResetSuccess',
+    (WidgetTester tester) async {
+      final bloc = _ResetTestMainBloc();
+      addTearDown(bloc.close);
+      final configs = FilterConfigs(
+        price: '2',
+        openAt: 12345000,
+        sortBy: 'best_match',
+        categories: 'japanese',
+        radius: 3000,
+        openNow: true,
+      );
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [S.delegate],
+          supportedLocales: S.delegate.supportedLocales,
+          home: BlocProvider<MainBloc>.value(
+            value: bloc,
+            child: Scaffold(
+              body: MainPageContentWidget(
+                filterConfigs: configs,
+                isListMode: true,
+              ),
+            ),
+          ),
+        ),
+      );
+
+      bloc.emit(const ResetSuccess());
+      await tester.pump();
+
+      expect(
+        bloc.dispatched.whereType<FetchSearchInfo>().any(
+              (e) =>
+                  e.price == '2' &&
+                  e.openAt == 12345 &&
+                  e.sortBy == 'best_match' &&
+                  e.categories == 'japanese' &&
+                  e.radius == 3000 &&
+                  e.openNow == true,
+            ),
+        isTrue,
+      );
+
+      await tester.pumpWidget(const SizedBox());
     },
   );
 }
