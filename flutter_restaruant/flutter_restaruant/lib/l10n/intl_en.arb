@@ -17,6 +17,8 @@
   "filter_sorting_rule_distance": "Distance",
   "filter_sorting_rating": "Rating",
   "filter_sorting_review_count": "Review Count",
+  "filter_cuisine_category": "Cuisine Category",
+  "filter_cuisine_all": "All",
   "main_page_title": "FindRestaurant",
   "keyword_search": "Keyword Search",
   "keyword_search_hint": "Store/Category/Street...",

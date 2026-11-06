@@ -161,6 +161,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "favorite_store_remove": MessageLookupByLibrary.simpleMessage("解除最愛店家"),
     "favorite_stores": MessageLookupByLibrary.simpleMessage("最愛店家"),
     "filter_business_hour": MessageLookupByLibrary.simpleMessage("營業時間"),
+    "filter_cuisine_all": MessageLookupByLibrary.simpleMessage("全部"),
+    "filter_cuisine_category": MessageLookupByLibrary.simpleMessage("餐飲料理分類"),
     "filter_price": MessageLookupByLibrary.simpleMessage("消費程度"),
     "filter_price_level1": MessageLookupByLibrary.simpleMessage("\$"),
     "filter_price_level2": MessageLookupByLibrary.simpleMessage("\$\$"),
