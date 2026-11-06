@@ -82,7 +82,7 @@
 | **Detail 核心欄位補齊與廢棄端點刪除 (A-8.8)** | ✅ **已於 2026-10-27 完成 (Issue #161 / PR #162)**：`YelpRestaurantDetailDto` 補齊 `id`、`price`、`url`、`display_phone` 等；`RestaurantDetailEntity` 補齊對應屬性；UI 改用 `displayPhone` 並加入 Yelp 外跳連結；刪除已廢除之 `APIClz.fetchToken`。 |
 | **測試 Mock 替身命名統一為 `_Mock` (E-8.7)** | ✅ **已於 2026-10-27 完成 (Issue #163 / PR #164)**：全專案單元測試檔內宣告之 mock 類別統一遵循 `_Mock` 前綴私有命名規範，與大型專案測試風格對齊。 |
 | **Repository 建構子注入解除全域 GetIt 依賴 (A-8.14)** | ✅ **已於 2026-10-29 完成 (Issue #165 / PR #168)**：全面為 `MainRepo`、`RestaurantDetailRepo` 及 4 個 Yelp Repository 改用具名建構子注入 `APIClz` 與 `locale`，消滅 data 層對 `app/` 與全域 GetIt 的隱性反向依賴。 |
-| **Yelp Autocomplete 與 Categories API 基礎建設 (A-8.9 / A-8.12 部分)** | 🟡 **已於 2026-10-25 完成 (Issue #159 / PR #160)**：串接 `/v3/autocomplete` 與 `/v3/categories` API 及獨立 Repository；Categories 菜系 ChoiceChip 與 `fetchCuisineCategories` 已於分支 `feature/202610/177-yelp-categories-filter` (PR #178) 實作待合入主幹；剩餘 Autocomplete UI/Debounce/BLoC 與 Categories 本地長週期快取待辦。 |
+| **Yelp Autocomplete 與 Categories API 基礎建設 (A-8.9 / A-8.12 部分)** | 🟡 **API/Repo 已於 2026-10-25 完成 (Issue #159 / PR #160)**；Categories 菜系篩選 UI (最多四列橫向滾動) 與 `fetchCuisineCategories` 已於 2026-11-07 完成並合入主幹 (Issue #177 / PR #178)；剩餘 Autocomplete UI/Debounce/BLoC 與 Categories 本地長週期快取待辦。 |
 
 **🔴 仍未解決與新納入阻擋項（全數為 P0 最高優先，AdMob 合規為絕對最高阻擋項）**
 
@@ -1896,8 +1896,8 @@ class ComparisonMatrixComponent extends A2UIComponent {
   1. 上述 5 個類別改名為 `_MockXRepository`（檔內 rename，無跨檔引用）。
   2. 驗收：`rtk proxy grep -rnE "^class Mock" test/` 輸出為空。
 
-#### [A-8.12] 串接 Yelp 分類體系 API (`GET /v3/categories` 與 `/v3/categories/{alias}`) 建立全量菜系分類樹過濾 — 🟡 API/Repo 已完成 (Issue #159 / PR #160)，分支 PR #178 已實作 Filter UI，剩餘 Cache
-- **狀態**：🟡 API 與 Repository 已完成（Issue #159 / PR #160，2026-10-25）：`APIClz.categories`／`category`、外殼 `YelpCategoryListDto`／`YelpCategoryDetailDto`（元素沿用既有 `YelpRestaurantCategoryDto`，未新建 `yelp_category_dto.dart`）、`YelpCategoryRepository`／`YelpCategoryRepo`。分支 `feature/202610/177-yelp-categories-filter`（PR #178）已實作 `FilterPage` 菜系 ChoiceChip 與 `fetchCuisineCategories`，目前處於 PR 審查待合併階段，尚未合入主幹 `main`。**仍未做**：本地長週期快取。
+#### [A-8.12] 串接 Yelp 分類體系 API (`GET /v3/categories` 與 `/v3/categories/{alias}`) 建立全量菜系分類樹過濾 — 🟡 API/Repo (Issue #159 / PR #160) 與 Filter UI (Issue #177 / PR #178) 已完成合入，剩餘 Cache
+- **狀態**：🟡 API 與 Repository 已完成（Issue #159 / PR #160，2026-10-25）：`APIClz.categories`／`category`、外殼 `YelpCategoryListDto`／`YelpCategoryDetailDto`（元素沿用既有 `YelpRestaurantCategoryDto`，未新建 `yelp_category_dto.dart`）、`YelpCategoryRepository`／`YelpCategoryRepo`。篩選 UI（`FilterPage` 菜系 ChoiceChip、最多四列橫向滾動 `CuisineCategoryChipsWidget`）與 `fetchCuisineCategories` 已於 2026-11-07 完成並合入主幹（Issue #177 / PR #178）。**仍未做**：本地長週期快取（Hive/SQLite）。
 - **優先級**：`P2` (進階搜尋維度)
 - **預估 Effort**：`0.5d`（原 1.0d，底層 API 與 Repo 落地後下修）
 - **價值與收益**：
@@ -1982,7 +1982,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
                                      & A-8.9 (Autocomplete 補全 🟡) & A-8.10 (進階篩選 ✅)
                                      │
  Phase 3 (AI M4/M5 支撐) ──► 納入 E-8.2 (mocktail測試 ✅) & E-8.7 (mock命名 ✅) & A-8.14 (Repo注入 ✅) & E-8.6 (blocTest ✅) & E-8.4 (80%覆蓋率) & UI-8.6 (A11y)
-                                     & A-8.12 (Yelp 分類樹 🟡 PR #178) & A-8.13 (GraphQL 聚合優化)
+                                     & A-8.12 (Yelp 分類樹 🟡 PR #160/#178) & A-8.13 (GraphQL 聚合優化)
 ========================================================================================
 ```
 
@@ -2006,7 +2006,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
    - 隨著 2026-09-12 PR #116 拍菜單助手 (M3) 與 2026-10-21 PR #155 評論摘要 (M5-Review) 的落地，已進入深度 AI 賦能階段。
    - **E-8.2 (`mocktail` 測試框架)** 已於 2026-09-27 完成 (Issue #130 / PR #131)；**E-8.7 (mock 命名統一為 `_Mock`)** 已於 2026-10-27 完成 (Issue #163 / PR #164)；**A-8.14 (Repository 建構子注入解耦)** 已於 2026-10-29 完成 (Issue #165 / PR #168)，消除 data 層對全域 GetIt 的隱性依賴；後續由 **E-8.6 (`blocTest` 統一 ✅，Issue #175 / PR #176)** 收齊測試寫法。
    - **E-8.4 (核心測試覆蓋率 $\ge 80\%$)** 與 **UI-8.6 (無障礙守衛)** 作為最終交付上線的堅實品質驗收指標。
-   - 長期可透過 **A-8.12 (全量菜系分類樹)**（API/Repo 已於 2026-10-25 隨 PR #160 完成；PR #178 已實作篩選 UI 待合入主幹，剩餘本地長週期快取）豐富推薦維度，並藉由 **A-8.13 (GraphQL 單次聚合)** 壓低請求次數與延遲。
+   - 長期可透過 **A-8.12 (全量菜系分類樹)**（API/Repo 已於 2026-10-25 隨 PR #160 完成；篩選 UI 與四列橫向滾動已於 2026-11-07 隨 PR #178 完成合入主幹，剩餘本地長週期快取）豐富推薦維度，並藉由 **A-8.13 (GraphQL 單次聚合)** 壓低請求次數與延遲。
 
 ---
 
