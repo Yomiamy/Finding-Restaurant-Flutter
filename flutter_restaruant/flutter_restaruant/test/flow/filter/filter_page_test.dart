@@ -4,7 +4,7 @@ import 'package:flutter_restaruant/api/dto/dto_barrel.dart';
 import 'package:flutter_restaruant/domain/repositories/yelp_category_repository.dart';
 import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
 import 'package:flutter_restaruant/features/utils/utils_barrel.dart';
-import 'package:flutter_restaruant/flow/filter/view/filter_page.dart';
+import 'package:flutter_restaruant/flow/filter/view/view_barrel.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_restaruant/models/model_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
@@ -121,7 +121,11 @@ void main() {
       await tester.pumpAndSettle();
 
       // Tap on 'Japanese' cuisine chip
-      await tester.scrollUntilVisible(find.text('Japanese'), 100);
+      await tester.scrollUntilVisible(
+        find.text('Japanese'),
+        100,
+        scrollable: find.byType(Scrollable).first,
+      );
       await tester.tap(find.text('Japanese'));
       await tester.pumpAndSettle();
 
@@ -156,7 +160,11 @@ void main() {
       await tester.tap(find.text('Open Filter'));
       await tester.pumpAndSettle();
 
-      await tester.scrollUntilVisible(find.text('Italian'), 100);
+      await tester.scrollUntilVisible(
+        find.text('Italian'),
+        100,
+        scrollable: find.byType(Scrollable).first,
+      );
 
       // 驗證 Italian ChoiceChip 處於選取狀態
       final italianChip = tester.widget<ChoiceChip>(
@@ -231,6 +239,52 @@ void main() {
       expect(find.text('All'), findsOneWidget);
       expect(find.text('日式料理'), findsOneWidget);
       expect(find.text('台灣小吃'), findsOneWidget);
+    });
+
+    testWidgets('在 FilterPage 中點選菜系後，該菜系動態排列於第一列第二項並保持選取狀態', (tester) async {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final initialConfigs = FilterConfigs();
+      final arguments = Tuple2<FilterConfigs, dynamic>(initialConfigs, null);
+
+      await tester.pumpWidget(buildTestApp(arguments: arguments));
+
+      await tester.tap(find.text('Open Filter'));
+      await tester.pumpAndSettle();
+
+      // 最初第一列第一項是 "All"，第二項是 "Taiwanese"
+      final rowWidgetsBefore = tester.widgetList<Row>(
+        find.descendant(
+          of: find.byType(CuisineCategoryChipsWidget),
+          matching: find.byType(Row),
+        ),
+      );
+      final firstRowChipsBefore = rowWidgetsBefore.first.children
+          .whereType<ChoiceChip>()
+          .toList();
+      expect((firstRowChipsBefore[0].label as Text).data, 'All');
+      expect((firstRowChipsBefore[1].label as Text).data, 'Taiwanese');
+
+      // 點擊 Italian
+      await tester.tap(find.text('Italian'));
+      await tester.pumpAndSettle();
+
+      // 重新取得第一列
+      final rowWidgetsAfter = tester.widgetList<Row>(
+        find.descendant(
+          of: find.byType(CuisineCategoryChipsWidget),
+          matching: find.byType(Row),
+        ),
+      );
+      final firstRowChipsAfter = rowWidgetsAfter.first.children
+          .whereType<ChoiceChip>()
+          .toList();
+      expect((firstRowChipsAfter[0].label as Text).data, 'All');
+      expect((firstRowChipsAfter[1].label as Text).data, 'Italian');
+      expect(firstRowChipsAfter[1].selected, isTrue);
     });
   });
 }

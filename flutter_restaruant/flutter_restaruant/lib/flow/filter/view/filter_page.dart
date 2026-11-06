@@ -8,6 +8,7 @@ import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../../../models/model_barrel.dart';
+import 'cuisine_category_chips_widget.dart';
 import 'section_card_widget.dart';
 import 'segment_control_widget.dart';
 
@@ -162,41 +163,14 @@ class _FilterPageState extends State<FilterPage> {
                                   child: CupertinoActivityIndicator(),
                                 ),
                               )
-                            : Wrap(
-                                spacing: ThemeSize.space8,
-                                runSpacing: ThemeSize.space8,
-                                children: [
-                                  ChoiceChip(
-                                    label: Text(S.current.filter_cuisine_all),
-                                    selected:
-                                        _selectedCategory == null ||
-                                        _selectedCategory!.isEmpty,
-                                    onSelected: (selected) {
-                                      if (selected) {
-                                        setState(() {
-                                          _selectedCategory = null;
-                                        });
-                                      }
-                                    },
-                                  ),
-                                  ..._cuisineCategories.map((category) {
-                                    final isSelected =
-                                        _selectedCategory == category.alias;
-                                    return ChoiceChip(
-                                      label: Text(
-                                        category.title ?? category.alias ?? '',
-                                      ),
-                                      selected: isSelected,
-                                      onSelected: (selected) {
-                                        setState(() {
-                                          _selectedCategory = selected
-                                              ? category.alias
-                                              : null;
-                                        });
-                                      },
-                                    );
-                                  }),
-                                ],
+                            : CuisineCategoryChipsWidget(
+                                categories: _cuisineCategories,
+                                selectedCategory: _selectedCategory,
+                                onCategorySelected: (category) {
+                                  setState(() {
+                                    _selectedCategory = category;
+                                  });
+                                },
                               ),
                       ),
                       const SizedBox(height: ThemeSize.space16),
