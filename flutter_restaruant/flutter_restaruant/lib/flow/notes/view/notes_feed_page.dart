@@ -52,6 +52,8 @@ class _NotesFeedPageState extends State<NotesFeedPage> {
       ),
       body: BlocBuilder<NotesFeedBloc, NotesFeedState>(
         bloc: _bloc,
+        buildWhen: (previous, current) =>
+            !(previous is NotesFeedSuccess && current is NotesFeedLoading),
         builder: (context, state) {
           return switch (state) {
             NotesFeedInitial() ||
