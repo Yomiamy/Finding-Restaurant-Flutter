@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:bloc_test/bloc_test.dart';
 import 'package:flutter_restaruant/domain/domain_barrel.dart';
 import 'package:flutter_restaruant/flow/notes/bloc/notes_feed_barrel.dart';
@@ -43,9 +45,9 @@ void main() {
     blocTest<NotesFeedBloc, NotesFeedState>(
       'emits [NotesFeedLoading, NotesFeedSuccess] when fetchNotes returns notes',
       build: () {
-        when(() => mockRepo.fetchNotes()).thenAnswer(
-          (_) async => _Data.sampleNotes,
-        );
+        when(
+          () => mockRepo.fetchNotes(),
+        ).thenAnswer((_) async => _Data.sampleNotes);
         return NotesFeedBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const FetchNotesFeed()),
@@ -65,18 +67,15 @@ void main() {
         return NotesFeedBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const FetchNotesFeed()),
-      expect: () => const [
-        NotesFeedLoading(),
-        NotesFeedEmpty(),
-      ],
+      expect: () => const [NotesFeedLoading(), NotesFeedEmpty()],
     );
 
     blocTest<NotesFeedBloc, NotesFeedState>(
       'emits [NotesFeedLoading, NotesFeedFailure] when fetchNotes throws Exception',
       build: () {
-        when(() => mockRepo.fetchNotes()).thenThrow(
-          Exception('Firestore network error'),
-        );
+        when(
+          () => mockRepo.fetchNotes(),
+        ).thenThrow(Exception('Firestore network error'));
         return NotesFeedBloc(repository: mockRepo);
       },
       act: (bloc) => bloc.add(const FetchNotesFeed()),
@@ -84,6 +83,39 @@ void main() {
         NotesFeedLoading(),
         NotesFeedFailure('Exception: Firestore network error'),
       ],
+    );
+
+    test(
+      'ignores stale response when an earlier FetchNotesFeed finishes after a newer one',
+      () async {
+        final firstCompleter = Completer<List<UgcNoteEntity>>();
+        final secondCompleter = Completer<List<UgcNoteEntity>>();
+        var callCount = 0;
+
+        when(() => mockRepo.fetchNotes()).thenAnswer((_) {
+          callCount++;
+          return callCount == 1
+              ? firstCompleter.future
+              : secondCompleter.future;
+        });
+
+        final bloc = NotesFeedBloc(repository: mockRepo);
+        addTearDown(bloc.close);
+
+        bloc
+          ..add(const FetchNotesFeed())
+          ..add(const FetchNotesFeed());
+
+        await Future<void>.delayed(Duration.zero);
+
+        secondCompleter.complete(_Data.sampleNotes);
+        await Future<void>.delayed(Duration.zero);
+        expect(bloc.state, const NotesFeedSuccess(notes: _Data.sampleNotes));
+
+        firstCompleter.complete(const []);
+        await Future<void>.delayed(Duration.zero);
+        expect(bloc.state, const NotesFeedSuccess(notes: _Data.sampleNotes));
+      },
     );
   });
 }

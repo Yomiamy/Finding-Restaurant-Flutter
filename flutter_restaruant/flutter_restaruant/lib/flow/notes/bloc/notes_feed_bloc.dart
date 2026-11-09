@@ -9,13 +9,12 @@ import 'notes_feed_state.dart';
 class NotesFeedBloc extends Bloc<NotesFeedEvent, NotesFeedState> {
   final UgcNoteRepository _repository;
   final Logger _logger;
+  int _requestId = 0;
 
-  NotesFeedBloc({
-    required UgcNoteRepository repository,
-    Logger? logger,
-  }) : _repository = repository,
-       _logger = logger ?? Logger(),
-       super(const NotesFeedInitial()) {
+  NotesFeedBloc({required UgcNoteRepository repository, Logger? logger})
+    : _repository = repository,
+      _logger = logger ?? Logger(),
+      super(const NotesFeedInitial()) {
     on<FetchNotesFeed>(_onFetchNotesFeed);
   }
 
@@ -23,15 +22,18 @@ class NotesFeedBloc extends Bloc<NotesFeedEvent, NotesFeedState> {
     FetchNotesFeed event,
     Emitter<NotesFeedState> emit,
   ) async {
+    final requestId = ++_requestId;
     emit(const NotesFeedLoading());
     try {
       final notes = await _repository.fetchNotes();
+      if (requestId != _requestId) return;
       if (notes.isEmpty) {
         emit(const NotesFeedEmpty());
       } else {
         emit(NotesFeedSuccess(notes: notes));
       }
     } on Exception catch (e, st) {
+      if (requestId != _requestId) return;
       _logger.e('FetchNotesFeed failed', error: e, stackTrace: st);
       emit(NotesFeedFailure(e.toString()));
     }
