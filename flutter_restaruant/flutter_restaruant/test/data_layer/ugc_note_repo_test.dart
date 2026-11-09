@@ -61,6 +61,11 @@ class _Data {
     'title': 'No Timestamp Note',
     'media_type': 'image',
   };
+
+  static const Map<String, dynamic> malformedFirestoreDoc = {
+    'title': 12345,
+    'image_urls': 'not-a-list',
+  };
 }
 
 void main() {
@@ -135,6 +140,21 @@ void main() {
         expect(notes[1].createdAtMs, 1000);
         expect(notes[2].id, 'missing_ts');
         expect(notes[2].createdAtMs, 0);
+      },
+    );
+
+    test(
+      'fetchNotes skips malformed document and returns remaining valid notes',
+      () async {
+        final col = fakeFirestore.collection(UgcNoteDataSource.collectionName);
+
+        await col.doc('valid').set(_Data.olderFirestoreDoc);
+        await col.doc('malformed').set(_Data.malformedFirestoreDoc);
+
+        final notes = await repo.fetchNotes();
+
+        expect(notes.length, 1);
+        expect(notes.first.id, 'valid');
       },
     );
   });
