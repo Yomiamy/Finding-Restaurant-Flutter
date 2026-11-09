@@ -81,7 +81,7 @@
 
 ### 3.2 驗收標準 (Acceptance Criteria)
 
-- [ ] **AC-1 (入口整合)**：`MainPage` 的 AppBar 新增搜尋按鈕 (`Icons.search`)，點擊叫起 `showSearch`。側邊欄 Drawer 的「關鍵字過濾」同步改為叫起同一搜尋流程。
+- [ ] **AC-1 (入口整合)**：`MainPage` 的 AppBar 新增常駐搜尋按鈕 (`Icons.search`)，點擊叫起 `showSearch`，並移除側邊欄 Drawer 中重複的舊版「關鍵字過濾」入口與對話框。
 - [ ] **AC-2 (防抖與字元門檻)**：文字輸入 $\ge 1$ 個字元時才觸發 API 請求；連續輸入時透過 300ms debounce 防抖；輸入清空時重置為初始空狀態。
 - [ ] **AC-3 (分維度展示)**：聯想結果依序分區展示：
   - **熱門詞彙** (`terms`): 前綴 `Icons.search`，點擊回傳關鍵字給 `MainBloc` 並執行搜尋。

@@ -14,7 +14,7 @@
 1. 建立 `AutocompleteBloc` 負責即時查詢狀態機，利用 `rxdart` 的 `debounceTime(300ms)` 與 `switchMap` 進行輸入防抖與取消過期請求，消除網路競態。
 2. 建立 Flutter Material 原生 `RestaurantSearchDelegate`，提供流暢的搜尋建議展示（熱門關鍵詞 `terms`、精準推薦店家 `businesses`、分類標籤 `categories`）。
 3. 支援點擊店家直接導航至 `RestaurantDetailPage`，點擊熱門詞或分類則帶回關鍵字觸發 `MainBloc.FilterListByKeyword`。
-4. 在 `MainPage` 的 AppBar 與 `DrawerWidget` 串接搜尋入口，淘汰舊有的簡易 `PlatformTextField` 對話框。
+4. 在 `MainPage` 的 AppBar 串接搜尋入口，並移除 `DrawerWidget` 中重複的關鍵字搜尋項目與舊有 `PlatformTextField` 對話框。
 5. 補齊中英文多語系字串與完整的單元/Widget 測試（`blocTest`），達成 `flutter analyze` 零警告。
 
 ---
@@ -126,7 +126,7 @@
        );
      }
      ```
-   - `DrawerWidget` 側邊欄中的「關鍵字過濾」點擊行為由原本的 `_showKeywordDialog` 改為調用 `_openSearch`。
+   - 移除 `DrawerWidget` 側邊欄中重複的「關鍵字過濾」項目，統一由 `MainPage` AppBar 搜尋按鈕觸發 `_openSearch`。
    - 移除 `_showKeywordDialog` 中已無用的舊代碼。
 2. **測試驗證**：
    - 跑全專案單元與 Widget 測試：`make test` 或 `flutter test`。
