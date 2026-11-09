@@ -9,11 +9,15 @@ import '../../../generated/l10n.dart';
 import '../../restaurant/view/restaurant_detail_page.dart';
 import '../bloc/autocomplete_barrel.dart';
 
+/// 餐廳關鍵字搜尋與 Yelp Autocomplete 聯想建議的 [SearchDelegate]。
+///
+/// 分區呈現熱門搜尋詞、推薦店家與相關分類；點選詞條或分類會回傳關鍵字，點選店家則導向詳情頁。
 class RestaurantSearchDelegate extends SearchDelegate<String?> {
   final AutocompleteBloc _bloc;
   final double? latitude;
   final double? longitude;
   String? _lastQuery;
+  bool _isClosingResults = false;
 
   RestaurantSearchDelegate({
     required AutocompleteBloc bloc,
@@ -73,7 +77,8 @@ class RestaurantSearchDelegate extends SearchDelegate<String?> {
   @override
   Widget buildResults(BuildContext context) {
     final trimmed = query.trim();
-    if (trimmed.isNotEmpty) {
+    if (trimmed.isNotEmpty && !_isClosingResults) {
+      _isClosingResults = true;
       WidgetsBinding.instance.addPostFrameCallback((_) {
         close(context, trimmed);
       });
@@ -98,50 +103,56 @@ class RestaurantSearchDelegate extends SearchDelegate<String?> {
       bloc: _bloc,
       builder: (context, state) {
         return switch (state) {
-          AutocompleteInitial() => _buildEmptyOrInitial(context),
+          AutocompleteInitial() => const _AutocompleteInitialView(),
           AutocompleteLoading() => const Center(
-              child: Padding(
-                padding: EdgeInsets.all(ThemeSize.space20),
-                child: CircularProgressIndicator(),
-              ),
+            child: Padding(
+              padding: EdgeInsets.all(ThemeSize.space20),
+              child: CircularProgressIndicator(),
             ),
+          ),
           AutocompleteEmpty() => Center(
-              child: Text(
-                S.current.autocomplete_no_results,
-                style: const TextStyle(
-                  color: ThemeColor.color9e9e9e,
-                  fontSize: ThemeFontSize.fontSize16,
-                ),
+            child: Text(
+              S.current.autocomplete_no_results,
+              style: const TextStyle(
+                color: ThemeColor.color9e9e9e,
+                fontSize: ThemeFontSize.fontSize16,
               ),
             ),
-          AutocompleteFailure(:final message) => Center(
-              child: Text(
-                message,
-                style: const TextStyle(
-                  color: ThemeColor.colorf44336,
-                  fontSize: ThemeFontSize.fontSize14,
-                ),
+          ),
+          AutocompleteFailure() => Center(
+            child: Text(
+              S.current.error_and_retry,
+              style: const TextStyle(
+                color: ThemeColor.colorf44336,
+                fontSize: ThemeFontSize.fontSize14,
               ),
             ),
+          ),
           AutocompleteSuccess(
             :final terms,
             :final businesses,
             :final categories,
           ) =>
-            _buildSuggestionsList(
-              context,
+            _AutocompleteSuggestionsList(
               terms: terms,
               businesses: businesses,
               categories: categories,
+              onSelectKeyword: (keyword) => close(context, keyword),
             ),
         };
       },
     );
   }
+}
 
-  Widget _buildEmptyOrInitial(BuildContext context) {
+class _AutocompleteInitialView extends StatelessWidget {
+  const _AutocompleteInitialView();
+
+  @override
+  Widget build(BuildContext context) {
     return Center(
       child: Column(
+        key: const Key('autocomplete_initial_view'),
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           const Icon(
@@ -161,35 +172,54 @@ class RestaurantSearchDelegate extends SearchDelegate<String?> {
       ),
     );
   }
+}
 
-  Widget _buildSuggestionsList(
-    BuildContext context, {
-    required List<YelpAutocompleteTermDto> terms,
-    required List<YelpRestaurantSummaryDto> businesses,
-    required List<YelpRestaurantCategoryDto> categories,
-  }) {
+class _AutocompleteSuggestionsList extends StatelessWidget {
+  final List<YelpAutocompleteTermDto> terms;
+  final List<YelpRestaurantSummaryDto> businesses;
+  final List<YelpRestaurantCategoryDto> categories;
+  final ValueChanged<String> onSelectKeyword;
+
+  const _AutocompleteSuggestionsList({
+    required this.terms,
+    required this.businesses,
+    required this.categories,
+    required this.onSelectKeyword,
+  });
+
+  @override
+  Widget build(BuildContext context) {
     return ListView(
       children: [
         if (terms.isNotEmpty) ...[
-          _buildSectionHeader(S.current.autocomplete_suggestions_title),
+          _AutocompleteSectionHeader(
+            title: S.current.autocomplete_suggestions_title,
+          ),
           ...terms.map((term) {
             final text = term.text ?? '';
             return ListTile(
               leading: const Icon(Icons.search, color: ThemeColor.color9e9e9e),
               title: Text(text),
-              onTap: () => close(context, text),
+              onTap: () => onSelectKeyword(text),
             );
           }),
         ],
         if (businesses.isNotEmpty) ...[
-          _buildSectionHeader(S.current.autocomplete_businesses_title),
+          _AutocompleteSectionHeader(
+            title: S.current.autocomplete_businesses_title,
+          ),
           ...businesses.map((business) {
             final name = business.name ?? '';
             final address = business.location?.displayAddress?.join(' ');
             return ListTile(
-              leading: const Icon(Icons.storefront, color: ThemeColor.colord84a20),
+              leading: const Icon(
+                Icons.storefront,
+                color: ThemeColor.colord84a20,
+              ),
               title: Text(name),
-              subtitle: address != null && address.isNotEmpty ? Text(address) : null,
+              subtitle: address != null && address.isNotEmpty
+                  ? Text(address)
+                  : null,
               onTap: () {
                 Navigator.of(context).pushNamed(
                   RestaurantDetailPage.routeName,
@@ -200,33 +230,47 @@ class RestaurantSearchDelegate extends SearchDelegate<String?> {
           }),
         ],
         if (categories.isNotEmpty) ...[
-          _buildSectionHeader(S.current.autocomplete_categories_title),
+          _AutocompleteSectionHeader(
+            title: S.current.autocomplete_categories_title,
+          ),
           ...categories.map((category) {
             final title = category.title ?? category.alias ?? '';
             return ListTile(
-              leading: const Icon(Icons.category_outlined, color: ThemeColor.color9e9e9e),
+              leading: const Icon(
+                Icons.category_outlined,
+                color: ThemeColor.color9e9e9e,
+              ),
               title: Text(title),
-              onTap: () => close(context, title),
+              onTap: () => onSelectKeyword(title),
             );
           }),
         ],
       ],
     );
   }
+}
 
-  Widget _buildSectionHeader(String title) {
-    return Container(
+class _AutocompleteSectionHeader extends StatelessWidget {
+  final String title;
+
+  const _AutocompleteSectionHeader({required this.title});
+
+  @override
+  Widget build(BuildContext context) {
+    return ColoredBox(
       color: ThemeColor.colorfffbf7,
-      padding: const EdgeInsets.symmetric(
-        horizontal: ThemeSize.space16,
-        vertical: ThemeSize.space8,
-      ),
-      child: Text(
-        title,
-        style: const TextStyle(
-          color: ThemeColor.color8a000000,
-          fontWeight: FontWeight.bold,
-          fontSize: ThemeFontSize.fontSize14,
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: ThemeSize.space16,
+          vertical: ThemeSize.space8,
+        ),
+        child: Text(
+          title,
+          style: const TextStyle(
+            color: ThemeColor.color8a000000,
+            fontWeight: FontWeight.bold,
+            fontSize: ThemeFontSize.fontSize14,
+          ),
         ),
       ),
     );

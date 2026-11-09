@@ -4,7 +4,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_restaruant/api/dto/dto_barrel.dart';
 import 'package:flutter_restaruant/domain/domain_barrel.dart';
+import 'package:flutter_restaruant/features/utils/tuple.dart';
 import 'package:flutter_restaruant/flow/autocomplete/autocomplete_barrel.dart';
+import 'package:flutter_restaruant/flow/restaurant/view/restaurant_detail_page.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
@@ -14,9 +16,7 @@ class _MockYelpAutocompleteRepository extends Mock
 
 class _Data {
   static final sampleDto = YelpAutocompleteDto(
-    terms: const [
-      YelpAutocompleteTermDto(text: 'ramen noodle'),
-    ],
+    terms: const [YelpAutocompleteTermDto(text: 'ramen noodle')],
     businesses: [
       YelpRestaurantSummaryDto(
         id: 'ramen-1',
@@ -63,43 +63,58 @@ void main() {
     );
   }
 
-  testWidgets('RestaurantSearchDelegate shows initial guidance and search field',
-      (tester) async {
-    String? selectedResult;
+  testWidgets(
+    'RestaurantSearchDelegate shows initial guidance and search field',
+    (tester) async {
+      String? selectedResult;
 
-    await tester.pumpWidget(
-      buildTestWidget(
-        builder: (context) => Scaffold(
-          body: ElevatedButton(
-            onPressed: () async {
-              selectedResult = await showSearch<String?>(
-                context: context,
-                delegate: RestaurantSearchDelegate(bloc: bloc),
-              );
-            },
-            child: const Text('Search'),
+      await tester.pumpWidget(
+        buildTestWidget(
+          builder: (context) => Scaffold(
+            body: ElevatedButton(
+              onPressed: () async {
+                selectedResult = await showSearch<String?>(
+                  context: context,
+                  delegate: RestaurantSearchDelegate(bloc: bloc),
+                );
+              },
+              child: const Text('Search'),
+            ),
           ),
         ),
-      ),
-    );
+      );
 
-    // Tap to open search
-    await tester.tap(find.text('Search'));
-    await tester.pumpAndSettle();
+      // Tap to open search
+      await tester.tap(find.text('Search'));
+      await tester.pumpAndSettle();
 
-    // Verify search hint is displayed in the initial view
-    expect(find.text('搜尋餐廳、料理或關鍵字...'), findsWidgets);
-    expect(find.byIcon(Icons.arrow_back), findsOneWidget);
+      // Verify search hint is displayed in the initial view body (not just the search bar)
+      expect(
+        find.byKey(const Key('autocomplete_initial_view')),
+        findsOneWidget,
+      );
+      expect(
+        find.descendant(
+          of: find.byKey(const Key('autocomplete_initial_view')),
+          matching: find.text('搜尋餐廳、料理或關鍵字...'),
+        ),
+        findsOneWidget,
+      );
+      expect(find.byIcon(Icons.arrow_back), findsOneWidget);
 
-    // Tap back button
-    await tester.tap(find.byIcon(Icons.arrow_back));
-    await tester.pumpAndSettle();
+      // Tap back button
+      await tester.tap(find.byIcon(Icons.arrow_back));
+      await tester.pumpAndSettle();
 
-    expect(selectedResult, isNull);
-  });
+      expect(selectedResult, isNull);
+      expect(find.byKey(const Key('autocomplete_back_button')), findsNothing);
+      expect(find.text('Search'), findsOneWidget);
+    },
+  );
 
-  testWidgets('RestaurantSearchDelegate renders suggestions and selects term',
-      (tester) async {
+  testWidgets('RestaurantSearchDelegate renders suggestions and selects term', (
+    tester,
+  ) async {
     final localBloc = AutocompleteBloc(
       repository: mockRepo,
       debounceDuration: Duration.zero,
@@ -158,8 +173,17 @@ void main() {
     unawaited(localBloc.close());
   });
 
-  testWidgets('RestaurantSearchDelegate clear button clears query',
-      (tester) async {
+  testWidgets('RestaurantSearchDelegate clear button clears query', (
+    tester,
+  ) async {
+    when(
+      () => mockRepo.autocomplete(
+        any(),
+        latitude: any(named: 'latitude'),
+        longitude: any(named: 'longitude'),
+      ),
+    ).thenAnswer((_) async => const YelpAutocompleteDto());
+
     await tester.pumpWidget(
       buildTestWidget(
         builder: (context) => Scaffold(
@@ -191,4 +215,75 @@ void main() {
 
     expect(find.text('test query'), findsNothing);
   });
+
+  testWidgets(
+    'RestaurantSearchDelegate navigates to RestaurantDetailPage when business is tapped',
+    (tester) async {
+      final localBloc = AutocompleteBloc(
+        repository: mockRepo,
+        debounceDuration: Duration.zero,
+      );
+
+      when(
+        () => mockRepo.autocomplete(
+          'ramen',
+          latitude: any(named: 'latitude'),
+          longitude: any(named: 'longitude'),
+        ),
+      ).thenAnswer((_) async => _Data.sampleDto);
+
+      Tuple2<RestaurantEntity, dynamic>? pushedArgs;
+
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('zh', 'TW'),
+          localizationsDelegates: const [
+            S.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: S.delegate.supportedLocales,
+          routes: {
+            RestaurantDetailPage.routeName: (context) {
+              pushedArgs =
+                  ModalRoute.of(context)?.settings.arguments
+                      as Tuple2<RestaurantEntity, dynamic>?;
+              return const Scaffold(body: Text('Detail Page Stub'));
+            },
+          },
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: ElevatedButton(
+                onPressed: () {
+                  showSearch<String?>(
+                    context: context,
+                    delegate: RestaurantSearchDelegate(bloc: localBloc),
+                  );
+                },
+                child: const Text('Search'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.text('Search'));
+      await tester.pumpAndSettle();
+
+      await tester.enterText(find.byType(TextField), 'ramen');
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 50));
+      await tester.pump();
+
+      await tester.tap(find.text('Best Ramen'));
+      await tester.pumpAndSettle();
+
+      expect(find.text('Detail Page Stub'), findsOneWidget);
+      expect(pushedArgs?.item1.id, 'ramen-1');
+      expect(pushedArgs?.item1.name, 'Best Ramen');
+
+      unawaited(localBloc.close());
+    },
+  );
 }
