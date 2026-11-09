@@ -150,5 +150,10 @@
   "review_summary_retry": "重試",
   "review_summary_failed": "AI 評論情報暫時無法取得",
   "review_summary_empty": "暫無評論情報",
-  "open_in_yelp": "在 Yelp 開啟"
+  "open_in_yelp": "在 Yelp 開啟",
+  "autocomplete_suggestions_title": "熱門搜尋",
+  "autocomplete_businesses_title": "推薦店家",
+  "autocomplete_categories_title": "相關分類",
+  "autocomplete_no_results": "找不到相符建議",
+  "autocomplete_search_hint": "搜尋餐廳、料理或關鍵字..."
 }

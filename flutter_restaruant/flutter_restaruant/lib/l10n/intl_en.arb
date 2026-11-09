@@ -150,5 +150,10 @@
   "review_summary_retry": "Retry",
   "review_summary_failed": "Failed to generate AI review summary",
   "review_summary_empty": "No review summary available",
-  "open_in_yelp": "Open in Yelp"
+  "open_in_yelp": "Open in Yelp",
+  "autocomplete_suggestions_title": "Suggestions",
+  "autocomplete_businesses_title": "Businesses",
+  "autocomplete_categories_title": "Categories",
+  "autocomplete_no_results": "No suggestions found",
+  "autocomplete_search_hint": "Search restaurants, cuisines..."
 }

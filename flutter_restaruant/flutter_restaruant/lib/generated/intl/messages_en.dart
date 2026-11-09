@@ -127,6 +127,21 @@ class MessageLookup extends MessageLookupByLibrary {
     "auth_error_wrong_password": MessageLookupByLibrary.simpleMessage(
       "Incorrect password, please try again",
     ),
+    "autocomplete_businesses_title": MessageLookupByLibrary.simpleMessage(
+      "Businesses",
+    ),
+    "autocomplete_categories_title": MessageLookupByLibrary.simpleMessage(
+      "Categories",
+    ),
+    "autocomplete_no_results": MessageLookupByLibrary.simpleMessage(
+      "No suggestions found",
+    ),
+    "autocomplete_search_hint": MessageLookupByLibrary.simpleMessage(
+      "Search restaurants, cuisines...",
+    ),
+    "autocomplete_suggestions_title": MessageLookupByLibrary.simpleMessage(
+      "Suggestions",
+    ),
     "biometric_prompt_reason": MessageLookupByLibrary.simpleMessage(
       "Please authenticate to sign in",
     ),
