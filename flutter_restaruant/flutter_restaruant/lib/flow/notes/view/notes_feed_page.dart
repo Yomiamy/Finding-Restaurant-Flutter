@@ -59,16 +59,22 @@ class _NotesFeedPageState extends State<NotesFeedPage> {
             NotesFeedEmpty() => EmptyDataWidget(
               title: S.current.notes_feed_empty,
               icon: Icons.explore_outlined,
+              onRetry: () => _bloc.add(const FetchNotesFeed()),
             ),
             NotesFeedFailure() => EmptyDataWidget.withDefaults(
               onRetry: () => _bloc.add(const FetchNotesFeed()),
             ),
             NotesFeedSuccess(:final notes) => RefreshIndicator(
               onRefresh: () async {
+                final done = _bloc.stream.firstWhere(
+                  (s) => s is! NotesFeedLoading,
+                );
                 _bloc.add(const FetchNotesFeed());
+                await done;
               },
               child: MasonryGridView.count(
                 key: const Key('notes_masonry_grid'),
+                physics: const AlwaysScrollableScrollPhysics(),
                 crossAxisCount: 2,
                 mainAxisSpacing: ThemeSize.space10,
                 crossAxisSpacing: ThemeSize.space10,

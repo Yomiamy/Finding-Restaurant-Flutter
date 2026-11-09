@@ -103,6 +103,7 @@ void main() {
 
       expect(find.byType(EmptyDataWidget), findsOneWidget);
       expect(find.text(S.current.notes_feed_empty), findsOneWidget);
+      expect(find.byIcon(Icons.refresh), findsOneWidget);
     });
 
     testWidgets('renders retry button on failure and re-fetches when tapped', (
