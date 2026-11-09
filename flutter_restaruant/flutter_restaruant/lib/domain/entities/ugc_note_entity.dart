@@ -49,8 +49,9 @@ class UgcNoteEntity extends Equatable {
         .where((e) => e.trim().isNotEmpty)
         .map((e) => e.trim())
         .toList();
-    final primaryCover = (dto.coverUrl?.trim().isNotEmpty ?? false)
-        ? dto.coverUrl!.trim()
+    final trimmedCover = dto.coverUrl?.trim() ?? '';
+    final primaryCover = trimmedCover.isNotEmpty
+        ? trimmedCover
         : (rawImages.isNotEmpty ? rawImages.first : '');
     final normalizedImages = rawImages.isNotEmpty
         ? rawImages
@@ -60,9 +61,10 @@ class UgcNoteEntity extends Equatable {
     final isVideo = dto.mediaType == 'video' && videoUrl.isNotEmpty;
     final rawDuration = dto.videoDurationSec ?? maxVideoDurationSec;
     final safeDuration = rawDuration.clamp(1, maxVideoDurationSec);
+    final trimmedId = dto.id?.trim() ?? '';
 
     return UgcNoteEntity(
-      id: (dto.id?.trim().isNotEmpty ?? false) ? dto.id!.trim() : (docId ?? ''),
+      id: trimmedId.isNotEmpty ? trimmedId : (docId ?? ''),
       title: dto.title?.trim() ?? '',
       content: dto.content?.trim() ?? '',
       authorName: dto.authorName?.trim() ?? '',
