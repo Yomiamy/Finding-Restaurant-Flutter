@@ -9,7 +9,6 @@ void main() {
   testWidgets('DrawerWidget renders navigation tiles and triggers callbacks', (
     WidgetTester tester,
   ) async {
-    bool keywordTapped = false;
     bool filterTapped = false;
     bool toggleTapped = false;
     bool myLocTapped = false;
@@ -24,7 +23,6 @@ void main() {
         home: Scaffold(
           drawer: DrawerWidget(
             isListMode: isListMode,
-            onKeywordSearch: () => keywordTapped = true,
             onFilterRules: () => filterTapped = true,
             onToggleViewMode: () => toggleTapped = true,
             onMapMyLoc: () => myLocTapped = true,
@@ -43,16 +41,10 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(DrawerWidget), findsOneWidget);
-    expect(find.byType(ListTile), findsNWidgets(6));
+    expect(find.byType(ListTile), findsNWidgets(5));
+    expect(find.text(S.current.keyword_search), findsNothing);
 
-    // Tap keyword search
-    await tester.tap(find.widgetWithText(ListTile, S.current.keyword_search));
-    await tester.pumpAndSettle();
-    expect(keywordTapped, isTrue);
-
-    // Open drawer again and tap filter rules
-    tester.state<ScaffoldState>(find.byType(Scaffold)).openDrawer();
-    await tester.pumpAndSettle();
+    // Tap filter rules
     await tester.tap(find.widgetWithText(ListTile, S.current.filter_rules));
     await tester.pumpAndSettle();
     expect(filterTapped, isTrue);
@@ -97,7 +89,6 @@ void main() {
           home: Scaffold(
             drawer: DrawerWidget(
               isListMode: true,
-              onKeywordSearch: () {},
               onFilterRules: () {},
               onToggleViewMode: () {},
               onMapMyLoc: () {},
@@ -111,7 +102,7 @@ void main() {
       tester.state<ScaffoldState>(find.byType(Scaffold)).openDrawer();
       await tester.pumpAndSettle();
 
-      expect(find.byType(ListTile), findsNWidgets(5));
+      expect(find.byType(ListTile), findsNWidgets(4));
       // Icons.map 只屬於切換項（定位重置用 Icons.navigation）。
       expect(find.byIcon(Icons.map), findsNothing);
       expect(find.text(S.current.map_mode), findsNothing);

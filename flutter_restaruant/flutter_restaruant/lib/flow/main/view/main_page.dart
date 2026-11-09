@@ -70,7 +70,6 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
       key: _scaffoldKey,
       drawer: DrawerWidget(
         isListMode: _isListMode,
-        onKeywordSearch: _openSearch,
         onFilterRules: _openFilterPage,
         onToggleViewMode: _toggleViewMode,
         onMapMyLoc: () => _mainBloc.add(const Reset()),
