@@ -147,7 +147,7 @@ void main() {
     );
 
     blocTest<AutocompleteBloc, AutocompleteState>(
-      'debounces rapid query events and only executes the last one',
+      'debounces rapid query events with default 300ms duration and only executes the last one',
       build: () {
         when(
           () => mockRepo.autocomplete(
@@ -156,21 +156,18 @@ void main() {
             longitude: any(named: 'longitude'),
           ),
         ).thenAnswer((_) async => _Data.sampleDto);
-        return AutocompleteBloc(
-          repository: mockRepo,
-          debounceDuration: const Duration(milliseconds: 100),
-        );
+        return AutocompleteBloc(repository: mockRepo);
       },
       act: (bloc) async {
         bloc.add(const AutocompleteQueryChanged('f'));
-        await Future.delayed(const Duration(milliseconds: 30));
+        await Future.delayed(const Duration(milliseconds: 50));
         bloc.add(const AutocompleteQueryChanged('fi'));
-        await Future.delayed(const Duration(milliseconds: 30));
+        await Future.delayed(const Duration(milliseconds: 50));
         bloc.add(const AutocompleteQueryChanged('fin'));
-        await Future.delayed(const Duration(milliseconds: 30));
+        await Future.delayed(const Duration(milliseconds: 50));
         bloc.add(const AutocompleteQueryChanged('final'));
       },
-      wait: const Duration(milliseconds: 200),
+      wait: const Duration(milliseconds: 400),
       expect: () => [const AutocompleteLoading(), isA<AutocompleteSuccess>()],
       verify: (_) {
         verifyNever(
