@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:logger/logger.dart';
 
 import '../../../features/component/component_barrel.dart';
 import '../../../app/di/di_barrel.dart';
@@ -31,6 +32,8 @@ class MainPage extends StatefulWidget {
 class MainPageState extends State<MainPage> implements AppOpenADEvent {
   FilterConfigs _configs = FilterConfigs();
   bool _isListMode = true;
+  bool _isSearchOpen = false;
+  final Logger _logger = Logger();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late MainBloc _mainBloc;
 
@@ -151,40 +154,57 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
   }
 
   Future<void> _openSearch() async {
-    double? latitude;
-    double? longitude;
+    if (_isSearchOpen) return;
+    _isSearchOpen = true;
+
+    AutocompleteBloc? autocompleteBloc;
     try {
-      final position = await Utils.getCurrentPosition();
-      latitude = position.latitude;
-      longitude = position.longitude;
-    } catch (_) {
-      // Location is optional; Yelp autocomplete works without coordinates too.
-    }
+      double? latitude;
+      double? longitude;
+      try {
+        final position = await Utils.getCurrentPosition().timeout(
+          const Duration(seconds: 2),
+        );
+        latitude = position.latitude;
+        longitude = position.longitude;
+      } catch (e, st) {
+        _logger.w(
+          'Location unavailable for autocomplete; proceeding without coordinates',
+          error: e,
+          stackTrace: st,
+        );
+      }
 
-    if (!mounted) return;
+      if (!mounted) return;
 
-    final selectedKeyword = await showSearch<String?>(
-      context: context,
-      delegate: RestaurantSearchDelegate(
-        bloc: AutocompleteBloc(
-          repository: getIt<YelpAutocompleteRepository>(),
-        ),
-        latitude: latitude,
-        longitude: longitude,
-      ),
-    );
+      autocompleteBloc = AutocompleteBloc(
+        repository: getIt<YelpAutocompleteRepository>(),
+      );
 
-    if (selectedKeyword != null &&
-        selectedKeyword.trim().isNotEmpty &&
-        mounted) {
-      _mainBloc.add(
-        FilterListByKeyword(
-          keyword: selectedKeyword.trim(),
-          sortByStr: _configs.sortBy,
-          price: _configs.price,
-          openAt: _configs.openAtInSec,
+      final selectedKeyword = await showSearch<String?>(
+        context: context,
+        delegate: RestaurantSearchDelegate(
+          bloc: autocompleteBloc,
+          latitude: latitude,
+          longitude: longitude,
         ),
       );
+
+      if (selectedKeyword != null &&
+          selectedKeyword.trim().isNotEmpty &&
+          mounted) {
+        _mainBloc.add(
+          FilterListByKeyword(
+            keyword: selectedKeyword.trim(),
+            sortByStr: _configs.sortBy,
+            price: _configs.price,
+            openAt: _configs.openAtInSec,
+          ),
+        );
+      }
+    } finally {
+      _isSearchOpen = false;
+      await autocompleteBloc?.close();
     }
   }
 
