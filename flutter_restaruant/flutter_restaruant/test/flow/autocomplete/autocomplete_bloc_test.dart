@@ -14,9 +14,7 @@ class _Data {
       YelpAutocompleteTermDto(text: 'ramen'),
       YelpAutocompleteTermDto(text: 'sushi'),
     ],
-    businesses: [
-      YelpRestaurantSummaryDto(id: 'biz-1', name: 'Ichiran Ramen'),
-    ],
+    businesses: [YelpRestaurantSummaryDto(id: 'biz-1', name: 'Ichiran Ramen')],
     categories: const [
       YelpRestaurantCategoryDto(alias: 'japanese', title: 'Japanese'),
     ],
@@ -89,11 +87,7 @@ void main() {
       ],
       verify: (_) {
         verify(
-          () => mockRepo.autocomplete(
-            'ramen',
-            latitude: null,
-            longitude: null,
-          ),
+          () => mockRepo.autocomplete('ramen', latitude: null, longitude: null),
         ).called(1);
       },
     );
@@ -114,10 +108,7 @@ void main() {
         );
       },
       act: (bloc) => bloc.add(const AutocompleteQueryChanged('xyz123')),
-      expect: () => [
-        const AutocompleteLoading(),
-        const AutocompleteEmpty(),
-      ],
+      expect: () => [const AutocompleteLoading(), const AutocompleteEmpty()],
     );
 
     blocTest<AutocompleteBloc, AutocompleteState>(
@@ -180,10 +171,7 @@ void main() {
         bloc.add(const AutocompleteQueryChanged('final'));
       },
       wait: const Duration(milliseconds: 200),
-      expect: () => [
-        const AutocompleteLoading(),
-        isA<AutocompleteSuccess>(),
-      ],
+      expect: () => [const AutocompleteLoading(), isA<AutocompleteSuccess>()],
       verify: (_) {
         verifyNever(
           () => mockRepo.autocomplete('f', latitude: null, longitude: null),
@@ -197,6 +185,39 @@ void main() {
         verify(
           () => mockRepo.autocomplete('final', latitude: null, longitude: null),
         ).called(1);
+      },
+    );
+
+    blocTest<AutocompleteBloc, AutocompleteState>(
+      'cancels pending debounced query when AutocompleteCleared arrives',
+      build: () {
+        when(
+          () => mockRepo.autocomplete(
+            any(),
+            latitude: any(named: 'latitude'),
+            longitude: any(named: 'longitude'),
+          ),
+        ).thenAnswer((_) async => _Data.sampleDto);
+        return AutocompleteBloc(
+          repository: mockRepo,
+          debounceDuration: const Duration(milliseconds: 100),
+        );
+      },
+      act: (bloc) async {
+        bloc.add(const AutocompleteQueryChanged('ramen'));
+        await Future.delayed(const Duration(milliseconds: 30));
+        bloc.add(const AutocompleteCleared());
+      },
+      wait: const Duration(milliseconds: 200),
+      expect: () => [const AutocompleteInitial()],
+      verify: (_) {
+        verifyNever(
+          () => mockRepo.autocomplete(
+            any(),
+            latitude: any(named: 'latitude'),
+            longitude: any(named: 'longitude'),
+          ),
+        );
       },
     );
   });
