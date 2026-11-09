@@ -7,6 +7,7 @@ import '../../flow/favor/view/view_barrel.dart';
 import '../../flow/filter/view/view_barrel.dart';
 import '../../flow/main/bloc/bloc_barrel.dart';
 import '../../flow/main/view/view_barrel.dart';
+import '../../flow/notes/notes_barrel.dart';
 import '../../flow/photo_viewer/view/view_barrel.dart';
 import '../../flow/restaurant/bloc/bloc_barrel.dart';
 import '../../flow/restaurant/view/view_barrel.dart';
@@ -43,4 +44,9 @@ final Map<String, WidgetBuilder> routesTable = <String, WidgetBuilder>{
     create: (_) => SettingsBloc(repository: GetIt.I<SettingsRepository>()),
     child: const SettingsPage(),
   ),
+  NotesFeedPage.routeName: (context) => BlocProvider<NotesFeedBloc>(
+    create: (_) => NotesFeedBloc(repository: GetIt.I<UgcNoteRepository>()),
+    child: const NotesFeedPage(),
+  ),
+  NoteDetailPage.routeName: (context) => const NoteDetailPage(),
 };
