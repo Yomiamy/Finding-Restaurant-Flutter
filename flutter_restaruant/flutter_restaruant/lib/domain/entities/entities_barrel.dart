@@ -16,3 +16,4 @@ export 'dish_item_entity.dart';
 export 'ai_foodie_message.dart';
 export 'auth_failure_reason.dart';
 export 'review_summary_entity.dart';
+export 'ugc_note_entity.dart';

@@ -139,6 +139,15 @@ void main() {
       },
     );
 
+    test('UgcNoteRepository resolves to UgcNoteRepository', () {
+      expect(GetIt.I.isRegistered<UgcNoteDataSource>(), isTrue);
+      expect(GetIt.I<UgcNoteDataSource>(), isA<UgcNoteDataSource>());
+
+      expect(GetIt.I.isRegistered<UgcNoteRepository>(), isTrue);
+      final repo = GetIt.I<UgcNoteRepository>();
+      expect(repo, isA<UgcNoteRepository>());
+    });
+
     test('Lazy singletons return the same instance', () {
       final mainRepo1 = GetIt.I<MainRepository>();
       final mainRepo2 = GetIt.I<MainRepository>();
