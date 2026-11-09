@@ -285,12 +285,11 @@ class _NoteVideoPlayerState extends State<NoteVideoPlayer> {
     _controller = controller;
     try {
       await controller.initialize();
+      if (!mounted) return;
       await controller.setLooping(true);
+      if (!mounted) return;
       await controller.play();
-      if (!mounted) {
-        unawaited(controller.dispose());
-        return;
-      }
+      if (!mounted) return;
       setState(() => _isInitialized = true);
     } on Exception catch (e, st) {
       Logger().w('NoteVideoPlayer init failed', error: e, stackTrace: st);
@@ -310,23 +309,18 @@ class _NoteVideoPlayerState extends State<NoteVideoPlayer> {
 
   @override
   void dispose() {
-    final controller = _controller;
-    if (controller != null && _isInitialized) {
-      unawaited(controller.dispose());
-    }
+    unawaited(_controller?.dispose());
     super.dispose();
   }
 
   void _togglePlayPause() {
     final controller = _controller;
     if (controller == null || !_isInitialized) return;
-    setState(() {
-      if (controller.value.isPlaying) {
-        controller.pause();
-      } else {
-        controller.play();
-      }
-    });
+    if (controller.value.isPlaying) {
+      unawaited(controller.pause());
+    } else {
+      unawaited(controller.play());
+    }
   }
 
   @override
@@ -360,14 +354,20 @@ class _NoteVideoPlayerState extends State<NoteVideoPlayer> {
           fit: StackFit.expand,
           children: [
             VideoPlayer(controller),
-            if (!controller.value.isPlaying)
-              const Center(
+            ValueListenableBuilder<VideoPlayerValue>(
+              valueListenable: controller,
+              builder: (context, value, child) {
+                if (value.isPlaying) return const SizedBox.shrink();
+                return child ?? const SizedBox.shrink();
+              },
+              child: const Center(
                 child: Icon(
                   Icons.play_circle_fill,
                   size: ThemeSize.size64,
                   color: ThemeColor.colorffffff,
                 ),
               ),
+            ),
             Positioned(
               left: 0,
               right: 0,
