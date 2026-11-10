@@ -1,4 +1,5 @@
 import 'package:flutter/services.dart';
+import 'package:flutter_inspector_kit/flutter_inspector_kit.dart';
 import 'package:flutter_restaruant/api/api_barrel.dart';
 
 import 'package:flutter_restaruant/data_layer/datasources/datasources_barrel.dart';
@@ -7,6 +8,7 @@ import 'package:flutter_restaruant/domain/repositories/repositories_barrel.dart'
 import 'package:flutter_restaruant/features/manager/manager_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() {
   TestWidgetsFlutterBinding.ensureInitialized();
@@ -150,5 +152,84 @@ void main() {
       final reviewSummaryRepo2 = GetIt.I<ReviewSummaryRepository>();
       expect(identical(reviewSummaryRepo1, reviewSummaryRepo2), isTrue);
     });
+
+    test(
+      'SharedPreferencesSource performs CRUD on key-value storage',
+      () async {
+        SharedPreferences.setMockInitialValues({
+          'string_key': 'hello',
+          'int_key': 42,
+          'double_key': 3.14,
+          'bool_key': true,
+          'list_key': ['a', 'b'],
+        });
+        final prefs = await SharedPreferences.getInstance();
+        final source = SharedPreferencesSource(prefs);
+
+        expect(source.name, 'SharedPreferences');
+
+        // listAll & type mappings
+        final entries = await source.listAll();
+        expect(entries.length, 5);
+        expect(
+          entries.firstWhere((e) => e.key == 'string_key').type,
+          KeyValueType.string,
+        );
+        expect(
+          entries.firstWhere((e) => e.key == 'int_key').type,
+          KeyValueType.int,
+        );
+        expect(
+          entries.firstWhere((e) => e.key == 'double_key').type,
+          KeyValueType.double,
+        );
+        expect(
+          entries.firstWhere((e) => e.key == 'bool_key').type,
+          KeyValueType.bool,
+        );
+        expect(
+          entries.firstWhere((e) => e.key == 'list_key').type,
+          KeyValueType.stringList,
+        );
+
+        // setValue updates
+        await source.setValue('string_key', 'world');
+        expect(prefs.getString('string_key'), 'world');
+
+        await source.setValue('int_key', 100);
+        expect(prefs.getInt('int_key'), 100);
+
+        await source.setValue('double_key', 2.718);
+        expect(prefs.getDouble('double_key'), 2.718);
+
+        await source.setValue('bool_key', false);
+        expect(prefs.getBool('bool_key'), false);
+
+        await source.setValue('list_key', ['x', 'y']);
+        expect(prefs.getStringList('list_key'), ['x', 'y']);
+
+        // remove
+        await source.remove('string_key');
+        expect(prefs.containsKey('string_key'), isFalse);
+
+        // clear
+        await source.clear();
+        expect(prefs.getKeys(), isEmpty);
+      },
+    );
+
+    test(
+      'registerSharedPreferencesSource registers source to inspector',
+      () async {
+        SharedPreferences.setMockInitialValues({});
+        final prefs = await SharedPreferences.getInstance();
+
+        await registerSharedPreferencesSource(prefs);
+        expect(
+          inspector?.keyValueSources.any((s) => s.name == 'SharedPreferences'),
+          isTrue,
+        );
+      },
+    );
   });
 }
