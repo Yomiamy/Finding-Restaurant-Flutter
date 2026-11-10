@@ -7,13 +7,12 @@ import '../../../generated/l10n.dart';
 
 /// 主頁面側邊選單元件 (Drawer)。
 ///
-/// 包含關鍵字搜尋、篩選條件、檢視模式切換、定位重置、收藏與設定頁等導覽選項。
+/// 包含篩選條件、檢視模式切換、定位重置、收藏與設定頁等導覽選項。
 /// 檢視模式（列表／地圖）切換僅在具地圖模式能力的平台顯示（見 [platformCapabilities]）。
 class DrawerWidget extends StatelessWidget {
   const DrawerWidget({
     super.key,
     required this.isListMode,
-    required this.onKeywordSearch,
     required this.onFilterRules,
     required this.onToggleViewMode,
     required this.onMapMyLoc,
@@ -22,7 +21,6 @@ class DrawerWidget extends StatelessWidget {
   });
 
   final bool isListMode;
-  final VoidCallback onKeywordSearch;
   final VoidCallback onFilterRules;
   final VoidCallback onToggleViewMode;
   final VoidCallback onMapMyLoc;
@@ -56,11 +54,6 @@ class DrawerWidget extends StatelessWidget {
                   ),
                 ),
               ),
-            ),
-            ListTile(
-              leading: const Icon(Icons.search, color: ThemeColor.colord84a20),
-              title: Text(appLocalizations.keyword_search),
-              onTap: () => _handleTap(context, onKeywordSearch),
             ),
             ListTile(
               leading: const Icon(

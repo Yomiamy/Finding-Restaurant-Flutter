@@ -115,6 +115,19 @@ class MessageLookup extends MessageLookupByLibrary {
     "auth_error_wrong_password": MessageLookupByLibrary.simpleMessage(
       "密碼錯誤，請再試一次",
     ),
+    "autocomplete_businesses_title": MessageLookupByLibrary.simpleMessage(
+      "推薦店家",
+    ),
+    "autocomplete_categories_title": MessageLookupByLibrary.simpleMessage(
+      "相關分類",
+    ),
+    "autocomplete_no_results": MessageLookupByLibrary.simpleMessage("找不到相符建議"),
+    "autocomplete_search_hint": MessageLookupByLibrary.simpleMessage(
+      "搜尋餐廳、料理或關鍵字...",
+    ),
+    "autocomplete_suggestions_title": MessageLookupByLibrary.simpleMessage(
+      "熱門搜尋",
+    ),
     "biometric_prompt_reason": MessageLookupByLibrary.simpleMessage(
       "請使用生物識別認證進行登入",
     ),

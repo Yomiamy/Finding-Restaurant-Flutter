@@ -89,4 +89,20 @@ void main() {
 
     await tester.pumpWidget(const SizedBox());
   });
+
+  testWidgets('MainPage AppBar renders search button with search icon', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+    try {
+      await pumpMainPage(tester);
+
+      expect(find.byKey(const Key('main_page_search_button')), findsOneWidget);
+      expect(find.byIcon(Icons.search), findsOneWidget);
+
+      await tester.pumpWidget(const SizedBox());
+    } finally {
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
 }

@@ -1444,6 +1444,56 @@ class S {
       args: [],
     );
   }
+
+  /// `Suggestions`
+  String get autocomplete_suggestions_title {
+    return Intl.message(
+      'Suggestions',
+      name: 'autocomplete_suggestions_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Businesses`
+  String get autocomplete_businesses_title {
+    return Intl.message(
+      'Businesses',
+      name: 'autocomplete_businesses_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Categories`
+  String get autocomplete_categories_title {
+    return Intl.message(
+      'Categories',
+      name: 'autocomplete_categories_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No suggestions found`
+  String get autocomplete_no_results {
+    return Intl.message(
+      'No suggestions found',
+      name: 'autocomplete_no_results',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search restaurants, cuisines...`
+  String get autocomplete_search_hint {
+    return Intl.message(
+      'Search restaurants, cuisines...',
+      name: 'autocomplete_search_hint',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

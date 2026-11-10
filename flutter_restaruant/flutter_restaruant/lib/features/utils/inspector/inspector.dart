@@ -1,7 +1,11 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter_inspector_kit/flutter_inspector_kit.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
-import '../../main.dart' show navigatorKey;
+import '../../../main.dart' show navigatorKey;
+import 'shared_preferences_source.dart';
+
+export 'shared_preferences_source.dart';
 
 /// Debug-only 除錯工具實例。release build 中恆為 `null`，
 /// 所有引用點因此成為 dead code 而被 tree-shaking 移除。
@@ -26,3 +30,10 @@ final FlutterInspector? inspector = kDebugMode
         redactSensitiveData: false,
       )
     : null;
+
+/// 註冊 [SharedPreferences] 監看來源至除錯工具。
+Future<void> registerSharedPreferencesSource([SharedPreferences? prefs]) async {
+  if (!kDebugMode || inspector == null) return;
+  final sharedPrefs = prefs ?? await SharedPreferences.getInstance();
+  inspector!.registerKeyValueSource(SharedPreferencesSource(sharedPrefs));
+}

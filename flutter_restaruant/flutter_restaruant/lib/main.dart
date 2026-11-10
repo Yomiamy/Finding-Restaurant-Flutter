@@ -46,6 +46,7 @@ void main() async {
       S.load(ui.PlatformDispatcher.instance.locale),
       // 於 runApp 前載入，使 isGuest 可被 UI 同步查詢
       SignInManager().loadPrefs(),
+      if (kDebugMode) registerSharedPreferencesSource(),
     ]);
 
     // App Check：驗證請求來自正版 App，保護 Firebase AI（Gemini）等後端配額。

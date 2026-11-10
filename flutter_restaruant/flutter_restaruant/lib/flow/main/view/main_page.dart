@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_platform_widgets/flutter_platform_widgets.dart';
+import 'package:logger/logger.dart';
 
 import '../../../features/component/component_barrel.dart';
 import '../../../app/di/di_barrel.dart';
-import '../../../domain/entities/entities_barrel.dart';
+import '../../../domain/domain_barrel.dart';
 import '../../../features/foundation/extension/extension_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../../../models/model_barrel.dart';
+import '../../autocomplete/autocomplete_barrel.dart';
 import '../../favor/view/view_barrel.dart';
 import '../../filter/view/view_barrel.dart';
 import '../../restaurant/view/view_barrel.dart';
@@ -30,8 +31,9 @@ class MainPage extends StatefulWidget {
 
 class MainPageState extends State<MainPage> implements AppOpenADEvent {
   FilterConfigs _configs = FilterConfigs();
-  String _filterKeyword = '';
   bool _isListMode = true;
+  bool _isSearchOpen = false;
+  final Logger _logger = Logger();
   final GlobalKey<ScaffoldState> _scaffoldKey = GlobalKey<ScaffoldState>();
   late MainBloc _mainBloc;
 
@@ -71,7 +73,6 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
       key: _scaffoldKey,
       drawer: DrawerWidget(
         isListMode: _isListMode,
-        onKeywordSearch: _showKeywordDialog,
         onFilterRules: _openFilterPage,
         onToggleViewMode: _toggleViewMode,
         onMapMyLoc: () => _mainBloc.add(const Reset()),
@@ -110,6 +111,12 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
       ),
       actions: [
         IconButton(
+          key: const Key('main_page_search_button'),
+          icon: const Icon(Icons.search, color: ThemeColor.colorffffff),
+          tooltip: S.current.autocomplete_search_hint,
+          onPressed: _openSearch,
+        ),
+        IconButton(
           key: const Key('ai_foodie_button'),
           icon: const Icon(Icons.auto_awesome, color: ThemeColor.colorffffff),
           tooltip: S.current.ai_foodie_assistant_tooltip,
@@ -146,44 +153,59 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
     Navigator.of(context).pushNamed(SettingsPage.routeName);
   }
 
-  void _showKeywordDialog() {
-    if (!mounted) {
-      return;
-    }
+  Future<void> _openSearch() async {
+    if (_isSearchOpen) return;
+    _isSearchOpen = true;
 
-    ViewUtils.showPromptDialog(
-      context: context,
-      title: S.current.keyword_search,
-      msgWidget: PlatformTextField(
-        hintText: S.current.keyword_search_hint,
-        onChanged: (keyword) {
-          _filterKeyword = keyword;
-        },
-      ),
-      actions: [
-        PlatformTextButton(
-          onPressed: () {
-            _mainBloc.add(
-              FilterListByKeyword(
-                keyword: _filterKeyword,
-                sortByStr: _configs.sortBy,
-                price: _configs.price,
-                openAt: _configs.openAtInSec,
-              ),
-            );
-            _filterKeyword = '';
-            Navigator.pop(context);
-          },
-          child: PlatformText(S.current.confirm),
+    AutocompleteBloc? autocompleteBloc;
+    try {
+      double? latitude;
+      double? longitude;
+      try {
+        final position = await Utils.getCurrentPosition().timeout(
+          const Duration(seconds: 2),
+        );
+        latitude = position.latitude;
+        longitude = position.longitude;
+      } catch (e, st) {
+        _logger.w(
+          'Location unavailable for autocomplete; proceeding without coordinates',
+          error: e,
+          stackTrace: st,
+        );
+      }
+
+      if (!mounted) return;
+
+      autocompleteBloc = AutocompleteBloc(
+        repository: getIt<YelpAutocompleteRepository>(),
+      );
+
+      final selectedKeyword = await showSearch<String?>(
+        context: context,
+        delegate: RestaurantSearchDelegate(
+          bloc: autocompleteBloc,
+          latitude: latitude,
+          longitude: longitude,
         ),
-        PlatformTextButton(
-          onPressed: () {
-            Navigator.pop(context);
-          },
-          child: PlatformText(S.current.cancel),
-        ),
-      ],
-    );
+      );
+
+      if (selectedKeyword != null &&
+          selectedKeyword.trim().isNotEmpty &&
+          mounted) {
+        _mainBloc.add(
+          FilterListByKeyword(
+            keyword: selectedKeyword.trim(),
+            sortByStr: _configs.sortBy,
+            price: _configs.price,
+            openAt: _configs.openAtInSec,
+          ),
+        );
+      }
+    } finally {
+      _isSearchOpen = false;
+      await autocompleteBloc?.close();
+    }
   }
 
   Future<void> _openFilterPage() async {
