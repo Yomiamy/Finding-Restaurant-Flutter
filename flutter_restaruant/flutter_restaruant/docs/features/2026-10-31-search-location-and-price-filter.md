@@ -4,7 +4,7 @@
 - **狀態**：草稿（待審查 / STAGE 0a）
 - **實查基線**：`main` @ `6ed8af32`
 - **需求來源**：gen-grill brief Q1–Q5，已放行（摘要見 §2.2）
-- **相關 brainstorm 項目**：`docs/brainstorm/2026-11-02-features-brainstorm.md` §8.3 [A-8.7]（L1624-1640）
+- **相關 brainstorm 項目**：`docs/brainstorm/2026-11-11-features-brainstorm.md` §8.3 [A-8.7]（L1624-1640）
 - **相關規格**：`docs/features/2026-10-23-yelp-places-api-coverage.md`（PR #160，保留 A-8.7 擴充點）
 
 ---
