@@ -16,7 +16,8 @@
 | :--- | :--- | :--- |
 | [`lib/main.dart`](../../lib/main.dart) | `main()`<br>`FindingRestaruantApp`<br>`navigatorKey`<br>`appRootBuilder` | App 入口。初始化 binding、DI、Firebase 與登入狀態後 `runApp`。組裝 `PlatformApp`（iOS/Android 雙分支）、掛載 `navigatorKey`、`navigatorObservers` 與 debug-only 的 5 連點喚起手勢。`appRootBuilder`（`builder:`）注入 `Theme`、全域 `ScaffoldMessenger` 與透明根 `Scaffold`，讓兩個分支都能顯示 SnackBar；並以 `ScrollConfiguration(AppScrollBehavior)` 讓兩個分支都能用滑鼠拖曳捲動。 |
 | [`lib/app/di/injection.dart`](../../lib/app/di/injection.dart) | `getIt`<br>`setupInjection()` | GetIt 依賴注入註冊中心。以**介面為 key、實作為 value** 註冊全部 Repository、DataSource 與 Manager，全數 `registerLazySingleton`。 |
-| [`lib/app/di/inspector.dart`](../../lib/app/di/inspector.dart) | `inspector` | Debug-only 除錯工具實例（頂層 `final FlutterInspector?`）。`kDebugMode` 為 false 時恆為 `null`，release build 中所有引用點成為 dead code 被 tree-shaking 移除。 |
+| [`lib/features/utils/inspector/inspector.dart`](../../lib/features/utils/inspector/inspector.dart) | `inspector`<br>`registerSharedPreferencesSource()` | Debug-only 除錯工具實例與 SharedPreferences 來源註冊。`kDebugMode` 為 false 時恆為 `null`，release build 中所有引用點成為 dead code 被 tree-shaking 移除。 |
+| [`lib/features/utils/inspector/shared_preferences_source.dart`](../../lib/features/utils/inspector/shared_preferences_source.dart) | `SharedPreferencesSource` | `KeyValueBrowserSource` 介面實作，支援除錯工具之 Key-Value Storage 瀏覽與增刪改查。 |
 | [`lib/app/routes/routes_table.dart`](../../lib/app/routes/routes_table.dart) | `routesTable` | **Composition Root**。路由名稱 → WidgetBuilder 的對照表，是全 App 唯一把「路由 / Bloc / Repository」接起來的地方（`BlocProvider` + `GetIt.I<介面>()`）。 |
 | [`lib/app/firebase_options.dart`](../../lib/app/firebase_options.dart) | `DefaultFirebaseOptions` | FlutterFire CLI 產生的各平台 Firebase 設定，供 `Firebase.initializeApp` 使用。 |
 
@@ -120,6 +121,8 @@
 | [`lib/flow/main/view/map_widget.dart`](../../lib/flow/main/view/map_widget.dart) | `MapWidget` | Google Maps 地圖與 Marker 呈現，右上角自訂定位按鈕與底部橫向餐廳卡片預覽。 |
 | [`lib/flow/main/view/restaurant_info_list_widget.dart`](../../lib/flow/main/view/restaurant_info_list_widget.dart) | `RestaurantInfoListWidget` | 餐廳列表（已移除內嵌廣告，含載入更多指示器）。 |
 | [`lib/flow/main/view/filter_tags_widget.dart`](../../lib/flow/main/view/filter_tags_widget.dart) | `FilterTagsWidget` | 已套用篩選條件的標籤列。 |
+| [`lib/flow/autocomplete/bloc/autocomplete_bloc.dart`](../../lib/flow/autocomplete/bloc/autocomplete_bloc.dart) | `AutocompleteBloc` | Yelp 搜尋即時補全業務邏輯（300ms 防抖、請求取消、錯誤處理）。 |
+| [`lib/flow/autocomplete/view/restaurant_search_delegate.dart`](../../lib/flow/autocomplete/view/restaurant_search_delegate.dart) | `RestaurantSearchDelegate` | Material 3 搜尋體驗，分區展示熱門詞條、推薦店家與相關分類，串接導航與關鍵字篩選。 |
 | [`lib/flow/restaurant/bloc/restaurant_detail_bloc.dart`](../../lib/flow/restaurant/bloc/restaurant_detail_bloc.dart) | `RestaurantDetailBloc` | 餐廳詳情頁業務邏輯。 |
 | [`lib/flow/restaurant/view/restaurant_detail_page.dart`](../../lib/flow/restaurant/view/restaurant_detail_page.dart) | `RestaurantDetailPage` | 餐廳詳情頁。 |
 | [`lib/flow/favor/bloc/favor_bloc.dart`](../../lib/flow/favor/bloc/favor_bloc.dart) | `FavorBloc` | 最愛清單業務邏輯。 |

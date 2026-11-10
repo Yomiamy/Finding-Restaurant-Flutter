@@ -9,7 +9,7 @@
 
 本報告整合了架構審計與競品探索報告之事實與推理鏈，產出符合產業界最高標準的產品與技術發展路線圖 (Strategic Product Roadmap) 及 RICE / ICE 雙優先級評估矩陣。
 
-> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。**2026-10-22 補記**：檔名前綴其後已再更新為 `2026-10-22`，上述 `2026-09-30` 為當時狀態。**2026-10-25 補記**：檔名前綴再更新為 `2026-10-25`。**2026-10-26 補記**：檔名前綴再更新為 `2026-10-26`。**2026-11-01 補記**：檔名前綴再更新為 `2026-11-01`。A-8.7 解除 GPS 強制綁定與價格字串過濾已完成 (Issue #169 / PR #170)。**2026-11-02 補記**：檔名前綴再更新為 `2026-11-02`。A-8.6 根治 Yelp 關鍵字假搜尋缺陷：廢除本地記憶體 50 筆過濾，直通遠端 `term` 查詢已完成 (Issue #171 / PR #172)。**2026-11-04 補記**：A-8.10 擴充 Yelp 搜尋進階篩選（`categories`、`radius`、`open_now` 與 1,000 筆分頁邊界防護）已完成 (Issue #173 / PR #174)。**2026-11-04 補記 (二)**：E-8.6 BLoC 測試統一改用 `blocTest` 宣告式結構已完成 (Issue #175 / PR #176)。
+> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。**2026-10-22 補記**：檔名前綴其後已再更新為 `2026-10-22`，上述 `2026-09-30` 為當時狀態。**2026-10-25 補記**：檔名前綴再更新為 `2026-10-25`。**2026-10-26 補記**：檔名前綴再更新為 `2026-10-26`。**2026-11-01 補記**：檔名前綴再更新為 `2026-11-01`。A-8.7 解除 GPS 強制綁定與價格字串過濾已完成 (Issue #169 / PR #170)。**2026-11-02 補記**：檔名前綴再更新為 `2026-11-02`。A-8.6 根治 Yelp 關鍵字假搜尋缺陷：廢除本地記憶體 50 筆過濾，直通遠端 `term` 查詢已完成 (Issue #171 / PR #172)。**2026-11-04 補記**：A-8.10 擴充 Yelp 搜尋進階篩選（`categories`、`radius`、`open_now` 與 1,000 筆分頁邊界防護）已完成 (Issue #173 / PR #174)。**2026-11-04 補記 (二)**：E-8.6 BLoC 測試統一改用 `blocTest` 宣告式結構已完成 (Issue #175 / PR #176)。**2026-11-10 補記**：A-8.12 菜系分類篩選與四列橫向滾動已合入主幹 (Issue #177 / PR #178)。**2026-11-11 補記**：檔名前綴更新為 `2026-11-11`。A-8.9 串接 Yelp Autocomplete API 實現搜尋即時補全與聯想已完成 (Issue #180 / PR #181)，落地於 `AutocompleteBloc`、`RestaurantSearchDelegate` 與 `MainPage` AppBar 常駐搜尋按鈕整合。
 
 ---
 
@@ -82,7 +82,7 @@
 | **Detail 核心欄位補齊與廢棄端點刪除 (A-8.8)** | ✅ **已於 2026-10-27 完成 (Issue #161 / PR #162)**：`YelpRestaurantDetailDto` 補齊 `id`、`price`、`url`、`display_phone` 等；`RestaurantDetailEntity` 補齊對應屬性；UI 改用 `displayPhone` 並加入 Yelp 外跳連結；刪除已廢除之 `APIClz.fetchToken`。 |
 | **測試 Mock 替身命名統一為 `_Mock` (E-8.7)** | ✅ **已於 2026-10-27 完成 (Issue #163 / PR #164)**：全專案單元測試檔內宣告之 mock 類別統一遵循 `_Mock` 前綴私有命名規範，與大型專案測試風格對齊。 |
 | **Repository 建構子注入解除全域 GetIt 依賴 (A-8.14)** | ✅ **已於 2026-10-29 完成 (Issue #165 / PR #168)**：全面為 `MainRepo`、`RestaurantDetailRepo` 及 4 個 Yelp Repository 改用具名建構子注入 `APIClz` 與 `locale`，消滅 data 層對 `app/` 與全域 GetIt 的隱性反向依賴。 |
-| **Yelp Autocomplete 與 Categories API 基礎建設 (A-8.9 / A-8.12 部分)** | 🟡 **API/Repo 已於 2026-10-25 完成 (Issue #159 / PR #160)**；Categories 菜系篩選 UI (最多四列橫向滾動) 與 `fetchCuisineCategories` 已於 2026-11-07 完成並合入主幹 (Issue #177 / PR #178)；剩餘 Autocomplete UI/Debounce/BLoC 與 Categories 本地長週期快取待辦。 |
+| **Yelp Autocomplete 與 Categories API 基礎建設 (A-8.9 / A-8.12 部分)** | ✅ **已於 2026-11-10 完成 (Issue #180 / PR #181)**：以 `AutocompleteBloc`（300ms 防抖 + switchMap）、`RestaurantSearchDelegate` 與 `MainPage` AppBar 常駐按鈕實現即時搜尋聯想與店家導航，Drawer 舊有重複入口已淘汰；Categories 菜系篩選 UI 亦已於 2026-11-07 完成 (Issue #177 / PR #178)；剩餘 Categories 本地長週期快取待辦。 |
 
 **🔴 仍未解決與新納入阻擋項（全數為 P0 最高優先，AdMob 合規為絕對最高阻擋項）**
 
@@ -1746,18 +1746,18 @@ class ComparisonMatrixComponent extends A2UIComponent {
 - **具體實作建議**：
   1. 實作 `ErrorHandlingInterceptor`：將 `DioExceptionType.connectionTimeout`, `badResponse` 對應為具體的 `AppException`。
 
-#### [A-8.9] 串接 Yelp Autocomplete API (`GET /v3/autocomplete`) 實現搜尋即時補全與聯想 — 🟡 API/Repo 已完成 (Issue #159 / PR #160)，剩餘 UI/Debounce/BLoC
-- **狀態**：🟡 API 與 Repository 已完成（Issue #159 / PR #160，2026-10-25）：`APIClz.autocomplete`、`YelpAutocompleteDto`、獨立的 `YelpAutocompleteRepository`／`YelpAutocompleteRepo`。與下方原提案的落差：未放進 `MainRepository`、未建 `autocomplete_suggestion_entity.dart`（Repository 直接回傳 DTO）。**仍未做**：Debounce、Overlay 建議清單 UI 與 BLoC。
+#### [A-8.9] 串接 Yelp Autocomplete API (`GET /v3/autocomplete`) 實現搜尋即時補全與聯想 — ✅ 已完成 (Issue #180 / PR #181)
+- **狀態**：✅ **已完成**（2026-11-10，Issue #180 / PR #181；底層 API 與 Repo 於 2026-10-25 Issue #159 / PR #160 完成）：落地於 `lib/flow/autocomplete/`（包含 300ms Debounce + switchMap 之 `AutocompleteBloc` 與多語系 ARB）及 Material 3 `RestaurantSearchDelegate`（分區展示熱門查詢詞 `terms`、符合店家 `businesses`、分類別名 `categories`），並於 `MainPage` AppBar 掛載常駐搜尋入口，淘汰 Drawer 中舊版重複項目。單元與 Widget 測試全數通過。
 - **優先級**：`P1` (核心搜尋體驗增強)
 - **預估 Effort**：`0.5d`（原 0.8d，底層 API 與 Repo 落地後下修）
 - **價值與收益**：
   使用者在搜尋列打字時，即時調用官方 `/v3/autocomplete` 取得 3 大維度建議（熱門查詢詞 `terms`、符合條件店家 `businesses`、分類別名 `categories`），消除「盲搜」與打字錯誤，大幅提升搜尋流暢度。
 - **影響檔案路徑**：
-  - 修改：`lib/api/api_clz.dart`（新增 `@GET('/v3/autocomplete')`）
-  - 新增：`lib/api/dto/yelp_autocomplete_dto.dart`
-  - 新增：`lib/domain/entities/autocomplete_suggestion_entity.dart`
-  - 修改：`lib/domain/repositories/main_repository.dart`、`lib/data_layer/repositories/main_repo.dart`
-  - 修改：`lib/flow/main/`（搜尋欄下拉聯想選單 UI）
+  - 新增：`lib/flow/autocomplete/bloc/autocomplete_bloc.dart`（及 Event / State / Barrel）
+  - 新增：`lib/flow/autocomplete/view/restaurant_search_delegate.dart`
+  - 修改：`lib/flow/main/view/main_page.dart`（AppBar 常駐按鈕與生命週期釋放）
+  - 修改：`lib/flow/main/view/drawer_widget.dart`（移除重複搜尋項）
+  - 修改：`lib/l10n/intl_en.arb`、`lib/l10n/intl_zh_TW.arb`（多語系鍵值）
 - **具體實作建議**：
   1. 定義 `autocomplete({@Query('text') required String text, @Query('latitude') double? latitude, @Query('longitude') double? longitude, @Query('locale') String? locale})`。
   2. 搭配 300ms Debounce，當搜尋列聚焦且輸入 $\ge 2$ 個字元時顯示 Overlay 建議清單。
@@ -1979,7 +1979,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
                                      & A-8.6 (Yelp 假搜尋根治 ✅) & A-8.7 (GPS 解綁 ✅) & A-8.8 (實體欄位補齊 ✅) & A-8.11 (鑑權容錯)
                                      │
  Phase 2 (社群/轉化)    ──► 納入 A-8.3 (Dio錯誤對應) & UI-8.4 (色差校正) & UI-8.3 (語法糖)
-                                     & A-8.9 (Autocomplete 補全 🟡) & A-8.10 (進階篩選 ✅)
+                                     & A-8.9 (Autocomplete 補全 ✅) & A-8.10 (進階篩選 ✅)
                                      │
  Phase 3 (AI M4/M5 支撐) ──► 納入 E-8.2 (mocktail測試 ✅) & E-8.7 (mock命名 ✅) & A-8.14 (Repo注入 ✅) & E-8.6 (blocTest ✅) & E-8.4 (80%覆蓋率) & UI-8.6 (A11y)
                                      & A-8.12 (Yelp 分類樹 🟡 PR #160/#178) & A-8.13 (GraphQL 聚合優化)
@@ -1999,7 +1999,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 3. **融入 Phase 2 社群生態與轉化閉環**：
    - 微訂位與候位排隊需要可分辨的網路錯誤，此時引入 **A-8.3 (Dio 錯誤對應攔截器)** 讓 BLoC 能區分逾時、伺服器錯誤與鑑權失敗。（原規劃的 401 自動換約已於 2026-10-22 移除：Yelp 為固定 API Key，無刷新端點；**A-8.11** 已升 P0 移至 Phase 1.5。）
-   - 引入 **A-8.9 (Autocomplete 即時聯想)**（API/Repo 已於 2026-10-25 隨 PR #160 完成，剩餘 UI/Debounce/BLoC）；**A-8.10 (菜系、半徑、營業中進階篩選與 1,000 筆分頁邊界防護)** 已於 2026-11-04 完成 (Issue #173 / PR #174，落地於 `APIClz.businessesSearch`、`MainRepo` 邊界防禦與 `FilterConfigs` 管線串接)。
+   - 引入 **A-8.9 (Autocomplete 即時聯想)** 已於 2026-11-10 完成 (Issue #180 / PR #181，落地於 `AutocompleteBloc` 300ms 防抖、`RestaurantSearchDelegate` 與 `MainPage` AppBar 搜尋整合)；**A-8.10 (菜系、半徑、營業中進階篩選與 1,000 筆分頁邊界防護)** 已於 2026-11-04 完成 (Issue #173 / PR #174，落地於 `APIClz.businessesSearch`、`MainRepo` 邊界防禦與 `FilterConfigs` 管線串接)。
    - **UI-8.4 (色差校正)** 與 **UI-8.3 (BuildContext 擴充語法糖)** 將作為視覺打磨的主力。
 
 4. **全面支撐 Phase 3 (Google AI Studio M4/M5 推進)**：
