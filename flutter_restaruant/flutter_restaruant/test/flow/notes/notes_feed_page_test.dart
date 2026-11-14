@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
@@ -154,5 +156,49 @@ void main() {
       expect(find.byType(NoteDetailPage), findsOneWidget);
       expect(find.text('麵體彈牙，醬汁濃郁。'), findsOneWidget);
     });
+
+    testWidgets(
+      'keeps MasonryGridView visible during pull-to-refresh and updates cards on completion',
+      (tester) async {
+        final refreshCompleter = Completer<List<UgcNoteEntity>>();
+        var callCount = 0;
+        when(() => mockRepository.fetchNotes()).thenAnswer((_) {
+          callCount++;
+          if (callCount == 1) {
+            return Future.value(const [_Data.imageNote]);
+          }
+          return refreshCompleter.future;
+        });
+
+        final bloc = NotesFeedBloc(repository: mockRepository);
+        addTearDown(bloc.close);
+
+        await tester.pumpWidget(buildTestApp(bloc));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(MasonryGridView), findsOneWidget);
+        expect(find.byType(NoteMasonryCard), findsOneWidget);
+
+        await tester.fling(
+          find.byType(MasonryGridView),
+          const Offset(0, 300),
+          1000,
+        );
+        await tester.pump();
+        await tester.pump(const Duration(seconds: 1));
+
+        expect(callCount, 2);
+        expect(find.byType(MasonryGridView), findsOneWidget);
+        expect(find.byType(LoadingWidget), findsNothing);
+        expect(find.text('巷弄裡的手工義大利麵'), findsOneWidget);
+
+        refreshCompleter.complete(const [_Data.imageNote, _Data.videoNote]);
+        await tester.pumpAndSettle();
+
+        expect(find.byType(MasonryGridView), findsOneWidget);
+        expect(find.byType(NoteMasonryCard), findsNWidgets(2));
+        expect(find.text('15秒直擊炙燒鮭魚握壽司'), findsOneWidget);
+      },
+    );
   });
 }
