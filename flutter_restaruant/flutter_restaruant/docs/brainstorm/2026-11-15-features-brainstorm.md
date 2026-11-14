@@ -9,7 +9,7 @@
 
 本報告整合了架構審計與競品探索報告之事實與推理鏈，產出符合產業界最高標準的產品與技術發展路線圖 (Strategic Product Roadmap) 及 RICE / ICE 雙優先級評估矩陣。
 
-> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。**2026-10-22 補記**：檔名前綴其後已再更新為 `2026-10-22`，上述 `2026-09-30` 為當時狀態。**2026-10-25 補記**：檔名前綴再更新為 `2026-10-25`。**2026-10-26 補記**：檔名前綴再更新為 `2026-10-26`。**2026-11-01 補記**：檔名前綴再更新為 `2026-11-01`。A-8.7 解除 GPS 強制綁定與價格字串過濾已完成 (Issue #169 / PR #170)。**2026-11-02 補記**：檔名前綴再更新為 `2026-11-02`。A-8.6 根治 Yelp 關鍵字假搜尋缺陷：廢除本地記憶體 50 筆過濾，直通遠端 `term` 查詢已完成 (Issue #171 / PR #172)。**2026-11-04 補記**：A-8.10 擴充 Yelp 搜尋進階篩選（`categories`、`radius`、`open_now` 與 1,000 筆分頁邊界防護）已完成 (Issue #173 / PR #174)。**2026-11-04 補記 (二)**：E-8.6 BLoC 測試統一改用 `blocTest` 宣告式結構已完成 (Issue #175 / PR #176)。**2026-11-10 補記**：A-8.12 菜系分類篩選與四列橫向滾動已合入主幹 (Issue #177 / PR #178)。**2026-11-11 補記**：檔名前綴更新為 `2026-11-11`。A-8.9 串接 Yelp Autocomplete API 實現搜尋即時補全與聯想已完成 (Issue #180 / PR #181)，落地於 `AutocompleteBloc`、`RestaurantSearchDelegate` 與 `MainPage` AppBar 常駐搜尋按鈕整合。**2026-11-14 補記**：檔名前綴更新為 `2026-11-14`。F-2.3 雙排瀑布流 UGC 食記與 15 秒探店短影片已完成 (Issue #182 / PR #183)，落地於 `UgcNoteDataSource`、`NotesFeedBloc`、`NotesFeedPage`、`NoteDetailPage` 及 `DrawerWidget` 探店筆記入口。
+> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。**2026-10-22 補記**：檔名前綴其後已再更新為 `2026-10-22`，上述 `2026-09-30` 為當時狀態。**2026-10-25 補記**：檔名前綴再更新為 `2026-10-25`。**2026-10-26 補記**：檔名前綴再更新為 `2026-10-26`。**2026-11-01 補記**：檔名前綴再更新為 `2026-11-01`。A-8.7 解除 GPS 強制綁定與價格字串過濾已完成 (Issue #169 / PR #170)。**2026-11-02 補記**：檔名前綴再更新為 `2026-11-02`。A-8.6 根治 Yelp 關鍵字假搜尋缺陷：廢除本地記憶體 50 筆過濾，直通遠端 `term` 查詢已完成 (Issue #171 / PR #172)。**2026-11-04 補記**：A-8.10 擴充 Yelp 搜尋進階篩選（`categories`、`radius`、`open_now` 與 1,000 筆分頁邊界防護）已完成底層 API／Repository／`FilterConfigs` 管線 (Issue #173 / PR #174)；`FilterPage` 僅完成菜系 UI (#178)，尚缺 `radius` 與 `open_now` 控制項（列為 🟡 部分完成）。**2026-11-04 補記 (二)**：E-8.6 BLoC 測試統一改用 `blocTest` 宣告式結構已完成 (Issue #175 / PR #176)。**2026-11-10 補記**：A-8.12 菜系分類篩選與四列橫向滾動已合入主幹 (Issue #177 / PR #178)。**2026-11-11 補記**：檔名前綴更新為 `2026-11-11`。A-8.9 串接 Yelp Autocomplete API 實現搜尋即時補全與聯想已完成 (Issue #180 / PR #181)，落地於 `AutocompleteBloc`、`RestaurantSearchDelegate` 與 `MainPage` AppBar 常駐搜尋按鈕整合。**2026-11-14 補記**：檔名前綴更新為 `2026-11-14`。F-2.3 雙排瀑布流 UGC 食記與 15 秒探店短影片已完成 (Issue #182 / PR #183)，落地於 `UgcNoteDataSource`、`NotesFeedBloc`、`NotesFeedPage`、`NoteDetailPage` 及 `DrawerWidget` 探店筆記入口。**2026-11-15 補記**：檔名前綴更新為 `2026-11-15`；全面校對文件與 `main` 實況：更正 `A-8.10` 為 🟡 部分完成、同步 `F-0.2`／`F-3.3`／`MapWidget`／`§3` `fluster` 狀態標記、修正 `F-3.2`／`F-3.3` 編號對照與 Phase 1 計數（`23/24`）、並更新 `UI-8.3`（48 處）／`UI-8.4`（30 處／15 檔）／`UI-9.3`（8 檔 `MediaQuery`）實查數據與過時路徑說明。
 
 ---
 
@@ -77,8 +77,8 @@
 | **RatingStars 評分星等元件 (取代 11 張 PNG)** | ✅ 實查 `rating_stars.dart` 已實作並接線，PNG 與 `RatingHelper` 已移除 (PR #73 驗證) |
 | **iOS UIScene Lifecycle 支援遷移** | ✅ **已於 2026-08-23 完成**，正確掛載 `FlutterSceneDelegate` 並保留原生推播委派 |
 | **AI 多模態 Vision 菜單翻譯 (F-3.1)** | ✅ **已於 2026-09-12 完成 (Issue #115 / PR #116)**：以 `firebase_ai` + `gemini-3.5-flash-lite` 實現結構化 JSON 菜單辨識與過敏原標註，架構落地於 `lib/domain/`、`lib/data_layer/` 與 `lib/flow/menu_vision/`（34 測試全過零警告，獲 Linus 🟢 好品味與 Production-Ready 裁決；揭露 2 項架構微調 Action Items） |
-| **AI 智能覓食助理與 GenUI 決策畫布 (F-3.2 / M4)** | ✅ **已於 2026-09-22 完成 (Issue #123 / PR #124)**：以 `firebase_ai` + `gemini-3.5-flash-lite` 實現自然語言覓食對話、候選店家 Grounding、動態卡片（`comparison_matrix`、`decision_roulette`、`action_chips`）與轉盤隨機挑選抽籤，架構落地於 `lib/domain/`、`lib/data_layer/` 與 `lib/flow/ai_foodie/`；連帶重構多語系 ARB 抽取與認證錯誤解耦（`AuthFailureReason`）。 |
-| **AI 餐廳評論智慧摘要與關鍵亮點 (F-3.3 / M5-Review)** | ✅ **已於 2026-10-21 完成 (Issue #154 / PR #155)**：以 `firebase_ai` + `gemini-3.8-flash` 實現真實顧客短評之 Pros、Cons、Highlights 與 Summary 結構化提煉，架構落地於 `lib/domain/`、`lib/data_layer/` 與 `lib/flow/restaurant/`；包含防注入安全隔離標籤、零評論短路、獨立 ReviewSummaryBloc 狀態機、ReviewSummaryCard 骨架屏與重試機制（單元與 Widget 測試全數通過）。 |
+| **AI 智能覓食助理與 GenUI 決策畫布 (§2.3 F-3.3 / §7.4 情境 1 / M4)** | ✅ **已於 2026-09-22 完成 (Issue #123 / PR #124)**：以 `firebase_ai` + `gemini-3.5-flash-lite` 實現自然語言覓食對話、候選店家 Grounding、動態卡片（`comparison_matrix`、`decision_roulette`、`action_chips`）與轉盤隨機挑選抽籤，架構落地於 `lib/domain/`、`lib/data_layer/` 與 `lib/flow/ai_foodie/`；連帶重構多語系 ARB 抽取與認證錯誤解耦（`AuthFailureReason`）。*（註：§2.3 `F-3.2` 實指 0-100% 個人味蕾配對度，尚未實作）* |
+| **AI 餐廳評論智慧摘要與關鍵亮點 (§7.4 情境 3 部分 / M5-Review)** | ✅ **已於 2026-10-21 完成 (Issue #154 / PR #155)**：以 `firebase_ai` + `gemini-3.8-flash` 實現真實顧客短評之 Pros、Cons、Highlights 與 Summary 結構化提煉，架構落地於 `lib/domain/`、`lib/data_layer/` 與 `lib/flow/restaurant/`；包含防注入安全隔離標籤、零評論短路、獨立 ReviewSummaryBloc 狀態機、ReviewSummaryCard 骨架屏與重試機制（單元與 Widget 測試全數通過）。*（註：同情境下之 0-100% 味蕾相性度 `F-3.2` 仍待實作）* |
 | **Detail 核心欄位補齊與廢棄端點刪除 (A-8.8)** | ✅ **已於 2026-10-27 完成 (Issue #161 / PR #162)**：`YelpRestaurantDetailDto` 補齊 `id`、`price`、`url`、`display_phone` 等；`RestaurantDetailEntity` 補齊對應屬性；UI 改用 `displayPhone` 並加入 Yelp 外跳連結；刪除已廢除之 `APIClz.fetchToken`。 |
 | **測試 Mock 替身命名統一為 `_Mock` (E-8.7)** | ✅ **已於 2026-10-27 完成 (Issue #163 / PR #164)**：全專案單元測試檔內宣告之 mock 類別統一遵循 `_Mock` 前綴私有命名規範，與大型專案測試風格對齊。 |
 | **Repository 建構子注入解除全域 GetIt 依賴 (A-8.14)** | ✅ **已於 2026-10-29 完成 (Issue #165 / PR #168)**：全面為 `MainRepo`、`RestaurantDetailRepo` 及 4 個 Yelp Repository 改用具名建構子注入 `APIClz` 與 `locale`，消滅 data 層對 `app/` 與全域 GetIt 的隱性反向依賴。 |
@@ -114,7 +114,13 @@
 
 ### 1.1 Flutter 專案現狀點評 (Project Architecture Review)
 
-`flutter_restaruant` 專案（版本 v1.4.0+30，基於 Dart SDK `^3.5.0` 及 Flutter 3.x）為一款具備完整雛形的餐廳搜尋與瀏覽應用程式。經 2026-07-26 至 07-30 的 Clean Architecture 對齊重構後，目錄已從單純 Feature-First 演進為 **Feature-First + 分層 (Domain / Data)** 架構：
+> **📌 2026-11-15 實查現況訂正**（下方目錄樹與描述為 `2026-07-30` 歷史快照，保留作重構基線參考）：
+> - **版本與 SDK**：`pubspec.yaml` 已升級至 `2.4.0+40`，`sdk: '>=3.10.1 <4.0.0'`、`flutter: '>=3.44.1'`。
+> - **目錄現況**：DI 位於 `lib/app/di/injection.dart`（原 `lib/di/`）、檢測器位於 `lib/features/utils/inspector/inspector.dart`、AI Remote Config 模型位於 `lib/api/dto/ai_model_config.dart`、基礎樣式與常數位於 `lib/app/constants/` 與 `lib/features/foundation/`；`lib/` 共 **266 個**非生成 `.dart` 檔（含 `.g.dart` 共 **297 個**）。
+> - **Domain / Data 層**：`lib/domain/repositories/` 已擴增至 **13 個**介面；`lib/domain/entities/` 下計有 **12 檔**引入 DTO／model（見 §8.4 A-8.2 定案）。
+> - **測試與相依**：`test/` 已達 **90 個** `*_test.dart` 檔（原記 13 個）；`camera`、`sqflite`、`path_provider`、`firebase_storage` 仍列於 `pubspec.yaml` 但未實際使用於本地快取（詳見 §9.5 E-9.1）。
+
+`flutter_restaruant` 專案（2026-07-30 快照：版本 v1.4.0+30，基於 Dart SDK `^3.5.0` 及 Flutter 3.x）為一款具備完整雛形的餐廳搜尋與瀏覽應用程式。經 2026-07-26 至 07-30 的 Clean Architecture 對齊重構後，目錄已從單純 Feature-First 演進為 **Feature-First + 分層 (Domain / Data)** 架構：
 
 ```
 lib/
@@ -198,10 +204,10 @@ lib/
    * **現況**：`lib/flow/filter/view/filter_page.dart:27-36` 已改為在 `didChangeDependencies()` 搭配 `_isInit` 旗標僅初始化一次，`build()` 回歸純淨。使用者調整條件不再被舊參數覆寫。
 
 7. **✅ 已修復 — `MapWidget` 標記未連動與常數品質 (Map & Code Quality Defects)**
-   * **✅ Marker 連動已修（2026-09-25 覆核）**：`map_widget.dart` 已實作 `didUpdateWidget()`。下方「🔴 Marker 未連動」為歷史紀錄。
+   * **✅ Marker 連動已修（2026-09-25 覆核）**：`map_widget.dart` 已實作 `didUpdateWidget()`。
    * **✅ 常數錯字已修**：`CONNECTION_TIEMOUT` / `RECEIVE_TIEMOUT` / `EMAIL_SUBJEC` 已更正並改為 `connectionTimeout` / `receiveTimeout` / `emailSubject`。
    * **✅ 風險 `operator ==` 已移除**：`YelpRestaurantSummaryInfo` 已由 `RestaurantEntity` 取代，`id!.compareTo()` 的 null crash 風險消失。
-   * **🔴 Marker 未連動仍存在**：`lib/flow/main/view/map_widget.dart` 至今未實作 `didUpdateWidget()`，Marker 僅於 `initState()`（`:22-35`）建立。搜尋或過濾更新列表時，地圖標記仍停留在初始狀態。
+   * ~~**🔴 Marker 未連動仍存在**：`lib/flow/main/view/map_widget.dart` 至今未實作 `didUpdateWidget()`，Marker 僅於 `initState()`（`:22-35`）建立。搜尋或過濾更新列表時，地圖標記仍停留在初始狀態。~~（歷史紀錄，已於 2026-09-25 覆核修復）
 
 ---
 
@@ -282,7 +288,7 @@ lib/
 
 | # | 接線 | 規劃位置 | 實際落地 |
 | :--- | :--- | :--- | :--- |
-| 1 | 建立單一 `FlutterInspector` 實例 | `lib/di/`（沿用 GetIt 註冊） | `lib/di/inspector.dart` —— **改用頂層 `final FlutterInspector?`**，`kDebugMode ? ... : null`，未走 GetIt（release 恆為 `null`，引用點成為 dead code 被 tree-shaking 移除，比 GetIt 註冊更能保證 AC-9） |
+| 1 | 建立單一 `FlutterInspector` 實例 | `lib/di/`（沿用 GetIt 註冊） | `lib/features/utils/inspector/inspector.dart`（原規劃於 `lib/di/inspector.dart`）—— **改用頂層 `final FlutterInspector?`**，`kDebugMode ? ... : null`，未走 GetIt（release 恆為 `null`，引用點成為 dead code 被 tree-shaking 移除，比 GetIt 註冊更能保證 AC-9） |
 | 2 | Dio 攔截器 | `lib/api/dio/dio_client.dart:24,29` | `lib/api/api_clz.dart` —— 掛載點實際在此檔，**排在既有 auth `InterceptorsWrapper` 之後**，確保攔得到已注入 header 的請求 |
 | 3 | `navigatorObservers` | `lib/main.dart:51` `PlatformApp` | 同規劃，`PlatformApp` 頂層掛載 |
 | 4 | 喚起手勢（5 連點） | `lib/main.dart:79` `builder:` | 同規劃包 `FlutterInspectorMagicalTap`；⚠️ 但 `onTap` **不可用 builder 的 `context`**（位於 Navigator 之上，`showGeneralDialog` 解析不到 `NavigatorState`），改由 `navigatorKey.currentContext` 取得 |
@@ -375,7 +381,7 @@ lib/
 * **技術實現**: 使用者拍照或選取紙本菜單圖片，傳送至 Gemini 3.5 Flash Lite (`gemini-3.5-flash-lite`) API，透過 `firebase_ai: ^3.7.1` 原生串接，支援相機/相簿選圖、本機 MIME 偵測與品質壓縮、App Check Debug/Safety 防護，並由 `MenuVisionBloc` 驅動 `DraggableScrollableSheet`。
 * **結構化輸出**: 返回 JSON Schema 規範之 `DishCatalogComponent`，包含：原始菜名、繁體中文翻譯、食材解析（`AllergenInfo` 含過敏原等級與標籤）、辣度等級、估算價格，並自動計算虛擬點餐總額。
 * **架構落地**:
-  - **模組邊界**: 對主工程僅透過 DI 容器 (`lib/di/injection.dart`) 與 AppBar 相機按鈕 2 處銜接，具備極致模組隔離（貫徹 Never break userspace）。
+  - **模組邊界**: 對主工程僅透過 DI 容器 (`lib/app/di/injection.dart`，原址 `lib/di/injection.dart`) 與 AppBar 相機按鈕 2 處銜接，具備極致模組隔離（貫徹 Never break userspace）。
   - **Domain**: `lib/domain/entities/dish_item_entity.dart`、`allergen_info.dart`、`a2ui_component.dart`（Sealed class 階層）、`lib/domain/repositories/menu_vision_repository.dart`
   - **Data**: `lib/data_layer/repositories/menu_vision_repo.dart`、`menu_analysis_schema.dart`
   - **Presentation / Flow**: `lib/flow/menu_vision/bloc/` (`menu_vision_bloc.dart`、`menu_vision_state.dart`（Sealed class 狀態機）)、`lib/flow/menu_vision/view/` (`menu_vision_sheet.dart`、`dish_card.dart`、`allergen_badge.dart`)
@@ -394,11 +400,12 @@ lib/
   2. 系統分析餐廳歷史標籤與評論關鍵詞向量。
   3. 為每家餐廳計算 0-100% Match Score，並於 UI 呈現卡片標記（例：「🔥 96% 味蕾配對！理由：你喜歡大麻大辣且偏好牛肉」）。
 
-#### F-3.3 自然語言決策轉盤與對話助手 (AI Meal Decision Helper)
+#### F-3.3 自然語言決策轉盤與對話助手 (AI Meal Decision Helper) — ✅ 已於 2026-09-22 完成 (Issue #123 / PR #124)
 * **設計理念**: 解決「今天吃什麼」聚餐選擇困難症。
 * **雙模式對話介面**:
   * **對話模式**: 輸入「想找中山區 500 元以內、氣氛安靜可以聊天的日式串燒」，AI 輸出 3 家精準對配餐廳並說明推薦理由。
   * **命運轉盤 (Decision Wheel)**: 一鍵將當前篩選結果/口袋名單載入 3D 轉盤，轉動進行隨機抽籤，伴隨物理音效與慶祝粒子動畫。
+* **實際落地**: 實作於 `lib/domain/`、`lib/data_layer/` 與 `lib/flow/ai_foodie/`（`AiFoodieSheet`、`DecisionRouletteDialog`、`ComparisonMatrixCard`、`ActionChipGroupWidget` 等元件；見 §2 Progress Review M4 與 §7.4 情境 1）。
 
 ---
 
@@ -478,7 +485,7 @@ lib/
    * **原問題**: `flow/{feature}/repository` 將資料層綁死在 UI 流程中。
    * **實作結果**: 已抽出 `domain/`（`entities/` + `repositories/` 抽象介面）與 `data_layer/`（`dto/` + `datasources/` + `repositories/` 實作）。legacy 的 `flow/*/repository/` 實作已全數移除。
 2. **✅ 導入全域依賴注入 (Dependency Injection with GetIt)**
-   * **實作結果**: 導入 `get_it: ^8.0.0`，於 `lib/di/` 集中註冊，路由表改由 get_it 解析 Bloc。
+   * **實作結果**: 導入 `get_it: ^8.0.0`，初期於 `lib/di/` 集中註冊（現已遷至 `lib/app/di/injection.dart`），路由表改由 get_it 解析 Bloc。
    * **⚠️ 與原規劃偏離**: **未導入 `injectable` 程式碼生成**，改採手寫註冊。以當前規模而言，手寫註冊足夠且少一層 build_runner 相依，屬合理取捨。
 3. **✅ 資料模型與職責分離 (DTO vs Domain Model 分離)**
    * **實作結果**: 建立 `RestaurantEntity` / `UserEntity` 等領域實體與 DTO mapping，legacy `YelpRestaurantSummaryInfo`、`AccountInfo` 已移除，連帶消滅了有 null crash 風險的 `operator ==`。
@@ -519,9 +526,9 @@ lib/
     * **觸發條件**: `prd-ios-{version}`, `prd-android-{version}`
     * **打包與分發**: 打包完成後，上傳至 **Apple Store Connect (TestFlight)** 與 **Google Play Console (Internal Testing)**。
 
-#### F-0.2 Flutter SDK 升級遷移至 3.44.1+ (Flutter SDK Version Migration)
-* **背景與痛點**:
-  * 目前專案運行於 Flutter `3.41.9` / Dart `3.11.5`，未能充分享受新版 Flutter 的 Dart 3.x 效能優化、WebAssembly/Impeller 渲染改進及安全性修補。
+#### F-0.2 Flutter SDK 升級遷移至 3.44.1+ (Flutter SDK Version Migration) — ✅ 已於 2026-08-26 完成
+* **背景與痛點** *（2026-08 歷史提案背景；現已升級完成，`pubspec.yaml` 為 `flutter: '>=3.44.1'` / `sdk: '>=3.10.1 <4.0.0'`，GitHub Actions 工作流亦鎖定 `'3.44.1'`）*:
+  * 原專案運行於 Flutter `3.41.9` / Dart `3.11.5`，未能充分享受新版 Flutter 的 Dart 3.x 效能優化、WebAssembly/Impeller 渲染改進及安全性修補。
   * 許多現代套件相容性約束已逐漸向 Flutter 3.44+ 靠攏。
 * **改造要點**:
   * 升級本機與 CI/CD 環境之 Flutter SDK 至 `3.44.1` 或最新穩定版。
@@ -543,9 +550,9 @@ lib/
 * **背景與痛點**:
   * **CocoaPods 維護終止**：CocoaPods 官方已正式進入維護模式（預計 2026 年底註冊表唯讀），Firebase 官方亦已宣布 iOS SDK 的 CocoaPods 支援自 2026 年 10 月起停止發布新版。
   * **Flutter 強制轉向 SPM**：Flutter 官方明確警告未來版本將強制全面轉向 SPM，並移除 `enable-swift-package-manager: false` 的退出選項（*“Disabling Swift Package Manager will not be allowed in a future version of Flutter.”*）。
-  * **現況阻礙**：目前因專案內部分關鍵套件（如 `google_maps_flutter_ios`、`flutter_inappwebview_ios`）以及 `firebase_analytics` 與 `firebase-ios-sdk` 的 SPM 版本解析衝突，專案暫時透過 `pubspec.yaml` 關閉 SPM 降級回 CocoaPods。
+  * **現況說明** *（✅ 2026-08-24 已採混合模式完成遷移，見 §2 及 §4）*：原提案期間曾因 `google_maps_flutter_ios`、`flutter_inappwebview_ios` 與 `firebase-ios-sdk` 之 SPM 解析衝突暫退回 CocoaPods；目前 `flutter_inappwebview` 已於 `UI-9.1` 移除、`pubspec.yaml` 並無關閉 SPM 之設定、`flutter config` 啟用 `enable-swift-package-manager: true`，實務上採 SPM 混合模式並暫時保留 `ios/Podfile`／`Podfile.lock` 作回退相容。
 * **改造要點**:
-  * 待依賴之社群與官方套件全面支援 SPM（或升級至相容之最新 Plugin 版本）後，解除 SPM 關閉旗標。
+  * 待混合模式全面驗證且無相容依賴後，清理殘餘 CocoaPods 設定。
   * 遷移 iOS 原生依賴至 Swift Package Manager（`FlutterGeneratedPluginSwiftPackage`）。
   * 移除 `ios/Podfile`、`Podfile.lock` 與 `Pods/` 目錄，徹底消除 CocoaPods 技術債務，提升 iOS 建置效能。
 
@@ -602,7 +609,7 @@ lib/
 | ✅ **調整側選單功能項目順序** | UX 優化 | 10 | 1.0 | 100% | 0.5 | **20.0** | 10.0 | - | **已完成** |
 | ✅ **列表底部載入更多動畫** | UX 優化 | 9 | 1.0 | 100% | 0.5 | **18.0** | 10.0 | - | **已完成** |
 | **情境化探索標籤 (#一人食等)** | 搜尋優化 | 9 | 2.0 | 90% | 1.0 | **16.2** | 16.2 | 7 | **P1** |
-| **`fluster` 圖標動態聚類** | 效能優化 | 8 | 2.0 | 90% | 1.0 | **14.4** | 16.2 | 8 | **P1** |
+| ❌ **`fluster` 圖標動態聚類** | 效能優化 | 8 | 2.0 | 90% | 1.0 | **14.4** | 16.2 | 8 | **已放棄 (Issue #76/#77)** |
 | **骨架屏 Shimmer 載入與離線快取** | UX 優化 | 9 | 1.5 | 100% | 1.0 | **13.5** | 13.5 | 9 | **P1 (Shimmer✅ / 離線未做)** |
 | **輕量化線上微訂位 Time-Slot 選擇器** | 商業轉化 | 7 | 3.0 | 80% | 2.0 | **8.4** | 19.2 | 11 | **P1** |
 | **自訂美食地圖社群共編** | 社群生態 | 6 | 2.0 | 80% | 2.0 | **4.8** | 9.6 | 12 | **P2** |
@@ -622,7 +629,7 @@ lib/
 +-----------------------------------------------------------------------------------+
 |                           STRATEGIC PRODUCT ROADMAP                               |
 +-----------------------------------------------------------------------------------+
-| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 22/22 ✅        |
+| Phase 1: 地基修復與架構對齊 (Foundation & Architecture)   ── 進度 23/24 🟡        |
 |   • [x] P0 🚨 修復 AdMob 廣告刊登合規性 (防欺騙點擊/移至底部/消滅 Layout Shift) ✅ 2026-09-04 (Issue #107) |
 |   • [x] P0 自動化 CI/CD 發布流水線 (GitHub Actions) ✅ 2026-09-08 (Issue #113 / PR #114) |
 |   • [x] P-1 整合 flutter_inspector_kit ✅ 2026-08-05（量測地基就位）             |
@@ -692,9 +699,9 @@ lib/
    * 2026-07-30 覆核執行 `flutter analyze` → **`No issues found!`**。此為後續 PR 的最低門檻，不得回退。
 
 2. **`flutter test` 測試覆蓋率 — 🟡 進行中**:
-   * 現況：13 個 test 檔，已涵蓋 DI 註冊、repositories 與 sign-in bloc。
-   * 待補：BLoC 狀態轉換的 `bloc_test` 尚未全面覆蓋；測試目標路徑因分層重構已變更為 `flow/*/bloc/`、`domain/` 與 `data_layer/repositories/`（舊路徑 `flow/*/repository/` 已不存在）。
-   * 測試覆蓋率目標：核心業務邏輯單元測試覆蓋率 $\ge 80\%$（尚未量測，需先跑 `flutter test --coverage` 取得基線）。
+   * 現況：原 `2026-07-30` 快照僅 13 個 test 檔；**2026-11-15 實查 `test/` 已擴增至 90 個 `*_test.dart` 檔**，且 `E-8.2` (`mocktail`)、`E-8.3` (`Makefile` `test_coverage`)、`E-8.6` (全專案統一 `blocTest`，PR #176) 均已完成。
+   * 待補：BLoC 測試已統一 `blocTest`（PR #176），現有缺口轉為 **CI 覆蓋率門檻強制執行** 與實測覆蓋率基準線紀錄；測試目標路徑為 `flow/*/bloc/`、`domain/` 與 `data_layer/repositories/`（舊路徑 `flow/*/repository/` 已不存在）。
+   * 測試覆蓋率目標：核心業務邏輯單元測試覆蓋率 $\ge 80\%$（`Makefile` 已具 `test_coverage` 目標，尚缺 CI 門檻接入與基準紀錄，詳見 §8.3.2 E-8.4）。
 
 ---
 
@@ -753,7 +760,7 @@ lib/
 §6.4 的「色票以 `#D84A20` 為種子」隱含一個未經驗證的假設：`colorScheme.primary` 會**是**品牌橘。**實測不成立** ——
 `ColorScheme.fromSeed(seedColor: #D84A20)` 依 M3 tonal palette 將 primary 映射為 **`#8F4B38`（較濁的棕橘）**，非原色。
 
-後果：`colorScheme.primary` 與仍硬編 `ThemeColor.appPrimary` 的 **19 處使用點（8 個檔案）**（2026-08-05 複測更正，原記 16 處／7 檔）並存時有可見色差。這是零 `copyWith` 決策（D-4 額度用 0 個）的既定後果，非缺陷，但 §6.4 原文未預料到，於此更正。**S2 引入 `surface` 覆寫時須一併決定 primary 是否也要 `copyWith` 鎖回 `#D84A20`。**
+後果：`colorScheme.primary` 與原硬編 `ThemeColor.appPrimary` 的 **19 處使用點（8 個檔案）**（2026-08-05 複測更正；後續在 S2/S4 改名為 `ThemeColor.colord84a20`，**2026-11-15 實查已擴增至 30 處使用點／15 個檔案，含宣告共 31 處／16 檔**，見 UI-8.4）並存時有可見色差。這是零 `copyWith` 決策（D-4 額度用 0 個）的既定後果，非缺陷，但 §6.4 原文未預料到，於此更正。**S2 引入 `surface` 覆寫時須一併決定 primary 是否也要 `copyWith` 鎖回 `#D84A20`。**
 
 ### 另一項計畫外發現：跨平台 theme 解析
 
@@ -1056,7 +1063,7 @@ lib/features/foundation/style/
 | T-2 | ~~裸 `Colors.xxx` **25 處／16 檔**~~ | ✅ **已於 S4 (PR #106) 清理歸零**（全專案改用 `ThemeColor.color[hex]` 常數） |
 | T-3 | 10 個 `@Deprecated` 字級常數、29 處使用、14 個檔案待遷移 | ✅ **已於 S1 (PR #66) 移除並由 ThemeFontSize 替換** |
 | T-6 | ~~奶油白 `surface` (`#FFFBF7`) 覆寫~~ | ✅ **已於 S2 (PR #105) 定義 `ThemeColor.colorfffbf7` 並於 S4 全面落地** |
-| **T-9（新增）** | `colorScheme.primary` = `#8F4B38` ≠ 品牌色 `#D84A20` | 🟡 **部分解決**：S2/S4 建立 `ThemeColor.colord84a20` 編譯期常數，呼叫端全面替換並移除 `appPrimary` 別名。**但 `theme_data.dart:19` 仍是純 `fromSeed`、未覆寫 `primary`**（`:13` 註解仍記「S2 待處理」），依賴 `colorScheme.primary` 的 M3 預設元件仍是濁橘 `#8F4B38`。殘留移交 [UI-8.4]（2026-09-25 實查） |
+| **T-9（新增）** | `colorScheme.primary` = `#8F4B38` ≠ 品牌色 `#D84A20` | 🟡 **部分解決**：S2/S4 建立 `ThemeColor.colord84a20` 編譯期常數，呼叫端全面替換並移除 `appPrimary` 別名。**但 `theme_data.dart:19` 仍是純 `fromSeed`、未覆寫 `primary`**（`:13` 註解仍記「S2 待處理」），依賴 `colorScheme.primary` 的 M3 預設元件仍是濁橘 `#8F4B38`（2026-11-15 實查 `ThemeColor.colord84a20` 已達 **30 處使用點／15 個檔案**，含宣告共 31 處／16 檔）。殘留移交 [UI-8.4] |
 
 > **順序理由**：S2 完成後列表與最愛兩畫面同時改觀，是最快看到成果的切點。S1 單獨看幾乎無變化，但為 S2/S3 的前提。
 
@@ -1309,7 +1316,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 ## 7.4 四大核心業務情境與 GenUI 落地流程 (Four Core Scenarios)
 
-### 情境 1：AI 智能覓食助理與 GenUI 決策畫布 (Conversational Foodie Canvas)
+### 情境 1：AI 智能覓食助理與 GenUI 決策畫布 (Conversational Foodie Canvas) — ✅ 已於 2026-09-22 完成 (Issue #123 / PR #124)
 
 * **痛點**：多人聚餐或情境特殊時，傳統單維度篩選（價格/距離）無法處理複雜自然語言（「4 人、不吃牛、想喝酒聊天、好停車」）。
 * **進入點**：
@@ -1339,6 +1346,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 │  [📍 在地圖上看這 3 家]   [🎲 選擇困難？轉盤抽籤]       │
 └────────────────────────────────────────────────────────┘
 ```
+* **落地架構**：實作於 `lib/domain/`、`lib/data_layer/` 與 `lib/flow/ai_foodie/`（`AiFoodieSheet`、`DecisionRouletteDialog`、`ComparisonMatrixCard`、`ActionChipGroupWidget` 等；詳見 §2 Progress Review 與 §2.3 F-3.3）。
 
 ---
 
@@ -1361,7 +1369,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 ---
 
-### 情境 3：評論智慧總結與 0-100% 個人味蕾相性度 (Review Synthesis & Flavor Match)
+### 情境 3：評論智慧總結與 0-100% 個人味蕾相性度 (Review Synthesis & Flavor Match) — 🟡 評論摘要已於 2026-10-21 完成 (Issue #154 / PR #155)；0-100% 相性度待實作
 
 * **痛點**：每家餐廳動輒幾百則評論，正負評夾雜，難以迅速掌握真實避雷點。
 * **進入點**：餐廳詳情頁「顧客評價」區塊頂部。
@@ -1428,12 +1436,12 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 | # | 維度 / 架構特性 | 對照組專案 | 當前專案 (`Finding-Restaurant-Flutter`) | Linus 模式技術裁決與核心洞察 |
 | :-: | :--- | :--- | :--- | :--- |
-| **1** | **模組組織與套件架構** | 🔴 **Melos 15+ packages + 24+ overrides**<br>`pubspec.yaml:40-60` 劃分 15 個 workspace packages，但在 `pubspec.yaml:14-39` 被迫宣告 24+ 項 `dependency_overrides`（`intl`, `dio`, `retrofit`, `json_serializable` 等）壓制套件版本衝突。 | 🟢 **Single Package 目錄分層**<br>`pubspec.yaml` 單一 package (`flutter_restaruant` 2.2.0+37)，以目錄切分職責 (`domain/`, `data_layer/`, `flow/`, `features/foundation/`)。 | 🔴 **對照組陷入 Monorepo 泥淖**：未享受獨立部署好處，反承受多套件維護地獄。<br>🟢 **本專案勝在簡潔**：單一 Package 結構緊湊、全域一鍵建置 (`make gen`)，拒絕無謂拆分。 |
-| **2** | **分層邊界與依賴方向** | 🔴 **依賴倒置徹底失靈**<br>`domain/pubspec.yaml:26-45` 竟然直接依賴 8 個底層 API packages（`goons_retrofit_api`, `krakend_retrofit_api`, `db` 等）；`domain_adapter.dart:50-60` 直接接 `DataSource` 與 `Dio`。 | 🟢 **嚴格單向依賴倒置**<br>`flow` -> `domain` <- `data_layer` -> `api`。抽象 Repository 介面定義於 Domain，Data 實作之。<br>⚠️ 唯一瑕疵：`restaurant_detail_entity.dart:1` 存在反向 `import '../../data_layer/dto/dto_barrel.dart'`。 | 🔴 **對照組犯了架構虛偽罪**：嘴上說 Clean Architecture，核心 Domain 卻被底層 Infrastructure 綁架。<br>🟢 **本專案架構邊界更純粹**：修復 DTO 輕微引用後即為完美依賴倒置。 |
-| **3** | **依賴注入機制與生命週期** | 🔴 **GetIt 全域 Singleton Bloc 狀態污染**<br>`main_app/lib/main.dart:240-286` 與 `member_center_bloc.dart:16-25` 將 80+ Blocs 全數註冊為 GetIt 全域單例，離開畫面不銷毀，靠人肉 Clear 事件清狀態。 | 🟢 **BlocProvider 路由生命週期託管**<br>`lib/di/injection.dart:1-37`（僅 37 行）GetIt 只註冊無狀態 Repo/Client；`routes_table.dart:29-35` 由 `BlocProvider` 隨路由建立與銷毀。 | 🔴 **對照組致命破壞生命週期**：Bloc 淪為全域 Service Locator，引發記憶體洩漏與跨頁狀態污染。<br>🟢 **本專案完勝**：嚴守 Flutter 單向數據流與路由樹生命週期。 |
+| **1** | **模組組織與套件架構** | 🔴 **Melos 15+ packages + 24+ overrides**<br>`pubspec.yaml:40-60` 劃分 15 個 workspace packages，但在 `pubspec.yaml:14-39` 被迫宣告 24+ 項 `dependency_overrides`（`intl`, `dio`, `retrofit`, `json_serializable` 等）壓制套件版本衝突。 | 🟢 **Single Package 目錄分層**<br>`pubspec.yaml` 單一 package (`flutter_restaruant` 快照當時 2.2.0+37；2026-11-15 `main` 為 `2.4.0+40`)，以目錄切分職責 (`domain/`, `data_layer/`, `flow/`, `features/foundation/`)。 | 🔴 **對照組陷入 Monorepo 泥淖**：未享受獨立部署好處，反承受多套件維護地獄。<br>🟢 **本專案勝在簡潔**：單一 Package 結構緊湊、全域一鍵建置 (`make gen`)，拒絕無謂拆分。 |
+| **2** | **分層邊界與依賴方向** | 🔴 **依賴倒置徹底失靈**<br>`domain/pubspec.yaml:26-45` 竟然直接依賴 8 個底層 API packages（`goons_retrofit_api`, `krakend_retrofit_api`, `db` 等）；`domain_adapter.dart:50-60` 直接接 `DataSource` 與 `Dio`。 | 🟢 **單向依賴為主（「Infra <- Domain」務實例外見 A-8.2）**<br>`flow` -> `domain` <- `data_layer` -> `api`。抽象 Repository 介面定義於 Domain，Data 實作之。<br>註：原快照僅記 1 處實體反向引用；2026-11-15 實查 `lib/domain/entities/` 下計 12 檔引用 DTO／model，已依 §8.4 A-8.2 定案維持務實分層。 | 🔴 **對照組犯了架構虛偽罪**：嘴上說 Clean Architecture，核心 Domain 卻被底層 Infrastructure 綁架。<br>🟢 **本專案架構邊界更純粹**：維持單一 Package 分層與務實資料映射規範。 |
+| **3** | **依賴注入機制與生命週期** | 🔴 **GetIt 全域 Singleton Bloc 狀態污染**<br>`main_app/lib/main.dart:240-286` 與 `member_center_bloc.dart:16-25` 將 80+ Blocs 全數註冊為 GetIt 全域單例，離開畫面不銷毀，靠人肉 Clear 事件清狀態。 | 🟢 **BlocProvider 路由生命週期託管**<br>`lib/app/di/injection.dart`（原址 `lib/di/injection.dart:1-37`）GetIt 只註冊無狀態 Repo/Client；`routes_table.dart` 由 `BlocProvider` 隨路由建立與銷毀。 | 🔴 **對照組致命破壞生命週期**：Bloc 淪為全域 Service Locator，引發記憶體洩漏與跨頁狀態污染。<br>🟢 **本專案完勝**：嚴守 Flutter 單向數據流與路由樹生命週期。 |
 | **4** | **呼叫鏈深度與儀式稅** | 🔴 **5 層轉發儀式稅 (Ritual Tax)**<br>查會員資訊經歷：UI -> Bloc -> `MemberCenterFacade:44-46` -> `GetMemberInfoUC:18-29` -> `MemberRepo:23-27` -> `ClaimInvoiceService:21-47` -> API。單行轉發高達 80%。 | 🟢 **直球 2 層鏈接**<br>UI -> `RestaurantDetailBloc:12-61` -> `RestaurantDetailRepository:3-11` -> `RestaurantDetailRepo:12-41` -> Retrofit。直截了當，零廢話。 | 🔴 **對照組嚴重形式主義**：只會轉發的 UseCase 是在浪費 CPU 與增加 Call Stack。<br>🟢 **本專案保持好品味**：堅持 Bloc 直連 Repo，無複合業務邏輯絕不加層。 |
 | **5** | **狀態管理架構** | 🟡 **80+ Blocs 巨大上帝狀態**<br>80+ Blocs 僅 1 個 Cubit，State 採巨大巢狀類別 + 手寫 `copyWith`（達 377 行），出現 God State 且遍布 `// TODO: 拆分` 註解。 | 🟡 **7 個高內聚 Bloc**<br>7 個高內聚 Bloc（`MainBloc`, `FavorBloc`, `RestaurantDetailBloc` 等），搭配 `part / part of`，但兩者皆尚未採用 Dart 3 sealed class 模式。 | 🟡 **平庸對平庸**：對照組的狀態過於臃腫；本專案規模適中，但雙方皆需現代化進化為 Dart 3 Sealed Class 窮盡比對。 |
-| **6** | **網路層、攔截器與防護** | 🟢 **工業級防護鏈，但 9 個 Dio 爆炸**<br>`krakend_dio_provider.dart:25-41` 實作 `RefreshTokenInterceptor`（401 自動換約）、憑證釘選、RateLimit、聚合錯誤處理；但分立 9 個 Dio 實例。 | 🟡 **單一 DioClient，但防護裸奔**<br>`lib/api/api_clz.dart:57-67` 單一實例，集中管理，但 Token 靜態寫死，無 401 自動刷新、無憑證釘選、無逾時重試。 | 🟢 **借鏡對照組攔截器**：移植其 401 自動換約與錯誤對應攔截器。<br>🔴 **拒絕對照組多 Dio 反模式**：維持本專案單一 `DioClient` 實例。 |
+| **6** | **網路層、攔截器與防護** | 🟢 **工業級防護鏈，但 9 個 Dio 爆炸**<br>`krakend_dio_provider.dart:25-41` 實作 `RefreshTokenInterceptor`（401 自動換約）、憑證釘選、RateLimit、聚合錯誤處理；但分立 9 個 Dio 實例。 | 🟡 **單一 DioClient，防護仍待補齊**<br>`lib/api/api_clz.dart` / `DioClient` 單一實例集中管理（Yelp API Token 現改由 Remote Config 提供），尚無統一錯誤對應攔截器與逾時重試。 | 🟢 **借鏡對照組攔截器**：移植其錯誤對應與重試攔截器（註：2026-10-22 已確認 Yelp 為固定 API Key、無刷新端點，不適用 401 自動換約）。<br>🔴 **拒絕對照組多 Dio 反模式**：維持本專案單一 `DioClient` 實例。 |
 | **7** | **錯誤處理與 Result 模式** | 🟡 **Record 模式但具 (null, null) 缺陷**<br>`common_exception.dart:177-195` 提供完整列舉，但回傳 `(Entity?, CommonException?)`，在 `member_center_bloc.dart:57-69` 被迫雙重防禦檢查。 | 🔴 **錯誤黑洞與吞錯崩潰**<br>`restaurant_detail_bloc.dart:42-44, 56-58` 採用 `on Exception catch (_)` 吞掉所有例外，僅拋出 `emit(const Failure())`，UI 無法感知原因。 | 🟢 **超越兩者的好品味方案**：拒絕對照組允許 `(null, null)` 的寬鬆 Record，引入 Dart 3 `sealed class Result<T>`，消除特殊情況。 |
 | **8** | **UI Token、元件與無障礙** | 🔴 **Sizes 廚房水槽 + 閹割無障礙**<br>`sizes.dart:1-248`（248 行 16 級 padding、刮刮卡高度）；`app.dart:272-286` 強行 `TextScaler.noScaling`；按鈕偽裝與 24x24 觸控違規。但有優雅的 `DialogQueueManager`。 | 🟢 **M3 現代化元件，但色票需微調**<br>`EmptyDataWidget`, `Skeleton`, `RatingStars` 現代化；無鎖死字體。但 `ThemeColor` 為十六進位命名 (`colord84a20`)，且存有未使用的 `PlatformWidget`。 | 🟢 **借鏡對照組對話框佇列**：移植 `DialogQueueManager` 消除彈窗併發重疊。<br>🔴 **嚴禁學對照組閹割無障礙**：堅決捍衛使用者字體縮放權利。 |
 | **9** | **工程化與測試品質** | 🟢 **mocktail 零 Codegen + PR CI 門禁**<br>`mocktail: ^1.0.4`（`mock_auth.dart:1-5`）免代碼生成；`.github/workflows/analysis.yml` 與 `tests.yml` 提供完整的 PR CI 自動化門禁。 | 🔴 **手寫 47 行 Fake Repo + PR CI 缺失**<br>`menu_vision_bloc_test.dart:9-56` 手寫 47 行 Fake 類別；Makefile 缺乏 `test`；GitHub Actions 僅有 Tag 發布，PR 零自動檢查。 | 🟢 **全盤借鏡測試工具鏈**：引入 `mocktail` 淘汰手寫 Fake；重構 Makefile 補齊 `make test`；新增 PR CI 門禁工作流。 |
@@ -1495,9 +1503,9 @@ class ComparisonMatrixComponent extends A2UIComponent {
      **好品味之處**：編譯期檢查、消除 `(null, null)` 邊界條件、零 defensive check。
 
 2. **工業級 Dio Interceptor 套件**
-   - **痛點根治**：解決本專案 Token 靜態寫死、無 401 續約、無逾時重試、無網路離線統一捕獲的脆弱性。
+   - **痛點根治**：解決本專案缺少統一網路錯誤轉換、無逾時重試與無網路離線統一捕獲的脆弱性。
    - **吸收精華**：借鏡對照組 `krakend_dio_provider.dart:25-41` 模式，在單一 `DioClient` 中串聯：
-     - `RefreshTokenInterceptor`：401 自動暫停佇列，換發 Token 後重放請求。
+     - ~~`RefreshTokenInterceptor`：401 自動暫停佇列，換發 Token 後重放請求。~~ *(2026-10-22 已排除：Yelp 採固定 API Key、無刷新端點，詳細規劃見 §8.3.2 A-8.3)*
      - `NetworkExceptionInterceptor`：將 `DioException` 統一轉換為結構化 `AppException`。
      - `RetryInterceptor`：針對冪等 GET 請求提供指數退避重試。
 
@@ -1587,7 +1595,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 - **影響檔案路徑**：無須調整
 
 #### [A-8.5] 建置 Firebase Remote Config 動態設定存取層 — ✅ 已完成 (Issue #134 / PR #135, 2026-09-28)
-- **落地**：新增 `lib/data_layer/datasources/ai_model_config.dart`（`AiModelConfig`），兩個 repo 以可選參數注入並每次請求讀值，`main.dart` 於 App Check 之後以 `unawaited` 觸發 `fetchAndActivate`（debug 間隔 0、release 12h、逾時 10 秒）。AI 參數保留程式預設值作為回退；非法值（空白、非數字、temperature 超出 [0, 2]）回退預設。未呼叫 `setDefaults`、未註冊 GetIt。範圍於 review 期間擴充：Yelp token 與 Static Map key 亦改由 Remote Config 提供（必填、無程式預設），並自 `constants.dart` 移除明碼。`AiModelConfig` 名稱已不足以涵蓋金鑰，改名留待後續。
+- **落地**：新增 `lib/api/dto/ai_model_config.dart`（`AiModelConfig`；原提案草擬置於 `lib/data_layer/datasources/`），兩個 repo 以可選參數注入並每次請求讀值，`main.dart` 於 App Check 之後以 `unawaited` 觸發 `fetchAndActivate`（debug 間隔 0、release 12h、逾時 10 秒）。AI 參數保留程式預設值作為回退；非法值（空白、非數字、temperature 超出 [0, 2]）回退預設。未呼叫 `setDefaults`、未註冊 GetIt。範圍於 review 期間擴充：Yelp token 與 Static Map key 亦改由 Remote Config 提供（必填、無程式預設），並自 `constants.dart` 移除明碼。`AiModelConfig` 名稱已不足以涵蓋金鑰，改名留待後續。
 - **優先級**：`P0`
 - **預估 Effort**：`1.0d`
 - **價值與收益**：目前 AI 模型參數全數寫死在程式碼中，換模型、調 prompt 或溫度都必須重新發版送審；一旦模型下架或配額異常，只能等新版上架才能止血。導入 Remote Config 後可遠端即時調整，並作為 §7.5-2「動態模型控制」的落地項。
@@ -1595,10 +1603,10 @@ class ComparisonMatrixComponent extends A2UIComponent {
   - `pubspec.yaml` 無 `firebase_remote_config`（已有 `firebase_core`、`firebase_ai`、`firebase_app_check`，可直接沿用同一 Firebase 專案）。
   - 模型名稱 `'gemini-3.5-flash-lite'` 重複寫死於 `ai_foodie_repo.dart:156` 與 `menu_vision_repo.dart:38`（同一設定兩份，遲早漂移）。
   - `temperature`、`systemInstruction` 分別以 `static const` 寫死於兩個 repo（`ai_foodie_repo.dart:28,159`、`menu_vision_repo.dart:28,40`）。
-- **影響檔案路徑**：
+- **影響檔案路徑** *(歷史提案預期 vs 實際落地路徑附註)*：
   - 修改：`pubspec.yaml`（加入 `firebase_remote_config`）
-  - 新增：`lib/data_layer/datasources/remote_config_data_source.dart`（或同層既有慣例位置）
-  - 修改：`lib/di/injection.dart`（註冊為 singleton）
+  - 新增：`lib/api/dto/ai_model_config.dart`（原規劃於 `lib/data_layer/datasources/remote_config_data_source.dart`）
+  - 修改：`lib/app/di/injection.dart`（原記 `lib/di/injection.dart`；實際未註冊 GetIt，採直接建構／注入）
   - 修改：`lib/main.dart`（`Firebase.initializeApp` 之後初始化）
   - 修改：`lib/data_layer/repositories/ai_foodie_repo.dart`、`lib/data_layer/repositories/menu_vision_repo.dart`
 - **具體實作建議**：
@@ -1770,20 +1778,19 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 #### [A-8.10] 擴充 Yelp 搜尋進階篩選（`categories` 分類別名、`radius` 半徑、`open_now` 營業中與 1,000 筆分頁邊界防護）
 - **優先級**：`P1` (篩選維度擴充)
-- **預估 Effort**：`0.5d`
-- **狀態**：✅ **已完成**（2026-11-04，Issue #173 / PR #174，落地於 `APIClz.businessesSearch`、`MainRepo` 邊界防禦與 `FilterConfigs` 管線串接）
+- **預估 Effort**：`0.5d` *（剩 `radius` / `open_now` UI 補完）*
+- **狀態**：🟡 **部分完成**（2026-11-04 PR #174 已完成 `APIClz.businessesSearch`、`MainRepo` 1,000 筆邊界防禦與 `FilterConfigs` 管線串接；2026-11-10 PR #178 已補齊 `FilterPage` 菜系分類篩選；**2026-11-15 實查 `lib/flow/filter/` 仍無 `radius` 與 `open_now` UI 控制項**）
 - **價值與收益**：
-  1. 目前專案篩選頁無法指定菜系分類，亦無法調整搜尋半徑。補齊 `categories`（如 `"japanese,bars"`）與 `radius`（公尺，上限 40,000）讓搜尋條件更精準。
-  2. 增加 `open_now: bool` 快速篩選營業中。
-  3. 增加邊界防禦：官方規定 `offset + limit <= 1000`，滑動超過 20 頁會報錯 400。加入上限攔截避免 App 崩潰。
+  1. 目前專案篩選頁已完成菜系選擇（#178），但尚無法在 UI 調整搜尋半徑 `radius`（公尺，上限 40,000）或切換 `open_now`。補齊表現層控制項才能真正對外釋出精準篩選。
+  2. 底層 API 參數與 `open_now: bool` 管線已就位，待補齊 `FilterPage` 控制元件與狀態回填。
+  3. 邊界防禦已完成：官方規定 `offset + limit <= 1000`，`MainRepo` 已加入上限攔截避免滑動超過 20 頁時報錯 400。
 - **影響檔案路徑**：
-  - 修改：`lib/api/api_clz.dart`
-  - 修改：`lib/data_layer/repositories/main_repo.dart`
-  - 修改：`lib/models/filter_configs.dart`
-  - 修改：`lib/flow/filter/view/filter_page.dart`
+  - 已完成：`lib/api/api_clz.dart`、`lib/data_layer/repositories/main_repo.dart`、`lib/models/filter_configs.dart`、`lib/flow/filter/view/filter_page.dart`（菜系 UI）
+  - 待修改：`lib/flow/filter/view/filter_page.dart`（補齊 `radius` 與 `open_now` UI 控制項）
 - **具體實作建議**：
-  1. `businessesSearch` 增加 `@Query('categories') String? categories`、`@Query('radius') int? radius`、`@Query('open_now') bool? openNow`。
-  2. 在 `MainRepo` 加入檢查：若 `_offset + 50 > 1000` 則停止繼續發送請求，標記到達底端。
+  1. ~~`businessesSearch` 增加 `@Query('categories') String? categories`、`@Query('radius') int? radius`、`@Query('open_now') bool? openNow`。~~ ✅ *PR #174 已完成*
+  2. ~~在 `MainRepo` 加入檢查：若 `_offset + 50 > 1000` 則停止繼續發送請求，標記到達底端。~~ ✅ *PR #174 已完成*
+  3. **待補齊**：在 `FilterPage` 加入搜尋半徑滑桿／選項（`radius`）與僅看營業中開關（`openNow`），並回填至 `FilterConfigs`。
 
 > **[A-8.11]** 已於 2026-10-22 升為 P0，移至 §8.3.1。
 
@@ -1793,8 +1800,8 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 #### [UI-8.3] 新增 BuildContext 語法糖擴充 (`context.colorScheme`, `context.textTheme`)
 - **優先級**：`P2`
-- **預估 Effort**：`0.2d`
-- **價值與收益**：消除專案內 13 處（2026-10-22 實查；原記 18+）冗長的 `Theme.of(context).colorScheme` 與 `Theme.of(context).textTheme` 樣板程式碼。
+- **預估 Effort**：`0.2d` *（原依 13 處估算；2026-11-15 實查已擴增至 48 處，實際作業規模高於原估，動工前建議重估）*
+- **價值與收益**：消除專案內頻繁出現的 `Theme.of(context)` 呼叫（**2026-11-15 實查全 `lib/` 共 48 處**，含 `NoteDetailPage` 等新頁面；2026-10-22 原記 13 處、最初記 18+）冗長的 `Theme.of(context).colorScheme` 與 `Theme.of(context).textTheme` 樣板程式碼。
 - **影響檔案路徑**：
   - 新增：`lib/features/foundation/extension/theme_extension.dart`
 - **具體實作建議**：
@@ -1808,11 +1815,12 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 #### [UI-8.4] 重構 ThemeColor 語意化命名與 M3 primary 濁橘色差校正
 - **優先級**：`P2`
-- **預估 Effort**：`0.5d`
-- **價值與收益**：淘汰 `colord84a20` 十六進位無效命名，消除 `ColorScheme.fromSeed` 將品牌橘 `#D84A20` 映射為 `#8F4B38` 的濁橘色差。
+- **預估 Effort**：`0.5d` *（原依 T-9 19 處／8 檔估算；2026-11-15 實查擴增至 30 處使用點／15 檔，影響面高於原估，動工前建議重估）*
+- **價值與收益**：淘汰 `colord84a20` 十六進位無效命名（**2026-11-15 實查全 `lib/` 計 30 處使用點／15 個檔案**，含宣告共 31 處／16 檔），消除 `ColorScheme.fromSeed` 將品牌橘 `#D84A20` 映射為 `#8F4B38` 的濁橘色差。
 - **影響檔案路徑**：
   - 修改：`lib/features/foundation/style/theme_color.dart`
   - 修改：`lib/features/foundation/style/theme_data.dart`
+  - 修改：受影響之 15 個呼叫端檔案（全域改名／引入語意化常數）
 - **具體實作建議**：
   1. `ThemeColor` 命名改為 `brandPrimary`, `backgroundCream`, `textSecondary` 等語意化常數。
   2. 在 `theme_data.dart` 的 `ColorScheme.fromSeed(...)` 鏈後顯式覆寫 `primary: ThemeColor.brandPrimary`，徹底消除 AppBar 與按鈕色差。
@@ -1984,7 +1992,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
                                      & A-8.6 (Yelp 假搜尋根治 ✅) & A-8.7 (GPS 解綁 ✅) & A-8.8 (實體欄位補齊 ✅) & A-8.11 (鑑權容錯)
                                      │
  Phase 2 (社群/轉化)    ──► 納入 A-8.3 (Dio錯誤對應) & UI-8.4 (色差校正) & UI-8.3 (語法糖)
-                                     & A-8.9 (Autocomplete 補全 ✅) & A-8.10 (進階篩選 ✅)
+                                     & A-8.9 (Autocomplete 補全 ✅) & A-8.10 (進階篩選 🟡 缺 radius/open_now UI)
                                      │
  Phase 3 (AI M4/M5 支撐) ──► 納入 E-8.2 (mocktail測試 ✅) & E-8.7 (mock命名 ✅) & A-8.14 (Repo注入 ✅) & E-8.6 (blocTest ✅) & E-8.4 (80%覆蓋率) & UI-8.6 (A11y)
                                      & A-8.12 (Yelp 分類樹 🟡 PR #160/#178) & A-8.13 (GraphQL 聚合優化)
@@ -1992,7 +2000,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 ```
 
 1. **融入 Phase 1 基礎設施剩餘收尾**：
-   - 目前 Phase 1 進度為 22/22。**E-8.1 (GitHub Actions PR CI 門禁)** (Issue #119 / PR #120) 與 **E-8.3 (Makefile 健全化)** (Issue #121 / PR #122) 已於 2026-09-17 全數完成，補齊 PR #114 僅完成發布 CD 的缺口。
+   - 目前 Phase 1 進度為 **23/24**（僅剩 P0「移除硬編碼 API Key / Broker」🟡 待金鑰撤銷輪替與 Broker）。**E-8.1 (GitHub Actions PR CI 門禁)** (Issue #119 / PR #120) 與 **E-8.3 (Makefile 健全化)** (Issue #121 / PR #122) 已於 2026-09-17 全數完成，補齊 PR #114 僅完成發布 CD 的缺口。
    - 原規劃之 **A-8.2 (DTO 反向依賴)** 經架構審查確認為「Infra $\leftarrow$ Domain」資料驅動分層之合法構造模式，維持現狀不調整，不再作為收尾項。
 
 2. **融入 Phase 1.5 空間與視覺體驗升級**：
@@ -2004,7 +2012,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 3. **融入 Phase 2 社群生態與轉化閉環**：
    - 微訂位與候位排隊需要可分辨的網路錯誤，此時引入 **A-8.3 (Dio 錯誤對應攔截器)** 讓 BLoC 能區分逾時、伺服器錯誤與鑑權失敗。（原規劃的 401 自動換約已於 2026-10-22 移除：Yelp 為固定 API Key，無刷新端點；**A-8.11** 已升 P0 移至 Phase 1.5。）
-   - 引入 **A-8.9 (Autocomplete 即時聯想)** 已於 2026-11-10 完成 (Issue #180 / PR #181，落地於 `AutocompleteBloc` 300ms 防抖、`RestaurantSearchDelegate` 與 `MainPage` AppBar 搜尋整合)；**A-8.10 (菜系、半徑、營業中進階篩選與 1,000 筆分頁邊界防護)** 已於 2026-11-04 完成 (Issue #173 / PR #174，落地於 `APIClz.businessesSearch`、`MainRepo` 邊界防禦與 `FilterConfigs` 管線串接)。
+   - 引入 **A-8.9 (Autocomplete 即時聯想)** 已於 2026-11-10 完成 (Issue #180 / PR #181，落地於 `AutocompleteBloc` 300ms 防抖、`RestaurantSearchDelegate` 與 `MainPage` AppBar 搜尋整合)；**A-8.10 (菜系、半徑、營業中進階篩選與 1,000 筆分頁邊界防護)** 🟡 部分完成（PR #174 已完成 `APIClz.businessesSearch`、`MainRepo` 邊界防禦與 `FilterConfigs` 管線串接，PR #178 已補齊 `FilterPage` 菜系篩選；2026-11-15 實查 `FilterPage` 仍缺 `radius` 與 `open_now` UI 控制項）。
    - **UI-8.4 (色差校正)** 與 **UI-8.3 (BuildContext 擴充語法糖)** 將作為視覺打磨的主力。
 
 4. **全面支撐 Phase 3 (Google AI Studio M4/M5 推進)**：
@@ -2093,7 +2101,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 | 領域 | 現況（實查） | 調整 |
 | :--- | :--- | :--- |
-| 版面 | 全為手機直式設計；無任何 `LayoutBuilder`；7 檔用 `MediaQuery` 取寬高；iOS 鎖直向 | 設定內容最大寬度；寬螢幕改雙欄（列表＋地圖／詳情）；`DrawerWidget` 在寬螢幕改 `NavigationRail` |
+| 版面 | 全為手機直式設計；無任何 `LayoutBuilder`；8 檔用 `MediaQuery` 取寬高（2026-11-15 實查；原記 7 檔）；iOS 鎖直向 | 設定內容最大寬度；寬螢幕改雙欄（列表＋地圖／詳情）；`DrawerWidget` 在寬螢幕改 `NavigationRail` |
 | BottomSheet | Menu Vision、AI Foodie 以 `DraggableScrollableSheet` 呈現 | 寬螢幕改 Dialog 或側邊面板，避免在 27 吋螢幕底部拉出整片 sheet |
 | 輸入 | 地圖卡片列為 `PageView`（`map_widget.dart:36,180`） | **Flutter 桌面／Web 預設不允許滑鼠拖曳捲動**，需以 `ScrollBehavior.dragDevices` 加入 mouse，或補左右箭頭按鈕。✅ 已以 `dragDevices` 加入 mouse 完成（UI-9.4，2026-10-18） |
 | 回饋訊息 | `fluttertoast`（macOS 無實作） | 改 `SnackBar`。⚠️ macOS 走 `CupertinoApp` 分支，**不會自帶 `ScaffoldMessenger`**，需在 `PlatformApp.builder` 補一層。✅ 已完成（UI-9.2，2026-10-18） |
@@ -2105,7 +2113,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 | 項目 | 說明 |
 | :--- | :--- |
-| **路由與重新整理** | 4 處以 `ModalRoute.of(context)!.settings.arguments` 強轉取參數（`restaurant_detail_page.dart:34`、`photo_viewer.dart:25`、`filter_page.dart:32`；`main_page.dart:214` 已用 `?.`）。瀏覽器**重新整理或直接開網址時 arguments 為 null → 強轉崩潰**。要支援分享連結（`/restaurant/<id>`），網址只能承載 `id`，但詳情頁目前依賴列表頁在記憶體中傳入的整個 `Tuple2<RestaurantEntity, dynamic>`（`restaurant_detail_page.dart:32-37`：頁首店名／圖片與 `_summaryInfo.favor` 收藏狀態皆取自它）。**真正的工作是讓詳情頁只憑 `id` 自足渲染**；路由解析本身以內建 `onGenerateRoute` 拆 `/restaurant/<id>` 即可（見 A-9.4）。其餘頁面（`photo_viewer`、`filter`）缺參數時導回首頁 |
+| **路由與重新整理** | 3 處以 `ModalRoute.of(context)!.settings.arguments` 強轉取參數（`restaurant_detail_page.dart:34`、`photo_viewer.dart:25`、`filter_page.dart:40`；`note_detail_page.dart:33` 與 `main_page.dart:252` 已用 `?.`；2026-11-15 實查更新）。瀏覽器**重新整理或直接開網址時 arguments 為 null → 強轉崩潰**。要支援分享連結（`/restaurant/<id>`），網址只能承載 `id`，但詳情頁目前依賴列表頁在記憶體中傳入的整個 `Tuple2<RestaurantEntity, dynamic>`（`restaurant_detail_page.dart:32-37`：頁首店名／圖片與 `_summaryInfo.favor` 收藏狀態皆取自它）。**真正的工作是讓詳情頁只憑 `id` 自足渲染**；路由解析本身以內建 `onGenerateRoute` 拆 `/restaurant/<id>` 即可（見 A-9.4）。其餘頁面（`photo_viewer`、`filter`）缺參數時導回首頁 |
 | **圖片跨域** | 店家照片（Yelp CDN）與靜態地圖（`restaurant_detail_bloc.dart:30` 產生 URL）皆以 `FadeInImage.assetNetwork` 載入。CanvasKit／skwasm 渲染器讀取跨域圖片需對方回 CORS header；未回則需改用 `<img>` 元素策略（`NetworkImage` 的 `webHtmlElementStrategy`）。**兩個來源是否回 CORS header 待實測** |
 | **Google 登入** | 現行 `GoogleSignIn().signIn()` → `idToken` → `signInWithCredential`；Web 改 `FirebaseAuth.instance.signInWithPopup(GoogleAuthProvider())`，Apple／Facebook 同理可統一走 Firebase popup |
 | **推播** | 需 `web/firebase-messaging-sw.js`、VAPID key、瀏覽器授權；iOS Safari 僅限加入主畫面的 PWA 才能收推播 |
@@ -2145,7 +2153,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | **A-9.3** | `flutterfire configure` 註冊 **macOS** App，重新產生 `firebase_options.dart`（`flutter create --platforms=macos .` 先產生 target）；App Check 的 macOS provider 選擇見 A-9.2，本項不改程式碼。✅ **已完成**（2026-10-22 實查回寫）：`firebase.json` 已含 macOS 平台設定，`lib/app/firebase_options.dart:76` 已產生 `macos` 的 `FirebaseOptions` | macOS | 0.3d | — |
 | **A-9.3b** | **Web 的 Firebase 註冊與 App Check**：註冊 Web App、App Check 改掛 **Fraud Defense（reCAPTCHA Enterprise）**。**採 Enterprise、不採 classic v3**：官方文件仍列 v3 provider，但明言新整合應採 Enterprise；2026-10-07 使用者回報「傳統版 reCAPTCHA 已淘汰，請改用 Google Cloud Fraud Defense」（reCAPTCHA 已併入 Fraud Defense）。程式碼用 `ReCaptchaEnterpriseProvider(siteKey)`（release）／`WebDebugProvider()`（debug），兩者皆**非 `const` 建構式**；`firebase_app_check ^0.4.7`（實裝 0.4.8）已內建三個 web provider，**無須升版**。**不需 Blaze**：Spark 可用 Enterprise，僅限 0.1／0.3／0.7／0.9 四個分數級距，連結 Cloud Billing 才開放全部 11 級；超出免費額度的 assessment 計費（2026-10-08 依官方 enterprise-provider 文件更正，原記「Blaze 為硬前置」有誤）。🟡 **部分完成**（2026-10-22 實查）：Web App 已註冊（`firebase.json` 含 web 設定、`lib/app/firebase_options.dart:65` 已產生 `web` 的 `FirebaseOptions`）；剩 App Check 的 web provider，`lib/` 尚無 `ReCaptchaEnterpriseProvider` | Web | 0.3d | — |
 | **UI-9.2** | `fluttertoast` → `SnackBar`（含 `CupertinoApp` 分支補 `ScaffoldMessenger`）。✅ **已完成**（2026-10-18，PR #153）：新增 `BuildContext.showAppSnackBar`（`SnackBarExtension`，先 `hideCurrentSnackBar` 再顯示、查無 messenger 時安全略過、鍵盤開啟時改 floating 並上移到鍵盤上方），`main.dart` 的 `appRootBuilder` 注入 `ScaffoldMessenger` 與透明根 `Scaffold`（`resizeToAvoidBottomInset: false`），登入／註冊／失敗與收藏共 4 處提示遷移，移除 `fluttertoast`。與提案落差：`ScaffoldMessenger` 兩個分支一律注入（Android 與 `MaterialApp` 自帶的那層重疊，實際生效的是內層），並多補透明根 `Scaffold`，因為 Cupertino 頁面沒有 Material `Scaffold` 可承載 SnackBar | 兩者 | 0.3d | — |
-| **UI-9.3** | 響應式版面：最大寬度、寬螢幕雙欄、`NavigationRail`、Sheet → Dialog | 兩者 | 2–3d | — |
+| **UI-9.3** | 響應式版面：最大寬度、寬螢幕雙欄、`NavigationRail`、Sheet → Dialog | 兩者 | 2–3d *（2026-11-15 實查已擴至 8 檔 `MediaQuery` 且含新頁面，實際工期風險高於原估）* | — |
 | **UI-9.4** | 桌面輸入：`ScrollBehavior` 滑鼠拖曳、hover 狀態、AI 對話 Enter 送出。✅ **已完成**（2026-10-18，PR #151）：新增 `AppScrollBehavior`（沿用預設 `dragDevices` 再加 mouse，保留 Voice Access 用的 `unknown`），由 `appRootBuilder` 的 `ScrollConfiguration` 注入，Material／Cupertino 兩分支皆生效；主頁列表與地圖卡片由 `GestureDetector` 改 `InkWell`，取得 hover 高亮與手型游標；AI 對話輸入欄以 Enter／numpadEnter 送出（IME 組字中或載入中不送出），改為 1–4 行多行輸入，Windows 的 IME 動作為換行。與提案落差：iOS／macOS 改用 Material 系的 behavior，macOS 的捲軸由 `CupertinoScrollbar` 變為 Material `Scrollbar` | 兩者 | 0.5d | — |
 | **A-9.4** | 深層連結：①詳情頁改為只憑 `id` 自足渲染（頁首取自詳情 API 回應、收藏狀態向收藏資料查詢，不再依賴傳入的 `RestaurantEntity`）；②`PlatformApp` 加 `onGenerateRoute` 解析 `/restaurant/<id>`；③其餘強轉 arguments 處缺參數導回首頁。**不導入 `go_router`**：現有 `routesTable` 與 10 處 `pushNamed` 不需改動 | 兩者（深層連結主要服務 Web） | 1–1.5d（主要成本在①） | D-9.3 |
 | **A-9.5** | 第三方登入改 Firebase popup 流程 | Web | 1d | A-9.3b |
@@ -2154,7 +2162,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 | **E-9.4a** | macOS 本機開發簽章：`DEVELOPMENT_TEAM`、Keychain Sharing（`keychain-access-groups`）、Sign in with Apple capability——**完成前 macOS 的 Firebase Auth 登入不可用**；完成後可實測登入、App Check、Apple 登入。CI 不建 macOS（D-9.8），不受 runner 無簽章身分限制，可視需要提前。✅ **已完成**（2026-10-16）：`DEVELOPMENT_TEAM` 與 `keychain-access-groups` 隨 A-9.6 於 2026-10-12 補上，macOS Google 登入實測可用；Sign in with Apple capability 補於三個 configuration 的 entitlements（`com.apple.developer.applesignin`）與 `project.pbxproj` 的 `SystemCapabilities`，Developer Portal 端 App ID 已啟用。與提案落差：Debug／Release 建置與既有測試通過，但 Apple 登入不再回報 `AuthorizationError 1000` 的執行期實測尚無紀錄 | macOS | 兩段合計沿用原估 1d | A-9.3 |
 | **E-9.4b** | macOS 發布：Developer ID 簽章 + notarization 或 Mac App Store，先手動；CI 上傳暫不做（D-9.8）。⚠️ Developer ID 版不支援 Sign in with Apple，DMG 版暫隱藏 Apple 登入，後續方向見 D-9.9。✅ **已完成**（2026-10-17，PR #149）：Developer ID 路徑實作為 `scripts/release_macos.sh`（建置、深度簽章＋Hardened Runtime、內嵌並驗證 Developer ID profile、DMG／ZIP、`notarytool` 公證、staple、`spctl`），實機完整跑通公證；操作手冊為 `docs/manuals/macos-release-guide.md`。Mac App Store 路徑僅提供 `ExportOptions-AppStore.plist` 與手冊步驟，未實測。與提案落差：`platformCapabilities()` 新增 `appleSignIn`，以 `--dart-define=DEVELOPER_ID_BUILD=true` 於 DMG 版隱藏 Apple 登入，簽章前移除 `applesignin` entitlement | macOS | （同上） | A-9.6、E-9.4a |
 
-> ⚠️ **effort 估計偏差提醒**（沿用本文件 C-1／C-2 教訓）：UI-9.3 響應式版面是最可能低估的項目——動到的不是「新寫幾個 layout」，而是**每個頁面既有的寬度假設**（`MediaQuery` 7 檔、固定寬 `230`／`260` 的 AI 卡片、`viewportFraction: 0.85`）。動工前先 grep 盤點使用點。
+> ⚠️ **effort 估計偏差提醒**（沿用本文件 C-1／C-2 教訓）：UI-9.3 響應式版面是最可能低估的項目——動到的不是「新寫幾個 layout」，而是**每個頁面既有的寬度假設**（`MediaQuery` 8 檔〔2026-11-15 實查；原記 7 檔，且後續新增頁面亦須納入評估〕、固定寬 `230`／`260` 的 AI 卡片、`viewportFraction: 0.85`）。動工前先 grep 盤點使用點。
 
 ## 9.7 方案比較
 
