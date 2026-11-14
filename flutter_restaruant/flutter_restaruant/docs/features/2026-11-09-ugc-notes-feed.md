@@ -4,7 +4,7 @@
 - **狀態**：草稿（等待 STAGE 0b 計畫與實作）
 - **實查基線**：`main`
 - **需求來源**：`gen-grill` 結構化 brief（Q1–Q5 五項齊備，3 輪問答收斂）
-- **相關 brainstorm 項目**：[`docs/brainstorm/2026-11-02-features-brainstorm.md`](../brainstorm/2026-11-02-features-brainstorm.md) §2.2 [F-2.3] (L356-359, L608, L673)
+- **相關 brainstorm 項目**：[`docs/brainstorm/2026-11-14-features-brainstorm.md`](../brainstorm/2026-11-14-features-brainstorm.md) §2.2 [F-2.3] (L356-359, L608, L673)
 
 ---
 

@@ -40,6 +40,8 @@
 | [`lib/domain/repositories/yelp_event_repository.dart`](../../lib/domain/repositories/yelp_event_repository.dart) | `YelpEventRepository` | Yelp 活動契約：活動搜尋、單一活動、精選活動。直接回傳 DTO。 |
 | [`lib/domain/repositories/yelp_category_repository.dart`](../../lib/domain/repositories/yelp_category_repository.dart) | `YelpCategoryRepository` | Yelp 分類契約：全部分類清單與單一分類詳情。直接回傳 DTO。 |
 | [`lib/domain/repositories/yelp_autocomplete_repository.dart`](../../lib/domain/repositories/yelp_autocomplete_repository.dart) | `YelpAutocompleteRepository` | Yelp 搜尋補全契約（關鍵字、商家、分類建議）。直接回傳 DTO。 |
+| [`lib/domain/repositories/ugc_note_repository.dart`](../../lib/domain/repositories/ugc_note_repository.dart) | `UgcNoteRepository` | UGC 探店筆記瀑布流的讀取契約（`abstract interface class`）。 |
+| [`lib/domain/entities/ugc_note_entity.dart`](../../lib/domain/entities/ugc_note_entity.dart) | `UgcNoteEntity`<br>`UgcNoteMediaType` | UGC 探店筆記業務模型與媒體型別列舉（`photo` / `video`），封裝 `fromDto`、`toDto`、`hasValidMedia` 與 `coverImageUrl`。 |
 | [`lib/domain/entities/dish_item_entity.dart`](../../lib/domain/entities/dish_item_entity.dart) | `DishItemEntity` | 菜品項目業務模型（含中英菜名、價錢、過敏原與辣度標籤）。 |
 | [`lib/domain/entities/allergen_info.dart`](../../lib/domain/entities/allergen_info.dart) | `AllergenInfo` | 過敏原與飲食偏好實體（含標籤文字與嚴重度）。 |
 | [`lib/domain/entities/ai_foodie_message.dart`](../../lib/domain/entities/ai_foodie_message.dart) | `AiFoodieMessage` | 覓食助理訊息模型（包含使用者或助理身份、文字內容及 A2UIComponent 動態元件陣列）。 |
@@ -75,10 +77,13 @@
 | [`lib/data_layer/repositories/yelp_event_repo.dart`](../../lib/data_layer/repositories/yelp_event_repo.dart) | `YelpEventRepo` | `YelpEventRepository` 實作，轉發至 `APIClz`（同上慣例）。 |
 | [`lib/data_layer/repositories/yelp_category_repo.dart`](../../lib/data_layer/repositories/yelp_category_repo.dart) | `YelpCategoryRepo` | `YelpCategoryRepository` 實作，轉發至 `APIClz`（同上慣例）。 |
 | [`lib/data_layer/repositories/yelp_autocomplete_repo.dart`](../../lib/data_layer/repositories/yelp_autocomplete_repo.dart) | `YelpAutocompleteRepo` | `YelpAutocompleteRepository` 實作，轉發至 `APIClz`（同上慣例）。 |
+| [`lib/data_layer/repositories/ugc_note_repo.dart`](../../lib/data_layer/repositories/ugc_note_repo.dart) | `UgcNoteRepo` | `UgcNoteRepository` 實作，委派 `UgcNoteDataSource` 讀取 Firestore 探店筆記清單。 |
 | [`lib/data_layer/models/menu_analysis_schema.dart`](../../lib/data_layer/models/menu_analysis_schema.dart) | `menuAnalysisSchema` | Gemini API 結構化輸出 JSON Schema 規範（定義菜品清單、價格、過敏原與辣度）。 |
 | [`lib/data_layer/models/ai_foodie_schema.dart`](../../lib/data_layer/models/ai_foodie_schema.dart) | `aiFoodieResponseSchema` | Gemini 結構化輸出 JSON Schema 規範（約束 text 及 components 格式）。 |
 | [`lib/data_layer/models/review_summary_schema.dart`](../../lib/data_layer/models/review_summary_schema.dart) | `reviewSummarySchema` | Gemini 結構化輸出 JSON Schema 規範（約束 pros, cons, highlights, summary 格式）。 |
 | [`lib/data_layer/datasources/favor_data_source.dart`](../../lib/data_layer/datasources/favor_data_source.dart) | `FavorDataSource` | **最愛清單在 Firestore 的單一存取點**，每個最愛項目以 subcollection `favors/{uid}/items/{restaurant_id}` 結構儲存。內含空字串 uid 的 guard，避免 Firestore 拋 `ArgumentError`。 |
+| [`lib/data_layer/datasources/ugc_note_data_source.dart`](../../lib/data_layer/datasources/ugc_note_data_source.dart) | `UgcNoteDataSource` | **UGC 探店筆記在 Firestore（`ugc_notes` 集合）的單一存取點**，依 `created_at` 降序查詢，將 `Timestamp` 轉為 ISO-8601 字串並自動略過損毀或無效媒體之文件。 |
+| [`lib/api/dto/ugc_note_dto.dart`](../../lib/api/dto/ugc_note_dto.dart) | `UgcNoteDto` | Firestore `ugc_notes` 文件的傳輸格式鏡射（`@JsonSerializable`）。 |
 | [`lib/api/dto/ai_model_config.dart`](../../lib/api/dto/ai_model_config.dart) | `AiModelConfig` | **Firebase Remote Config 的單一存取點**：AI 模型名、temperature、system instruction（非法或未設定時回退程式預設值），以及 Yelp token、Static Map key（必填、無程式預設）。每次讀值即時查詢、建構時不碰 Firebase；`fetchAndActivate()` 由 `main.dart` 於啟動時非阻塞觸發。 |
 | [`lib/api/dto/yelp_search_dto.dart`](../../lib/api/dto/yelp_search_dto.dart) | `YelpSearchDto` | Yelp 搜尋結果的線上格式鏡射（`@JsonSerializable`）。 |
 | [`lib/api/dto/yelp_restaurant_summary_dto.dart`](../../lib/api/dto/yelp_restaurant_summary_dto.dart) | `YelpRestaurantSummaryDto` | 餐廳摘要 Dto，對應 `RestaurantEntity`。 |
@@ -116,13 +121,16 @@
 | [`lib/flow/main/bloc/main_event.dart`](../../lib/flow/main/bloc/main_event.dart) | `MainEvent`<br>`FetchSearchInfo`<br>`FilterListByKeyword`<br>`ToggleFavor`<br>`Reset`<br>`NotificationSetup` | 主畫面事件定義（`Equatable`）。 |
 | [`lib/flow/main/bloc/main_state.dart`](../../lib/flow/main/bloc/main_state.dart) | `MainState`<br>`MainInitial` / `InProgress` / `Success` / `Failure` / `LoadMoreSuccess` / `ResetSuccess` / `ToggleFavorSuccess` | 主畫面狀態。以**具名子類別**表達互斥狀態，而非布林旗標組合。 |
 | [`lib/flow/main/view/main_page.dart`](../../lib/flow/main/view/main_page.dart) | `MainPage` | 主畫面 Scaffold，組合 `MainPageContentWidget`、`DrawerWidget` 與底部常駐 `BannerAD`。 |
-| [`lib/flow/main/view/drawer_widget.dart`](../../lib/flow/main/view/drawer_widget.dart) | `DrawerWidget` | 側邊導航抽屜（搜尋、重設位置、我的最愛、設定）。 |
+| [`lib/flow/main/view/drawer_widget.dart`](../../lib/flow/main/view/drawer_widget.dart) | `DrawerWidget` | 側邊導航抽屜（重設位置、我的最愛、探店筆記、設定）。 |
 | [`lib/flow/main/view/main_page_content_widget.dart`](../../lib/flow/main/view/main_page_content_widget.dart) | `MainPageContentWidget` | 主頁內容容器（地圖與列表模式切換呈現、載入骨架屏）。 |
 | [`lib/flow/main/view/map_widget.dart`](../../lib/flow/main/view/map_widget.dart) | `MapWidget` | Google Maps 地圖與 Marker 呈現，右上角自訂定位按鈕與底部橫向餐廳卡片預覽。 |
 | [`lib/flow/main/view/restaurant_info_list_widget.dart`](../../lib/flow/main/view/restaurant_info_list_widget.dart) | `RestaurantInfoListWidget` | 餐廳列表（已移除內嵌廣告，含載入更多指示器）。 |
 | [`lib/flow/main/view/filter_tags_widget.dart`](../../lib/flow/main/view/filter_tags_widget.dart) | `FilterTagsWidget` | 已套用篩選條件的標籤列。 |
 | [`lib/flow/autocomplete/bloc/autocomplete_bloc.dart`](../../lib/flow/autocomplete/bloc/autocomplete_bloc.dart) | `AutocompleteBloc` | Yelp 搜尋即時補全業務邏輯（300ms 防抖、請求取消、錯誤處理）。 |
 | [`lib/flow/autocomplete/view/restaurant_search_delegate.dart`](../../lib/flow/autocomplete/view/restaurant_search_delegate.dart) | `RestaurantSearchDelegate` | Material 3 搜尋體驗，分區展示熱門詞條、推薦店家與相關分類，串接導航與關鍵字篩選。 |
+| [`lib/flow/notes/bloc/notes_feed_bloc.dart`](../../lib/flow/notes/bloc/notes_feed_bloc.dart) | `NotesFeedBloc` | UGC 探店筆記瀑布流業務邏輯（處理初次載入、下拉重整 `Completer` 同步與請求版本 Token 防並發舊回應覆蓋）。 |
+| [`lib/flow/notes/view/notes_feed_page.dart`](../../lib/flow/notes/view/notes_feed_page.dart) | `NotesFeedPage` | 雙排瀑布流（`MasonryGridView.count`）探店筆記總覽頁，支援下拉重整（重整期間保留既有卡片）、空狀態與錯誤重試。 |
+| [`lib/flow/notes/view/note_detail_page.dart`](../../lib/flow/notes/view/note_detail_page.dart) | `NoteDetailPage` | 探店筆記詳情頁（支援多圖 `PageView` 輪播、15 秒短影片 `VideoPlayerController` 循環播放及逾時／播中錯誤降級面板）。 |
 | [`lib/flow/restaurant/bloc/restaurant_detail_bloc.dart`](../../lib/flow/restaurant/bloc/restaurant_detail_bloc.dart) | `RestaurantDetailBloc` | 餐廳詳情頁業務邏輯。 |
 | [`lib/flow/restaurant/view/restaurant_detail_page.dart`](../../lib/flow/restaurant/view/restaurant_detail_page.dart) | `RestaurantDetailPage` | 餐廳詳情頁。 |
 | [`lib/flow/favor/bloc/favor_bloc.dart`](../../lib/flow/favor/bloc/favor_bloc.dart) | `FavorBloc` | 最愛清單業務邏輯。 |

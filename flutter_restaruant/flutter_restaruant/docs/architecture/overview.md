@@ -2,7 +2,7 @@
 
 > 「差勁的程式員只擔心程式碼，優秀的程式員關心資料結構。」 —— Linus Torvalds
 
-`flutter_restaruant` 是一個餐廳探索與收藏的 Flutter App。資料來源為 **Yelp Fusion API**（搜尋、詳情、評論）與 **Cloud Firestore**（使用者最愛清單），並整合多種第三方登入、FCM 推播與 AdMob 廣告。
+`flutter_restaruant` 是一個餐廳探索與收藏的 Flutter App。資料來源為 **Yelp Fusion API**（搜尋、詳情、評論）與 **Cloud Firestore**（使用者最愛清單、UGC 探店筆記），並整合多種第三方登入、FCM 推播與 AdMob 廣告。
 
 本專案採 **Clean Architecture 三層分離** + **BLoC 單向資料流** + **GetIt 依賴注入**。
 
@@ -90,10 +90,11 @@ YelpRestaurantSummaryDto get toDto => ...
 - **Dto 與 Entity 分離**：`lib/api/dto/` 下的 `Yelp*Dto` 以 `@JsonSerializable` 標註，由 `json_serializable` 產生 `*.g.dart`。Dto 是 API 線上格式的鏡射（欄位名對齊 Yelp JSON），Entity 才是 App 內部使用的模型；AI 菜單辨識與評論摘要則透過 `lib/data_layer/models/` 的 `menu_analysis_schema.dart`、`review_summary_schema.dart`、`ai_foodie_schema.dart` 定義 Gemini Structured Output Schema，輸出由對應的 Repository 映射為領域 Entity。
 - **轉換點明確**：`RestaurantEntity.fromDto(dto)` 一律在 `data_layer` 內呼叫（`main_repo.dart:63`、`restaurant_detail_repo.dart:22,29`、`sign_in_repo.dart:43`、`favor_data_source.dart:52`）。**Dto 永不外洩到 Presentation 層。**
 - **`FavorDataSource`**：最愛清單在 Firestore 的**單一存取點**，每個最愛項目以 subcollection `favors/{uid}/items/{restaurant_id}` 結構儲存。內含空字串 uid 的 guard——少了它 Firestore 會拋 `ArgumentError`。
+- **`UgcNoteDataSource`**：UGC 探店筆記在 Firestore（`ugc_notes` 集合）的**單一存取點**，依 `created_at` 降序讀取並轉換 `Timestamp`，對損毀或無效媒體之文件採逐筆容錯略過。
 
 ### 3. 表現層 (Presentation Layer)
 
-- **Feature-First 目錄**：`lib/flow/<feature>/` 下再分 `bloc/` 與 `view/`，每個 feature 自成一個垂直切片（main、restaurant、favor、signinup、settings、splash、filter、photo_viewer、menu_vision、ai_foodie）。
+- **Feature-First 目錄**：`lib/flow/<feature>/` 下再分 `bloc/` 與 `view/`，每個 feature 自成一個垂直切片（main、restaurant、favor、signinup、settings、splash、filter、photo_viewer、menu_vision、ai_foodie、autocomplete、notes）。
 - **BLoC 單向資料流**：`Bloc<Event, State>` + `Equatable`。State 以**具名子類別**表達（`MainInitial` / `InProgress` / `Success` / `Failure` / `LoadMoreSuccess` / `ToggleFavorSuccess`；MenuVision 則採 `sealed class MenuVisionState` 搭配 Pattern Matching），而非單一 class 塞 `isLoading` 布林旗標——狀態互斥性由型別系統保證。Menu Vision 與 AI 覓食由 BLoC 將 nullable entity 轉為欄位 non-null 的 UI model（`lib/flow/<feature>/model/`），呈現用預設值集中於轉換處，View 只讀 UI model。
 - **Design Tokens**：`lib/features/foundation/style/` 下的 `AppThemeData`、`ThemeColor`、`ThemeSize`、`ThemeFontSize`、`ThemeTextStyle`。
 
