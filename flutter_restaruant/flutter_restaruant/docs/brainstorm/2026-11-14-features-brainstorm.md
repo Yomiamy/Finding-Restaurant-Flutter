@@ -9,7 +9,7 @@
 
 本報告整合了架構審計與競品探索報告之事實與推理鏈，產出符合產業界最高標準的產品與技術發展路線圖 (Strategic Product Roadmap) 及 RICE / ICE 雙優先級評估矩陣。
 
-> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。**2026-10-22 補記**：檔名前綴其後已再更新為 `2026-10-22`，上述 `2026-09-30` 為當時狀態。**2026-10-25 補記**：檔名前綴再更新為 `2026-10-25`。**2026-10-26 補記**：檔名前綴再更新為 `2026-10-26`。**2026-11-01 補記**：檔名前綴再更新為 `2026-11-01`。A-8.7 解除 GPS 強制綁定與價格字串過濾已完成 (Issue #169 / PR #170)。**2026-11-02 補記**：檔名前綴再更新為 `2026-11-02`。A-8.6 根治 Yelp 關鍵字假搜尋缺陷：廢除本地記憶體 50 筆過濾，直通遠端 `term` 查詢已完成 (Issue #171 / PR #172)。**2026-11-04 補記**：A-8.10 擴充 Yelp 搜尋進階篩選（`categories`、`radius`、`open_now` 與 1,000 筆分頁邊界防護）已完成 (Issue #173 / PR #174)。**2026-11-04 補記 (二)**：E-8.6 BLoC 測試統一改用 `blocTest` 宣告式結構已完成 (Issue #175 / PR #176)。**2026-11-10 補記**：A-8.12 菜系分類篩選與四列橫向滾動已合入主幹 (Issue #177 / PR #178)。**2026-11-11 補記**：檔名前綴更新為 `2026-11-11`。A-8.9 串接 Yelp Autocomplete API 實現搜尋即時補全與聯想已完成 (Issue #180 / PR #181)，落地於 `AutocompleteBloc`、`RestaurantSearchDelegate` 與 `MainPage` AppBar 常駐搜尋按鈕整合。
+> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。**2026-10-22 補記**：檔名前綴其後已再更新為 `2026-10-22`，上述 `2026-09-30` 為當時狀態。**2026-10-25 補記**：檔名前綴再更新為 `2026-10-25`。**2026-10-26 補記**：檔名前綴再更新為 `2026-10-26`。**2026-11-01 補記**：檔名前綴再更新為 `2026-11-01`。A-8.7 解除 GPS 強制綁定與價格字串過濾已完成 (Issue #169 / PR #170)。**2026-11-02 補記**：檔名前綴再更新為 `2026-11-02`。A-8.6 根治 Yelp 關鍵字假搜尋缺陷：廢除本地記憶體 50 筆過濾，直通遠端 `term` 查詢已完成 (Issue #171 / PR #172)。**2026-11-04 補記**：A-8.10 擴充 Yelp 搜尋進階篩選（`categories`、`radius`、`open_now` 與 1,000 筆分頁邊界防護）已完成 (Issue #173 / PR #174)。**2026-11-04 補記 (二)**：E-8.6 BLoC 測試統一改用 `blocTest` 宣告式結構已完成 (Issue #175 / PR #176)。**2026-11-10 補記**：A-8.12 菜系分類篩選與四列橫向滾動已合入主幹 (Issue #177 / PR #178)。**2026-11-11 補記**：檔名前綴更新為 `2026-11-11`。A-8.9 串接 Yelp Autocomplete API 實現搜尋即時補全與聯想已完成 (Issue #180 / PR #181)，落地於 `AutocompleteBloc`、`RestaurantSearchDelegate` 與 `MainPage` AppBar 常駐搜尋按鈕整合。**2026-11-14 補記**：檔名前綴更新為 `2026-11-14`。F-2.3 雙排瀑布流 UGC 食記與 15 秒探店短影片已完成 (Issue #182 / PR #183)，落地於 `UgcNoteDataSource`、`NotesFeedBloc`、`NotesFeedPage`、`NoteDetailPage` 及 `DrawerWidget` 探店筆記入口。
 
 ---
 
@@ -83,6 +83,7 @@
 | **測試 Mock 替身命名統一為 `_Mock` (E-8.7)** | ✅ **已於 2026-10-27 完成 (Issue #163 / PR #164)**：全專案單元測試檔內宣告之 mock 類別統一遵循 `_Mock` 前綴私有命名規範，與大型專案測試風格對齊。 |
 | **Repository 建構子注入解除全域 GetIt 依賴 (A-8.14)** | ✅ **已於 2026-10-29 完成 (Issue #165 / PR #168)**：全面為 `MainRepo`、`RestaurantDetailRepo` 及 4 個 Yelp Repository 改用具名建構子注入 `APIClz` 與 `locale`，消滅 data 層對 `app/` 與全域 GetIt 的隱性反向依賴。 |
 | **Yelp Autocomplete 與 Categories API 基礎建設 (A-8.9 / A-8.12 部分)** | ✅ **已於 2026-11-10 完成 (Issue #180 / PR #181)**：以 `AutocompleteBloc`（300ms 防抖 + switchMap）、`RestaurantSearchDelegate` 與 `MainPage` AppBar 常駐按鈕實現即時搜尋聯想與店家導航，Drawer 舊有重複入口已淘汰；Categories 菜系篩選 UI 亦已於 2026-11-07 完成 (Issue #177 / PR #178)；剩餘 Categories 本地長週期快取待辦。 |
+| **雙排瀑布流 UGC 食記與 15 秒探店短影片 (F-2.3)** | ✅ **已於 2026-11-14 完成 (Issue #182 / PR #183)**：以 `flutter_staggered_grid_view`、`video_player` 與 Firestore `ugc_notes` 集合實現雙排瀑布流瀏覽（`NotesFeedPage`）、下拉重整與並發 Token 防護（`NotesFeedBloc`）、多圖輪播與 15 秒短影片播放/逾時及播中錯誤降級（`NoteDetailPage`），並於 `DrawerWidget` 整合「探店筆記」入口。 |
 
 **🔴 仍未解決與新納入阻擋項（全數為 P0 最高優先，AdMob 合規為絕對最高阻擋項）**
 
@@ -353,9 +354,13 @@ lib/
 * **設計理念**: 使用者可將自己的口袋名單設定為「公開/共編」，產出專屬地圖 URL / QR Code。
 * **協作機制**: 允許受邀好友新增/刪除餐廳、對特定餐廳點讚 (Thumbs Up/Down) 與留下私房推薦語，在地圖畫面上以不同頭像標記好友推薦點。
 
-#### F-2.3 雙排瀑布流 UGC 食記與短影片 (Masonry Grid UGC & Short Vlogs)
+#### F-2.3 雙排瀑布流 UGC 食記與短影片 (Masonry Grid UGC & Short Vlogs) — ✅ 已於 2026-11-14 完成 (Issue #182 / PR #183)
 * **設計理念**: 於首頁整合「探店筆記」Tab，採用 `flutter_staggered_grid_view` 實現雙排瀑布流。
 * **內容形態**: 支援多圖與 15 秒短影片 (使用 `video_player` / `chewie` 封裝)，展現極致餐飲視覺誘惑 (Food Porn)。
+* **實際落地與提案落差**:
+  - **入口位置**: 由原提案「首頁整合 Tab」調整為 `DrawerWidget` 側邊導航抽屜新增「探店筆記」入口（路由 `/notes_feed`），避免與首頁地圖／列表雙模式切換互相干擾。
+  - **資料與領域層**: 新增 `UgcNoteDto`、`UgcNoteEntity`（含 `UgcNoteMediaType { photo, video }` 與 `hasValidMedia` 契約校驗）、`UgcNoteDataSource`（讀取 Firestore `ugc_notes` 集合，依 `created_at` 降序取前 30 筆，單筆損毀文件自動略過並記錄 `Logger().w`）及 `UgcNoteRepository` / `UgcNoteRepo`。
+  - **表現層與影音封裝**: 新增 `NotesFeedBloc`（含請求版本 Token 防並發舊回應覆蓋與 `Completer` 下拉重整同步）、`NotesFeedPage`（`MasonryGridView.count` 雙排瀑布流，下拉重整期間透過 `buildWhen` 保留既有卡片）與 `NoteDetailPage`（直接使用 `video_player: ^2.9.2` 封裝 15 秒循環播放、10 秒初始化逾時與播中錯誤降級面板，未額外引入 `chewie`；多圖筆記以 `PageView` 輪播呈現）。
 
 #### F-2.4 筆記地點打卡 Tag (Clickable Location Chips)
 * **設計理念**: 每篇 UGC 筆記下方內嵌高亮「地點打卡 Tag」（例：「📍 隱家拉麵 中山店」）。
@@ -605,7 +610,7 @@ lib/
 | ✅ **AI 多模態 Vision 菜單翻譯 (F-3.1)** | AI 創新 | 6 | 2.5 | 80% | 2.5 | **4.8** | 12.0 | 14 | **已完成 (2026-09-12)** |
 | **個人味蕾配對度 (0-100% Match)** | AI 創新 | 7 | 2.0 | 70% | 2.5 | **3.92** | 9.8 | 15 | **P2** |
 | ✅ **自然語言選店助手與命運轉盤** | AI 創新 | 6 | 2.0 | 70% | 2.0 | **4.2** | 11.2 | 16 | **已完成**（2026-09-22, Issue #123 / PR #124，即 M4 AI 智能覓食助理） |
-| **雙排瀑布流 UGC 食記與短影片** | 內容生態 | 5 | 2.0 | 70% | 3.0 | **2.33** | 9.8 | 17 | **P2** |
+| ✅ **雙排瀑布流 UGC 食記與短影片 (F-2.3)** | 內容生態 | 5 | 2.0 | 70% | 3.0 | **2.33** | 9.8 | 17 | **已完成**（2026-11-14, Issue #182 / PR #183） |
 
 ---
 
@@ -670,7 +675,7 @@ lib/
 |   • [x] AI 多模態 Vision 菜單翻譯與食材過敏原拆解 ✅ 2026-09-12 (Issue #115 / PR #116) |
 |   • 個人味蕾配對度 (0-100% Match Score & 味覺雷達)                                  |
 |   • [x] 自然語言選店對話助手與命運轉盤 ✅ 2026-09-22 (Issue #123 / PR #124)          |
-|   • 雙排瀑布流 UGC 食記與 15 秒探店短影片                                           |
+|   • [x] 雙排瀑布流 UGC 食記與 15 秒探店短影片 ✅ 2026-11-14 (Issue #182 / PR #183)    |
 +-----------------------------------------------------------------------------------+
 ```
 

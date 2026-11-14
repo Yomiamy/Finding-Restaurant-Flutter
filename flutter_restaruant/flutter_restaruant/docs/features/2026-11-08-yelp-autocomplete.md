@@ -4,7 +4,7 @@
 - **狀態**：🟢 已定案 (STAGE 0a)
 - **實查基線**：`main` @ `44abb540`
 - **需求來源**：`gen-grill` brief Q1–Q5
-- **相關 brainstorm 項目**：`docs/brainstorm/2026-11-11-features-brainstorm.md` §8.3.2 [A-8.9]
+- **相關 brainstorm 項目**：`docs/brainstorm/2026-11-14-features-brainstorm.md` §8.3.2 [A-8.9]
 - **底層基礎建設**：PR #160 (`APIClz.autocomplete`、`YelpAutocompleteDto`、`YelpAutocompleteRepository` / `YelpAutocompleteRepo`)
 
 ---
