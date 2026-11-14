@@ -283,6 +283,7 @@ class _NoteVideoPlayerState extends State<NoteVideoPlayer> {
 
     final controller = VideoPlayerController.networkUrl(uri);
     _controller = controller;
+    controller.addListener(_onControllerUpdated);
     try {
       await controller.initialize();
       if (!mounted) return;
@@ -309,8 +310,19 @@ class _NoteVideoPlayerState extends State<NoteVideoPlayer> {
 
   @override
   void dispose() {
+    _controller?.removeListener(_onControllerUpdated);
     unawaited(_controller?.dispose());
     super.dispose();
+  }
+
+  void _onControllerUpdated() {
+    final controller = _controller;
+    if (controller != null &&
+        controller.value.hasError &&
+        !_hasError &&
+        mounted) {
+      setState(() => _hasError = true);
+    }
   }
 
   void _togglePlayPause() {
