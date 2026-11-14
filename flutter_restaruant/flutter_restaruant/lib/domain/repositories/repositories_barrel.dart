@@ -10,3 +10,4 @@ export 'yelp_business_repository.dart';
 export 'yelp_event_repository.dart';
 export 'yelp_category_repository.dart';
 export 'yelp_autocomplete_repository.dart';
+export 'ugc_note_repository.dart';

@@ -13,6 +13,7 @@ import '../../../models/model_barrel.dart';
 import '../../autocomplete/autocomplete_barrel.dart';
 import '../../favor/view/view_barrel.dart';
 import '../../filter/view/view_barrel.dart';
+import '../../notes/view/view_barrel.dart';
 import '../../restaurant/view/view_barrel.dart';
 import '../../settings/view/view_barrel.dart';
 import '../bloc/bloc_barrel.dart';
@@ -77,6 +78,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         onToggleViewMode: _toggleViewMode,
         onMapMyLoc: () => _mainBloc.add(const Reset()),
         onFavorites: _navigateToFavorites,
+        onNotesFeed: _navigateToNotesFeed,
         onSettings: _navigateToSettings,
       ),
       appBar: _buildAppBar(context),
@@ -146,6 +148,11 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
   void _navigateToFavorites() {
     if (!mounted) return;
     Navigator.of(context).pushNamed(FavorPage.routeName);
+  }
+
+  void _navigateToNotesFeed() {
+    if (!mounted) return;
+    Navigator.of(context).pushNamed(NotesFeedPage.routeName);
   }
 
   void _navigateToSettings() {

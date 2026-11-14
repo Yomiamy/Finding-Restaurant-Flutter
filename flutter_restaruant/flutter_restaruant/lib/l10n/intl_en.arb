@@ -155,5 +155,9 @@
   "autocomplete_businesses_title": "Businesses",
   "autocomplete_categories_title": "Categories",
   "autocomplete_no_results": "No suggestions found",
-  "autocomplete_search_hint": "Search restaurants, cuisines..."
+  "autocomplete_search_hint": "Search restaurants, cuisines...",
+  "notes_feed_title": "Foodie Notes",
+  "notes_feed_empty": "No foodie notes yet",
+  "note_detail_title": "Note Detail",
+  "note_video_error": "Failed to load video"
 }

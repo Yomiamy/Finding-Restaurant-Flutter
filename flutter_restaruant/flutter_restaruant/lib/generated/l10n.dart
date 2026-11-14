@@ -1494,6 +1494,46 @@ class S {
       args: [],
     );
   }
+
+  /// `Foodie Notes`
+  String get notes_feed_title {
+    return Intl.message(
+      'Foodie Notes',
+      name: 'notes_feed_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No foodie notes yet`
+  String get notes_feed_empty {
+    return Intl.message(
+      'No foodie notes yet',
+      name: 'notes_feed_empty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Note Detail`
+  String get note_detail_title {
+    return Intl.message(
+      'Note Detail',
+      name: 'note_detail_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Failed to load video`
+  String get note_video_error {
+    return Intl.message(
+      'Failed to load video',
+      name: 'note_video_error',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

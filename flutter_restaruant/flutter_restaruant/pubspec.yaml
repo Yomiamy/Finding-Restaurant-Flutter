@@ -14,6 +14,8 @@ environment:
 dependencies:
   # UI 元件與介面元件 (UI Components & Layouts)
   flutter_platform_widgets: ^10.0.1 # 跨平台 UI 元件 (依據 iOS/Android 自動切換原生風格)
+  flutter_staggered_grid_view: ^0.7.0 # 雙排瀑布流佈局 (Masonry Grid)
+  video_player: ^2.14.1 # 官方短影片播放器
 
   # 狀態管理與非同步 (State Management & Reactive Programming)
   bloc: ^9.2.1 # BLoC 狀態管理核心庫

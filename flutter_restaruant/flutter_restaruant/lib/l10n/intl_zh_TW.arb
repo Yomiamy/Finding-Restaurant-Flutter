@@ -155,5 +155,9 @@
   "autocomplete_businesses_title": "推薦店家",
   "autocomplete_categories_title": "相關分類",
   "autocomplete_no_results": "找不到相符建議",
-  "autocomplete_search_hint": "搜尋餐廳、料理或關鍵字..."
+  "autocomplete_search_hint": "搜尋餐廳、料理或關鍵字...",
+  "notes_feed_title": "探店筆記",
+  "notes_feed_empty": "尚無探店筆記",
+  "note_detail_title": "筆記詳情",
+  "note_video_error": "影片載入失敗"
 }

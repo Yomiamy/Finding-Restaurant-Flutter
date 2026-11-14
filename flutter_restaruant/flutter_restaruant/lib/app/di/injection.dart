@@ -21,6 +21,7 @@ void setupInjection() {
 
   // Data sources
   getIt.registerLazySingleton<FavorDataSource>(() => FavorDataSource());
+  getIt.registerLazySingleton<UgcNoteDataSource>(() => UgcNoteDataSource());
 
   // Repositories
   getIt.registerLazySingleton<MainRepository>(
@@ -58,5 +59,8 @@ void setupInjection() {
   );
   getIt.registerLazySingleton<YelpAutocompleteRepository>(
     () => YelpAutocompleteRepo(api: getIt<APIClz>(), locale: Constants.locale),
+  );
+  getIt.registerLazySingleton<UgcNoteRepository>(
+    () => UgcNoteRepo(dataSource: getIt<UgcNoteDataSource>()),
   );
 }

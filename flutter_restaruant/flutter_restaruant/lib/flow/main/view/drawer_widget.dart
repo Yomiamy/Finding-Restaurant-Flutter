@@ -17,6 +17,7 @@ class DrawerWidget extends StatelessWidget {
     required this.onToggleViewMode,
     required this.onMapMyLoc,
     required this.onFavorites,
+    required this.onNotesFeed,
     required this.onSettings,
   });
 
@@ -25,6 +26,7 @@ class DrawerWidget extends StatelessWidget {
   final VoidCallback onToggleViewMode;
   final VoidCallback onMapMyLoc;
   final VoidCallback onFavorites;
+  final VoidCallback onNotesFeed;
   final VoidCallback onSettings;
 
   void _handleTap(BuildContext context, VoidCallback action) {
@@ -82,12 +84,23 @@ class DrawerWidget extends StatelessWidget {
               onTap: () => _handleTap(context, onMapMyLoc),
             ),
             ListTile(
-              leading: const Icon(Icons.favorite, color: ThemeColor.colord84a20),
+              leading: const Icon(
+                Icons.favorite,
+                color: ThemeColor.colord84a20,
+              ),
               title: Text(appLocalizations.favorite_stores),
               onTap: () => _handleTap(context, onFavorites),
             ),
             ListTile(
-              leading: const Icon(Icons.settings, color: ThemeColor.colord84a20),
+              leading: const Icon(Icons.explore, color: ThemeColor.colord84a20),
+              title: Text(appLocalizations.notes_feed_title),
+              onTap: () => _handleTap(context, onNotesFeed),
+            ),
+            ListTile(
+              leading: const Icon(
+                Icons.settings,
+                color: ThemeColor.colord84a20,
+              ),
               title: Text(appLocalizations.settings_title),
               onTap: () => _handleTap(context, onSettings),
             ),

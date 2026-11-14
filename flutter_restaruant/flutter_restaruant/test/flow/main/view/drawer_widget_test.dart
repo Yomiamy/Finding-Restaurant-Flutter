@@ -13,6 +13,7 @@ void main() {
     bool toggleTapped = false;
     bool myLocTapped = false;
     bool favoritesTapped = false;
+    bool notesFeedTapped = false;
     bool settingsTapped = false;
 
     Widget buildTestScaffold({required bool isListMode}) {
@@ -27,6 +28,7 @@ void main() {
             onToggleViewMode: () => toggleTapped = true,
             onMapMyLoc: () => myLocTapped = true,
             onFavorites: () => favoritesTapped = true,
+            onNotesFeed: () => notesFeedTapped = true,
             onSettings: () => settingsTapped = true,
           ),
           body: const SizedBox(),
@@ -41,7 +43,7 @@ void main() {
     await tester.pumpAndSettle();
 
     expect(find.byType(DrawerWidget), findsOneWidget);
-    expect(find.byType(ListTile), findsNWidgets(5));
+    expect(find.byType(ListTile), findsNWidgets(6));
     expect(find.text(S.current.keyword_search), findsNothing);
 
     // Tap filter rules
@@ -70,6 +72,13 @@ void main() {
     await tester.pumpAndSettle();
     expect(favoritesTapped, isTrue);
 
+    // Open drawer and tap notes feed
+    tester.state<ScaffoldState>(find.byType(Scaffold)).openDrawer();
+    await tester.pumpAndSettle();
+    await tester.tap(find.widgetWithText(ListTile, S.current.notes_feed_title));
+    await tester.pumpAndSettle();
+    expect(notesFeedTapped, isTrue);
+
     // Open drawer and tap settings
     tester.state<ScaffoldState>(find.byType(Scaffold)).openDrawer();
     await tester.pumpAndSettle();
@@ -93,6 +102,7 @@ void main() {
               onToggleViewMode: () {},
               onMapMyLoc: () {},
               onFavorites: () {},
+              onNotesFeed: () {},
               onSettings: () {},
             ),
             body: const SizedBox(),
@@ -102,7 +112,7 @@ void main() {
       tester.state<ScaffoldState>(find.byType(Scaffold)).openDrawer();
       await tester.pumpAndSettle();
 
-      expect(find.byType(ListTile), findsNWidgets(4));
+      expect(find.byType(ListTile), findsNWidgets(5));
       // Icons.map 只屬於切換項（定位重置用 Icons.navigation）。
       expect(find.byIcon(Icons.map), findsNothing);
       expect(find.text(S.current.map_mode), findsNothing);

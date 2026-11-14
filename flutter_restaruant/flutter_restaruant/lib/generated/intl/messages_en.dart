@@ -306,6 +306,14 @@ class MessageLookup extends MessageLookupByLibrary {
     "navigation_choice": MessageLookupByLibrary.simpleMessage(
       "Navigation Choice",
     ),
+    "note_detail_title": MessageLookupByLibrary.simpleMessage("Note Detail"),
+    "note_video_error": MessageLookupByLibrary.simpleMessage(
+      "Failed to load video",
+    ),
+    "notes_feed_empty": MessageLookupByLibrary.simpleMessage(
+      "No foodie notes yet",
+    ),
+    "notes_feed_title": MessageLookupByLibrary.simpleMessage("Foodie Notes"),
     "open_in_yelp": MessageLookupByLibrary.simpleMessage("Open in Yelp"),
     "passwd_invalid_hint_msg": MessageLookupByLibrary.simpleMessage(
       "Please input password",
