@@ -41,6 +41,9 @@ class UgcNoteDto extends Equatable {
   @JsonKey(name: 'restaurant_name')
   final String? restaurantName;
 
+  @JsonKey(name: 'restaurant_id')
+  final String? restaurantId;
+
   @JsonKey(name: 'created_at_ms')
   final int? createdAtMs;
 
@@ -57,6 +60,7 @@ class UgcNoteDto extends Equatable {
     this.videoUrl,
     this.videoDurationSec,
     this.restaurantName,
+    this.restaurantId,
     this.createdAtMs,
   });
 
@@ -79,6 +83,7 @@ class UgcNoteDto extends Equatable {
     videoUrl,
     videoDurationSec,
     restaurantName,
+    restaurantId,
     createdAtMs,
   ];
 }

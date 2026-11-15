@@ -20,7 +20,53 @@ class _Data {
     videoUrl: 'https://example.com/video.mp4',
     videoDurationSec: 12,
     restaurantName: 'Ichiran',
+    restaurantId: 'biz-ichiran',
     createdAtMs: 1700000000000,
+  );
+
+  static const UgcNoteDto trimmedRestaurantDto = UgcNoteDto(
+    id: 'note-trimmed',
+    restaurantName: 'Ichiran',
+    restaurantId: '  biz-123  ',
+  );
+
+  static const UgcNoteDto blankRestaurantDto = UgcNoteDto(
+    id: 'note-blank',
+    restaurantName: 'Ichiran',
+    restaurantId: '   ',
+  );
+
+  static const UgcNoteEntity defaultRestaurantIdEntity = UgcNoteEntity(
+    id: 'note-default',
+    title: 'Default Note',
+    content: '',
+    authorName: 'Bob',
+    authorAvatarUrl: '',
+    isVideo: false,
+    coverUrl: '',
+    coverAspectRatio: UgcNoteEntity.defaultAspectRatio,
+    imageUrls: <String>[],
+    videoUrl: '',
+    videoDurationSec: 1,
+    restaurantName: 'Ichiran',
+    createdAtMs: 0,
+  );
+
+  static const UgcNoteEntity linkedRestaurantIdEntity = UgcNoteEntity(
+    id: 'note-default',
+    title: 'Default Note',
+    content: '',
+    authorName: 'Bob',
+    authorAvatarUrl: '',
+    isVideo: false,
+    coverUrl: '',
+    coverAspectRatio: UgcNoteEntity.defaultAspectRatio,
+    imageUrls: <String>[],
+    videoUrl: '',
+    videoDurationSec: 1,
+    restaurantName: 'Ichiran',
+    restaurantId: 'biz-123',
+    createdAtMs: 0,
   );
 
   static const UgcNoteDto extremeVideoDto = UgcNoteDto(
@@ -62,6 +108,14 @@ class _Data {
     'media_type': 'image',
   };
 
+  static const Map<String, dynamic> linkedFirestoreDoc = {
+    'title': 'Linked Note',
+    'media_type': 'image',
+    'restaurant_name': 'Afuri Ramen',
+    'restaurant_id': '  afuri-tokyo-1  ',
+    'created_at_ms': 2000,
+  };
+
   static const Map<String, dynamic> malformedFirestoreDoc = {
     'title': 12345,
     'image_urls': 'not-a-list',
@@ -74,8 +128,39 @@ void main() {
       final json = _Data.fullVideoDto.toJson();
       final fromJson = UgcNoteDto.fromJson(json);
 
+      expect(json['restaurant_id'], 'biz-ichiran');
+      expect(fromJson.restaurantId, 'biz-ichiran');
       expect(fromJson, equals(_Data.fullVideoDto));
     });
+
+    test(
+      'UgcNoteEntity.fromDto trims restaurantId and defaults missing/null to empty string',
+      () {
+        final trimmed = UgcNoteEntity.fromDto(_Data.trimmedRestaurantDto);
+        expect(trimmed.restaurantId, 'biz-123');
+
+        final missingDto = UgcNoteDto.fromJson(const <String, dynamic>{
+          'title': 'Missing Restaurant Id',
+        });
+        expect(missingDto.restaurantId, isNull);
+        expect(UgcNoteEntity.fromDto(missingDto).restaurantId, '');
+
+        final nullDto = UgcNoteDto.fromJson(const <String, dynamic>{
+          'restaurant_id': null,
+        });
+        expect(nullDto.restaurantId, isNull);
+        expect(UgcNoteEntity.fromDto(nullDto).restaurantId, '');
+
+        final blank = UgcNoteEntity.fromDto(_Data.blankRestaurantDto);
+        expect(blank.restaurantId, '');
+
+        expect(_Data.defaultRestaurantIdEntity.restaurantId, '');
+        expect(
+          _Data.defaultRestaurantIdEntity,
+          isNot(equals(_Data.linkedRestaurantIdEntity)),
+        );
+      },
+    );
 
     test(
       'UgcNoteEntity.fromDto clamps coverAspectRatio and videoDurationSec',
@@ -155,6 +240,24 @@ void main() {
 
         expect(notes.length, 1);
         expect(notes.first.id, 'valid');
+      },
+    );
+
+    test(
+      'fetchNotes maps trimmed restaurant_id from Firestore and defaults missing to empty',
+      () async {
+        final col = fakeFirestore.collection(UgcNoteDataSource.collectionName);
+
+        await col.doc('linked').set(_Data.linkedFirestoreDoc);
+        await col.doc('unlinked').set(_Data.olderFirestoreDoc);
+
+        final notes = await repo.fetchNotes();
+
+        expect(notes.length, 2);
+        expect(notes[0].id, 'linked');
+        expect(notes[0].restaurantId, 'afuri-tokyo-1');
+        expect(notes[1].id, 'unlinked');
+        expect(notes[1].restaurantId, '');
       },
     );
   });
