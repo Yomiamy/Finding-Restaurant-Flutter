@@ -31,19 +31,23 @@
 
 以下每一項都經逐檔複查確認，附精確行號。
 
-#### 1. Domain 層反向依賴 Data 層（架構規則實質失效）
+#### ~~1. Domain 層反向依賴 Data 層（架構規則實質失效）~~ ❌ 已裁決不調整（As-Designed 資料驅動分層架構；循環依賴已於 PR #112 解除）
 
-**11 個 entity 檔案全數 `import '../../data_layer/dto/dto_barrel.dart'`**，根因是 `fromDto` / `toDto` 這對轉換方法被放在 Entity 自己身上。原先 `AccountDto` ⇄ `UserEntity` 構成**真實的循環 import**（`account_dto.dart:2` ⇄ `user_entity.dart:2`）；此問題已於 2026-09-07（PR #112）透過在 Data 層定義 `AccountType`、Domain 層定義 `AccountTypeModel` 解耦消除，`AccountDto` 不再反向依賴 Domain。剩餘 Entity 的 `fromDto`/`toDto` 則維持妥協派設計，待後續規劃專用 Mapper。
+**11 個 entity 檔案全數 `import '../../data_layer/dto/dto_barrel.dart'`**，根因是 `fromDto` / `toDto` 這對轉換方法被放在 Entity 自己身上。原先 `AccountDto` ⇄ `UserEntity` 構成**真實的循環 import**（`account_dto.dart:2` ⇄ `user_entity.dart:2`）；此問題已於 2026-09-07（PR #112）透過在 Data 層定義 `AccountType`、Domain 層定義 `AccountTypeModel` 解耦消除，`AccountDto` 不再反向依賴 Domain。
 
 Dart 允許循環 import 故編譯不會失敗，但這代表 **domain 層物理上無法獨立於 data_layer 抽出來編譯或測試**——Clean Architecture 最主要的收益就此蒸發。
 
 > 「依賴方向」不是靠目錄名字決定的，是靠 import 決定的。目前 `domain/` 這個目錄名字說它是內層，import 說它不是。
 
-**修法**：把 `fromDto`/`toDto` 移到 data_layer 的 mapper，Entity 就不再需要認識 DTO，循環自然消失。
+**原修法提案**：把 `fromDto`/`toDto` 移到 data_layer 的 mapper，Entity 就不再需要認識 DTO，循環自然消失。
 
 附帶兩處橫向洩漏：`sign_in_repository.dart:2` 與 `restaurant_business_time_entity.dart:2` import `features/utils/utils_barrel.dart`，而該 barrel 間接拉進 `geolocator` 與 `url_launcher`——一個 domain entity 只為判斷語系，就把定位與瀏覽器套件掛上了。
 
-#### 2. `LogInterceptor` 在 release build 印出完整請求與回應
+> **2026-11-15 實查更新**：
+> 1. **循環依賴與橫向洩漏已解**：`AccountDto ⇄ UserEntity` 直接循環 import 已於 PR #112（2026-09-07）解除；`restaurant_business_time_entity.dart` 對 `features/utils/utils_barrel.dart` 的 import 亦已隨 A-9.1（刪除 `Utils.isLocaleZh()`）移除。
+> 2. **架構定案（`[A-8.2]` / `docs/architecture/overview.md` §1）**：正式裁決為 **❌ 不需要調整（As-Designed 資料驅動分層架構）**。本專案採 `Infra (DTO, API, DB) ← Domain (Entity) ← Data Layer (Repository) ← BLoC ← Presentation` 拓撲，由 `Entity.fromDto` 自行封裝轉換並確保 DTO 永不外洩至 Presentation 層，拒絕引入純單行轉發的形式主義 Mapper。
+
+#### 2. `LogInterceptor` 預設值與攔截器順序（🟡 部分修復：呼叫端已加 `kDebugMode`，release 外洩風險已解除）
 
 `dio_client.dart:23-26` 的 `isLogEnabled` 預設 `true`，呼叫端（`api_clz.dart:53`）未覆寫，且**沒有 `kDebugMode` 圍堵**：
 
@@ -58,6 +62,8 @@ release 版仍會把完整 request/response body 寫進 stdout。這與 Inspecto
 附帶一致性問題：`LogInterceptor` 位於 index 0、早於 auth 注入，因此它印的 header 不含 `Authorization`，與 Inspector 看到的是兩份不同快照。
 
 **修法**：`isLogEnabled` 預設改為 `kDebugMode`，並將註冊順序移到 auth 之後。
+
+> **2026-11-15 實查更新**：呼叫端 `lib/api/api_clz.dart:164` **已明確傳入 `isLogEnabled: kDebugMode`**（附註解「release 不記錄請求 URI 與回應內容」），release build 印出完整請求與回應的外洩風險已解除。目前僅剩 `lib/api/dio/dio_client.dart:10` 建構子預設值仍為 `bool isLogEnabled = true`，以及 `:24-32` 中 `LogInterceptor` 註冊順序仍早於 `interceptWraps`（Auth header 注入）待收尾。
 
 #### ~~3. `main()` 的 `Future.wait` 無錯誤處理 → 啟動失敗即永久白屏~~ ✅ 已修復
 
@@ -89,9 +95,11 @@ release 版仍會把完整 request/response body 寫進 stdout。這與 Inspecto
 
 `main.dart:29` 的 `getIt.registerSingleton<BannerADState>(...)` 是唯一的 **eager** singleton，且**不在** `injection.dart` 內（因為它需要注入 `MobileAds.initialize()` 的 Future）。讀 `injection.dart` 會誤以為那就是全部的註冊。
 
-#### 7. `locale` 被決定了兩次，其中一次是多餘的
+#### ~~7. `locale` 被決定了兩次，其中一次是多餘的~~ ✅ 已修復
 
 `main.dart:35` 用**系統語系**載入翻譯 `S.load(ui.PlatformDispatcher.instance.locale)`，但 `main.dart:56` 把 `PlatformApp.locale` **硬鎖為 `zh_TW`**。`locale` 一旦指定，`S.delegate` 會以 `zh_TW` 重新載入並覆蓋前者。第 35 行實質上只影響 `runApp` 之前那個沒有 UI 的極短窗口——**是可直接刪除的複雜度**。
+
+> **2026-11-15 實查更新**：此缺陷已修復。`lib/main.dart:97-129` 的 `PlatformApp` 已移除硬鎖的 `locale:` 參數，全 App 統一由 `lib/main.dart:46` 的 `S.load(ui.PlatformDispatcher.instance.locale)` 與 `supportedLocales: S.delegate.supportedLocales` 決定語系。
 
 #### 8. `MainRepository` 介面洩漏可變內部狀態
 
@@ -110,12 +118,12 @@ release 版仍會把完整 request/response body 寫進 stdout。這與 Inspecto
 | 維度 | 對照組套件 (`flutter_inspector_kit`) | 當前專案 (`flutter_restaruant`) |
 | :--- | :--- | :--- |
 | **架構模式** | **扁平技術分包**（`core` / `models` / `ui` / `utils`） | **Clean Architecture + Feature-First**（`domain` / `data_layer` / `flow`） |
-| **層級隔離** | 無嚴格層級，靠 `FlutterInspector` Facade 收斂 | 宣告為三層單向，**實際上 entity 有反向 import**（見缺陷 1） |
+| **層級隔離** | 無嚴格層級，靠 `FlutterInspector` Facade 收斂 | 採 `Infra ← Domain ← Data Layer ← Presentation` 資料驅動分層，`Entity.fromDto` 封裝轉換、DTO 永不外洩至 UI（見缺陷 1 更新與 `overview.md`） |
 | **業務邏輯位置** | UI `StatefulWidget` 內或純函數 | `Bloc` 的事件處理器 + Repository |
 | **實體隔離** | 統一 `Entry`，實作 `TimestampedEntry` 契約 | 區分 `Entity`（業務）／`Dto`（線上格式）／`Model`（UI） |
 | **規模** | ~60 檔，單一 package | **174 檔**，8 個 feature 垂直切片 |
 
-> **實用主義評註**：兩者的選擇都對——**架構應該匹配問題規模**。對照組是輕量 debug 工具，引入 UseCase 或 Repository 層純屬自我折磨；當前專案有 8 個 feature、兩個外部資料源、5 種登入方式，分層帶來的隔離是划算的。真正的問題不是「分層太多」，而是**宣告了分層卻沒守住**（缺陷 1）。
+> **實用主義評註**：兩者的選擇都對——**架構應該匹配問題規模**。對照組是輕量 debug 工具，引入 UseCase 或 Repository 層純屬自我折磨；當前專案有 8 個 feature、兩個外部資料源、5 種登入方式，分層帶來的隔離是划算的。`Entity.fromDto` 亦經 `[A-8.2]` 確認為資料驅動分層架構的既定設計，不額外引入單行轉發的 Mapper。
 
 ### 2. 狀態管理與職責
 
@@ -148,11 +156,12 @@ release 版仍會把完整 request/response body 寫進 stdout。這與 Inspecto
 
 | 優先 | 項目 | 理由 | 預估成本 |
 | :---: | :--- | :--- | :---: |
-| **P0** | 缺陷 2：`LogInterceptor` release 生效 | 資訊外洩，改 1 行預設值即可 | 極低 |
+| 🟡 **部分修復** | 缺陷 2：`LogInterceptor` 預設值與順序 | 呼叫端 `api_clz.dart:164` 已傳 `isLogEnabled: kDebugMode`（release 外洩已解）；剩 `dio_client.dart` 建構子預設值與註冊順序移至 auth 之後 | 極低 |
 | ✅ **已修復** | ~~缺陷 3：`Future.wait` 無錯誤處理~~ | 已於 `lib/main.dart` 加入 `try/catch` 完整包覆 | 低 |
 | 🟡 **部分修復** | 缺陷 4：硬編碼 Token | 明文已遷至 Remote Config（PR #135）、`fetchToken` 已刪（PR #162）；剩餘 Server-side Broker 與金鑰輪替 | 高 |
-| **P2** | 缺陷 1：Entity 反向依賴 | 架構完整性；11 檔 + mapper 新建，但無行為變更 | 中 |
-| **P3** | 缺陷 5、6、7 | 複雜度清理，無外部行為改變 | 低 |
+| ❌ **不調整 (As-Designed)** | ~~缺陷 1：Entity 反向依賴~~ | `AccountDto ⇄ UserEntity` 循環已於 PR #112 解除；`Entity.fromDto` 經 `[A-8.2]` 與 `overview.md` 裁決為資料驅動分層架構，不加形式主義 Mapper | — |
+| ✅ **已修復** | ~~缺陷 7：`locale` 重複指定~~ | `PlatformApp` 已移除 `locale: zh_TW` 硬鎖，統一由 `S.load` 與 `supportedLocales` 決定 | 低 |
+| **P3** | 缺陷 5、6 | 複雜度清理（三層單例雙重取用路徑、DI 註冊點分散），無外部行為改變 | 低 |
 | **P3** | 缺陷 8、9 | 介面設計；動到公開契約需同步改呼叫端 | 中 |
 
-> **P0 兩項合計約 10 行改動，卻同時消除「資訊外洩」與「啟動白屏無從診斷」兩個真實風險。** 這是目前投資報酬率最高的一筆。
+> **原 P0 兩項之「啟動白屏」（缺陷 3）與「release 印出完整請求」（缺陷 2 呼叫端）均已解除；剩餘 `dio_client.dart` 建構子預設值與攔截器順序僅約 5 行改動即可徹底收尾。**
