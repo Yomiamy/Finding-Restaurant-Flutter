@@ -9,6 +9,7 @@ import '../../../gen/assets.gen.dart';
 import '../../../generated/l10n.dart';
 import '../bloc/notes_feed_barrel.dart';
 import 'note_detail_page.dart';
+import 'note_restaurant_summary_sheet.dart';
 
 /// 雙排瀑布流探店食記與短影片列表頁。
 class NotesFeedPage extends StatefulWidget {
@@ -83,7 +84,12 @@ class _NotesFeedPageState extends State<NotesFeedPage> {
                 padding: const EdgeInsets.all(ThemeSize.space10),
                 itemCount: notes.length,
                 itemBuilder: (context, index) {
-                  return NoteMasonryCard(note: notes[index]);
+                  final note = notes[index];
+                  return NoteMasonryCard(
+                    note: note,
+                    onRestaurantTagTap: () =>
+                        NoteRestaurantSummarySheet.show(context, note: note),
+                  );
                 },
               ),
             ),
@@ -97,8 +103,13 @@ class _NotesFeedPageState extends State<NotesFeedPage> {
 /// 瀑布流中的單張食記／短影片卡片。
 class NoteMasonryCard extends StatelessWidget {
   final UgcNoteEntity note;
+  final VoidCallback? onRestaurantTagTap;
 
-  const NoteMasonryCard({super.key, required this.note});
+  const NoteMasonryCard({
+    super.key,
+    required this.note,
+    this.onRestaurantTagTap,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -156,25 +167,35 @@ class NoteMasonryCard extends StatelessWidget {
                   ),
                   if (restaurantName.isNotEmpty) ...[
                     const SizedBox(height: ThemeSize.space4),
-                    Row(
-                      children: [
-                        const Icon(
-                          Icons.place,
-                          size: ThemeSize.size14,
-                          color: ThemeColor.colord84a20,
+                    InkWell(
+                      key: Key('note_card_restaurant_tag_${note.id}'),
+                      borderRadius: BorderRadius.circular(ThemeSize.radius8),
+                      onTap: onRestaurantTagTap,
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          vertical: ThemeSize.space3,
                         ),
-                        const SizedBox(width: ThemeSize.space3),
-                        Expanded(
-                          child: Text(
-                            restaurantName,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: textTheme.labelSmall?.copyWith(
-                              color: colorScheme.onSurfaceVariant,
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.place,
+                              size: ThemeSize.size14,
+                              color: ThemeColor.colord84a20,
                             ),
-                          ),
+                            const SizedBox(width: ThemeSize.space3),
+                            Expanded(
+                              child: Text(
+                                restaurantName,
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                                style: textTheme.labelSmall?.copyWith(
+                                  color: colorScheme.onSurfaceVariant,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
-                      ],
+                      ),
                     ),
                   ],
                   const SizedBox(height: ThemeSize.space8),

@@ -8,6 +8,7 @@ import '../../../domain/entities/entities_barrel.dart';
 import '../../../features/component/component_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../generated/l10n.dart';
+import 'note_restaurant_summary_sheet.dart';
 import 'notes_feed_page.dart';
 
 /// 探店食記與 15 秒短影片詳情頁。
@@ -112,6 +113,10 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
                           const SizedBox(height: ThemeSize.space8),
                           NoteRestaurantTag(
                             restaurantName: note.restaurantName,
+                            onTap: () => NoteRestaurantSummarySheet.show(
+                              context,
+                              note: note,
+                            ),
                           ),
                         ],
                         const SizedBox(height: ThemeSize.space12),
@@ -131,45 +136,63 @@ class _NoteDetailPageState extends State<NoteDetailPage> {
   }
 }
 
-/// 詳情頁中的靜態餐廳名稱標籤。
+/// 詳情頁中的餐廳名稱標籤，點擊彈出餐廳摘要 BottomSheet。
 class NoteRestaurantTag extends StatelessWidget {
   final String restaurantName;
+  final VoidCallback? onTap;
 
-  const NoteRestaurantTag({super.key, required this.restaurantName});
+  const NoteRestaurantTag({
+    super.key,
+    required this.restaurantName,
+    this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
     final textTheme = Theme.of(context).textTheme;
 
-    return Container(
+    return Material(
       key: const Key('note_detail_restaurant_tag'),
-      padding: const EdgeInsets.symmetric(
-        horizontal: ThemeSize.space10,
-        vertical: ThemeSize.space4,
-      ),
-      decoration: BoxDecoration(
-        color: ThemeColor.colord84a20.withValues(alpha: 0.1),
-        borderRadius: BorderRadius.circular(ThemeSize.radiusTag),
-      ),
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          const Icon(
-            Icons.place,
-            size: ThemeSize.size16,
-            color: ThemeColor.colord84a20,
+      color: ThemeColor.color00000000,
+      child: InkWell(
+        borderRadius: BorderRadius.circular(ThemeSize.space16),
+        onTap: onTap,
+        child: Ink(
+          padding: const EdgeInsets.symmetric(
+            horizontal: ThemeSize.space10,
+            vertical: ThemeSize.space4,
           ),
-          const SizedBox(width: ThemeSize.space4),
-          Flexible(
-            child: Text(
-              restaurantName,
-              style: textTheme.bodyMedium?.copyWith(
+          decoration: BoxDecoration(
+            color: ThemeColor.colord84a20.withValues(alpha: 0.1),
+            borderRadius: BorderRadius.circular(ThemeSize.radiusTag),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(
+                Icons.place,
+                size: ThemeSize.size16,
                 color: ThemeColor.colord84a20,
-                fontWeight: FontWeight.bold,
               ),
-            ),
+              const SizedBox(width: ThemeSize.space4),
+              Flexible(
+                child: Text(
+                  restaurantName,
+                  style: textTheme.bodyMedium?.copyWith(
+                    color: ThemeColor.colord84a20,
+                    fontWeight: FontWeight.bold,
+                  ),
+                ),
+              ),
+              const SizedBox(width: ThemeSize.space4),
+              const Icon(
+                Icons.chevron_right,
+                size: ThemeSize.size16,
+                color: ThemeColor.colord84a20,
+              ),
+            ],
           ),
-        ],
+        ),
       ),
     );
   }
