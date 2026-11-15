@@ -14,7 +14,8 @@
 
 * **狀態以型別表達，而非布林旗標組合**：`MainState` 用 7 個互斥的具名子類別（`MainInitial` / `InProgress` / `Success` / `Failure` / `LoadMoreSuccess` / `ResetSuccess` / `ToggleFavorSuccess`）表達狀態機，而非單一 class 塞 `isLoading` / `hasError`。不可能出現「同時 loading 又 error」這種靠約定才不發生的非法狀態。
 
-* **平台分歧在編譯期強制處理**：`PlatformWidget<I extends Widget, A extends Widget>` 以兩個 `required` 抽象方法約束，繼承者漏寫任一平台則編譯失敗。這比在 `build` 內散落 `if (Platform.isIOS)` 更能消滅「某平台忘了處理」的特殊情況。
+* ~~**平台分歧在編譯期強制處理**：`PlatformWidget<I extends Widget, A extends Widget>` 以兩個 `required` 抽象方法約束，繼承者漏寫任一平台則編譯失敗。這比在 `build` 內散落 `if (Platform.isIOS)` 更能消滅「某平台忘了處理」的特殊情況。~~
+  > **2026-09-26 實查更新 (UI-8.2 / PR #129)**：經查全專案 0 處繼承或呼叫 `lib/component/platform_widget.dart`（專案實際跨平台 UI 一律採用 `flutter_platform_widgets` 套件），該檔已作為零引用死碼移除。
 
 * **回傳持久化結果而非 `void`**：`MainRepository.toggleFavor` 回傳寫入後的 Entity，介面註解寫明理由——「so callers adopt the new favor value instead of deriving it a second time」。避免了「翻轉邏輯存在於兩處」的經典錯誤。
 
@@ -68,11 +69,15 @@ release 版仍會把完整 request/response body 寫進 stdout。這與 Inspecto
 
 > **2026-08-21 實查更新**：此缺陷已修復。`lib/main.dart` 的啟動鏈（第 33-40 行區塊）已改用 `await Future.wait([...])` 並被 `try/catch (e, st)` 完整包覆，解決了永久白屏風險與 `.then()` 規範違反。
 
-#### 4. 硬編碼的 Yelp Bearer Token
+#### 4. 硬編碼的 Yelp Bearer Token（🟡 部分修復：明文已遷至 Remote Config，`fetchToken` 死碼已刪除）
 
 `constants.dart:40` 的 `Constants.authToken` 是明文靜態 token，會被打包進 release binary。`APIClz.fetchToken`（`api_clz.dart:18-24`）雖然存在，但**全 codebase 無任何呼叫點**——取得 token 的正規管道寫好了卻沒接上。
 
 附帶 bug：auth interceptor 用 `addAll` 而非 `putIfAbsent`，會**覆寫** Retrofit 已組好的 header。`fetchToken` 標註 `@FormUrlEncoded()`，生成碼設 `application/x-www-form-urlencoded`，會被此 interceptor 蓋成 `application/json`。因無呼叫點所以尚未爆發。
+
+> **2026-10-27 實查更新 (PR #135 / PR #162)**：
+> 1. `constants.dart` 內的明文 `Constants.authToken` 與 `staticMapApiKey` 已於 **A-8.5（Issue #134 / PR #135，2026-09-28）** 移除，改由 Firebase Remote Config（`AiModelConfig().yelpAuthToken`／`staticMapApiKey`）動態下發。惟 Remote Config 值仍會下發至客戶端記憶體，長期根治仍待建立 Server-side Broker 並輪替歷史金鑰。
+> 2. 零呼叫的死碼 `APIClz.fetchToken` 已於 **A-8.8（Issue #161 / PR #162，2026-10-27）** 正式刪除。
 
 #### 5. 三層單例疊床架屋，且兩條取用路徑並存
 
@@ -145,7 +150,7 @@ release 版仍會把完整 request/response body 寫進 stdout。這與 Inspecto
 | :---: | :--- | :--- | :---: |
 | **P0** | 缺陷 2：`LogInterceptor` release 生效 | 資訊外洩，改 1 行預設值即可 | 極低 |
 | ✅ **已修復** | ~~缺陷 3：`Future.wait` 無錯誤處理~~ | 已於 `lib/main.dart` 加入 `try/catch` 完整包覆 | 低 |
-| **P1** | 缺陷 4：硬編碼 Token | 金鑰外洩；但需先有 broker 端，成本高 | 高 |
+| 🟡 **部分修復** | 缺陷 4：硬編碼 Token | 明文已遷至 Remote Config（PR #135）、`fetchToken` 已刪（PR #162）；剩餘 Server-side Broker 與金鑰輪替 | 高 |
 | **P2** | 缺陷 1：Entity 反向依賴 | 架構完整性；11 檔 + mapper 新建，但無行為變更 | 中 |
 | **P3** | 缺陷 5、6、7 | 複雜度清理，無外部行為改變 | 低 |
 | **P3** | 缺陷 8、9 | 介面設計；動到公開契約需同步改呼叫端 | 中 |

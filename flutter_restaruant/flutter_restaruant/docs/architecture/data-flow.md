@@ -36,15 +36,18 @@
     │     ⚠️ 這是唯一的 eager singleton，且註冊點在 main.dart
     │        而非 injection.dart——讀 injection.dart 會誤以為那是全部
     │
-    ├─ 4. Future.wait([...]) 併發四項初始化
+    ├─ 4. try { await Future.wait([...]); ... } catch (e, st)
     │     ├─ Constants.init()          （PackageInfo）
     │     ├─ Firebase.initializeApp(...)
     │     ├─ S.load(系統語系)
-    │     └─ SignInManager().loadPrefs()
-    │           （於 runApp 前載入，使 isGuest 可被 UI 同步查詢，
-    │             SplashPage 才不需要 await 就能決定導向哪一頁）
+    │     ├─ SignInManager().loadPrefs()
+    │     │     （於 runApp 前載入，使 isGuest 可被 UI 同步查詢，
+    │     │       SplashPage 才不需要 await 就能決定導向哪一頁）
+    │     └─ [debug] registerSharedPreferencesSource()
+    │     （後續依序啟動 FirebaseAppCheck.activate、unawaited(AiModelConfig().fetchAndActivate())、FcmManager().init()；
+    │       任一環節拋錯由 catch 記錄 Logger().e，不阻斷後續 runApp）
     │
-    └─ 5. .then((_) { FcmManager().init(); runApp(...); })
+    └─ 5. runApp(const FindingRestaruantApp())
               │
               ▼
        ┌────────────────────────────────────────────────┐
@@ -62,9 +65,31 @@
        └────────────────────────────────────────────────┘
 ```
 
-### 🔴 關鍵風險：`Future.wait` 無錯誤處理，任一項失敗即白屏
+### ~~🔴 關鍵風險：`Future.wait` 無錯誤處理，任一項失敗即白屏~~ ✅ 已修復
 
-`Future.wait` 的語意是**任一 Future reject，整體即 reject**。目前 `.then()` 之後沒有 `.catchError`，也沒有 `try/catch`：
+> **實查更新**：`lib/main.dart:41-79` 已將原先無防護的 `Future.wait([...]).then(...)` 改為 `try { await Future.wait([...]); ... } catch (e, st)` 完整包覆，並把 `runApp(const FindingRestaruantApp())` 置於 `try/catch` 之後確保必定執行，同時消除了永久白屏風險與 `.then()` 規範違反：
+
+```dart
+try {
+  await Future.wait([
+    Constants.init(),
+    Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform),
+    S.load(ui.PlatformDispatcher.instance.locale),
+    SignInManager().loadPrefs(),
+    if (kDebugMode) registerSharedPreferencesSource(),
+  ]);
+  // FirebaseAppCheck.activate / unawaited(AiModelConfig().fetchAndActivate()) / FcmManager().init() ...
+} catch (e, st) {
+  Logger().e('Initialization failed', error: e, stackTrace: st);
+}
+
+runApp(const FindingRestaruantApp());
+```
+
+<details>
+<summary>歷史紀錄（修復前之舊版問題描述）</summary>
+
+`Future.wait` 的語意是**任一 Future reject，整體即 reject**。舊版 `.then()` 之後沒有 `.catchError`，也沒有 `try/catch`：
 
 ```dart
 Future.wait([
@@ -80,9 +105,8 @@ Future.wait([
 
 `Firebase.initializeApp()` 或 `Constants.init()` 若拋例外，`runApp()` **永遠不會被呼叫**——App 停在原生啟動畫面，使用者看到永久白屏，且沒有任何錯誤訊息可循。
 
-四項之中只有 `SignInManager.loadPrefs()` 自行包了 `try/catch`（`sign_in_manager.dart:49-55`，註解明確寫著「避免整個 Future reject」）——**這證明開發者已意識到此風險，但只修了一處**。
-
-> 🐧 **附帶品味問題**：本專案 style guide 明令「禁止 `.then()`」（§7.5），而 `main()` 宣告為 `async` 卻全程不用 `await`，第 38 行還掛了 `// ignore: unawaited_futures` 壓警告。改成 `await Future.wait([...])` 後接兩行即等價，且能自然套用 `try/catch`——一次修掉風險與規範違反。
+> 🐧 **附帶品味問題**：本專案 style guide 明令「禁止 `.then()`」（§7.5），而舊版 `main()` 宣告為 `async` 卻全程不用 `await`，還掛了 `// ignore: unawaited_futures` 壓警告。改成 `await Future.wait([...])` 後接 `try/catch` 即可一次修掉風險與規範違反。
+</details>
 
 ### 關鍵細節：為什麼登入狀態要在 `runApp` 之前載入
 
