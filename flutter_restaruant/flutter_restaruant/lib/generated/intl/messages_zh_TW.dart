@@ -247,6 +247,18 @@ class MessageLookup extends MessageLookupByLibrary {
     ),
     "navigation_choice": MessageLookupByLibrary.simpleMessage("請選擇導覽方式"),
     "note_detail_title": MessageLookupByLibrary.simpleMessage("筆記詳情"),
+    "note_restaurant_sheet_error": MessageLookupByLibrary.simpleMessage(
+      "無法載入餐廳摘要資訊",
+    ),
+    "note_restaurant_sheet_open_maps": MessageLookupByLibrary.simpleMessage(
+      "Google Maps 導航",
+    ),
+    "note_restaurant_sheet_unlinked_hint": MessageLookupByLibrary.simpleMessage(
+      "此筆記尚未綁定餐廳詳情，可直接開啟地圖搜尋導航",
+    ),
+    "note_restaurant_sheet_view_detail": MessageLookupByLibrary.simpleMessage(
+      "查看餐廳詳情",
+    ),
     "note_video_error": MessageLookupByLibrary.simpleMessage("影片載入失敗"),
     "notes_feed_empty": MessageLookupByLibrary.simpleMessage("尚無探店筆記"),
     "notes_feed_title": MessageLookupByLibrary.simpleMessage("探店筆記"),

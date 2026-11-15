@@ -1534,6 +1534,46 @@ class S {
       args: [],
     );
   }
+
+  /// `View Restaurant Details`
+  String get note_restaurant_sheet_view_detail {
+    return Intl.message(
+      'View Restaurant Details',
+      name: 'note_restaurant_sheet_view_detail',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Navigate with Google Maps`
+  String get note_restaurant_sheet_open_maps {
+    return Intl.message(
+      'Navigate with Google Maps',
+      name: 'note_restaurant_sheet_open_maps',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This note isn't linked to a restaurant profile yet. You can still navigate via Google Maps.`
+  String get note_restaurant_sheet_unlinked_hint {
+    return Intl.message(
+      'This note isn\'t linked to a restaurant profile yet. You can still navigate via Google Maps.',
+      name: 'note_restaurant_sheet_unlinked_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unable to load restaurant summary`
+  String get note_restaurant_sheet_error {
+    return Intl.message(
+      'Unable to load restaurant summary',
+      name: 'note_restaurant_sheet_error',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {
