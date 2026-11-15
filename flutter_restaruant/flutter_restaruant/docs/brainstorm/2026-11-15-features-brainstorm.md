@@ -368,9 +368,12 @@ lib/
   - **資料與領域層**: 新增 `UgcNoteDto`、`UgcNoteEntity`（含 `UgcNoteMediaType { photo, video }` 與 `hasValidMedia` 契約校驗）、`UgcNoteDataSource`（讀取 Firestore `ugc_notes` 集合，依 `created_at` 降序取前 30 筆，單筆損毀文件自動略過並記錄 `Logger().w`）及 `UgcNoteRepository` / `UgcNoteRepo`。
   - **表現層與影音封裝**: 新增 `NotesFeedBloc`（含請求版本 Token 防並發舊回應覆蓋與 `Completer` 下拉重整同步）、`NotesFeedPage`（`MasonryGridView.count` 雙排瀑布流，下拉重整期間透過 `buildWhen` 保留既有卡片）與 `NoteDetailPage`（直接使用 `video_player: ^2.9.2` 封裝 15 秒循環播放、10 秒初始化逾時與播中錯誤降級面板，未額外引入 `chewie`；多圖筆記以 `PageView` 輪播呈現）。
 
-#### F-2.4 筆記地點打卡 Tag (Clickable Location Chips)
+#### F-2.4 筆記地點打卡 Tag (Clickable Location Chips) — 🟡 部分完成（靜態標籤已隨 F-2.3 落地，剩點擊彈出 BottomSheet）
 * **設計理念**: 每篇 UGC 筆記下方內嵌高亮「地點打卡 Tag」（例：「📍 隱家拉麵 中山店」）。
 * **互動體驗**: 點擊 Tag 彈出輕量 BottomSheet 展示餐廳評分、地址、即時空位與「一鍵預訂/導航」按鈕，縮短導流鏈路。
+* **落地進度 (2026-11-14 隨 PR #183 部分交付)**:
+  - ✅ **已落地**: `UgcNoteEntity.restaurantId`／`restaurantName` 欄位與 `lib/flow/notes/view/note_detail_page.dart:135-176` 的靜態 `NoteRestaurantTag` 晶片元件已建立並顯示於筆記詳情頁。
+  - ❌ **待完成**: 點擊 `NoteRestaurantTag` 後彈出輕量餐廳摘要 BottomSheet（載入餐廳評分、地址與一鍵導航／詳情跳轉）及瀑布流列表卡片上的打卡標籤互動。
 
 ---
 
@@ -673,7 +676,7 @@ lib/
 |   • Firestore Subcollection 最愛口袋名單與社群共編美食地圖                          |
 |   • 輕量化線上微訂位 Time-Slot 選擇器                                               |
 |   • 線上候位領號與 FCM 動態隊列推播追蹤                                             |
-|   • 筆記/清單地點打卡 Tag 輕量彈窗                                                  |
+|   • 🟡 筆記/清單地點打卡 Tag 輕量彈窗 (靜態 NoteRestaurantTag 已隨 PR #183 落地，剩點擊彈出 BottomSheet) |
 +-----------------------------------------------------------------------------------+
                                          │
                                          ▼
@@ -1732,7 +1735,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 - **預估 Effort**：`0.5d`
 - **價值與收益**：根治多重 API 同時失敗時彈窗重疊覆蓋、連點穿透與 Navigator 路由黑屏死鎖問題。
 - **影響檔案路徑**：
-  - 新增：`lib/component/dialog/dialog_queue_manager.dart`
+  - 新增：`lib/features/component/dialog/dialog_queue_manager.dart`
   - 修改：各頁面調用 `showDialog` 或 `ScaffoldMessenger` 處
 - **具體實作建議**：
   1. 移植基於 `Queue<QueuedDialog>` 的輕量對話框管理器。
@@ -1916,10 +1919,8 @@ class ComparisonMatrixComponent extends A2UIComponent {
 - **價值與收益**：
   Yelp 擁有千種標準化餐飲層級分類（含在地化多語系稱謂）。透過串接官方分類 API 並在本地做長週期快取（或 Hive 本地保存），可於篩選頁提供階層式或標籤式「熱門菜系（日式、義式、咖啡輕食）」選單，徹底擺脫目前只能依距離/評分粗暴排序的侷限。
 - **影響檔案路徑**：
-  - 修改：`lib/api/api_clz.dart`
-  - 新增：`lib/api/dto/yelp_category_dto.dart`
-  - 新增：`lib/data_layer/repositories/category_repo.dart`
-  - 修改：`lib/flow/filter/`
+  - 已落地（PR #160 / PR #178）：`lib/api/api_clz.dart`、`lib/api/dto/yelp_category_list_dto.dart`、`lib/api/dto/yelp_category_detail_dto.dart`、`lib/data_layer/repositories/yelp_category_repo.dart`、`lib/flow/filter/view/cuisine_category_chips_widget.dart`
+  - 待修改（本地持久化快取）：`lib/data_layer/repositories/yelp_category_repo.dart`（將目前記憶體級快取擴充為本地長週期快取）
 - **具體實作建議**：
   1. 宣告 `getCategories({@Query('locale') String? locale})`。
   2. 於本地快取繁體中文餐飲分類，供篩選頁分類 Chip 元件動態渲染。
