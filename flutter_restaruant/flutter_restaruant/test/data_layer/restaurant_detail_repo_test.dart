@@ -50,5 +50,28 @@ void main() {
       expect(result.total, _Data.total);
       verify(apiCall).called(1);
     });
+
+    test('拒絕含路徑跳脫或非法字元的 business id，不發送 API 請求', () async {
+      for (final badId in const <String>[
+        '',
+        '..',
+        '../search',
+        'foo/reviews',
+        'biz?locale=en',
+        'biz#fragment',
+      ]) {
+        await expectLater(
+          repo.fetchYelpRestaurantDetailInfo(badId),
+          throwsFormatException,
+        );
+        await expectLater(
+          repo.fetchYelpRestaurantReviewInfo(badId),
+          throwsFormatException,
+        );
+      }
+
+      verifyNever(() => api.business(any(), any()));
+      verifyNever(() => api.review(any(), any()));
+    });
   });
 }
