@@ -210,6 +210,46 @@ class S {
     return Intl.message('All', name: 'filter_cuisine_all', desc: '', args: []);
   }
 
+  /// `Open Now`
+  String get filter_open_now {
+    return Intl.message(
+      'Open Now',
+      name: 'filter_open_now',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Show only restaurants open right now (ignores specific time)`
+  String get filter_open_now_subtitle {
+    return Intl.message(
+      'Show only restaurants open right now (ignores specific time)',
+      name: 'filter_open_now_subtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Search Radius`
+  String get filter_search_radius {
+    return Intl.message(
+      'Search Radius',
+      name: 'filter_search_radius',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Unlimited`
+  String get filter_radius_unlimited {
+    return Intl.message(
+      'Unlimited',
+      name: 'filter_radius_unlimited',
+      desc: '',
+      args: [],
+    );
+  }
+
   /// `FindRestaurant`
   String get main_page_title {
     return Intl.message(

@@ -214,12 +214,22 @@ class MessageLookup extends MessageLookupByLibrary {
     "filter_cuisine_category": MessageLookupByLibrary.simpleMessage(
       "Cuisine Category",
     ),
+    "filter_open_now": MessageLookupByLibrary.simpleMessage("Open Now"),
+    "filter_open_now_subtitle": MessageLookupByLibrary.simpleMessage(
+      "Show only restaurants open right now (ignores specific time)",
+    ),
     "filter_price": MessageLookupByLibrary.simpleMessage("Price Rule"),
     "filter_price_level1": MessageLookupByLibrary.simpleMessage("\$"),
     "filter_price_level2": MessageLookupByLibrary.simpleMessage("\$\$"),
     "filter_price_level3": MessageLookupByLibrary.simpleMessage("\$\$\$"),
     "filter_price_level4": MessageLookupByLibrary.simpleMessage("\$\$\$\$"),
+    "filter_radius_unlimited": MessageLookupByLibrary.simpleMessage(
+      "Unlimited",
+    ),
     "filter_rules": MessageLookupByLibrary.simpleMessage("Filter Rules"),
+    "filter_search_radius": MessageLookupByLibrary.simpleMessage(
+      "Search Radius",
+    ),
     "filter_sorting_rating": MessageLookupByLibrary.simpleMessage("Rating"),
     "filter_sorting_review_count": MessageLookupByLibrary.simpleMessage(
       "Review Count",
