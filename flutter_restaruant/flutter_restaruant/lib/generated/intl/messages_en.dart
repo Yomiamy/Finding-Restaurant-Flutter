@@ -27,9 +27,13 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m2(winner) =>
       "🎲 Decision roulette selected the top choice for you:\n👉 **${winner}** 👈\nWishing you a delightful dining experience!";
 
-  static String m3(error) => "Menu recognition failed: ${error}";
+  static String m3(km) => "${km} km";
 
-  static String m4(error) => "Retry analysis failed: ${error}";
+  static String m4(meters) => "${meters} m";
+
+  static String m5(error) => "Menu recognition failed: ${error}";
+
+  static String m6(error) => "Retry analysis failed: ${error}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -223,6 +227,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "filter_price_level2": MessageLookupByLibrary.simpleMessage("\$\$"),
     "filter_price_level3": MessageLookupByLibrary.simpleMessage("\$\$\$"),
     "filter_price_level4": MessageLookupByLibrary.simpleMessage("\$\$\$\$"),
+    "filter_radius_kilometers": m3,
+    "filter_radius_meters": m4,
     "filter_radius_unlimited": MessageLookupByLibrary.simpleMessage(
       "Unlimited",
     ),
@@ -282,8 +288,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "menu_vision_empty_dishes": MessageLookupByLibrary.simpleMessage(
       "No dish items recognized. Please ensure photo is clear and try again",
     ),
-    "menu_vision_error_analyze_failed": m3,
-    "menu_vision_error_retry_failed": m4,
+    "menu_vision_error_analyze_failed": m5,
+    "menu_vision_error_retry_failed": m6,
     "menu_vision_error_unexpected_format": MessageLookupByLibrary.simpleMessage(
       "Unexpected component format",
     ),

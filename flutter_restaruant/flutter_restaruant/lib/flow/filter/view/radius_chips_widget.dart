@@ -26,33 +26,43 @@ class RadiusChipsWidget extends StatelessWidget {
   final ValueChanged<int?> onRadiusSelected;
 
   String _formatRadius(int meters) {
-    if (meters < 1000) {
-      return '$meters m';
+    if (meters % 1000 == 0) {
+      return S.current.filter_radius_kilometers(meters ~/ 1000);
     }
-    return '${meters ~/ 1000} km';
+    return S.current.filter_radius_meters(meters);
   }
 
   @override
   Widget build(BuildContext context) {
+    final int? selected = selectedRadius;
+
     return Wrap(
       spacing: ThemeSize.space8,
       runSpacing: ThemeSize.space8,
       children: [
         ChoiceChip(
           label: Text(S.current.filter_radius_unlimited),
-          selected: selectedRadius == null,
-          onSelected: (selected) {
-            if (selected) {
+          selected: selected == null,
+          onSelected: (isSelected) {
+            if (isSelected) {
               onRadiusSelected(null);
             }
           },
         ),
+        if (selected != null &&
+            selected > 0 &&
+            !presetRadiiMeters.contains(selected))
+          ChoiceChip(
+            label: Text(_formatRadius(selected)),
+            selected: true,
+            onSelected: (_) => onRadiusSelected(null),
+          ),
         for (final meters in presetRadiiMeters)
           ChoiceChip(
             label: Text(_formatRadius(meters)),
-            selected: selectedRadius == meters,
-            onSelected: (selected) {
-              onRadiusSelected(selected ? meters : null);
+            selected: selected == meters,
+            onSelected: (isSelected) {
+              onRadiusSelected(isSelected ? meters : null);
             },
           ),
       ],

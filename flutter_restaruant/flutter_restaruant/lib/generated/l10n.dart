@@ -250,6 +250,26 @@ class S {
     );
   }
 
+  /// `{meters} m`
+  String filter_radius_meters(Object meters) {
+    return Intl.message(
+      '$meters m',
+      name: 'filter_radius_meters',
+      desc: '',
+      args: [meters],
+    );
+  }
+
+  /// `{km} km`
+  String filter_radius_kilometers(Object km) {
+    return Intl.message(
+      '$km km',
+      name: 'filter_radius_kilometers',
+      desc: '',
+      args: [km],
+    );
+  }
+
   /// `FindRestaurant`
   String get main_page_title {
     return Intl.message(

@@ -131,5 +131,31 @@ void main() {
       expect(callCount, 0);
       expect(selectedResult, isNull);
     });
+
+    testWidgets('傳入非預設半徑 2500 時顯示選中 Chip，點擊該 Chip 回呼 null 清除', (tester) async {
+      int? selectedResult = 2500;
+      await tester.pumpWidget(
+        buildTestWidget(
+          selectedRadius: 2500,
+          onRadiusSelected: (val) => selectedResult = val,
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ChoiceChip), findsNWidgets(9));
+      final customChip = tester.widget<ChoiceChip>(
+        find.widgetWithText(ChoiceChip, '2500 m'),
+      );
+      expect(customChip.selected, isTrue);
+
+      final unlimitedChip = tester.widget<ChoiceChip>(
+        find.widgetWithText(ChoiceChip, 'Unlimited'),
+      );
+      expect(unlimitedChip.selected, isFalse);
+
+      await tester.tap(find.text('2500 m'));
+      await tester.pumpAndSettle();
+      expect(selectedResult, isNull);
+    });
   });
 }

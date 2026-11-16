@@ -27,9 +27,13 @@ class MessageLookup extends MessageLookupByLibrary {
   static String m2(winner) =>
       "🎲 命運轉盤為您抽出了最棒的選擇：\n👉 **${winner}** 👈\n祝您今晚用餐愉快，吃得開心滿足！";
 
-  static String m3(error) => "菜單辨識失敗：${error}";
+  static String m3(km) => "${km} 公里";
 
-  static String m4(error) => "重試分析失敗：${error}";
+  static String m4(meters) => "${meters} 公尺";
+
+  static String m5(error) => "菜單辨識失敗：${error}";
+
+  static String m6(error) => "重試分析失敗：${error}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -185,6 +189,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "filter_price_level2": MessageLookupByLibrary.simpleMessage("\$\$"),
     "filter_price_level3": MessageLookupByLibrary.simpleMessage("\$\$\$"),
     "filter_price_level4": MessageLookupByLibrary.simpleMessage("\$\$\$\$"),
+    "filter_radius_kilometers": m3,
+    "filter_radius_meters": m4,
     "filter_radius_unlimited": MessageLookupByLibrary.simpleMessage("不限"),
     "filter_rules": MessageLookupByLibrary.simpleMessage("過濾條件"),
     "filter_search_radius": MessageLookupByLibrary.simpleMessage("搜尋半徑"),
@@ -226,8 +232,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "menu_vision_empty_dishes": MessageLookupByLibrary.simpleMessage(
       "未能成功辨識出菜色項目，請確認照片清晰後重試",
     ),
-    "menu_vision_error_analyze_failed": m3,
-    "menu_vision_error_retry_failed": m4,
+    "menu_vision_error_analyze_failed": m5,
+    "menu_vision_error_retry_failed": m6,
     "menu_vision_error_unexpected_format": MessageLookupByLibrary.simpleMessage(
       "未預期的組件格式",
     ),

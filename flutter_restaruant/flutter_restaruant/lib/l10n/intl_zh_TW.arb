@@ -23,6 +23,8 @@
   "filter_open_now_subtitle": "只搜尋現在營業中的餐廳（將忽略指定時間）",
   "filter_search_radius": "搜尋半徑",
   "filter_radius_unlimited": "不限",
+  "filter_radius_meters": "{meters} 公尺",
+  "filter_radius_kilometers": "{km} 公里",
   "main_page_title": "尋找餐廳",
   "keyword_search": "關鍵字過濾",
   "keyword_search_hint": "店名/分類/地區/路",
