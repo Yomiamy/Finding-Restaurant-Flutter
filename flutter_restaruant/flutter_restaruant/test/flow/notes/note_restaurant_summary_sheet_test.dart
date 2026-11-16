@@ -17,6 +17,8 @@ import 'package:mocktail/mocktail.dart';
 class _MockRestaurantDetailRepository extends Mock
     implements RestaurantDetailRepository {}
 
+class _MockFavorRepository extends Mock implements FavorRepository {}
+
 class _Data {
   static const UgcNoteEntity unlinkedNote = UgcNoteEntity(
     id: 'note_unlinked',
@@ -131,18 +133,38 @@ class _Data {
     ),
     hours: [RestaurantHoursEntity(isOpenNow: true)],
   );
+
+  static const UgcNoteEntity invalidIdNote = UgcNoteEntity(
+    id: 'note_invalid_id',
+    title: '異常 ID 筆記',
+    content: '測試路徑跳脫防護。',
+    authorName: 'Tester',
+    authorAvatarUrl: '',
+    isVideo: false,
+    coverUrl: '',
+    coverAspectRatio: 0.8,
+    imageUrls: [''],
+    videoUrl: '',
+    videoDurationSec: 0,
+    restaurantName: '測試餐廳',
+    restaurantId: '../search',
+    createdAtMs: 1700000003000,
+  );
 }
 
 void main() {
   late _MockRestaurantDetailRepository mockRepository;
+  late _MockFavorRepository mockFavorRepository;
 
   setUp(() {
     mockRepository = _MockRestaurantDetailRepository();
+    mockFavorRepository = _MockFavorRepository();
   });
 
   Widget buildHostApp({
     required UgcNoteEntity note,
     RestaurantDetailRepository? repository,
+    FavorRepository? favorRepository,
     void Function(String query)? onOpenMaps,
     Map<String, WidgetBuilder> routes = const {},
   }) {
@@ -167,6 +189,7 @@ void main() {
                   context,
                   note: note,
                   repository: repository,
+                  favorRepository: favorRepository,
                   onOpenMaps: onOpenMaps,
                 );
               },
@@ -526,5 +549,238 @@ void main() {
         findsOneWidget,
       );
     });
+
+    testWidgets(
+      'rejects invalid restaurantId with path or query characters without calling repository',
+      (tester) async {
+        expect(
+          NoteRestaurantSummarySheet.isValidRestaurantId('biz-ichiran'),
+          isTrue,
+        );
+        expect(
+          NoteRestaurantSummarySheet.isValidRestaurantId(
+            'WavvLdfdP6g8aZTtbBQHTw',
+          ),
+          isTrue,
+        );
+        expect(
+          NoteRestaurantSummarySheet.isValidRestaurantId('afuri_tokyo_1'),
+          isTrue,
+        );
+        for (final badId in const <String>[
+          '',
+          '..',
+          '../search',
+          'foo/reviews',
+          'biz?q=1',
+          'biz#frag',
+        ]) {
+          expect(
+            NoteRestaurantSummarySheet.isValidRestaurantId(badId),
+            isFalse,
+          );
+        }
+
+        await tester.pumpWidget(
+          buildHostApp(note: _Data.invalidIdNote, repository: mockRepository),
+        );
+
+        await tester.tap(find.byKey(const Key('open_sheet_btn')));
+        await tester.pumpAndSettle();
+
+        verifyNever(() => mockRepository.fetchYelpRestaurantDetailInfo(any()));
+        expect(
+          find.text(S.current.note_restaurant_sheet_error),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('note_restaurant_sheet_retry_btn')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('note_restaurant_sheet_detail_btn')),
+          findsNothing,
+        );
+
+        await tester.tap(
+          find.byKey(const Key('note_restaurant_sheet_retry_btn')),
+        );
+        await tester.pump();
+        verifyNever(() => mockRepository.fetchYelpRestaurantDetailInfo(any()));
+      },
+    );
+
+    testWidgets(
+      'resolves favorited status via FavorRepository and forwards favor: true to RestaurantDetailPage',
+      (tester) async {
+        Tuple2<RestaurantEntity, dynamic>? pushedArgs;
+
+        when(
+          () => mockRepository.fetchYelpRestaurantDetailInfo('biz-ichiran'),
+        ).thenAnswer((_) async => _Data.fullDetailOpen);
+        when(
+          () => mockFavorRepository.isFavor('biz-ichiran'),
+        ).thenAnswer((_) async => true);
+
+        await tester.pumpWidget(
+          buildHostApp(
+            note: _Data.linkedNote,
+            repository: mockRepository,
+            favorRepository: mockFavorRepository,
+            routes: {
+              RestaurantDetailPage.routeName: (context) {
+                pushedArgs =
+                    ModalRoute.of(context)?.settings.arguments
+                        as Tuple2<RestaurantEntity, dynamic>?;
+                return const Scaffold(body: Text('Restaurant Detail Stub'));
+              },
+            },
+          ),
+        );
+
+        await tester.tap(find.byKey(const Key('open_sheet_btn')));
+        await tester.pumpAndSettle();
+
+        await tester.tap(
+          find.byKey(const Key('note_restaurant_sheet_detail_btn')),
+        );
+        await tester.pumpAndSettle();
+
+        expect(pushedArgs, isNotNull);
+        expect(pushedArgs!.item1.id, 'biz-ichiran');
+        expect(pushedArgs!.item1.favor, isTrue);
+        verify(() => mockFavorRepository.isFavor('biz-ichiran')).called(1);
+      },
+    );
+
+    testWidgets(
+      'falls back to favor: false when FavorRepository throws Exception',
+      (tester) async {
+        Tuple2<RestaurantEntity, dynamic>? pushedArgs;
+
+        when(
+          () => mockRepository.fetchYelpRestaurantDetailInfo('biz-ichiran'),
+        ).thenAnswer((_) async => _Data.fullDetailOpen);
+        when(
+          () => mockFavorRepository.isFavor('biz-ichiran'),
+        ).thenAnswer((_) async => throw Exception('Firestore unavailable'));
+
+        await tester.pumpWidget(
+          buildHostApp(
+            note: _Data.linkedNote,
+            repository: mockRepository,
+            favorRepository: mockFavorRepository,
+            routes: {
+              RestaurantDetailPage.routeName: (context) {
+                pushedArgs =
+                    ModalRoute.of(context)?.settings.arguments
+                        as Tuple2<RestaurantEntity, dynamic>?;
+                return const Scaffold(body: Text('Restaurant Detail Stub'));
+              },
+            },
+          ),
+        );
+
+        await tester.tap(find.byKey(const Key('open_sheet_btn')));
+        await tester.pumpAndSettle();
+
+        await tester.tap(
+          find.byKey(const Key('note_restaurant_sheet_detail_btn')),
+        );
+        await tester.pumpAndSettle();
+
+        expect(pushedArgs, isNotNull);
+        expect(pushedArgs!.item1.favor, isFalse);
+      },
+    );
+
+    testWidgets(
+      'protects bottom action button from nonzero bottom system view padding',
+      (tester) async {
+        const bottomInset = 34.0;
+        addTearDown(tester.view.resetPhysicalSize);
+        addTearDown(tester.view.resetDevicePixelRatio);
+        addTearDown(tester.view.resetPadding);
+        addTearDown(tester.view.resetViewPadding);
+        tester.view.physicalSize = const Size(400, 800);
+        tester.view.devicePixelRatio = 1.0;
+        tester.view.padding = FakeViewPadding(
+          bottom: bottomInset * tester.view.devicePixelRatio,
+        );
+        tester.view.viewPadding = FakeViewPadding(
+          bottom: bottomInset * tester.view.devicePixelRatio,
+        );
+
+        when(
+          () => mockRepository.fetchYelpRestaurantDetailInfo('biz-ichiran'),
+        ).thenAnswer((_) async => _Data.fullDetailOpen);
+
+        await tester.pumpWidget(
+          buildHostApp(note: _Data.linkedNote, repository: mockRepository),
+        );
+
+        await tester.tap(find.byKey(const Key('open_sheet_btn')));
+        await tester.pumpAndSettle();
+
+        final mapsBtnBottom = tester
+            .getBottomLeft(
+              find.byKey(const Key('note_restaurant_sheet_maps_btn')),
+            )
+            .dy;
+        expect(
+          mapsBtnBottom,
+          lessThanOrEqualTo(800.0 - bottomInset - ThemeSize.space16),
+        );
+      },
+    );
+
+    testWidgets(
+      'close button provides localized close tooltip and dismisses the sheet',
+      (tester) async {
+        await tester.pumpWidget(
+          buildHostApp(note: _Data.unlinkedNote, repository: mockRepository),
+        );
+
+        await tester.tap(find.byKey(const Key('open_sheet_btn')));
+        await tester.pumpAndSettle();
+
+        final closeTooltip = MaterialLocalizations.of(
+          tester.element(find.byType(NoteRestaurantSummarySheet)),
+        ).closeButtonTooltip;
+        expect(find.byTooltip(closeTooltip), findsOneWidget);
+
+        await tester.tap(find.byTooltip(closeTooltip));
+        await tester.pumpAndSettle();
+
+        expect(find.byType(NoteRestaurantSummarySheet), findsNothing);
+      },
+    );
+
+    test(
+      'buildGoogleMapsQuery prefers coordinates, then detail name, then trimmed note name',
+      () {
+        expect(
+          NoteRestaurantSummarySheet.buildGoogleMapsQuery(
+            _Data.linkedNote,
+            _Data.fullDetailOpen,
+          ),
+          '25.033964,121.564468',
+        );
+        expect(
+          NoteRestaurantSummarySheet.buildGoogleMapsQuery(
+            _Data.linkedNote,
+            _Data.detailClosed,
+          ),
+          '一蘭拉麵 台北本店',
+        );
+        expect(
+          NoteRestaurantSummarySheet.buildGoogleMapsQuery(
+            _Data.unlinkedNote,
+            null,
+          ),
+          '鼎泰豐 信義店',
+        );
+      },
+    );
   });
 }

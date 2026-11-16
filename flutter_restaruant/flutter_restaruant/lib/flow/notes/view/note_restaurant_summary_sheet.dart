@@ -30,8 +30,9 @@ final class _SheetLoading extends _SheetState {
 
 final class _SheetLoaded extends _SheetState {
   final RestaurantDetailEntity detail;
+  final bool isFavor;
 
-  const _SheetLoaded(this.detail);
+  const _SheetLoaded(this.detail, {this.isFavor = false});
 }
 
 final class _SheetFailure extends _SheetState {
@@ -40,21 +41,30 @@ final class _SheetFailure extends _SheetState {
 
 /// 筆記打卡地點標籤點擊後彈出的輕量餐廳摘要 BottomSheet。
 class NoteRestaurantSummarySheet extends StatefulWidget {
+  static final RegExp _validRestaurantIdPattern = RegExp(r'^[A-Za-z0-9_-]+$');
+
   final UgcNoteEntity note;
   final RestaurantDetailRepository? repository;
+  final FavorRepository? favorRepository;
   final void Function(String query)? onOpenMaps;
 
   const NoteRestaurantSummarySheet({
     super.key,
     required this.note,
     this.repository,
+    this.favorRepository,
     this.onOpenMaps,
   });
+
+  /// 檢查 `restaurantId` 是否符合 Yelp Business ID／Alias 允許字元集。
+  static bool isValidRestaurantId(String id) =>
+      _validRestaurantIdPattern.hasMatch(id);
 
   static Future<void> show(
     BuildContext context, {
     required UgcNoteEntity note,
     RestaurantDetailRepository? repository,
+    FavorRepository? favorRepository,
     void Function(String query)? onOpenMaps,
   }) {
     return showModalBottomSheet<void>(
@@ -70,6 +80,7 @@ class NoteRestaurantSummarySheet extends StatefulWidget {
       builder: (sheetContext) => NoteRestaurantSummarySheet(
         note: note,
         repository: repository,
+        favorRepository: favorRepository,
         onOpenMaps: onOpenMaps,
       ),
     );
@@ -92,11 +103,12 @@ class NoteRestaurantSummarySheet extends StatefulWidget {
     return note.restaurantName.trim();
   }
 
-  /// 將餐廳詳情與筆記保底欄位映射為 [RestaurantEntity]，確保 `id` 非空。
+  /// 將餐廳詳情與筆記保底欄位映射為 [RestaurantEntity]，確保 `id` 非空並帶入收藏狀態。
   static RestaurantEntity toRestaurantEntity(
     UgcNoteEntity note,
-    RestaurantDetailEntity detail,
-  ) {
+    RestaurantDetailEntity detail, {
+    bool isFavor = false,
+  }) {
     final detailId = detail.id?.trim() ?? '';
     final resolvedId = detailId.isNotEmpty ? detailId : note.restaurantId;
     final detailName = detail.name?.trim() ?? '';
@@ -114,6 +126,7 @@ class NoteRestaurantSummarySheet extends StatefulWidget {
       categories: detail.categories,
       location: detail.location,
       coordinates: detail.coordinates,
+      favor: isFavor,
     );
   }
 
@@ -131,6 +144,16 @@ class _NoteRestaurantSummarySheetState
     super.initState();
     if (widget.note.restaurantId.isEmpty) {
       _state = const _SheetUnlinked();
+      return;
+    }
+    if (!NoteRestaurantSummarySheet.isValidRestaurantId(
+      widget.note.restaurantId,
+    )) {
+      Logger().w(
+        'Invalid restaurantId rejected before API request: '
+        '${widget.note.restaurantId}',
+      );
+      _state = const _SheetFailure();
       return;
     }
     final repo = _resolveRepository();
@@ -152,19 +175,50 @@ class _NoteRestaurantSummarySheetState
     return null;
   }
 
+  FavorRepository? _resolveFavorRepository() {
+    if (widget.favorRepository != null) {
+      return widget.favorRepository;
+    }
+    if (GetIt.I.isRegistered<FavorRepository>()) {
+      return GetIt.I<FavorRepository>();
+    }
+    return null;
+  }
+
+  Future<bool> _resolveIsFavor(String restaurantId) async {
+    final favorRepo = _resolveFavorRepository();
+    if (favorRepo == null || restaurantId.isEmpty) {
+      return false;
+    }
+    try {
+      return await favorRepo.isFavor(restaurantId);
+    } on Exception catch (e, st) {
+      Logger().w(
+        'Failed to resolve favorite status for $restaurantId',
+        error: e,
+        stackTrace: st,
+      );
+      return false;
+    }
+  }
+
   Future<void> _loadDetail(RestaurantDetailRepository repo) async {
     try {
       final detail = await Future.sync(
         () => repo.fetchYelpRestaurantDetailInfo(widget.note.restaurantId),
       );
       if (!mounted) return;
-      final hasId = detail.id?.trim().isNotEmpty ?? false;
+      final detailId = detail.id?.trim() ?? '';
+      final hasId = detailId.isNotEmpty;
       final hasName = detail.name?.trim().isNotEmpty ?? false;
-      if (hasId || hasName) {
-        setState(() => _state = _SheetLoaded(detail));
-      } else {
+      if (!hasId && !hasName) {
         setState(() => _state = const _SheetFailure());
+        return;
       }
+      final resolvedId = hasId ? detailId : widget.note.restaurantId;
+      final isFavor = await _resolveIsFavor(resolvedId);
+      if (!mounted) return;
+      setState(() => _state = _SheetLoaded(detail, isFavor: isFavor));
     } on Exception catch (e, st) {
       Logger().e(
         'Failed to fetch note restaurant detail',
@@ -177,6 +231,12 @@ class _NoteRestaurantSummarySheetState
   }
 
   void _retryLoad() {
+    if (!NoteRestaurantSummarySheet.isValidRestaurantId(
+      widget.note.restaurantId,
+    )) {
+      setState(() => _state = const _SheetFailure());
+      return;
+    }
     final repo = _resolveRepository();
     if (repo == null) {
       setState(() => _state = const _SheetFailure());
@@ -204,14 +264,21 @@ class _NoteRestaurantSummarySheetState
     );
   }
 
-  void _openRestaurantDetail(RestaurantDetailEntity detail) {
+  void _openRestaurantDetail(
+    RestaurantDetailEntity detail, {
+    required bool isFavor,
+  }) {
     final navigator = Navigator.of(context);
     navigator.pop();
     unawaited(
       navigator.pushNamed(
         RestaurantDetailPage.routeName,
         arguments: Tuple2<RestaurantEntity, dynamic>(
-          NoteRestaurantSummarySheet.toRestaurantEntity(widget.note, detail),
+          NoteRestaurantSummarySheet.toRestaurantEntity(
+            widget.note,
+            detail,
+            isFavor: isFavor,
+          ),
           null,
         ),
       ),
@@ -230,31 +297,35 @@ class _NoteRestaurantSummarySheetState
       _SheetFailure() => widget.note.restaurantName,
     };
 
-    return SingleChildScrollView(
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        crossAxisAlignment: CrossAxisAlignment.stretch,
-        children: [
-          NoteRestaurantSheetHeader(title: headerTitle),
-          Padding(
-            padding: const EdgeInsets.all(ThemeSize.space16),
-            child: switch (_state) {
-              _SheetUnlinked() => _UnlinkedSheetBody(
-                onOpenMaps: () => _openMaps(null),
-              ),
-              _SheetLoading() => const _LoadingSheetBody(),
-              _SheetLoaded(:final detail) => _LoadedSheetBody(
-                detail: detail,
-                onViewDetail: () => _openRestaurantDetail(detail),
-                onOpenMaps: () => _openMaps(detail),
-              ),
-              _SheetFailure() => _FailureSheetBody(
-                onRetry: _retryLoad,
-                onOpenMaps: () => _openMaps(null),
-              ),
-            },
-          ),
-        ],
+    return SafeArea(
+      top: false,
+      child: SingleChildScrollView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.stretch,
+          children: [
+            NoteRestaurantSheetHeader(title: headerTitle),
+            Padding(
+              padding: const EdgeInsets.all(ThemeSize.space16),
+              child: switch (_state) {
+                _SheetUnlinked() => _UnlinkedSheetBody(
+                  onOpenMaps: () => _openMaps(null),
+                ),
+                _SheetLoading() => const _LoadingSheetBody(),
+                _SheetLoaded(:final detail, :final isFavor) => _LoadedSheetBody(
+                  detail: detail,
+                  onViewDetail: () =>
+                      _openRestaurantDetail(detail, isFavor: isFavor),
+                  onOpenMaps: () => _openMaps(detail),
+                ),
+                _SheetFailure() => _FailureSheetBody(
+                  onRetry: _retryLoad,
+                  onOpenMaps: () => _openMaps(null),
+                ),
+              },
+            ),
+          ],
+        ),
       ),
     );
   }
@@ -310,6 +381,7 @@ class NoteRestaurantSheetHeader extends StatelessWidget {
                 ),
               ),
               IconButton(
+                tooltip: MaterialLocalizations.of(context).closeButtonTooltip,
                 onPressed: () => Navigator.of(context).pop(),
                 icon: const Icon(Icons.close),
               ),
@@ -332,8 +404,6 @@ class NoteRestaurantDetailPreview extends StatelessWidget {
   Widget build(BuildContext context) {
     final colorScheme = Theme.of(context).colorScheme;
     final textTheme = Theme.of(context).textTheme;
-    final rating = detail.rating ?? 0;
-    final reviewCount = detail.reviewCount ?? 0;
     final categoryText = [
       detail.price?.trim() ?? '',
       ...?detail.categories?.map((c) => c.title?.trim() ?? ''),
@@ -367,26 +437,9 @@ class NoteRestaurantDetailPreview extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Wrap(
-                    crossAxisAlignment: WrapCrossAlignment.center,
-                    spacing: ThemeSize.space5,
-                    runSpacing: ThemeSize.space3,
-                    children: [
-                      RatingStars(rating: rating),
-                      Text(
-                        rating.toStringAsFixed(1),
-                        style: textTheme.bodyMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                          color: colorScheme.onSurface,
-                        ),
-                      ),
-                      Text(
-                        '$reviewCount${S.current.review_count_suffix}',
-                        style: textTheme.labelSmall?.copyWith(
-                          color: colorScheme.onSurfaceVariant,
-                        ),
-                      ),
-                    ],
+                  _RestaurantRatingRow(
+                    rating: detail.rating ?? 0,
+                    reviewCount: detail.reviewCount ?? 0,
                   ),
                   if (categoryText.isNotEmpty) ...[
                     const SizedBox(height: ThemeSize.space4),
@@ -401,31 +454,7 @@ class NoteRestaurantDetailPreview extends StatelessWidget {
                   ],
                   if (isOpenNow != null) ...[
                     const SizedBox(height: ThemeSize.space5),
-                    DecoratedBox(
-                      decoration: BoxDecoration(
-                        color: isOpenNow
-                            ? const Color(0xFF2E7D32)
-                            : colorScheme.outline,
-                        borderRadius: const BorderRadius.all(
-                          Radius.circular(ThemeSize.radiusTag),
-                        ),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: ThemeSize.space8,
-                          vertical: ThemeSize.space3,
-                        ),
-                        child: Text(
-                          isOpenNow
-                              ? S.current.business_status_open
-                              : S.current.business_status_closed,
-                          style: textTheme.labelSmall?.copyWith(
-                            fontWeight: FontWeight.bold,
-                            color: ThemeColor.colorffffff,
-                          ),
-                        ),
-                      ),
-                    ),
+                    _OpenStatusBadge(isOpenNow: isOpenNow),
                   ],
                 ],
               ),
@@ -434,28 +463,113 @@ class NoteRestaurantDetailPreview extends StatelessWidget {
         ),
         if (addressText.isNotEmpty) ...[
           const SizedBox(height: ThemeSize.space12),
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Icon(
-                Icons.location_on_outlined,
-                size: ThemeSize.size16,
-                color: colorScheme.onSurfaceVariant,
-              ),
-              const SizedBox(width: ThemeSize.space5),
-              Expanded(
-                child: Text(
-                  addressText,
-                  maxLines: 2,
-                  overflow: TextOverflow.ellipsis,
-                  style: textTheme.bodyMedium?.copyWith(
-                    color: colorScheme.onSurfaceVariant,
-                  ),
-                ),
-              ),
-            ],
-          ),
+          _AddressRow(address: addressText),
         ],
+      ],
+    );
+  }
+}
+
+class _RestaurantRatingRow extends StatelessWidget {
+  final double rating;
+  final int reviewCount;
+
+  const _RestaurantRatingRow({required this.rating, required this.reviewCount});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Wrap(
+      crossAxisAlignment: WrapCrossAlignment.center,
+      spacing: ThemeSize.space5,
+      runSpacing: ThemeSize.space3,
+      children: [
+        RatingStars(rating: rating),
+        Text(
+          rating.toStringAsFixed(1),
+          style: textTheme.bodyMedium?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: colorScheme.onSurface,
+          ),
+        ),
+        Text(
+          '$reviewCount${S.current.review_count_suffix}',
+          style: textTheme.labelSmall?.copyWith(
+            color: colorScheme.onSurfaceVariant,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _OpenStatusBadge extends StatelessWidget {
+  final bool isOpenNow;
+
+  const _OpenStatusBadge({required this.isOpenNow});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return DecoratedBox(
+      decoration: BoxDecoration(
+        color: isOpenNow ? const Color(0xFF2E7D32) : colorScheme.outline,
+        borderRadius: const BorderRadius.all(
+          Radius.circular(ThemeSize.radiusTag),
+        ),
+      ),
+      child: Padding(
+        padding: const EdgeInsets.symmetric(
+          horizontal: ThemeSize.space8,
+          vertical: ThemeSize.space3,
+        ),
+        child: Text(
+          isOpenNow
+              ? S.current.business_status_open
+              : S.current.business_status_closed,
+          style: textTheme.labelSmall?.copyWith(
+            fontWeight: FontWeight.bold,
+            color: ThemeColor.colorffffff,
+          ),
+        ),
+      ),
+    );
+  }
+}
+
+class _AddressRow extends StatelessWidget {
+  final String address;
+
+  const _AddressRow({required this.address});
+
+  @override
+  Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
+    final textTheme = Theme.of(context).textTheme;
+
+    return Row(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Icon(
+          Icons.location_on_outlined,
+          size: ThemeSize.size16,
+          color: colorScheme.onSurfaceVariant,
+        ),
+        const SizedBox(width: ThemeSize.space5),
+        Expanded(
+          child: Text(
+            address,
+            maxLines: 2,
+            overflow: TextOverflow.ellipsis,
+            style: textTheme.bodyMedium?.copyWith(
+              color: colorScheme.onSurfaceVariant,
+            ),
+          ),
+        ),
       ],
     );
   }
