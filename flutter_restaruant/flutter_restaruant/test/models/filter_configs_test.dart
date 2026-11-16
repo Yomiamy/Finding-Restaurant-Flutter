@@ -64,5 +64,85 @@ void main() {
       expect(configs.sortBy, isNull);
       expect(configs.categories, 'cafes');
     });
+
+    test('fromUI 在 openNow 為 true 時清除 openAt 並保留 radius', () {
+      final targetDate = DateTime(2026, 11, 16, 18, 30);
+      final configs = FilterConfigs.fromUI(
+        priceIndex: 0,
+        openAtDate: targetDate,
+        sortingRuleIndex: 0,
+        radius: 5000,
+        openNow: true,
+      );
+
+      expect(configs.openNow, isTrue);
+      expect(configs.openAt, isNull);
+      expect(configs.radius, 5000);
+    });
+
+    test('fromUI 在 openNow 為 false 或 null 時正規化為 null 並保留 openAt', () {
+      final targetDate = DateTime(2026, 11, 16, 18, 30);
+      final falseConfigs = FilterConfigs.fromUI(
+        priceIndex: 0,
+        openAtDate: targetDate,
+        sortingRuleIndex: 0,
+        openNow: false,
+      );
+      final nullConfigs = FilterConfigs.fromUI(
+        priceIndex: 0,
+        openAtDate: targetDate,
+        sortingRuleIndex: 0,
+      );
+
+      expect(falseConfigs.openNow, isNull);
+      expect(falseConfigs.openAt, targetDate.millisecondsSinceEpoch);
+      expect(nullConfigs.openNow, isNull);
+      expect(nullConfigs.openAt, targetDate.millisecondsSinceEpoch);
+    });
+
+    test('fromUI 正規化 radius 邊界：保留合法非預設值、過濾 <=0 並上限 clamp 至 40000', () {
+      final targetDate = DateTime(2026, 11, 16, 18, 30);
+      final validCustom = FilterConfigs.fromUI(
+        priceIndex: 0,
+        openAtDate: targetDate,
+        sortingRuleIndex: 0,
+        radius: 2500,
+      );
+      final zeroRadius = FilterConfigs.fromUI(
+        priceIndex: 0,
+        openAtDate: targetDate,
+        sortingRuleIndex: 0,
+        radius: 0,
+      );
+      final negativeRadius = FilterConfigs.fromUI(
+        priceIndex: 0,
+        openAtDate: targetDate,
+        sortingRuleIndex: 0,
+        radius: -100,
+      );
+      final overMaxRadius = FilterConfigs.fromUI(
+        priceIndex: 0,
+        openAtDate: targetDate,
+        sortingRuleIndex: 0,
+        radius: 50000,
+      );
+
+      expect(validCustom.radius, 2500);
+      expect(zeroRadius.radius, isNull);
+      expect(negativeRadius.radius, isNull);
+      expect(overMaxRadius.radius, 40000);
+    });
+
+    test('clearConfig(radius / openNow) 分別清回 null 且不影響其他欄位', () {
+      final configs = FilterConfigs(price: '2', radius: 3000, openNow: true);
+
+      configs.clearConfig(FilterConfigType.radius);
+      expect(configs.radius, isNull);
+      expect(configs.openNow, isTrue);
+
+      configs.clearConfig(FilterConfigType.openNow);
+      expect(configs.openNow, isNull);
+      expect(configs.price, '2');
+    });
   });
 }

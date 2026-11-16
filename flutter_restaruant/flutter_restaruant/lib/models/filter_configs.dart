@@ -26,6 +26,9 @@ enum SortBy {
 }
 
 class FilterConfigs {
+  /// Yelp Fusion API `/v3/businesses/search` 支援的最大搜尋半徑（公尺）。
+  static const int maxRadiusMeters = 40000;
+
   // Price
   String? price;
   int get priceIndex {
@@ -85,12 +88,21 @@ class FilterConfigs {
     required DateTime openAtDate,
     required int sortingRuleIndex,
     this.categories,
-    this.radius,
-    this.openNow,
+    int? radius,
+    bool? openNow,
   }) {
     price = '${priceIndex + 1}';
-    openAt = openAtDate.millisecondsSinceEpoch;
+    this.openNow = (openNow == true) ? true : null;
+    openAt = (this.openNow == true) ? null : openAtDate.millisecondsSinceEpoch;
     sortBy = mapSortingRuleByIndex(sortingRuleIndex);
+    this.radius = _normalizeRadius(radius);
+  }
+
+  static int? _normalizeRadius(int? radius) {
+    if (radius == null || radius <= 0) {
+      return null;
+    }
+    return radius > maxRadiusMeters ? maxRadiusMeters : radius;
   }
 
   void clearConfig(FilterConfigType configType) {
