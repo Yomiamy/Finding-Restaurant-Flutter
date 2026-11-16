@@ -520,18 +520,24 @@ void main() {
       await tester.pumpAndSettle();
       await tester.tap(find.byType(SwitchListTile));
       await tester.pumpAndSettle();
-      expect(find.byType(CupertinoDatePicker), findsOneWidget);
+      final picker = tester.widget<CupertinoDatePicker>(
+        find.byType(CupertinoDatePicker),
+      );
 
       await tester.tap(find.byType(FilledButton));
       await tester.pumpAndSettle();
 
       expect(result, isNotNull);
       expect(result!.item1.openNow, isNull);
-      expect(result!.item1.openAt, isNotNull);
+      expect(result!.item1.openAt, greaterThan(0));
+      expect(
+        result!.item1.openAt,
+        picker.initialDateTime.millisecondsSinceEpoch,
+      );
       expect(result!.item1.radius, isNull);
     });
 
-    testWidgets('初始傳入非預設半徑 2500 未異動直接套用時仍完整保留', (tester) async {
+    testWidgets('初始傳入非預設半徑 2500 未異動直接套用時仍完整保留並顯示選中 Chip', (tester) async {
       tester.view.physicalSize = const Size(800, 1200);
       tester.view.devicePixelRatio = 1.0;
       addTearDown(tester.view.resetPhysicalSize);
@@ -546,6 +552,18 @@ void main() {
       );
       await tester.tap(find.text('Open Filter'));
       await tester.pumpAndSettle();
+
+      await tester.scrollUntilVisible(
+        find.text('2500 m'),
+        100,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(
+        tester
+            .widget<ChoiceChip>(find.widgetWithText(ChoiceChip, '2500 m'))
+            .selected,
+        isTrue,
+      );
 
       await tester.tap(find.byType(FilledButton));
       await tester.pumpAndSettle();
