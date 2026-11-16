@@ -21,7 +21,7 @@ UgcNoteDto _$UgcNoteDtoFromJson(Map<String, dynamic> json) => UgcNoteDto(
   videoUrl: json['video_url'] as String?,
   videoDurationSec: (json['video_duration_sec'] as num?)?.toInt(),
   restaurantName: json['restaurant_name'] as String?,
-  restaurantId: json['restaurant_id'] as String?,
+  restaurantId: _stringOrNullFromJson(json['restaurant_id']),
   createdAtMs: (json['created_at_ms'] as num?)?.toInt(),
 );
 

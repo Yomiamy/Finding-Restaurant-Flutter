@@ -41,7 +41,7 @@ class UgcNoteDto extends Equatable {
   @JsonKey(name: 'restaurant_name')
   final String? restaurantName;
 
-  @JsonKey(name: 'restaurant_id')
+  @JsonKey(name: 'restaurant_id', fromJson: _stringOrNullFromJson)
   final String? restaurantId;
 
   @JsonKey(name: 'created_at_ms')
@@ -87,3 +87,5 @@ class UgcNoteDto extends Equatable {
     createdAtMs,
   ];
 }
+
+String? _stringOrNullFromJson(Object? value) => value is String ? value : null;

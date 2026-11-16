@@ -120,6 +120,14 @@ class _Data {
     'title': 12345,
     'image_urls': 'not-a-list',
   };
+
+  static const Map<String, dynamic> nonStringRestaurantIdFirestoreDoc = {
+    'title': 'Note With Bad Restaurant Id',
+    'media_type': 'image',
+    'restaurant_name': 'Ichiran',
+    'restaurant_id': 12345,
+    'created_at_ms': 3000,
+  };
 }
 
 void main() {
@@ -159,6 +167,25 @@ void main() {
           _Data.defaultRestaurantIdEntity,
           isNot(equals(_Data.linkedRestaurantIdEntity)),
         );
+      },
+    );
+
+    test(
+      'UgcNoteDto.fromJson ignores non-string restaurant_id instead of throwing TypeError',
+      () {
+        for (final badValue in const <Object?>[
+          12345,
+          true,
+          <String>['a'],
+          <String, dynamic>{'id': 'x'},
+        ]) {
+          final dto = UgcNoteDto.fromJson(<String, dynamic>{
+            'title': 'Bad Restaurant Id',
+            'restaurant_id': badValue,
+          });
+          expect(dto.restaurantId, isNull);
+          expect(UgcNoteEntity.fromDto(dto).restaurantId, '');
+        }
       },
     );
 
@@ -258,6 +285,25 @@ void main() {
         expect(notes[0].restaurantId, 'afuri-tokyo-1');
         expect(notes[1].id, 'unlinked');
         expect(notes[1].restaurantId, '');
+      },
+    );
+
+    test(
+      'fetchNotes preserves note when restaurant_id is non-string and defaults restaurantId to empty',
+      () async {
+        final col = fakeFirestore.collection(UgcNoteDataSource.collectionName);
+
+        await col
+            .doc('bad_restaurant_id')
+            .set(_Data.nonStringRestaurantIdFirestoreDoc);
+
+        final notes = await repo.fetchNotes();
+
+        expect(notes.length, 1);
+        expect(notes.first.id, 'bad_restaurant_id');
+        expect(notes.first.title, 'Note With Bad Restaurant Id');
+        expect(notes.first.restaurantName, 'Ichiran');
+        expect(notes.first.restaurantId, '');
       },
     );
   });
