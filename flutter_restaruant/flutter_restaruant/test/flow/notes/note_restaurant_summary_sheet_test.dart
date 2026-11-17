@@ -695,6 +695,74 @@ void main() {
     );
 
     testWidgets(
+      'falls back to favor: false when favorite lookup hangs past timeout',
+      (tester) async {
+        final favorCompleter = Completer<bool>();
+        Tuple2<RestaurantEntity, dynamic>? pushedArgs;
+        String? openedQuery;
+
+        when(
+          () => mockRepository.fetchYelpRestaurantDetailInfo('biz-ichiran'),
+        ).thenAnswer((_) async => _Data.fullDetailOpen);
+        when(
+          () => mockFavorRepository.isFavor('biz-ichiran'),
+        ).thenAnswer((_) => favorCompleter.future);
+
+        await tester.pumpWidget(
+          buildHostApp(
+            note: _Data.linkedNote,
+            repository: mockRepository,
+            favorRepository: mockFavorRepository,
+            onOpenMaps: (query) => openedQuery = query,
+            routes: {
+              RestaurantDetailPage.routeName: (context) {
+                pushedArgs =
+                    ModalRoute.of(context)?.settings.arguments
+                        as Tuple2<RestaurantEntity, dynamic>?;
+                return const Scaffold(body: Text('Restaurant Detail Stub'));
+              },
+            },
+          ),
+        );
+
+        await tester.tap(find.byKey(const Key('open_sheet_btn')));
+        await tester.pump();
+        await tester.pump();
+
+        expect(find.byType(LoadingWidget), findsOneWidget);
+
+        await tester.pump(NoteRestaurantSummarySheet.defaultFavorLookupTimeout);
+        await tester.pumpAndSettle();
+
+        expect(find.byType(LoadingWidget), findsNothing);
+        expect(find.text('一蘭拉麵 台北本店'), findsOneWidget);
+        expect(
+          find.byKey(const Key('note_restaurant_sheet_maps_btn')),
+          findsOneWidget,
+        );
+        expect(
+          find.byKey(const Key('note_restaurant_sheet_detail_btn')),
+          findsOneWidget,
+        );
+
+        await tester.tap(
+          find.byKey(const Key('note_restaurant_sheet_maps_btn')),
+        );
+        await tester.pump();
+        expect(openedQuery, '25.033964,121.564468');
+
+        await tester.tap(
+          find.byKey(const Key('note_restaurant_sheet_detail_btn')),
+        );
+        await tester.pumpAndSettle();
+
+        expect(pushedArgs, isNotNull);
+        expect(pushedArgs!.item1.id, 'biz-ichiran');
+        expect(pushedArgs!.item1.favor, isFalse);
+      },
+    );
+
+    testWidgets(
       'protects bottom action button from nonzero bottom system view padding',
       (tester) async {
         const bottomInset = 34.0;

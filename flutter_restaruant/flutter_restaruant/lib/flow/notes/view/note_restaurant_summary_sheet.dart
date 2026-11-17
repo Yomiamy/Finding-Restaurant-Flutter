@@ -41,6 +41,7 @@ final class _SheetFailure extends _SheetState {
 
 /// 筆記打卡地點標籤點擊後彈出的輕量餐廳摘要 BottomSheet。
 class NoteRestaurantSummarySheet extends StatefulWidget {
+  static const Duration defaultFavorLookupTimeout = Duration(seconds: 2);
   static final RegExp _validRestaurantIdPattern = RegExp(r'^[A-Za-z0-9_-]+$');
 
   final UgcNoteEntity note;
@@ -191,8 +192,11 @@ class _NoteRestaurantSummarySheetState
       return false;
     }
     try {
-      return await favorRepo.isFavor(restaurantId);
+      return await favorRepo
+          .isFavor(restaurantId)
+          .timeout(NoteRestaurantSummarySheet.defaultFavorLookupTimeout);
     } on Exception catch (e, st) {
+      // Includes TimeoutException when Firestore/legacy migration hangs offline.
       Logger().w(
         'Failed to resolve favorite status for $restaurantId',
         error: e,
