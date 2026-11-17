@@ -1,71 +1,37 @@
 import 'dart:async';
 
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
-import 'package:logger/logger.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:sprintf/sprintf.dart';
 
 import '../../../app/constants/constants_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
-import '../../../domain/repositories/repositories_barrel.dart';
 import '../../../features/component/component_barrel.dart';
 import '../../../features/component/rating_stars.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../../restaurant/view/restaurant_detail_page.dart';
+import '../bloc/notes_feed_barrel.dart';
 import 'notes_feed_page.dart';
-
-sealed class _SheetState {
-  const _SheetState();
-}
-
-final class _SheetUnlinked extends _SheetState {
-  const _SheetUnlinked();
-}
-
-final class _SheetLoading extends _SheetState {
-  const _SheetLoading();
-}
-
-final class _SheetLoaded extends _SheetState {
-  final RestaurantDetailEntity detail;
-  final bool isFavor;
-
-  const _SheetLoaded(this.detail, {this.isFavor = false});
-}
-
-final class _SheetFailure extends _SheetState {
-  const _SheetFailure();
-}
 
 /// 筆記打卡地點標籤點擊後彈出的輕量餐廳摘要 BottomSheet。
 class NoteRestaurantSummarySheet extends StatefulWidget {
-  static const Duration defaultFavorLookupTimeout = Duration(seconds: 2);
-  static final RegExp _validRestaurantIdPattern = RegExp(r'^[A-Za-z0-9_-]+$');
-
   final UgcNoteEntity note;
-  final RestaurantDetailRepository? repository;
-  final FavorRepository? favorRepository;
+  final NoteRestaurantSheetBloc? bloc;
   final void Function(String query)? onOpenMaps;
 
   const NoteRestaurantSummarySheet({
     super.key,
     required this.note,
-    this.repository,
-    this.favorRepository,
+    this.bloc,
     this.onOpenMaps,
   });
-
-  /// 檢查 `restaurantId` 是否符合 Yelp Business ID／Alias 允許字元集。
-  static bool isValidRestaurantId(String id) =>
-      _validRestaurantIdPattern.hasMatch(id);
 
   static Future<void> show(
     BuildContext context, {
     required UgcNoteEntity note,
-    RestaurantDetailRepository? repository,
-    FavorRepository? favorRepository,
+    NoteRestaurantSheetBloc? bloc,
     void Function(String query)? onOpenMaps,
   }) {
     return showModalBottomSheet<void>(
@@ -80,8 +46,7 @@ class NoteRestaurantSummarySheet extends StatefulWidget {
       ),
       builder: (sheetContext) => NoteRestaurantSummarySheet(
         note: note,
-        repository: repository,
-        favorRepository: favorRepository,
+        bloc: bloc,
         onOpenMaps: onOpenMaps,
       ),
     );
@@ -138,116 +103,50 @@ class NoteRestaurantSummarySheet extends StatefulWidget {
 
 class _NoteRestaurantSummarySheetState
     extends State<NoteRestaurantSummarySheet> {
-  late _SheetState _state;
+  late NoteRestaurantSheetBloc _bloc;
+  late bool _isLocalBloc;
 
   @override
   void initState() {
     super.initState();
-    if (widget.note.restaurantId.isEmpty) {
-      _state = const _SheetUnlinked();
-      return;
-    }
-    if (!NoteRestaurantSummarySheet.isValidRestaurantId(
-      widget.note.restaurantId,
-    )) {
-      Logger().w(
-        'Invalid restaurantId rejected before API request: '
-        '${widget.note.restaurantId}',
-      );
-      _state = const _SheetFailure();
-      return;
-    }
-    final repo = _resolveRepository();
-    if (repo == null) {
-      _state = const _SheetFailure();
-      return;
-    }
-    _state = const _SheetLoading();
-    unawaited(_loadDetail(repo));
+    _initBloc();
   }
 
-  RestaurantDetailRepository? _resolveRepository() {
-    if (widget.repository != null) {
-      return widget.repository;
-    }
-    if (GetIt.I.isRegistered<RestaurantDetailRepository>()) {
-      return GetIt.I<RestaurantDetailRepository>();
-    }
-    return null;
-  }
-
-  FavorRepository? _resolveFavorRepository() {
-    if (widget.favorRepository != null) {
-      return widget.favorRepository;
-    }
-    if (GetIt.I.isRegistered<FavorRepository>()) {
-      return GetIt.I<FavorRepository>();
-    }
-    return null;
-  }
-
-  Future<bool> _resolveIsFavor(String restaurantId) async {
-    final favorRepo = _resolveFavorRepository();
-    if (favorRepo == null || restaurantId.isEmpty) {
-      return false;
-    }
-    try {
-      return await favorRepo
-          .isFavor(restaurantId)
-          .timeout(NoteRestaurantSummarySheet.defaultFavorLookupTimeout);
-    } on Exception catch (e, st) {
-      // Includes TimeoutException when Firestore/legacy migration hangs offline.
-      Logger().w(
-        'Failed to resolve favorite status for $restaurantId',
-        error: e,
-        stackTrace: st,
-      );
-      return false;
-    }
-  }
-
-  Future<void> _loadDetail(RestaurantDetailRepository repo) async {
-    try {
-      final detail = await Future.sync(
-        () => repo.fetchYelpRestaurantDetailInfo(widget.note.restaurantId),
-      );
-      if (!mounted) return;
-      final detailId = detail.id?.trim() ?? '';
-      final hasId = detailId.isNotEmpty;
-      final hasName = detail.name?.trim().isNotEmpty ?? false;
-      if (!hasId && !hasName) {
-        setState(() => _state = const _SheetFailure());
-        return;
+  @override
+  void didUpdateWidget(covariant NoteRestaurantSummarySheet oldWidget) {
+    super.didUpdateWidget(oldWidget);
+    if (widget.bloc != oldWidget.bloc) {
+      if (_isLocalBloc) {
+        unawaited(_bloc.close());
       }
-      final resolvedId = hasId ? detailId : widget.note.restaurantId;
-      final isFavor = await _resolveIsFavor(resolvedId);
-      if (!mounted) return;
-      setState(() => _state = _SheetLoaded(detail, isFavor: isFavor));
-    } on Exception catch (e, st) {
-      Logger().e(
-        'Failed to fetch note restaurant detail',
-        error: e,
-        stackTrace: st,
+      _initBloc();
+    } else if (widget.note.restaurantId != oldWidget.note.restaurantId) {
+      _bloc.add(
+        FetchNoteRestaurantSummary(restaurantId: widget.note.restaurantId),
       );
-      if (!mounted) return;
-      setState(() => _state = const _SheetFailure());
     }
+  }
+
+  void _initBloc() {
+    _isLocalBloc = widget.bloc == null;
+    _bloc = widget.bloc ?? NoteRestaurantSheetBloc.fromGetIt();
+    _bloc.add(
+      FetchNoteRestaurantSummary(restaurantId: widget.note.restaurantId),
+    );
+  }
+
+  @override
+  void dispose() {
+    if (_isLocalBloc) {
+      unawaited(_bloc.close());
+    }
+    super.dispose();
   }
 
   void _retryLoad() {
-    if (!NoteRestaurantSummarySheet.isValidRestaurantId(
-      widget.note.restaurantId,
-    )) {
-      setState(() => _state = const _SheetFailure());
-      return;
-    }
-    final repo = _resolveRepository();
-    if (repo == null) {
-      setState(() => _state = const _SheetFailure());
-      return;
-    }
-    setState(() => _state = const _SheetLoading());
-    unawaited(_loadDetail(repo));
+    _bloc.add(
+      FetchNoteRestaurantSummary(restaurantId: widget.note.restaurantId),
+    );
   }
 
   void _openMaps(RestaurantDetailEntity? detail) {
@@ -291,45 +190,59 @@ class _NoteRestaurantSummarySheetState
 
   @override
   Widget build(BuildContext context) {
-    final headerTitle = switch (_state) {
-      _SheetLoaded(:final detail) =>
-        (detail.name?.trim().isNotEmpty ?? false)
-            ? (detail.name ?? '').trim()
-            : widget.note.restaurantName,
-      _SheetUnlinked() ||
-      _SheetLoading() ||
-      _SheetFailure() => widget.note.restaurantName,
-    };
+    return BlocProvider<NoteRestaurantSheetBloc>.value(
+      value: _bloc,
+      child: BlocBuilder<NoteRestaurantSheetBloc, NoteRestaurantSheetState>(
+        bloc: _bloc,
+        builder: (context, state) {
+          final headerTitle = switch (state) {
+            NoteRestaurantSheetLoaded(:final detail) =>
+              (detail.name?.trim().isNotEmpty ?? false)
+                  ? (detail.name ?? '').trim()
+                  : widget.note.restaurantName,
+            NoteRestaurantSheetInitial() ||
+            NoteRestaurantSheetUnlinked() ||
+            NoteRestaurantSheetLoading() ||
+            NoteRestaurantSheetFailure() => widget.note.restaurantName,
+          };
 
-    return SafeArea(
-      top: false,
-      child: SingleChildScrollView(
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          crossAxisAlignment: CrossAxisAlignment.stretch,
-          children: [
-            NoteRestaurantSheetHeader(title: headerTitle),
-            Padding(
-              padding: const EdgeInsets.all(ThemeSize.space16),
-              child: switch (_state) {
-                _SheetUnlinked() => _UnlinkedSheetBody(
-                  onOpenMaps: () => _openMaps(null),
-                ),
-                _SheetLoading() => const _LoadingSheetBody(),
-                _SheetLoaded(:final detail, :final isFavor) => _LoadedSheetBody(
-                  detail: detail,
-                  onViewDetail: () =>
-                      _openRestaurantDetail(detail, isFavor: isFavor),
-                  onOpenMaps: () => _openMaps(detail),
-                ),
-                _SheetFailure() => _FailureSheetBody(
-                  onRetry: _retryLoad,
-                  onOpenMaps: () => _openMaps(null),
-                ),
-              },
+          return SafeArea(
+            top: false,
+            child: SingleChildScrollView(
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  NoteRestaurantSheetHeader(title: headerTitle),
+                  Padding(
+                    padding: const EdgeInsets.all(ThemeSize.space16),
+                    child: switch (state) {
+                      NoteRestaurantSheetUnlinked() => _UnlinkedSheetBody(
+                        onOpenMaps: () => _openMaps(null),
+                      ),
+                      NoteRestaurantSheetInitial() ||
+                      NoteRestaurantSheetLoading() => const _LoadingSheetBody(),
+                      NoteRestaurantSheetLoaded(
+                        :final detail,
+                        :final isFavor,
+                      ) =>
+                        _LoadedSheetBody(
+                          detail: detail,
+                          onViewDetail: () =>
+                              _openRestaurantDetail(detail, isFavor: isFavor),
+                          onOpenMaps: () => _openMaps(detail),
+                        ),
+                      NoteRestaurantSheetFailure() => _FailureSheetBody(
+                        onRetry: _retryLoad,
+                        onOpenMaps: () => _openMaps(null),
+                      ),
+                    },
+                  ),
+                ],
+              ),
             ),
-          ],
-        ),
+          );
+        },
       ),
     );
   }

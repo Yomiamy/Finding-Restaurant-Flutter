@@ -12,6 +12,8 @@ import 'package:flutter_restaruant/flow/notes/notes_barrel.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/restaurant_detail_page.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
+import 'package:logger/logger.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockRestaurantDetailRepository extends Mock
@@ -155,16 +157,28 @@ class _Data {
 void main() {
   late _MockRestaurantDetailRepository mockRepository;
   late _MockFavorRepository mockFavorRepository;
+  late List<NoteRestaurantSheetBloc> createdBlocs;
 
-  setUp(() {
+  setUp(() async {
+    await GetIt.I.reset();
     mockRepository = _MockRestaurantDetailRepository();
     mockFavorRepository = _MockFavorRepository();
+    createdBlocs = <NoteRestaurantSheetBloc>[];
+  });
+
+  tearDown(() async {
+    for (final bloc in createdBlocs) {
+      await bloc.close();
+    }
+    await GetIt.I.reset();
   });
 
   Widget buildHostApp({
     required UgcNoteEntity note,
+    NoteRestaurantSheetBloc? bloc,
     RestaurantDetailRepository? repository,
     FavorRepository? favorRepository,
+    bool useGetIt = false,
     void Function(String query)? onOpenMaps,
     Map<String, WidgetBuilder> routes = const {},
   }) {
@@ -185,11 +199,21 @@ void main() {
             child: ElevatedButton(
               key: const Key('open_sheet_btn'),
               onPressed: () {
+                final resolvedBloc = useGetIt
+                    ? null
+                    : (bloc ??
+                          NoteRestaurantSheetBloc(
+                            repository: repository,
+                            favorRepository: favorRepository,
+                            logger: Logger(level: Level.off),
+                          ));
+                if (!useGetIt && bloc == null && resolvedBloc != null) {
+                  createdBlocs.add(resolvedBloc);
+                }
                 NoteRestaurantSummarySheet.show(
                   context,
                   note: note,
-                  repository: repository,
-                  favorRepository: favorRepository,
+                  bloc: resolvedBloc,
                   onOpenMaps: onOpenMaps,
                 );
               },
@@ -553,34 +577,6 @@ void main() {
     testWidgets(
       'rejects invalid restaurantId with path or query characters without calling repository',
       (tester) async {
-        expect(
-          NoteRestaurantSummarySheet.isValidRestaurantId('biz-ichiran'),
-          isTrue,
-        );
-        expect(
-          NoteRestaurantSummarySheet.isValidRestaurantId(
-            'WavvLdfdP6g8aZTtbBQHTw',
-          ),
-          isTrue,
-        );
-        expect(
-          NoteRestaurantSummarySheet.isValidRestaurantId('afuri_tokyo_1'),
-          isTrue,
-        );
-        for (final badId in const <String>[
-          '',
-          '..',
-          '../search',
-          'foo/reviews',
-          'biz?q=1',
-          'biz#frag',
-        ]) {
-          expect(
-            NoteRestaurantSummarySheet.isValidRestaurantId(badId),
-            isFalse,
-          );
-        }
-
         await tester.pumpWidget(
           buildHostApp(note: _Data.invalidIdNote, repository: mockRepository),
         );
@@ -731,7 +727,7 @@ void main() {
 
         expect(find.byType(LoadingWidget), findsOneWidget);
 
-        await tester.pump(NoteRestaurantSummarySheet.defaultFavorLookupTimeout);
+        await tester.pump(NoteRestaurantSheetBloc.defaultFavorLookupTimeout);
         await tester.pumpAndSettle();
 
         expect(find.byType(LoadingWidget), findsNothing);
@@ -848,6 +844,51 @@ void main() {
           ),
           '鼎泰豐 信義店',
         );
+      },
+    );
+
+    testWidgets(
+      'uses GetIt dependencies when bloc is omitted and preserves injected bloc after sheet dismissal',
+      (tester) async {
+        GetIt.I.registerSingleton<RestaurantDetailRepository>(mockRepository);
+        GetIt.I.registerSingleton<FavorRepository>(mockFavorRepository);
+        when(
+          () => mockRepository.fetchYelpRestaurantDetailInfo('biz-ichiran'),
+        ).thenAnswer((_) async => _Data.fullDetailOpen);
+        when(
+          () => mockFavorRepository.isFavor('biz-ichiran'),
+        ).thenAnswer((_) async => false);
+
+        await tester.pumpWidget(
+          buildHostApp(note: _Data.linkedNote, useGetIt: true),
+        );
+        await tester.tap(find.byKey(const Key('open_sheet_btn')));
+        await tester.pumpAndSettle();
+
+        expect(find.text('一蘭拉麵 台北本店'), findsOneWidget);
+
+        await tester.tapAt(const Offset(10, 10));
+        await tester.pumpAndSettle();
+        expect(find.byType(NoteRestaurantSummarySheet), findsNothing);
+
+        final externalBloc = NoteRestaurantSheetBloc(
+          repository: mockRepository,
+          favorRepository: mockFavorRepository,
+          logger: Logger(level: Level.off),
+        );
+        addTearDown(externalBloc.close);
+
+        await tester.pumpWidget(
+          buildHostApp(note: _Data.linkedNote, bloc: externalBloc),
+        );
+        await tester.tap(find.byKey(const Key('open_sheet_btn')));
+        await tester.pumpAndSettle();
+        expect(find.text('一蘭拉麵 台北本店'), findsOneWidget);
+
+        await tester.tapAt(const Offset(10, 10));
+        await tester.pumpAndSettle();
+
+        expect(externalBloc.isClosed, isFalse);
       },
     );
   });

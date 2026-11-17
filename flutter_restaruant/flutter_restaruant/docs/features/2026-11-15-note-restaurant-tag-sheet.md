@@ -1,7 +1,7 @@
 # 功能規格：F-2.4 筆記地點打卡 Tag 點擊彈出輕量餐廳摘要 BottomSheet
 
 - **日期**：2026-11-15
-- **狀態**：草稿（等待 STAGE 0b 計畫與實作）
+- **狀態**：已實作（採 `NoteRestaurantSheetBloc` 單向資料流架構）
 - **實查基線**：`main`
 - **需求來源**：`gen-grill` 結構化 brief（Q1–Q5 五項齊備，2 輪問答收斂）
 - **相關 brainstorm 項目**：[`docs/brainstorm/2026-11-15-features-brainstorm.md`](../brainstorm/2026-11-15-features-brainstorm.md) §2.2 [F-2.4] (L371-376, L621, L686)
@@ -29,7 +29,7 @@
 
 - **資料結構**：
   - 在 `UgcNoteDto` 新增選填 `@JsonKey(name: 'restaurant_id') final String? restaurantId;`，並於 `UgcNoteEntity` 新增 `final String restaurantId`（建構子預設為 `''`，`UgcNoteEntity.fromDto` 以 `(dto.restaurantId ?? '').trim()` 正規化）。
-  - 點擊地點標籤時彈出 `NoteRestaurantSummarySheet`，當 `note.restaurantId.isNotEmpty` 時直接複用既有 `RestaurantDetailRepository.fetchYelpRestaurantDetailInfo(note.restaurantId)` 拉取 `RestaurantDetailEntity`，不另造冗餘 API 或重複資料模型。
+  - 點擊地點標籤時彈出 `NoteRestaurantSummarySheet`，由專屬 `NoteRestaurantSheetBloc` 驗證 `restaurantId` 並複用既有 `RestaurantDetailRepository.fetchYelpRestaurantDetailInfo(note.restaurantId)` 與 `FavorRepository.isFavor` 拉取 `RestaurantDetailEntity` 與收藏狀態（View 層不直接依賴 Repository），不另造冗餘 API 或重複資料模型。
 - **消滅特殊情況**：
   - **舊種子資料向後相容（無 `restaurant_id`）**：當 `note.restaurantId.isEmpty` 時，BottomSheet 不發起無效的 API 請求，直接以降級摘要模式顯示 `note.restaurantName` 與「Google Maps 導航」按鈕。
   - **導航參數統一化（避免雙重 URL 編碼）**：以單一純函式 `buildGoogleMapsQuery` 決定 Google Maps 查詢原始字串——若 `RestaurantDetailEntity.coordinates` 具備有效經緯度則回傳 `sprintf('%f,%f', [lat, lng])`，否則自動回退為去空白後的餐廳名稱純文字（因 `Utils.openUrl` 內部的 `Utils.encodeQueryParameters` 已統一執行 `Uri.encodeComponent`，故不在外層重複編碼），再以 `Constants.googleMapHost` 與 `Constants.googleMapNavigationPath` 呼叫 `Utils.openUrl`，消滅 UI 層對座標有無的分支判斷。
@@ -55,8 +55,8 @@
 - **AC-2 (雙觸發入口：`NoteDetailPage` 與 `NotesFeedPage`)**：
   - `NoteDetailPage` 的 `NoteRestaurantTag` 支援點擊並彈出 `NoteRestaurantSummarySheet`。
   - `NotesFeedPage` 的 `NoteMasonryCard` 地點列（`Key('note_card_restaurant_tag_${note.id}')`）支援獨立點擊並彈出 `NoteRestaurantSummarySheet`，且不觸發外層卡片跳轉 `NoteDetailPage`。
-- **AC-3 (`NoteRestaurantSummarySheet` 完整餐廳摘要展示)**：
-  - 當 `note.restaurantId.isNotEmpty` 時，透過 `RestaurantDetailRepository.fetchYelpRestaurantDetailInfo(note.restaurantId)` 載入餐廳詳情：
+- **AC-3 (`NoteRestaurantSheetBloc` 與 `NoteRestaurantSummarySheet` 完整餐廳摘要展示)**：
+  - 由 `NoteRestaurantSheetBloc` 管理單向資料流狀態；當 `note.restaurantId.isNotEmpty`（且通過 ID 格式驗證）時，透過 `RestaurantDetailRepository.fetchYelpRestaurantDetailInfo(note.restaurantId)` 載入餐廳詳情，並搭配 `FavorRepository.isFavor`（2 秒逾時降級為 `false`）解析收藏狀態：
     - 載入中顯示餐廳名稱標題與 `LoadingWidget`。
     - 載入成功（回傳有效 `detail`，即 `detail.id` 或 `detail.name` 非空）顯示：餐廳封面縮圖（空 URL 或失敗回退 `Assets.images.empty`）、餐廳名稱、`RatingStars` 與評分／評論數（複用 `S.current.review_count_suffix`）、價位與分類列（如 `$$ · 日本料理`）、營業中／已打烊狀態標籤（僅在 `detail.hours != null && detail.hours!.isNotEmpty && detail.hours!.first.isOpenNow != null` 時渲染，複用 `S.current.business_status_open` / `S.current.business_status_closed`）、地址列（若有 `location.displayAddress`）。
 - **AC-4 (雙核心轉化行動按鈕)**：
@@ -66,7 +66,7 @@
   - 當 `note.restaurantId.isEmpty` 時，不發起網路請求，直接顯示 `note.restaurantName`、降級提示文字與可用的「Google Maps 導航」按鈕（以 `restaurantName` 搜尋導航）。
   - 當 `note.restaurantId.isNotEmpty` 但 `fetchYelpRestaurantDetailInfo` 拋出 `Exception` 或回傳空殼資料時，顯示錯誤提示、重試按鈕（`Key('note_restaurant_sheet_retry_btn')`，複用 `S.current.empty_data_retry`）以及可用的「Google Maps 導航」降級按鈕。
 - **AC-6 (靜態分析與測試覆蓋)**：
-  - 補齊 `ugc_note_repo_test.dart`（驗證 `restaurant_id` 解析與缺省預設值）、`note_restaurant_summary_sheet_test.dart`（涵蓋載入成功、無 `restaurantId` 降級、載入失敗重試、點擊跳轉 `RestaurantDetailPage`）、以及 `note_detail_page_test.dart` 與 `notes_feed_page_test.dart` 的互動測試。
+  - 補齊 `ugc_note_repo_test.dart`（驗證 `restaurant_id` 解析與缺省預設值）、`note_restaurant_sheet_bloc_test.dart`（以 `bloc_test` 驗證 ID 校驗、未綁定降級、詳情載入與收藏 2 秒逾時降級、空殼回應／例外失敗重試、逾期請求捨棄）、`note_restaurant_summary_sheet_test.dart`（涵蓋載入成功、無 `restaurantId` 降級、載入失敗重試、點擊跳轉 `RestaurantDetailPage`、注入 BLoC 與 GetIt 生命週期管理）、以及 `note_detail_page_test.dart` 與 `notes_feed_page_test.dart` 的互動測試。
   - `flutter analyze .` 零警告，`flutter test` 全數通過。
 
 ---

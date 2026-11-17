@@ -4,24 +4,24 @@
 > 建立日期：2026-11-15  
 > 關聯規格：[`docs/features/2026-11-15-note-restaurant-tag-sheet.md`](../features/2026-11-15-note-restaurant-tag-sheet.md)  
 > 實查基線：`main`  
-> 狀態：草稿（等待 STAGE 0b plan-verifier 初審與使用者確認）
+> 狀態：已實作（採 `NoteRestaurantSheetBloc` 單向資料流架構，對齊 `.claude/rules/flutter-styles.md` 與 `docs/architecture/overview.md`）
 
 ---
 
 ## 1. 目標與架構方案權衡
 
 ### 1.1 目標
-為「探店筆記」的瀑布流卡片（`NoteMasonryCard`）與筆記詳情頁（`NoteDetailPage`）中的地點打卡標籤加上點擊互動，彈出輕量餐廳摘要 BottomSheet（`NoteRestaurantSummarySheet`），串接既有 `RestaurantDetailRepository` 呈現餐廳評分、營業狀態、價位分類與地址，並提供 **「查看餐廳詳情」**（跳轉 `RestaurantDetailPage`）與 **「Google Maps 導航」** 兩大轉化行動。
+為「探店筆記」的瀑布流卡片（`NoteMasonryCard`）與筆記詳情頁（`NoteDetailPage`）中的地點打卡標籤加上點擊互動，彈出輕量餐廳摘要 BottomSheet（`NoteRestaurantSummarySheet`），由專屬 `NoteRestaurantSheetBloc` 串接既有 `RestaurantDetailRepository` 與 `FavorRepository` 呈現餐廳評分、營業狀態、價位分類與地址，並提供 **「查看餐廳詳情」**（跳轉 `RestaurantDetailPage`）與 **「Google Maps 導航」** 兩大轉化行動。
 
 ### 1.2 方案權衡（Trade-offs）
 
-| 評估維度 | 方案 A（採用）：`StatefulWidget` + 私有 `sealed class _SheetState` | 方案 B（淘汰）：新建 `NoteRestaurantSheetBloc`（Event / State / Bloc 三檔） |
+| 評估維度 | 方案 A（採用）：`NoteRestaurantSheetBloc` + `sealed class NoteRestaurantSheetState` | 方案 B（淘汰）：`StatefulWidget` (`setState`) 直接呼叫 `Repository` / `GetIt` |
 |:---|:---|:---|
-| **狀態本質** | 單一 BottomSheet 生命週期內的一次性 `Future` 查詢（加失敗重試），無跨畫面共享狀態 | 過度設計；為單一 `fetchYelpRestaurantDetailInfo` 包裝 Event/State/Bloc 徒增 3 個檔案與樣板碼 |
-| **型別安全與邊界消滅** | 符合 Style Guide §5.4：以 `sealed class _SheetState`（`_SheetLoading` / `_SheetLoaded` / `_SheetUnlinked` / `_SheetFailure`）搭配窮盡式 `switch` 編譯期強制覆蓋所有分支 | 同樣用 `sealed class`，但多一層 `BlocProvider` 與 `Stream` 訂閱開銷 |
-| **可測試性** | `NoteRestaurantSummarySheet` 建構子直接支援選填注入 `RestaurantDetailRepository? repository` 與 `void Function(String query)? onOpenMaps`（不污染 `NotesFeedPage` / `NoteDetailPage` 建構子） | 需額外引入 `bloc_test` 測單一方法轉發 |
+| **架構一致性** | 符合 Style Guide §7.3 與 `overview.md` 硬性邊界：凡存取 `Repository` / 執行非同步 I/O 的 BottomSheet 一律配對 BLoC（對齊 `MenuVisionSheet`、`AiFoodieSheet`），View 層零 Repository 相依 | 與專案 10/12 既有 BLoC 模組風格分裂，使後續開發者無所適從 |
+| **型別安全與狀態互斥** | 符合 Style Guide §5.4：以 `sealed class NoteRestaurantSheetState`（`Initial` / `Unlinked` / `Loading` / `Loaded` / `Failure`）+ `Equatable` 搭配窮盡式 `switch` | 狀態模型雖封閉，但把非同步抓取、ID 驗證與逾時降級耦合在 `State<StatefulWidget>` 內 |
+| **可測試性與生命週期** | `NoteRestaurantSheetBloc` 支援建構子注入與 `bloc_test` 純單元驗證；`NoteRestaurantSummarySheet` 支援選填 `bloc` 注入，未傳入時透過 `NoteRestaurantSheetBloc.fromGetIt()` 建立本地實例並在 `dispose` 關閉 | 必須在 Widget 測試裡混入 `GetIt` / timeout / retry 與請求狀態測試 |
 
-**結論**：採用 **方案 A**，遵守 Linus「消滅非必要複雜度」與 Ponytail YAGNI 原則。
+**結論**：採用 **方案 A**（`NoteRestaurantSheetBloc`），確保架構邊界統一、資料流單向可預測且完全隔離 UI 與資料層。
 
 ---
 
@@ -30,11 +30,12 @@
 1. **DTO 與 Entity 邊界正規化**：
    - `UgcNoteDto` 新增 `@JsonKey(name: 'restaurant_id') final String? restaurantId;`。
    - `UgcNoteEntity` 新增 `final String restaurantId`（建構子預設 `this.restaurantId = ''`），在 `UgcNoteEntity.fromDto` 中以 `(dto.restaurantId ?? '').trim()` 正規化為非 null 字串，UI 層只需檢查 `note.restaurantId.isNotEmpty`，徹底消滅 `null` 與空白字串 `"   "` 的雙重判斷。
-2. **四態封閉狀態機（`sealed class _SheetState`）**：
-   - `_SheetUnlinked`：當 `note.restaurantId.isEmpty` 時於 `initState` 直接進入此狀態，**不發起任何網路請求**，呈現餐廳名稱與 Google Maps 導航按鈕。
-   - `_SheetLoading`：當 `note.restaurantId.isNotEmpty` 時於 `initState`（及重試時）進入此狀態並呼叫 `fetchYelpRestaurantDetailInfo(note.restaurantId)`。
-   - `_SheetLoaded(final RestaurantDetailEntity detail)`：當 `fetchYelpRestaurantDetailInfo` 成功回傳且 `(detail.id?.trim().isNotEmpty ?? false) || (detail.name?.trim().isNotEmpty ?? false)` 時進入，呈現完整餐廳摘要與雙行動按鈕。
-   - `_SheetFailure`：當拋出 `Exception`（如 `DioException`）、回傳空殼物件、或 DI 未註冊 `RestaurantDetailRepository` 時進入，呈現重試按鈕（複用 `S.current.empty_data_retry`）與 Google Maps 降級導航按鈕。
+2. **五態封閉狀態機（`sealed class NoteRestaurantSheetState`）與防呆保護**：
+   - `NoteRestaurantSheetInitial`：BLoC 初始狀態。
+   - `NoteRestaurantSheetUnlinked`：當 `restaurantId.isEmpty` 時直接進入此狀態，**不發起任何網路請求**，呈現餐廳名稱與 Google Maps 導航按鈕。
+   - `NoteRestaurantSheetLoading`：當 `restaurantId` 通過 `NoteRestaurantSheetBloc.isValidRestaurantId`（`^[A-Za-z0-9_-]+$`）校驗且 `RestaurantDetailRepository` 可用時發出，並搭配 `_requestId` 遞增序號拋棄逾期回應。
+   - `NoteRestaurantSheetLoaded(detail, isFavor)`：當 `fetchYelpRestaurantDetailInfo` 成功回傳且 `(detail.id?.trim().isNotEmpty ?? false) || (detail.name?.trim().isNotEmpty ?? false)` 時進入；同步以 `FavorRepository.isFavor` 解析收藏狀態（具 `defaultFavorLookupTimeout = 2s` 逾時與例外降級 `isFavor: false`）。
+   - `NoteRestaurantSheetFailure(message)`：當 `restaurantId` 格式不合法、`RestaurantDetailRepository` 未註冊、API 拋出 `Exception` 或回傳空殼物件時進入，呈現重試按鈕（複用 `S.current.empty_data_retry`）與 Google Maps 降級導航按鈕。
 3. **Google Maps 查詢參數單一純函式（消除雙重 URL 編碼）**：
    - `Utils.openUrl` 內部的 `Utils.encodeQueryParameters` 已對每個參數值呼叫 `Uri.encodeComponent(e.value)`。因此 `buildGoogleMapsQuery` 必須回傳**未編碼的原始字串**，避免中文店名遭雙重編碼：
    ```dart
@@ -47,10 +48,11 @@
      if (lat != null && lng != null) {
        return sprintf('%f,%f', [lat, lng]);
      }
-     final name = (detail?.name?.trim().isNotEmpty ?? false)
-         ? detail!.name!.trim()
-         : note.restaurantName.trim();
-     return name;
+     final detailName = detail?.name?.trim() ?? '';
+     if (detailName.isNotEmpty) {
+       return detailName;
+     }
+     return note.restaurantName.trim();
    }
    ```
    - 呼叫端對齊 `RestaurantInfoCell` 既有寫法：
@@ -66,18 +68,19 @@
    ```
 4. **精確映射 `RestaurantEntity` 與 `id` 非空保底（Never Break Userspace）**：
    - `RestaurantDetailPage` 在 `didChangeDependencies` 讀取 `_summaryInfo` 並執行 `_bloc.add(FetchDetailInfo(id: _summaryInfo.id!))`（強制非空 `!`），且其頂部 `RestaurantHeadCell` 點擊收藏時會將該 `RestaurantEntity` 寫入本地收藏庫。
-   - 因此 `NoteRestaurantSummarySheet` 在跳轉 `RestaurantDetailPage` 時，透過 `_toRestaurantEntity(UgcNoteEntity note, RestaurantDetailEntity detail)` 映射 `RestaurantEntity` 實際存在的欄位，並以 `note.restaurantId` 保底 `id` 絕不為空或 `null`：
+   - 因此 `NoteRestaurantSummarySheet` 在跳轉 `RestaurantDetailPage` 時，透過 `toRestaurantEntity(UgcNoteEntity note, RestaurantDetailEntity detail, {bool isFavor = false})` 映射 `RestaurantEntity` 實際存在的欄位（含 `favor: isFavor`），並以 `note.restaurantId` 保底 `id` 絕不為空或 `null`：
    ```dart
    static RestaurantEntity toRestaurantEntity(
      UgcNoteEntity note,
-     RestaurantDetailEntity detail,
-   ) {
-     final resolvedId = (detail.id?.trim().isNotEmpty ?? false)
-         ? detail.id!.trim()
-         : note.restaurantId;
-     final resolvedName = (detail.name?.trim().isNotEmpty ?? false)
-         ? detail.name!.trim()
-         : note.restaurantName;
+     RestaurantDetailEntity detail, {
+     bool isFavor = false,
+   }) {
+     final detailId = detail.id?.trim() ?? '';
+     final resolvedId = detailId.isNotEmpty ? detailId : note.restaurantId;
+     final detailName = detail.name?.trim() ?? '';
+     final resolvedName = detailName.isNotEmpty
+         ? detailName
+         : note.restaurantName.trim();
      return RestaurantEntity(
        id: resolvedId,
        name: resolvedName,
@@ -89,6 +92,7 @@
        categories: detail.categories,
        location: detail.location,
        coordinates: detail.coordinates,
+       favor: isFavor,
      );
    }
    ```
@@ -100,7 +104,7 @@
 | 任務編號 | 負責範圍 | 異動檔案（寫入路徑完全互斥） | 執行方式 |
 |:---|:---|:---|:---:|
 | **T1** | `UgcNoteDto` / `UgcNoteEntity` 擴充 `restaurantId`、多國語系與資料層單元測試 | `lib/api/dto/ugc_note_dto.dart`<br>`lib/api/dto/ugc_note_dto.g.dart`<br>`lib/domain/entities/ugc_note_entity.dart`<br>`lib/l10n/intl_zh_TW.arb`<br>`lib/l10n/intl_en.arb`<br>`lib/generated/intl/messages_all.dart`<br>`lib/generated/intl/messages_en.dart`<br>`lib/generated/intl/messages_zh_TW.dart`<br>`lib/generated/l10n.dart`<br>`test/data_layer/ugc_note_repo_test.dart` | 序列第一步 |
-| **T2** | `NoteRestaurantSummarySheet` 元件、`NoteDetailPage` 與 `NotesFeedPage` 雙入口串接及 Widget 測試 | `lib/flow/notes/view/note_restaurant_summary_sheet.dart`（新增）<br>`lib/flow/notes/view/note_detail_page.dart`<br>`lib/flow/notes/view/notes_feed_page.dart`<br>`lib/flow/notes/view/view_barrel.dart`<br>`test/flow/notes/note_restaurant_summary_sheet_test.dart`（新增）<br>`test/flow/notes/note_detail_page_test.dart`<br>`test/flow/notes/notes_feed_page_test.dart` | 序列第二步（依賴 T1） |
+| **T2** | `NoteRestaurantSheetBloc`、`NoteRestaurantSummarySheet`、`NoteDetailPage` 與 `NotesFeedPage` 雙入口串接及測試 | `lib/flow/notes/bloc/note_restaurant_sheet_bloc.dart`（新增）<br>`lib/flow/notes/bloc/note_restaurant_sheet_event.dart`（新增）<br>`lib/flow/notes/bloc/note_restaurant_sheet_state.dart`（新增）<br>`lib/flow/notes/bloc/notes_feed_barrel.dart`<br>`lib/flow/notes/view/note_restaurant_summary_sheet.dart`（新增）<br>`lib/flow/notes/view/note_detail_page.dart`<br>`lib/flow/notes/view/notes_feed_page.dart`<br>`lib/flow/notes/view/view_barrel.dart`<br>`test/flow/notes/note_restaurant_sheet_bloc_test.dart`（新增）<br>`test/flow/notes/note_restaurant_summary_sheet_test.dart`（新增）<br>`test/flow/notes/note_detail_page_test.dart`<br>`test/flow/notes/notes_feed_page_test.dart` | 序列第二步（依賴 T1） |
 
 ---
 
@@ -142,15 +146,24 @@
 
 ---
 
-### 4.2 T2：`NoteRestaurantSummarySheet` 與雙入口整合
+### 4.2 T2：`NoteRestaurantSheetBloc`、`NoteRestaurantSummarySheet` 與雙入口整合
 
-#### 4.2.1 `lib/flow/notes/view/note_restaurant_summary_sheet.dart`（新增）
+#### 4.2.1 `lib/flow/notes/bloc/note_restaurant_sheet_bloc.dart`（含 event / state）
+- 狀態機：`NoteRestaurantSheetInitial`、`NoteRestaurantSheetUnlinked`、`NoteRestaurantSheetLoading`、`NoteRestaurantSheetLoaded(detail, isFavor)`、`NoteRestaurantSheetFailure(message)`。
+- 事件：`FetchNoteRestaurantSummary({required String restaurantId})`（初次載入與重試共用）。
+- 邏輯：
+  - `restaurantId.isEmpty` 直接 emit `NoteRestaurantSheetUnlinked`，不呼叫任何 Repository。
+  - 經 `isValidRestaurantId`（`^[A-Za-z0-9_-]+$`）防護路徑跳脫或查詢注入，不合法則 emit `NoteRestaurantSheetFailure`。
+  - 查詢 `RestaurantDetailRepository.fetchYelpRestaurantDetailInfo(restaurantId)` 與 `FavorRepository.isFavor(id).timeout(defaultFavorLookupTimeout)`（預設 `2s`，逾時或失敗降級 `isFavor: false`），並以遞增 `_requestId` 防止逾期回應覆寫最新狀態。
+  - 提供 `factory NoteRestaurantSheetBloc.fromGetIt()`，使 View 層無需直接依賴 Repository。
+
+#### 4.2.2 `lib/flow/notes/view/note_restaurant_summary_sheet.dart`（新增）
 - 提供靜態方法 `NoteRestaurantSummarySheet.show`：
   ```dart
   static Future<void> show(
     BuildContext context, {
     required UgcNoteEntity note,
-    RestaurantDetailRepository? repository,
+    NoteRestaurantSheetBloc? bloc,
     void Function(String query)? onOpenMaps,
   }) {
     return showModalBottomSheet<void>(
@@ -165,20 +178,15 @@
       ),
       builder: (sheetContext) => NoteRestaurantSummarySheet(
         note: note,
-        repository: repository,
+        bloc: bloc,
         onOpenMaps: onOpenMaps,
       ),
     );
   }
   ```
-- 狀態與生命週期：
-  - 若 `widget.note.restaurantId.isEmpty`，初始狀態為 `const _SheetUnlinked()`。
-  - 若 `widget.note.restaurantId.isNotEmpty`，初始狀態為 `const _SheetLoading()`，並於 `initState` 執行 `_loadDetail()`：
-    - 優先使用 `widget.repository`，若為 `null` 且 `GetIt.I.isRegistered<RestaurantDetailRepository>()` 則取 `GetIt.I<RestaurantDetailRepository>()`；若均未提供則轉為 `const _SheetFailure()`。
-    - 呼叫 `repo.fetchYelpRestaurantDetailInfo(widget.note.restaurantId)`：
-      - `if (!mounted) return;`（遵守 Style Guide §7.5 非同步安全）。
-      - 若 `(detail.id?.trim().isNotEmpty ?? false) || (detail.name?.trim().isNotEmpty ?? false)`，狀態更新為 `_SheetLoaded(detail)`；否則轉為 `const _SheetFailure()`。
-    - 捕捉 `on Exception catch (e, st)`，以 `Logger().e('Failed to fetch note restaurant detail', error: e, stackTrace: st)` 記錄後更新為 `const _SheetFailure()`。
+- BLoC 生命週期綁定：
+  - 若外部未傳入 `bloc`，於 `initState` 透過 `NoteRestaurantSheetBloc.fromGetIt()` 建立本地實例並以 `_isLocalBloc` 標記於 `dispose()` 關閉；並派發 `FetchNoteRestaurantSummary(restaurantId: widget.note.restaurantId)`。
+  - 以 `BlocProvider.value` 與 `BlocBuilder<NoteRestaurantSheetBloc, NoteRestaurantSheetState>` 對五態 `sealed` state 執行窮盡式 `switch` 渲染。
 - 拆分獨立小 Widget（遵守 Style Guide 禁止 `_buildSubWidget` 輔助方法）：
   - `NoteRestaurantDetailPreview`：
     - 渲染封面圖（80x80 圓角縮圖，失敗回退 `Assets.images.empty`）。
@@ -189,16 +197,22 @@
     ```dart
     final navigator = Navigator.of(context);
     navigator.pop();
-    navigator.pushNamed(
-      RestaurantDetailPage.routeName,
-      arguments: Tuple2(toRestaurantEntity(widget.note, detail), null),
+    unawaited(
+      navigator.pushNamed(
+        RestaurantDetailPage.routeName,
+        arguments: Tuple2(
+          toRestaurantEntity(widget.note, detail, isFavor: isFavor),
+          null,
+        ),
+      ),
     );
     ```
   - 點擊 **「Google Maps 導航」**（`Key('note_restaurant_sheet_maps_btn')`）：
     ```dart
     final query = buildGoogleMapsQuery(widget.note, detail);
-    if (widget.onOpenMaps != null) {
-      widget.onOpenMaps!(query);
+    final onOpenMaps = widget.onOpenMaps;
+    if (onOpenMaps != null) {
+      onOpenMaps(query);
       return;
     }
     Utils.openUrl(
@@ -211,16 +225,16 @@
     );
     ```
 
-#### 4.2.2 `lib/flow/notes/view/note_detail_page.dart`
+#### 4.2.3 `lib/flow/notes/view/note_detail_page.dart`
 - 不更動 `NoteDetailPage` 建構子簽章（零 Prop-Drilling）。
 - `NoteRestaurantTag` 新增 `final VoidCallback? onTap;`，外層以 `Material` + `InkWell(borderRadius: BorderRadius.circular(ThemeSize.space16), onTap: onTap)` 包覆，並在文字右側加上 `Icon(Icons.chevron_right, size: ThemeSize.size16, color: ThemeColor.colord84a20)` 視覺提示可點擊。
 - 點擊時呼叫 `NoteRestaurantSummarySheet.show(context, note: note)`。
 
-#### 4.2.3 `lib/flow/notes/view/notes_feed_page.dart`
+#### 4.2.4 `lib/flow/notes/view/notes_feed_page.dart`
 - 不更動 `NotesFeedPage` 建構子簽章（零 Prop-Drilling）。
 - `NoteMasonryCard` 新增選填 `final VoidCallback? onRestaurantTagTap;`，將 `if (note.restaurantName.isNotEmpty)` 的餐廳地點列包進 `InkWell(key: Key('note_card_restaurant_tag_${note.id}'), onTap: onRestaurantTagTap, ...)`，點擊時直接彈出 `NoteRestaurantSummarySheet.show(context, note: note)`，不會誤觸外層卡片進入筆記詳情頁。
 
-#### 4.2.4 `lib/flow/notes/view/view_barrel.dart`
+#### 4.2.5 `lib/flow/notes/view/view_barrel.dart`
 - 匯出 `export 'note_restaurant_summary_sheet.dart';`。
 
 ---
@@ -242,7 +256,7 @@
    ```
 2. **單元與 Widget 測試**：
    ```bash
-   flutter test test/data_layer/ugc_note_repo_test.dart test/flow/notes/note_restaurant_summary_sheet_test.dart test/flow/notes/note_detail_page_test.dart test/flow/notes/notes_feed_page_test.dart
+   flutter test test/data_layer/ugc_note_repo_test.dart test/flow/notes/note_restaurant_sheet_bloc_test.dart test/flow/notes/note_restaurant_summary_sheet_test.dart test/flow/notes/note_detail_page_test.dart test/flow/notes/notes_feed_page_test.dart
    ```
 3. **全專案迴歸與靜態分析**：
    ```bash
