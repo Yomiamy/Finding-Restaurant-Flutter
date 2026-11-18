@@ -127,28 +127,14 @@ class _FilterPageState extends State<FilterPage> {
                       SectionCardWidget(
                         icon: Icons.restaurant_menu,
                         title: S.current.filter_cuisine_category,
-                        child:
-                            BlocBuilder<FilterCuisineBloc, FilterCuisineState>(
-                              builder: (context, state) => switch (state) {
-                                FilterCuisineInitial() ||
-                                FilterCuisineLoading() => const SizedBox(
-                                  height: ThemeSize.size48,
-                                  child: Center(
-                                    child: CupertinoActivityIndicator(),
-                                  ),
-                                ),
-                                FilterCuisineLoaded(:final categories) =>
-                                  CuisineCategoryChipsWidget(
-                                    categories: categories,
-                                    selectedCategory: _selectedCategory,
-                                    onCategorySelected: (category) {
-                                      setState(() {
-                                        _selectedCategory = category;
-                                      });
-                                    },
-                                  ),
-                              },
-                            ),
+                        child: _CuisineCategorySection(
+                          selectedCategory: _selectedCategory,
+                          onCategorySelected: (category) {
+                            setState(() {
+                              _selectedCategory = category;
+                            });
+                          },
+                        ),
                       ),
                       const SizedBox(height: ThemeSize.space16),
                       SectionCardWidget(
@@ -202,6 +188,33 @@ class _FilterPageState extends State<FilterPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _CuisineCategorySection extends StatelessWidget {
+  final String? selectedCategory;
+  final ValueChanged<String?> onCategorySelected;
+
+  const _CuisineCategorySection({
+    required this.selectedCategory,
+    required this.onCategorySelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<FilterCuisineBloc, FilterCuisineState>(
+      builder: (context, state) => switch (state) {
+        FilterCuisineInitial() || FilterCuisineLoading() => const SizedBox(
+          height: ThemeSize.size48,
+          child: Center(child: CupertinoActivityIndicator()),
+        ),
+        FilterCuisineLoaded(:final categories) => CuisineCategoryChipsWidget(
+          categories: categories,
+          selectedCategory: selectedCategory,
+          onCategorySelected: onCategorySelected,
+        ),
+      },
     );
   }
 }
