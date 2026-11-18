@@ -21,6 +21,7 @@ class UgcNoteEntity extends Equatable {
   final String videoUrl;
   final int videoDurationSec;
   final String restaurantName;
+  final String restaurantId;
   final int createdAtMs;
 
   const UgcNoteEntity({
@@ -36,6 +37,7 @@ class UgcNoteEntity extends Equatable {
     required this.videoUrl,
     required this.videoDurationSec,
     required this.restaurantName,
+    this.restaurantId = '',
     required this.createdAtMs,
   });
 
@@ -62,6 +64,7 @@ class UgcNoteEntity extends Equatable {
     final rawDuration = dto.videoDurationSec ?? maxVideoDurationSec;
     final safeDuration = rawDuration.clamp(1, maxVideoDurationSec);
     final trimmedId = dto.id?.trim() ?? '';
+    final normalizedRestaurantId = (dto.restaurantId ?? '').trim();
 
     return UgcNoteEntity(
       id: trimmedId.isNotEmpty ? trimmedId : (docId ?? ''),
@@ -76,6 +79,7 @@ class UgcNoteEntity extends Equatable {
       videoUrl: videoUrl,
       videoDurationSec: safeDuration,
       restaurantName: dto.restaurantName?.trim() ?? '',
+      restaurantId: normalizedRestaurantId,
       createdAtMs: dto.createdAtMs ?? 0,
     );
   }
@@ -100,6 +104,7 @@ class UgcNoteEntity extends Equatable {
     videoUrl,
     videoDurationSec,
     restaurantName,
+    restaurantId,
     createdAtMs,
   ];
 }

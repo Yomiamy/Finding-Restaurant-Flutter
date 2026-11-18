@@ -159,5 +159,9 @@
   "notes_feed_title": "Foodie Notes",
   "notes_feed_empty": "No foodie notes yet",
   "note_detail_title": "Note Detail",
-  "note_video_error": "Failed to load video"
+  "note_video_error": "Failed to load video",
+  "note_restaurant_sheet_view_detail": "View Restaurant Details",
+  "note_restaurant_sheet_open_maps": "Navigate with Google Maps",
+  "note_restaurant_sheet_unlinked_hint": "This note isn't linked to a restaurant profile yet. You can still navigate via Google Maps.",
+  "note_restaurant_sheet_error": "Unable to load restaurant summary"
 }

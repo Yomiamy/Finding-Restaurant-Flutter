@@ -307,6 +307,18 @@ class MessageLookup extends MessageLookupByLibrary {
       "Navigation Choice",
     ),
     "note_detail_title": MessageLookupByLibrary.simpleMessage("Note Detail"),
+    "note_restaurant_sheet_error": MessageLookupByLibrary.simpleMessage(
+      "Unable to load restaurant summary",
+    ),
+    "note_restaurant_sheet_open_maps": MessageLookupByLibrary.simpleMessage(
+      "Navigate with Google Maps",
+    ),
+    "note_restaurant_sheet_unlinked_hint": MessageLookupByLibrary.simpleMessage(
+      "This note isn\'t linked to a restaurant profile yet. You can still navigate via Google Maps.",
+    ),
+    "note_restaurant_sheet_view_detail": MessageLookupByLibrary.simpleMessage(
+      "View Restaurant Details",
+    ),
     "note_video_error": MessageLookupByLibrary.simpleMessage(
       "Failed to load video",
     ),

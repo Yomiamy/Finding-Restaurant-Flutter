@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_restaruant/domain/repositories/repositories_barrel.dart';
 import 'package:flutter_restaruant/features/component/component_barrel.dart';
@@ -10,9 +11,13 @@ import 'package:flutter_restaruant/flow/notes/notes_barrel.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_staggered_grid_view/flutter_staggered_grid_view.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:get_it/get_it.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockUgcNoteRepository extends Mock implements UgcNoteRepository {}
+
+class _MockRestaurantDetailRepository extends Mock
+    implements RestaurantDetailRepository {}
 
 class _Data {
   static const UgcNoteEntity imageNote = UgcNoteEntity(
@@ -29,6 +34,31 @@ class _Data {
     videoDurationSec: 0,
     restaurantName: 'Bella Pasta',
     createdAtMs: 1700000002000,
+  );
+
+  static const UgcNoteEntity linkedImageNote = UgcNoteEntity(
+    id: 'note_img_1',
+    title: '巷弄裡的手工義大利麵',
+    content: '麵體彈牙，醬汁濃郁。',
+    authorName: 'Chef Lin',
+    authorAvatarUrl: '',
+    isVideo: false,
+    coverUrl: '',
+    coverAspectRatio: 0.75,
+    imageUrls: ['', ''],
+    videoUrl: '',
+    videoDurationSec: 0,
+    restaurantName: 'Bella Pasta',
+    restaurantId: 'biz-bella-pasta',
+    createdAtMs: 1700000002000,
+  );
+
+  static const RestaurantDetailEntity bellaPastaDetail = RestaurantDetailEntity(
+    id: 'biz-bella-pasta',
+    name: 'Bella Pasta Bistro',
+    rating: 4.7,
+    reviewCount: 88,
+    price: r'$$',
   );
 
   static const UgcNoteEntity videoNote = UgcNoteEntity(
@@ -50,14 +80,28 @@ class _Data {
 
 void main() {
   late _MockUgcNoteRepository mockRepository;
+  late _MockRestaurantDetailRepository mockDetailRepository;
 
-  setUp(() {
+  setUp(() async {
+    await GetIt.I.reset();
     mockRepository = _MockUgcNoteRepository();
+    mockDetailRepository = _MockRestaurantDetailRepository();
+    GetIt.I.registerSingleton<RestaurantDetailRepository>(mockDetailRepository);
+  });
+
+  tearDown(() async {
+    await GetIt.I.reset();
   });
 
   Widget buildTestApp(NotesFeedBloc bloc) {
     return MaterialApp(
-      localizationsDelegates: const [S.delegate],
+      locale: const Locale('zh', 'TW'),
+      localizationsDelegates: const [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
       supportedLocales: S.delegate.supportedLocales,
       theme: AppThemeData.materialLight,
       routes: {NoteDetailPage.routeName: (_) => const NoteDetailPage()},
@@ -198,6 +242,44 @@ void main() {
         expect(find.byType(MasonryGridView), findsOneWidget);
         expect(find.byType(NoteMasonryCard), findsNWidgets(2));
         expect(find.text('15秒直擊炙燒鮭魚握壽司'), findsOneWidget);
+      },
+    );
+
+    testWidgets(
+      'tapping card restaurant tag opens NoteRestaurantSummarySheet without navigating to NoteDetailPage',
+      (tester) async {
+        when(
+          () => mockRepository.fetchNotes(),
+        ).thenAnswer((_) async => const [_Data.linkedImageNote]);
+        when(
+          () => mockDetailRepository.fetchYelpRestaurantDetailInfo(
+            'biz-bella-pasta',
+          ),
+        ).thenAnswer((_) async => _Data.bellaPastaDetail);
+
+        final bloc = NotesFeedBloc(repository: mockRepository);
+        addTearDown(bloc.close);
+
+        await tester.pumpWidget(buildTestApp(bloc));
+        await tester.pumpAndSettle();
+
+        final tagFinder = find.byKey(
+          const Key('note_card_restaurant_tag_note_img_1'),
+        );
+        await tester.ensureVisible(tagFinder);
+        await tester.pumpAndSettle();
+
+        await tester.tap(tagFinder);
+        await tester.pumpAndSettle();
+
+        expect(find.byType(NoteRestaurantSummarySheet), findsOneWidget);
+        expect(find.byType(NoteDetailPage), findsNothing);
+        expect(find.text('Bella Pasta Bistro'), findsOneWidget);
+        verify(
+          () => mockDetailRepository.fetchYelpRestaurantDetailInfo(
+            'biz-bella-pasta',
+          ),
+        ).called(1);
       },
     );
   });

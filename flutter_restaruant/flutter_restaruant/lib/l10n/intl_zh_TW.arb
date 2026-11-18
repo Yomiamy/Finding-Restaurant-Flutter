@@ -159,5 +159,9 @@
   "notes_feed_title": "探店筆記",
   "notes_feed_empty": "尚無探店筆記",
   "note_detail_title": "筆記詳情",
-  "note_video_error": "影片載入失敗"
+  "note_video_error": "影片載入失敗",
+  "note_restaurant_sheet_view_detail": "查看餐廳詳情",
+  "note_restaurant_sheet_open_maps": "Google Maps 導航",
+  "note_restaurant_sheet_unlinked_hint": "此筆記尚未綁定餐廳詳情，可直接開啟地圖搜尋導航",
+  "note_restaurant_sheet_error": "無法載入餐廳摘要資訊"
 }

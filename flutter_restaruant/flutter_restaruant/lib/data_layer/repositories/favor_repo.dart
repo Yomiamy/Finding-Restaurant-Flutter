@@ -20,6 +20,13 @@ class FavorRepo implements FavorRepository {
   }
 
   @override
+  Future<bool> isFavor(String id) async {
+    if (id.isEmpty) return false;
+    final favorIds = await _dataSource.fetchFavorIds();
+    return favorIds.contains(id);
+  }
+
+  @override
   Future<RestaurantEntity> toggleFavor(RestaurantEntity summaryInfo) async {
     RestaurantEntity updatedEntity = await _dataSource.toggleFavor(summaryInfo);
 

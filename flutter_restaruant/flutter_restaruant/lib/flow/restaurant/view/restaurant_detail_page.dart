@@ -123,6 +123,11 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
             if (state is InProgress || state is ToggleFavorSuccess) {
               return const RestaurantDetailSkeleton();
             } else if (state is Success) {
+              final hours = state.detailInfo.hours;
+              final businessTimeInfos = (hours != null && hours.isNotEmpty)
+                  ? (hours.first.open ?? const <RestaurantBusinessTimeEntity>[])
+                  : const <RestaurantBusinessTimeEntity>[];
+
               return ListView(
                 children: [
                   RestaurantHeadCell(
@@ -135,7 +140,7 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
                   ),
                   RestaurantImageCell(photos: state.detailInfo.photos ?? []),
                   RestaurantBusinessHourCell(
-                    businessTimeInfos: state.detailInfo.hours?[0].open ?? [],
+                    businessTimeInfos: businessTimeInfos,
                   ),
                   ReviewSummaryCard(
                     detail: state.detailInfo,

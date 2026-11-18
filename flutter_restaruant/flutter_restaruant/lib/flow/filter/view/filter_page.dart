@@ -1,22 +1,20 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:get_it/get_it.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 
-import '../../../api/dto/yelp_restaurant_category_dto.dart';
-import '../../../domain/repositories/yelp_category_repository.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../../../models/model_barrel.dart';
+import '../bloc/bloc_barrel.dart';
 import 'cuisine_category_chips_widget.dart';
 import 'section_card_widget.dart';
 import 'segment_control_widget.dart';
 
 class FilterPage extends StatefulWidget {
   static const routeName = '/FilterPage';
-  final YelpCategoryRepository? categoryRepository;
 
-  const FilterPage({super.key, this.categoryRepository});
+  const FilterPage({super.key});
 
   @override
   State<FilterPage> createState() => _FilterPageState();
@@ -27,60 +25,33 @@ class _FilterPageState extends State<FilterPage> {
   DateTime _openAtDateTime = DateTime.now();
   int _sortByIndex = 0;
   String? _selectedCategory;
-  List<YelpRestaurantCategoryDto> _cuisineCategories = const [];
-  bool _isLoadingCuisines = true;
 
   bool _isInit = false;
+
+  @override
+  void initState() {
+    super.initState();
+    final bloc = context.read<FilterCuisineBloc>();
+    if (bloc.state is FilterCuisineInitial) {
+      bloc.add(const FetchFilterCuisines());
+    }
+  }
 
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
     if (!_isInit) {
       final args =
-          ModalRoute.of(context)!.settings.arguments
-              as Tuple2<FilterConfigs, dynamic>;
-      final configs = args.item1;
-      _priceIndex = configs.priceIndex;
-      _openAtDateTime = configs.openAtDateTime;
-      _sortByIndex = configs.sortByIndex;
-      _selectedCategory = configs.categories;
+          ModalRoute.of(context)?.settings.arguments
+              as Tuple2<FilterConfigs, dynamic>?;
+      final configs = args?.item1;
+      if (configs != null) {
+        _priceIndex = configs.priceIndex;
+        _openAtDateTime = configs.openAtDateTime;
+        _sortByIndex = configs.sortByIndex;
+        _selectedCategory = configs.categories;
+      }
       _isInit = true;
-      _loadCuisineCategories();
-    }
-  }
-
-  Future<void> _loadCuisineCategories() async {
-    final repo =
-        widget.categoryRepository ??
-        (GetIt.I.isRegistered<YelpCategoryRepository>()
-            ? GetIt.I<YelpCategoryRepository>()
-            : null);
-
-    if (repo == null) {
-      if (mounted) {
-        setState(() {
-          _cuisineCategories = YelpCategoryRepository.fallbackCuisines;
-          _isLoadingCuisines = false;
-        });
-      }
-      return;
-    }
-
-    try {
-      final cuisines = await repo.fetchCuisineCategories();
-      if (mounted) {
-        setState(() {
-          _cuisineCategories = cuisines;
-          _isLoadingCuisines = false;
-        });
-      }
-    } on Exception {
-      if (mounted) {
-        setState(() {
-          _cuisineCategories = repo.defaultCuisines;
-          _isLoadingCuisines = false;
-        });
-      }
     }
   }
 
@@ -156,22 +127,14 @@ class _FilterPageState extends State<FilterPage> {
                       SectionCardWidget(
                         icon: Icons.restaurant_menu,
                         title: S.current.filter_cuisine_category,
-                        child: _isLoadingCuisines
-                            ? const SizedBox(
-                                height: ThemeSize.size48,
-                                child: Center(
-                                  child: CupertinoActivityIndicator(),
-                                ),
-                              )
-                            : CuisineCategoryChipsWidget(
-                                categories: _cuisineCategories,
-                                selectedCategory: _selectedCategory,
-                                onCategorySelected: (category) {
-                                  setState(() {
-                                    _selectedCategory = category;
-                                  });
-                                },
-                              ),
+                        child: _CuisineCategorySection(
+                          selectedCategory: _selectedCategory,
+                          onCategorySelected: (category) {
+                            setState(() {
+                              _selectedCategory = category;
+                            });
+                          },
+                        ),
                       ),
                       const SizedBox(height: ThemeSize.space16),
                       SectionCardWidget(
@@ -225,6 +188,33 @@ class _FilterPageState extends State<FilterPage> {
           ),
         ),
       ),
+    );
+  }
+}
+
+class _CuisineCategorySection extends StatelessWidget {
+  final String? selectedCategory;
+  final ValueChanged<String?> onCategorySelected;
+
+  const _CuisineCategorySection({
+    required this.selectedCategory,
+    required this.onCategorySelected,
+  });
+
+  @override
+  Widget build(BuildContext context) {
+    return BlocBuilder<FilterCuisineBloc, FilterCuisineState>(
+      builder: (context, state) => switch (state) {
+        FilterCuisineInitial() || FilterCuisineLoading() => const SizedBox(
+          height: ThemeSize.size48,
+          child: Center(child: CupertinoActivityIndicator()),
+        ),
+        FilterCuisineLoaded(:final categories) => CuisineCategoryChipsWidget(
+          categories: categories,
+          selectedCategory: selectedCategory,
+          onCategorySelected: onCategorySelected,
+        ),
+      },
     );
   }
 }

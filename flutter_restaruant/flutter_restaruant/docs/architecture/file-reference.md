@@ -131,6 +131,8 @@
 | [`lib/flow/notes/bloc/notes_feed_bloc.dart`](../../lib/flow/notes/bloc/notes_feed_bloc.dart) | `NotesFeedBloc` | UGC 探店筆記瀑布流業務邏輯（處理初次載入、下拉重整 `Completer` 同步與請求版本 Token 防並發舊回應覆蓋）。 |
 | [`lib/flow/notes/view/notes_feed_page.dart`](../../lib/flow/notes/view/notes_feed_page.dart) | `NotesFeedPage` | 雙排瀑布流（`MasonryGridView.count`）探店筆記總覽頁，支援下拉重整（重整期間保留既有卡片）、空狀態與錯誤重試。 |
 | [`lib/flow/notes/view/note_detail_page.dart`](../../lib/flow/notes/view/note_detail_page.dart) | `NoteDetailPage` | 探店筆記詳情頁（支援多圖 `PageView` 輪播、15 秒短影片 `VideoPlayerController` 循環播放及逾時／播中錯誤降級面板）。 |
+| [`lib/flow/notes/bloc/note_restaurant_sheet_bloc.dart`](../../lib/flow/notes/bloc/note_restaurant_sheet_bloc.dart) | `NoteRestaurantSheetBloc` | 筆記餐廳標籤摘要彈窗業務邏輯（餐廳 ID 校驗、詳情查詢、收藏狀態 2 秒逾時降級與逾期請求捨棄）。 |
+| [`lib/flow/notes/view/note_restaurant_summary_sheet.dart`](../../lib/flow/notes/view/note_restaurant_summary_sheet.dart) | `NoteRestaurantSummarySheet` | 筆記打卡地點標籤點擊彈出的餐廳摘要 BottomSheet（支援跳轉 `RestaurantDetailPage` 與 Google Maps 導航）。 |
 | [`lib/flow/restaurant/bloc/restaurant_detail_bloc.dart`](../../lib/flow/restaurant/bloc/restaurant_detail_bloc.dart) | `RestaurantDetailBloc` | 餐廳詳情頁業務邏輯。 |
 | [`lib/flow/restaurant/view/restaurant_detail_page.dart`](../../lib/flow/restaurant/view/restaurant_detail_page.dart) | `RestaurantDetailPage` | 餐廳詳情頁。 |
 | [`lib/flow/favor/bloc/favor_bloc.dart`](../../lib/flow/favor/bloc/favor_bloc.dart) | `FavorBloc` | 最愛清單業務邏輯。 |
@@ -146,7 +148,8 @@
 | [`lib/flow/settings/view/settings_header_widget.dart`](../../lib/flow/settings/view/settings_header_widget.dart) | `SettingsHeaderWidget` | 設定頁頁首。 |
 | [`lib/flow/settings/view/settings_account_section_widget.dart`](../../lib/flow/settings/view/settings_account_section_widget.dart) | `SettingsAccountSectionWidget` | 帳號區塊（登入狀態與登出）。 |
 | [`lib/flow/settings/view/settings_info_section_widget.dart`](../../lib/flow/settings/view/settings_info_section_widget.dart) | `SettingsInfoSectionWidget` | 資訊區塊（版本、條款等）。 |
-| [`lib/flow/filter/view/filter_page.dart`](../../lib/flow/filter/view/filter_page.dart) | `FilterPage` | 搜尋條件篩選頁（無 Bloc，以本地狀態管理）。 |
+| [`lib/flow/filter/bloc/filter_cuisine_bloc.dart`](../../lib/flow/filter/bloc/filter_cuisine_bloc.dart) | `FilterCuisineBloc` | 篩選頁餐飲菜系分類載入（失敗降級為 `defaultCuisines`）。 |
+| [`lib/flow/filter/view/filter_page.dart`](../../lib/flow/filter/view/filter_page.dart) | `FilterPage` | 搜尋條件篩選頁；菜系清單由 `FilterCuisineBloc` 提供，表單暫存值以本地狀態管理。 |
 | [`lib/flow/photo_viewer/view/photo_viewer.dart`](../../lib/flow/photo_viewer/view/photo_viewer.dart) | `PhotoViewer` | 全螢幕照片瀏覽（無 Bloc）。 |
 | [`lib/flow/splash/bloc/splash_bloc.dart`](../../lib/flow/splash/bloc/splash_bloc.dart) | `SplashBloc` | 啟動頁業務邏輯。 |
 | [`lib/flow/menu_vision/bloc/menu_vision_bloc.dart`](../../lib/flow/menu_vision/bloc/menu_vision_bloc.dart) | `MenuVisionBloc` | AI 多模態菜單視覺識別業務邏輯（事件驅動、狀態模式比對）。 |

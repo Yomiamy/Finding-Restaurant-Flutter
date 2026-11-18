@@ -26,10 +26,12 @@ Flutter 版本 3.35
 - **非同步**：正確使用 `async`/`await`。**禁止**使用 `.then()`。UI 請用 `FutureBuilder` 或狀態管理。
 
 ### 🛠 狀態管理與架構
-- **選型原則**：本 package 本身無跨畫面共享狀態，以原生 Flutter (`StatefulWidget` / `ValueNotifier` / `ChangeNotifier`) 為主，**不引入**重量級狀態管理依賴。下列規範適用於採用該狀態管理的**消費端 App 或子模組**，二選一、專案內保持一致，勿混用：
-  - **BLoC**：嚴格遵守單向數據流。本 Guide 的範例以 BLoC 為基準（見 §7.3）。
-  - **Riverpod**：Riverpod v2 + `@riverpod` (程式碼生成)。
-- **UI 純淨原則**：`build` 方法僅聲明佈局。業務邏輯必須移至 Controller/Notifier/ViewModel。
+- **單一架構標準（BLoC + GetIt）**：本專案統一採用 **BLoC** 作為業務狀態管理（見 §7.3），嚴禁混用其他狀態管理框架（如 Riverpod）或繞過 BLoC 直接從 UI 存取資料層。
+- **BLoC vs `StatefulWidget` (`setState`) 硬性邊界**：
+  - **必須使用 `BLoC`**：凡頁面、BottomSheet、Dialog 或獨立卡片區塊需要存取 `Repository` / `GetIt`、執行非同步外部 I/O（API、Firestore、AI、定位等），或管理載入中／成功／失敗／重試狀態機時，**一律建立對應 BLoC**。`View` 層嚴禁直接 import 或呼叫 `*Repository`。
+  - **僅限使用 `StatefulWidget` (`setState`)**：純本地、無外部資料存取與非同步業務邏輯的短生命週期 UI 狀態（表單暫存選取、展開／收合、分頁索引、`ScrollController` / `VideoPlayerController` 等控制器管理）。
+  - **同頁混用的切分方式**：同一頁面可同時存在兩者——例如 `FilterPage` 的菜系清單載入由 `FilterCuisineBloc` 負責，價格／時間／排序／選取菜系等表單暫存值則留在 `State` 以 `setState` 管理。判斷依據是「這份狀態是否來自資料層」，而非「頁面是否已有 BLoC」。
+- **UI 純淨原則**：`build` 方法僅聲明佈局；非同步業務流程一律委派給 `BLoC`，禁止在 `View` 內手寫 `try-catch` 呼叫 Repository。
 
 ### 📦 關鍵庫偏好
 - **路由**：`go_router`
@@ -446,14 +448,17 @@ void method() {
 
 ### 7.3. 狀態管理 (State Management)
 
-當專案採用 BLoC 時（見上方「狀態管理與架構」的選型原則），遵循 BLoC 的最佳實踐來組織和管理應用程式的狀態。採用 Riverpod 的專案則對應到 Notifier/AsyncNotifier，原則相通。
+本專案統一採用 BLoC 管理所有涉及 `Repository`、外部 I/O 或非同步狀態機的畫面與元件（適用邊界見上方「狀態管理與架構」）。
 
 #### 7.3.1. BLoC 組織 (BLoC Organization)
 
 - 每個 BLoC 應該專注於單一職責 (Single Responsibility Principle)。
 - **避免公開屬性 (avoid-bloc-public-fields)**：狀態只能透過 `State` 往外發布，禁止在 BLoC 中宣告 `public` 變數讓外部直接存取，保持單向資料流的純淨。
-- 使用事件 (Events) 來觸發狀態變更，並使用狀態 (State) 來表示不同的 UI 狀態。
-- 將 BLoC 與 UI 分離，確保 UI 只關心如何呈現狀態。
+- **單向資料流與 View 隔離**：`View` 嚴禁直接依賴 `*Repository` 或在元件內自行 `try-catch` 呼叫資料層；一律透過 `bloc.add(Event)` 觸發、以 `BlocBuilder` / `BlocListener` 消費 `State`。
+- **State 建模**：具多個互斥狀態（如 Initial / Loading / Success / Failure）時，一律使用 `sealed class` + `Equatable` 搭配窮盡式 `switch`，由編譯器保證不漏分支。
+- **生命週期綁定慣例**：
+  - **頁面級（Page）**：於 `routesTable`（Composition Root）以 `BlocProvider` 建立，隨路由 pop 自動 `close()`。
+  - **彈窗／獨立卡片級（BottomSheet / Card）**：若未由外層路由注入，元件須提供可選的 `bloc` 參數（利於測試替換）；未傳入時才於 `initState` 建立本地實例，並以 `_isLocalBloc` 旗標在 `dispose()` 關閉，同時透過 `BlocProvider.value` 提供給子樹（參考 `MenuVisionSheet`、`AiFoodieSheet`、`NoteRestaurantSummarySheet`）。
 
 #### 7.3.2. BLoC 命名 (BLoC Naming)
 
