@@ -1,13 +1,17 @@
+import 'dart:async';
+
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_restaruant/api/dto/dto_barrel.dart';
 import 'package:flutter_restaruant/domain/repositories/yelp_category_repository.dart';
 import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
 import 'package:flutter_restaruant/features/utils/utils_barrel.dart';
-import 'package:flutter_restaruant/flow/filter/view/view_barrel.dart';
+import 'package:flutter_restaruant/flow/filter/filter_barrel.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_restaruant/models/model_barrel.dart';
 import 'package:flutter_test/flutter_test.dart';
+import 'package:logger/logger.dart';
 import 'package:mocktail/mocktail.dart';
 
 class _MockYelpCategoryRepository extends Mock
@@ -46,8 +50,12 @@ void main() {
               onPressed: () async {
                 final res = await Navigator.of(context).push(
                   MaterialPageRoute(
-                    builder: (_) => FilterPage(
-                      categoryRepository: categoryRepo ?? mockCategoryRepo,
+                    builder: (_) => BlocProvider<FilterCuisineBloc>(
+                      create: (_) => FilterCuisineBloc(
+                        repository: categoryRepo ?? mockCategoryRepo,
+                        logger: Logger(level: Level.off),
+                      ),
+                      child: const FilterPage(),
                     ),
                     settings: RouteSettings(
                       name: FilterPage.routeName,
@@ -194,7 +202,7 @@ void main() {
       expect(result!.item1.categories, isNull);
     });
 
-    testWidgets('若 Repository 未注入且 GetIt 未註冊，優雅降級為 defaultCuisines 渲染', (
+    testWidgets('菜系載入中顯示 CupertinoActivityIndicator，載入完成後渲染 Chip', (
       tester,
     ) async {
       tester.view.physicalSize = const Size(800, 1200);
@@ -202,36 +210,48 @@ void main() {
       addTearDown(tester.view.resetPhysicalSize);
       addTearDown(tester.view.resetDevicePixelRatio);
 
-      final initialConfigs = FilterConfigs();
-      final arguments = Tuple2<FilterConfigs, dynamic>(initialConfigs, null);
-
-      await tester.pumpWidget(
-        MaterialApp(
-          theme: AppThemeData.materialLight,
-          localizationsDelegates: const [S.delegate],
-          home: Builder(
-            builder: (context) {
-              return Scaffold(
-                body: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(context).push(
-                      MaterialPageRoute(
-                        builder: (_) => const FilterPage(),
-                        settings: RouteSettings(
-                          name: FilterPage.routeName,
-                          arguments: arguments,
-                        ),
-                      ),
-                    );
-                  },
-                  child: const Text('Open Filter'),
-                ),
-              );
-            },
-          ),
+      final completer = Completer<List<YelpRestaurantCategoryDto>>();
+      when(
+        () => mockCategoryRepo.fetchCuisineCategories(
+          forceRefresh: any(named: 'forceRefresh'),
         ),
-      );
+      ).thenAnswer((_) => completer.future);
 
+      final arguments = Tuple2<FilterConfigs, dynamic>(FilterConfigs(), null);
+
+      await tester.pumpWidget(buildTestApp(arguments: arguments));
+      await tester.tap(find.text('Open Filter'));
+      await tester.pump();
+      await tester.pump(const Duration(milliseconds: 350));
+
+      expect(find.byType(CupertinoActivityIndicator), findsOneWidget);
+      expect(find.byType(CuisineCategoryChipsWidget), findsNothing);
+
+      completer.complete(testCuisines);
+      await tester.pumpAndSettle();
+
+      expect(find.byType(CupertinoActivityIndicator), findsNothing);
+      expect(find.text('Japanese'), findsOneWidget);
+    });
+
+    testWidgets('Repository 拋出例外時，優雅降級為 defaultCuisines 渲染', (tester) async {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      when(
+        () => mockCategoryRepo.fetchCuisineCategories(
+          forceRefresh: any(named: 'forceRefresh'),
+        ),
+      ).thenThrow(Exception('network down'));
+      when(
+        () => mockCategoryRepo.defaultCuisines,
+      ).thenReturn(YelpCategoryRepository.fallbackCuisines);
+
+      final arguments = Tuple2<FilterConfigs, dynamic>(FilterConfigs(), null);
+
+      await tester.pumpWidget(buildTestApp(arguments: arguments));
       await tester.tap(find.text('Open Filter'));
       await tester.pumpAndSettle();
 

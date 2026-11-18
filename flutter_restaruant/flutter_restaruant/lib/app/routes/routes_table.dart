@@ -4,7 +4,7 @@ import 'package:get_it/get_it.dart';
 import '../../domain/repositories/repositories_barrel.dart';
 import '../../flow/favor/bloc/bloc_barrel.dart';
 import '../../flow/favor/view/view_barrel.dart';
-import '../../flow/filter/view/view_barrel.dart';
+import '../../flow/filter/filter_barrel.dart';
 import '../../flow/main/bloc/bloc_barrel.dart';
 import '../../flow/main/view/view_barrel.dart';
 import '../../flow/notes/notes_barrel.dart';
@@ -38,7 +38,11 @@ final Map<String, WidgetBuilder> routesTable = <String, WidgetBuilder>{
     create: (_) => FavorBloc(repository: GetIt.I<FavorRepository>()),
     child: const FavorPage(),
   ),
-  FilterPage.routeName: (context) => const FilterPage(),
+  FilterPage.routeName: (context) => BlocProvider<FilterCuisineBloc>(
+    create: (_) =>
+        FilterCuisineBloc(repository: GetIt.I<YelpCategoryRepository>()),
+    child: const FilterPage(),
+  ),
   PhotoViewer.routeName: (context) => const PhotoViewer(),
   SettingsPage.routeName: (context) => BlocProvider<SettingsBloc>(
     create: (_) => SettingsBloc(repository: GetIt.I<SettingsRepository>()),
