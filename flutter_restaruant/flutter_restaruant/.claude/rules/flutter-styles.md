@@ -30,7 +30,7 @@ Flutter 版本 3.35
 - **BLoC vs `StatefulWidget` (`setState`) 硬性邊界**：
   - **必須使用 `BLoC`**：凡頁面、BottomSheet、Dialog 或獨立卡片區塊需要存取 `Repository` / `GetIt`、執行非同步外部 I/O（API、Firestore、AI、定位等），或管理載入中／成功／失敗／重試狀態機時，**一律建立對應 BLoC**。`View` 層嚴禁直接 import 或呼叫 `*Repository`。
   - **僅限使用 `StatefulWidget` (`setState`)**：純本地、無外部資料存取與非同步業務邏輯的短生命週期 UI 狀態（表單暫存選取、展開／收合、分頁索引、`ScrollController` / `VideoPlayerController` 等控制器管理）。
-  - **既有遺留特例**：`FilterPage` 的菜系分類載入（`YelpCategoryRepository`）屬早期遺留程式碼；新開發或重構功能不得仿效，須全面採用 BLoC。
+  - **同頁混用的切分方式**：同一頁面可同時存在兩者——例如 `FilterPage` 的菜系清單載入由 `FilterCuisineBloc` 負責，價格／時間／排序／選取菜系等表單暫存值則留在 `State` 以 `setState` 管理。判斷依據是「這份狀態是否來自資料層」，而非「頁面是否已有 BLoC」。
 - **UI 純淨原則**：`build` 方法僅聲明佈局；非同步業務流程一律委派給 `BLoC`，禁止在 `View` 內手寫 `try-catch` 呼叫 Repository。
 
 ### 📦 關鍵庫偏好
