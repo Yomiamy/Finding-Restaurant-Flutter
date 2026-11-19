@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
 import 'package:flutter_restaruant/flow/filter/view/radius_chips_widget.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
@@ -8,10 +9,18 @@ void main() {
   Widget buildTestWidget({
     required int? selectedRadius,
     required ValueChanged<int?> onRadiusSelected,
+    Locale? locale,
   }) {
     return MaterialApp(
+      locale: locale,
       theme: AppThemeData.materialLight,
-      localizationsDelegates: const [S.delegate],
+      localizationsDelegates: const [
+        S.delegate,
+        GlobalMaterialLocalizations.delegate,
+        GlobalWidgetsLocalizations.delegate,
+        GlobalCupertinoLocalizations.delegate,
+      ],
+      supportedLocales: S.delegate.supportedLocales,
       home: Scaffold(
         body: RadiusChipsWidget(
           selectedRadius: selectedRadius,
@@ -176,6 +185,22 @@ void main() {
         );
         expect(unlimitedChip.selected, isTrue);
       }
+    });
+
+    testWidgets('繁體中文語系正確顯示不限與公尺／公里單位標籤', (tester) async {
+      await tester.pumpWidget(
+        buildTestWidget(
+          selectedRadius: 2500,
+          onRadiusSelected: (_) {},
+          locale: const Locale('zh', 'TW'),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('不限'), findsOneWidget);
+      expect(find.text('500 公尺'), findsOneWidget);
+      expect(find.text('3 公里'), findsOneWidget);
+      expect(find.text('2500 公尺'), findsOneWidget);
     });
   });
 }
