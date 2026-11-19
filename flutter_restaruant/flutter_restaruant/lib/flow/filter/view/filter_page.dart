@@ -8,6 +8,7 @@ import '../../../generated/l10n.dart';
 import '../../../models/model_barrel.dart';
 import '../bloc/bloc_barrel.dart';
 import 'cuisine_category_chips_widget.dart';
+import 'radius_chips_widget.dart';
 import 'section_card_widget.dart';
 import 'segment_control_widget.dart';
 
@@ -25,6 +26,8 @@ class _FilterPageState extends State<FilterPage> {
   DateTime _openAtDateTime = DateTime.now();
   int _sortByIndex = 0;
   String? _selectedCategory;
+  int? _selectedRadius;
+  bool _openNow = false;
 
   bool _isInit = false;
 
@@ -50,6 +53,8 @@ class _FilterPageState extends State<FilterPage> {
         _openAtDateTime = configs.openAtDateTime;
         _sortByIndex = configs.sortByIndex;
         _selectedCategory = configs.categories;
+        _selectedRadius = configs.radius;
+        _openNow = configs.openNow == true;
       }
       _isInit = true;
     }
@@ -106,21 +111,42 @@ class _FilterPageState extends State<FilterPage> {
                       SectionCardWidget(
                         icon: Icons.access_time,
                         title: S.current.filter_business_hour,
-                        child: Container(
-                          height: ThemeSize.size180,
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(
-                              ThemeSize.radius8,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            SwitchListTile(
+                              contentPadding: EdgeInsets.zero,
+                              title: Text(S.current.filter_open_now),
+                              subtitle: Text(
+                                S.current.filter_open_now_subtitle,
+                              ),
+                              value: _openNow,
+                              onChanged: (value) {
+                                setState(() {
+                                  _openNow = value;
+                                });
+                              },
                             ),
-                          ),
-                          child: CupertinoDatePicker(
-                            initialDateTime: _openAtDateTime,
-                            use24hFormat: true,
-                            mode: CupertinoDatePickerMode.dateAndTime,
-                            onDateTimeChanged: (dateTime) {
-                              _openAtDateTime = dateTime;
-                            },
-                          ),
+                            if (!_openNow) ...[
+                              const SizedBox(height: ThemeSize.space8),
+                              Container(
+                                height: ThemeSize.size180,
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(
+                                    ThemeSize.radius8,
+                                  ),
+                                ),
+                                child: CupertinoDatePicker(
+                                  initialDateTime: _openAtDateTime,
+                                  use24hFormat: true,
+                                  mode: CupertinoDatePickerMode.dateAndTime,
+                                  onDateTimeChanged: (dateTime) {
+                                    _openAtDateTime = dateTime;
+                                  },
+                                ),
+                              ),
+                            ],
+                          ],
                         ),
                       ),
                       const SizedBox(height: ThemeSize.space16),
@@ -132,6 +158,19 @@ class _FilterPageState extends State<FilterPage> {
                           onCategorySelected: (category) {
                             setState(() {
                               _selectedCategory = category;
+                            });
+                          },
+                        ),
+                      ),
+                      const SizedBox(height: ThemeSize.space16),
+                      SectionCardWidget(
+                        icon: Icons.location_searching,
+                        title: S.current.filter_search_radius,
+                        child: RadiusChipsWidget(
+                          selectedRadius: _selectedRadius,
+                          onRadiusSelected: (radius) {
+                            setState(() {
+                              _selectedRadius = radius;
                             });
                           },
                         ),
@@ -172,6 +211,8 @@ class _FilterPageState extends State<FilterPage> {
                     openAtDate: _openAtDateTime,
                     sortingRuleIndex: _sortByIndex,
                     categories: _selectedCategory,
+                    radius: _selectedRadius,
+                    openNow: _openNow,
                   );
                   Tuple2<FilterConfigs, dynamic> result = Tuple2(configs, null);
                   Navigator.pop(context, result);
