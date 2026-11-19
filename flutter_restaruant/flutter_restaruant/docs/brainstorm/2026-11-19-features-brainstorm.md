@@ -9,7 +9,7 @@
 
 本報告整合了架構審計與競品探索報告之事實與推理鏈，產出符合產業界最高標準的產品與技術發展路線圖 (Strategic Product Roadmap) 及 RICE / ICE 雙優先級評估矩陣。
 
-> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。**2026-10-22 補記**：檔名前綴其後已再更新為 `2026-10-22`，上述 `2026-09-30` 為當時狀態。**2026-10-25 補記**：檔名前綴再更新為 `2026-10-25`。**2026-10-26 補記**：檔名前綴再更新為 `2026-10-26`。**2026-11-01 補記**：檔名前綴再更新為 `2026-11-01`。A-8.7 解除 GPS 強制綁定與價格字串過濾已完成 (Issue #169 / PR #170)。**2026-11-02 補記**：檔名前綴再更新為 `2026-11-02`。A-8.6 根治 Yelp 關鍵字假搜尋缺陷：廢除本地記憶體 50 筆過濾，直通遠端 `term` 查詢已完成 (Issue #171 / PR #172)。**2026-11-04 補記**：A-8.10 擴充 Yelp 搜尋進階篩選（`categories`、`radius`、`open_now` 與 1,000 筆分頁邊界防護）已完成底層 API／Repository／`FilterConfigs` 管線 (Issue #173 / PR #174)；`FilterPage` 僅完成菜系 UI (#178)，尚缺 `radius` 與 `open_now` 控制項（列為 🟡 部分完成）。**2026-11-04 補記 (二)**：E-8.6 BLoC 測試統一改用 `blocTest` 宣告式結構已完成 (Issue #175 / PR #176)。**2026-11-10 補記**：A-8.12 菜系分類篩選與四列橫向滾動已合入主幹 (Issue #177 / PR #178)。**2026-11-11 補記**：檔名前綴更新為 `2026-11-11`。A-8.9 串接 Yelp Autocomplete API 實現搜尋即時補全與聯想已完成 (Issue #180 / PR #181)，落地於 `AutocompleteBloc`、`RestaurantSearchDelegate` 與 `MainPage` AppBar 常駐搜尋按鈕整合。**2026-11-14 補記**：檔名前綴更新為 `2026-11-14`。F-2.3 雙排瀑布流 UGC 食記與 15 秒探店短影片已完成 (Issue #182 / PR #183)，落地於 `UgcNoteDataSource`、`NotesFeedBloc`、`NotesFeedPage`、`NoteDetailPage` 及 `DrawerWidget` 探店筆記入口。**2026-11-15 補記**：檔名前綴更新為 `2026-11-15`；全面校對文件與 `main` 實況：更正 `A-8.10` 為 🟡 部分完成、同步 `F-0.2`／`F-3.3`／`MapWidget`／`§3` `fluster` 狀態標記、修正 `F-3.2`／`F-3.3` 編號對照與 Phase 1 計數（`23/24`）、並更新 `UI-8.3`（48 處）／`UI-8.4`（30 處／15 檔）／`UI-9.3`（8 檔 `MediaQuery`）實查數據與過時路徑說明。
+> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。**2026-10-22 補記**：檔名前綴其後已再更新為 `2026-10-22`，上述 `2026-09-30` 為當時狀態。**2026-10-25 補記**：檔名前綴再更新為 `2026-10-25`。**2026-10-26 補記**：檔名前綴再更新為 `2026-10-26`。**2026-11-01 補記**：檔名前綴再更新為 `2026-11-01`。A-8.7 解除 GPS 強制綁定與價格字串過濾已完成 (Issue #169 / PR #170)。**2026-11-02 補記**：檔名前綴再更新為 `2026-11-02`。A-8.6 根治 Yelp 關鍵字假搜尋缺陷：廢除本地記憶體 50 筆過濾，直通遠端 `term` 查詢已完成 (Issue #171 / PR #172)。**2026-11-04 補記**：A-8.10 擴充 Yelp 搜尋進階篩選（`categories`、`radius`、`open_now` 與 1,000 筆分頁邊界防護）已完成底層 API／Repository／`FilterConfigs` 管線 (Issue #173 / PR #174)；`FilterPage` 僅完成菜系 UI (#178)，尚缺 `radius` 與 `open_now` 控制項（列為 🟡 部分完成）。**2026-11-04 補記 (二)**：E-8.6 BLoC 測試統一改用 `blocTest` 宣告式結構已完成 (Issue #175 / PR #176)。**2026-11-10 補記**：A-8.12 菜系分類篩選與四列橫向滾動已合入主幹 (Issue #177 / PR #178)。**2026-11-11 補記**：檔名前綴更新為 `2026-11-11`。A-8.9 串接 Yelp Autocomplete API 實現搜尋即時補全與聯想已完成 (Issue #180 / PR #181)，落地於 `AutocompleteBloc`、`RestaurantSearchDelegate` 與 `MainPage` AppBar 常駐搜尋按鈕整合。**2026-11-14 補記**：檔名前綴更新為 `2026-11-14`。F-2.3 雙排瀑布流 UGC 食記與 15 秒探店短影片已完成 (Issue #182 / PR #183)，落地於 `UgcNoteDataSource`、`NotesFeedBloc`、`NotesFeedPage`、`NoteDetailPage` 及 `DrawerWidget` 探店筆記入口。**2026-11-15 補記**：檔名前綴更新為 `2026-11-15`；全面校對文件與 `main` 實況：更正 `A-8.10` 為 🟡 部分完成、同步 `F-0.2`／`F-3.3`／`MapWidget`／`§3` `fluster` 狀態標記、修正 `F-3.2`／`F-3.3` 編號對照與 Phase 1 計數（`23/24`）、並更新 `UI-8.3`（48 處）／`UI-8.4`（30 處／15 檔）／`UI-9.3`（8 檔 `MediaQuery`）實查數據與過時路徑說明。**2026-11-19 補記**：檔名前綴更新為 `2026-11-19`。F-2.4 筆記地點打卡 Tag 點擊彈出輕量餐廳摘要 BottomSheet 已完成 (Issue #184 / PR #185)，落地於 `UgcNoteDto`／`UgcNoteEntity`（新增可選標準化 `restaurantId`）、`NoteRestaurantSheetBloc`、`NoteRestaurantSummarySheet`、`NoteDetailPage` 與 `NotesFeedPage` 雙入口串接，以及 `FavorRepository.isFavor`、Yelp 商家 ID 格式校驗與 `RestaurantDetailPage` 空 `hours` 防護；並同步訂定 `BLoC` vs `StatefulWidget`（`setState`）硬性邊界，將 `FilterPage` 菜系載入重構遷入 `FilterCuisineBloc`。
 
 ---
 
@@ -84,6 +84,7 @@
 | **Repository 建構子注入解除全域 GetIt 依賴 (A-8.14)** | ✅ **已於 2026-10-29 完成 (Issue #165 / PR #168)**：全面為 `MainRepo`、`RestaurantDetailRepo` 及 4 個 Yelp Repository 改用具名建構子注入 `APIClz` 與 `locale`，消滅 data 層對 `app/` 與全域 GetIt 的隱性反向依賴。 |
 | **Yelp Autocomplete 與 Categories API 基礎建設 (A-8.9 / A-8.12 部分)** | ✅ **已於 2026-11-10 完成 (Issue #180 / PR #181)**：以 `AutocompleteBloc`（300ms 防抖 + switchMap）、`RestaurantSearchDelegate` 與 `MainPage` AppBar 常駐按鈕實現即時搜尋聯想與店家導航，Drawer 舊有重複入口已淘汰；Categories 菜系篩選 UI 亦已於 2026-11-07 完成 (Issue #177 / PR #178)；剩餘 Categories 本地長週期快取待辦。 |
 | **雙排瀑布流 UGC 食記與 15 秒探店短影片 (F-2.3)** | ✅ **已於 2026-11-14 完成 (Issue #182 / PR #183)**：以 `flutter_staggered_grid_view`、`video_player` 與 Firestore `ugc_notes` 集合實現雙排瀑布流瀏覽（`NotesFeedPage`）、下拉重整與並發 Token 防護（`NotesFeedBloc`）、多圖輪播與 15 秒短影片播放/逾時及播中錯誤降級（`NoteDetailPage`），並於 `DrawerWidget` 整合「探店筆記」入口。 |
+| **筆記地點打卡 Tag 點擊彈出餐廳摘要 (F-2.4) ＋ Filter BLoC 對齊** | ✅ **已於 2026-11-19 完成 (Issue #184 / PR #185)**：於 `UgcNoteDto`／`UgcNoteEntity` 擴充可選 `restaurantId`（含非字串容錯）、`FavorRepository.isFavor`、Yelp ID 允許字元集校驗與 `RestaurantDetailPage` 空 `hours` 防護；新增 `NoteRestaurantSheetBloc`（含 2 秒收藏查詢逾時降級）與 `NoteRestaurantSummarySheet`，串接 `NoteDetailPage` 與 `NotesFeedPage` 雙入口（支援查看詳情與 Google Maps 導航）；並同步於 `.claude/rules/flutter-styles.md` 及 `overview.md` 確立 `BLoC` vs `setState` 硬性邊界，將 `FilterPage` 菜系載入重構為 `FilterCuisineBloc`。 |
 
 **🔴 仍未解決與新納入阻擋項（全數為 P0 最高優先，AdMob 合規為絕對最高阻擋項）**
 
@@ -368,12 +369,13 @@ lib/
   - **資料與領域層**: 新增 `UgcNoteDto`、`UgcNoteEntity`（含 `UgcNoteMediaType { photo, video }` 與 `hasValidMedia` 契約校驗）、`UgcNoteDataSource`（讀取 Firestore `ugc_notes` 集合，依 `created_at` 降序取前 30 筆，單筆損毀文件自動略過並記錄 `Logger().w`）及 `UgcNoteRepository` / `UgcNoteRepo`。
   - **表現層與影音封裝**: 新增 `NotesFeedBloc`（含請求版本 Token 防並發舊回應覆蓋與 `Completer` 下拉重整同步）、`NotesFeedPage`（`MasonryGridView.count` 雙排瀑布流，下拉重整期間透過 `buildWhen` 保留既有卡片）與 `NoteDetailPage`（直接使用 `video_player: ^2.9.2` 封裝 15 秒循環播放、10 秒初始化逾時與播中錯誤降級面板，未額外引入 `chewie`；多圖筆記以 `PageView` 輪播呈現）。
 
-#### F-2.4 筆記地點打卡 Tag (Clickable Location Chips) — 🟡 部分完成（靜態標籤已隨 F-2.3 落地，剩點擊彈出 BottomSheet）
+#### F-2.4 筆記地點打卡 Tag (Clickable Location Chips) — ✅ 已於 2026-11-19 完成 (Issue #184 / PR #185)
 * **設計理念**: 每篇 UGC 筆記下方內嵌高亮「地點打卡 Tag」（例：「📍 隱家拉麵 中山店」）。
 * **互動體驗**: 點擊 Tag 彈出輕量 BottomSheet 展示餐廳評分、地址、即時空位與「一鍵預訂/導航」按鈕，縮短導流鏈路。
-* **落地進度 (2026-11-14 隨 PR #183 部分交付)**:
-  - ✅ **已落地**: `UgcNoteEntity.restaurantId`／`restaurantName` 欄位與 `lib/flow/notes/view/note_detail_page.dart:135-176` 的靜態 `NoteRestaurantTag` 晶片元件已建立並顯示於筆記詳情頁。
-  - ❌ **待完成**: 點擊 `NoteRestaurantTag` 後彈出輕量餐廳摘要 BottomSheet（載入餐廳評分、地址與一鍵導航／詳情跳轉）及瀑布流列表卡片上的打卡標籤互動。
+* **實際落地與提案落差**:
+  - **資料與安全性**: `UgcNoteDto`（以 `_stringOrNullFromJson` 容忍非字串舊值）與 `UgcNoteEntity` 擴充選填標準化 `restaurantId`；`FavorRepository.isFavor` 支援快速判斷收藏狀態；`NoteRestaurantSheetBloc.isValidRestaurantId` 與 `RestaurantDetailRepo._validateBusinessId` 以 `^[A-Za-z0-9_-]+$` 防護 API 路徑參數；`RestaurantDetailPage` 補齊空 `hours` 清單防護。
+  - **表現層與雙入口**: 新增 `NoteRestaurantSheetBloc`（含 `_requestId` 逾期請求捨棄與 2 秒收藏查詢逾時降級 `isFavor: false`）與 `NoteRestaurantSummarySheet`（四主態：`Unlinked`／`Loading`／`Loaded`／`Failure`），於 `NoteDetailPage` 的 `NoteRestaurantTag` 與 `NotesFeedPage` 的 `NoteMasonryCard` 地點標籤點擊時彈出（且瀑布流點擊標籤不誤觸整卡導航）。
+  - **與原提案落差**: BottomSheet 提供「查看餐廳詳情」（帶入持久化 `favor` 推入 `RestaurantDetailPage`）與「Google Maps 導航」（依座標或餐廳名開啟 `/maps?q=...`），不包含即時空位查詢與微訂位按鈕（屬 `F-4.1` 範圍）；無 `restaurantId` 之舊資料以降級提示文字＋Google Maps 店名搜尋承接。
 
 ---
 
@@ -676,7 +678,7 @@ lib/
 |   • Firestore Subcollection 最愛口袋名單與社群共編美食地圖                          |
 |   • 輕量化線上微訂位 Time-Slot 選擇器                                               |
 |   • 線上候位領號與 FCM 動態隊列推播追蹤                                             |
-|   • 🟡 筆記/清單地點打卡 Tag 輕量彈窗 (靜態 NoteRestaurantTag 已隨 PR #183 落地，剩點擊彈出 BottomSheet) |
+|   • [x] 筆記地點打卡 Tag 點擊彈出輕量餐廳摘要 BottomSheet (F-2.4) ✅ 2026-11-19 (Issue #184 / PR #185) |
 +-----------------------------------------------------------------------------------+
                                          │
                                          ▼
@@ -702,7 +704,7 @@ lib/
    * 2026-07-30 覆核執行 `flutter analyze` → **`No issues found!`**。此為後續 PR 的最低門檻，不得回退。
 
 2. **`flutter test` 測試覆蓋率 — 🟡 進行中**:
-   * 現況：原 `2026-07-30` 快照僅 13 個 test 檔；**2026-11-15 實查 `test/` 已擴增至 90 個 `*_test.dart` 檔**，且 `E-8.2` (`mocktail`)、`E-8.3` (`Makefile` `test_coverage`)、`E-8.6` (全專案統一 `blocTest`，PR #176) 均已完成。
+   * 現況：原 `2026-07-30` 快照僅 13 個 test 檔；**2026-11-19 實查 `test/` 已擴增至 95 個 `*_test.dart` 檔**，且 `E-8.2` (`mocktail`)、`E-8.3` (`Makefile` `test_coverage`)、`E-8.6` (全專案統一 `blocTest`，PR #176) 均已完成。
    * 待補：BLoC 測試已統一 `blocTest`（PR #176），現有缺口轉為 **CI 覆蓋率門檻強制執行** 與實測覆蓋率基準線紀錄；測試目標路徑為 `flow/*/bloc/`、`domain/` 與 `data_layer/repositories/`（舊路徑 `flow/*/repository/` 已不存在）。
    * 測試覆蓋率目標：核心業務邏輯單元測試覆蓋率 $\ge 80\%$（`Makefile` 已具 `test_coverage` 目標，尚缺 CI 門檻接入與基準紀錄，詳見 §8.3.2 E-8.4）。
 
@@ -1913,13 +1915,13 @@ class ComparisonMatrixComponent extends A2UIComponent {
   2. 驗收：`rtk proxy grep -rnE "^class Mock" test/` 輸出為空。
 
 #### [A-8.12] 串接 Yelp 分類體系 API (`GET /v3/categories` 與 `/v3/categories/{alias}`) 建立全量菜系分類樹過濾 — 🟡 API/Repo (Issue #159 / PR #160) 與 Filter UI (Issue #177 / PR #178) 已完成合入，剩餘 Cache
-- **狀態**：🟡 API 與 Repository 已完成（Issue #159 / PR #160，2026-10-25）：`APIClz.categories`／`category`、外殼 `YelpCategoryListDto`／`YelpCategoryDetailDto`（元素沿用既有 `YelpRestaurantCategoryDto`，未新建 `yelp_category_dto.dart`）、`YelpCategoryRepository`／`YelpCategoryRepo`。篩選 UI（`FilterPage` 菜系 ChoiceChip、最多四列橫向滾動 `CuisineCategoryChipsWidget`）與 `fetchCuisineCategories` 已於 2026-11-07 完成並合入主幹（Issue #177 / PR #178）。**仍未做**：本地長週期快取（Hive/SQLite）。
+- **狀態**：🟡 API 與 Repository 已完成（Issue #159 / PR #160，2026-10-25）：`APIClz.categories`／`category`、外殼 `YelpCategoryListDto`／`YelpCategoryDetailDto`（元素沿用既有 `YelpRestaurantCategoryDto`，未新建 `yelp_category_dto.dart`）、`YelpCategoryRepository`／`YelpCategoryRepo`。篩選 UI（`FilterPage` 菜系 ChoiceChip、最多四列橫向滾動 `CuisineCategoryChipsWidget`）與 `fetchCuisineCategories` 已於 2026-11-07 完成並合入主幹（Issue #177 / PR #178），並於 2026-11-19（Issue #184 / PR #185）將菜系清單載入狀態抽離至 `FilterCuisineBloc`（`FilterPage` 僅保留表單暫存選取狀態）。**仍未做**：本地長週期快取（Hive/SQLite）。
 - **優先級**：`P2` (進階搜尋維度)
 - **預估 Effort**：`0.5d`（原 1.0d，底層 API 與 Repo 落地後下修）
 - **價值與收益**：
   Yelp 擁有千種標準化餐飲層級分類（含在地化多語系稱謂）。透過串接官方分類 API 並在本地做長週期快取（或 Hive 本地保存），可於篩選頁提供階層式或標籤式「熱門菜系（日式、義式、咖啡輕食）」選單，徹底擺脫目前只能依距離/評分粗暴排序的侷限。
 - **影響檔案路徑**：
-  - 已落地（PR #160 / PR #178）：`lib/api/api_clz.dart`、`lib/api/dto/yelp_category_list_dto.dart`、`lib/api/dto/yelp_category_detail_dto.dart`、`lib/data_layer/repositories/yelp_category_repo.dart`、`lib/flow/filter/view/cuisine_category_chips_widget.dart`
+  - 已落地（PR #160 / PR #178 / PR #185）：`lib/api/api_clz.dart`、`lib/api/dto/yelp_category_list_dto.dart`、`lib/api/dto/yelp_category_detail_dto.dart`、`lib/data_layer/repositories/yelp_category_repo.dart`、`lib/flow/filter/view/cuisine_category_chips_widget.dart`、`lib/flow/filter/bloc/filter_cuisine_bloc.dart`、`lib/app/routes/routes_table.dart`
   - 待修改（本地持久化快取）：`lib/data_layer/repositories/yelp_category_repo.dart`（將目前記憶體級快取擴充為本地長週期快取）
 - **具體實作建議**：
   1. 宣告 `getCategories({@Query('locale') String? locale})`。
