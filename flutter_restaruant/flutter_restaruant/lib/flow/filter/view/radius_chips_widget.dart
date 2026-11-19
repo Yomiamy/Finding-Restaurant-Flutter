@@ -42,7 +42,7 @@ class RadiusChipsWidget extends StatelessWidget {
       children: [
         ChoiceChip(
           label: Text(S.current.filter_radius_unlimited),
-          selected: selected == null,
+          selected: selected == null || selected <= 0,
           onSelected: (isSelected) {
             if (isSelected) {
               onRadiusSelected(null);

@@ -157,5 +157,25 @@ void main() {
       await tester.pumpAndSettle();
       expect(selectedResult, isNull);
     });
+
+    testWidgets('傳入 selectedRadius <= 0 時選中 Unlimited 且不渲染自訂 Chip', (
+      tester,
+    ) async {
+      for (final invalidRadius in const [0, -100]) {
+        await tester.pumpWidget(
+          buildTestWidget(
+            selectedRadius: invalidRadius,
+            onRadiusSelected: (_) {},
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.byType(ChoiceChip), findsNWidgets(8));
+        final unlimitedChip = tester.widget<ChoiceChip>(
+          find.widgetWithText(ChoiceChip, 'Unlimited'),
+        );
+        expect(unlimitedChip.selected, isTrue);
+      }
+    });
   });
 }
