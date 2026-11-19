@@ -1,3 +1,4 @@
+import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_restaruant/models/filter_configs.dart';
 import 'package:flutter_test/flutter_test.dart';
 
@@ -143,6 +144,28 @@ void main() {
       configs.clearConfig(FilterConfigType.openNow);
       expect(configs.openNow, isNull);
       expect(configs.price, '2');
+    });
+
+    test('getSortingRuleDispStr 對應各 SortBy 值並對未知值回傳空字串', () {
+      final configs = FilterConfigs();
+
+      expect(
+        configs.getSortingRuleDispStr(SortBy.bestMatch.value),
+        S.current.filter_sorting_rule_best_match,
+      );
+      expect(
+        configs.getSortingRuleDispStr(SortBy.distance.value),
+        S.current.filter_sorting_rule_distance,
+      );
+      expect(
+        configs.getSortingRuleDispStr(SortBy.reviewCount.value),
+        S.current.filter_sorting_review_count,
+      );
+      expect(
+        configs.getSortingRuleDispStr(SortBy.rating.value),
+        S.current.filter_sorting_rating,
+      );
+      expect(configs.getSortingRuleDispStr('unknown'), '');
     });
   });
 }

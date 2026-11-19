@@ -165,17 +165,16 @@ class FilterConfigs {
   }
 
   String getSortingRuleDispStr(String sortBy) {
-    switch (sortBy) {
-      case 'best_match':
-        return S.current.filter_sorting_rule_best_match;
-      case 'distance':
-        return S.current.filter_sorting_rule_distance;
-      case 'review_count':
-        return S.current.filter_sorting_review_count;
-      case 'rating':
-        return S.current.filter_sorting_rating;
-      default:
-        return '';
+    for (final rule in SortBy.values) {
+      if (rule.value == sortBy) {
+        return switch (rule) {
+          SortBy.bestMatch => S.current.filter_sorting_rule_best_match,
+          SortBy.distance => S.current.filter_sorting_rule_distance,
+          SortBy.reviewCount => S.current.filter_sorting_review_count,
+          SortBy.rating => S.current.filter_sorting_rating,
+        };
+      }
     }
+    return '';
   }
 }
