@@ -91,9 +91,10 @@ class FilterConfigs {
     int? radius,
     bool? openNow,
   }) {
+    final isOpenNow = openNow ?? false;
     price = '${priceIndex + 1}';
-    this.openNow = (openNow == true) ? true : null;
-    openAt = (this.openNow == true) ? null : openAtDate.millisecondsSinceEpoch;
+    this.openNow = isOpenNow ? true : null;
+    openAt = isOpenNow ? null : openAtDate.millisecondsSinceEpoch;
     sortBy = mapSortingRuleByIndex(sortingRuleIndex);
     this.radius = _normalizeRadius(radius);
   }
