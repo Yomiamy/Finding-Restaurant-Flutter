@@ -381,5 +381,195 @@ void main() {
         ),
       ).called(1);
     });
+
+    testWidgets('渲染僅看營業中開關與搜尋半徑區塊', (tester) async {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final arguments = Tuple2<FilterConfigs, dynamic>(FilterConfigs(), null);
+      await tester.pumpWidget(buildTestApp(arguments: arguments));
+
+      await tester.tap(find.text('Open Filter'));
+      await tester.pumpAndSettle();
+
+      final openNowTile = tester.widget<SwitchListTile>(
+        find.byType(SwitchListTile),
+      );
+      expect(openNowTile.value, isFalse);
+      expect(find.text('Open Now'), findsOneWidget);
+      expect(find.text('Search Radius'), findsOneWidget);
+      expect(find.text('Unlimited'), findsOneWidget);
+      expect(find.text('500 m'), findsOneWidget);
+      expect(find.text('40 km'), findsOneWidget);
+    });
+
+    testWidgets('切換僅看營業中開關隱藏與恢復 CupertinoDatePicker 並保留原有時間', (tester) async {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final initialOpenAt = DateTime(2026, 11, 16, 18, 30);
+      final initialConfigs = FilterConfigs(
+        openAt: initialOpenAt.millisecondsSinceEpoch,
+      );
+      final arguments = Tuple2<FilterConfigs, dynamic>(initialConfigs, null);
+
+      await tester.pumpWidget(buildTestApp(arguments: arguments));
+      await tester.tap(find.text('Open Filter'));
+      await tester.pumpAndSettle();
+
+      final pickerBefore = tester.widget<CupertinoDatePicker>(
+        find.byType(CupertinoDatePicker),
+      );
+      expect(pickerBefore.initialDateTime, initialOpenAt);
+
+      await tester.tap(find.byType(SwitchListTile));
+      await tester.pumpAndSettle();
+      expect(find.byType(CupertinoDatePicker), findsNothing);
+
+      await tester.tap(find.byType(SwitchListTile));
+      await tester.pumpAndSettle();
+      final pickerAfter = tester.widget<CupertinoDatePicker>(
+        find.byType(CupertinoDatePicker),
+      );
+      expect(pickerAfter.initialDateTime, initialOpenAt);
+    });
+
+    testWidgets('開啟僅看營業中並選取 3 km 後套用，回傳正確 openNow、null openAt 與 radius', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final arguments = Tuple2<FilterConfigs, dynamic>(FilterConfigs(), null);
+      Tuple2<FilterConfigs, dynamic>? result;
+
+      await tester.pumpWidget(
+        buildTestApp(arguments: arguments, onResult: (res) => result = res),
+      );
+      await tester.tap(find.text('Open Filter'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(SwitchListTile));
+      await tester.pumpAndSettle();
+
+      await tester.scrollUntilVisible(
+        find.text('3 km'),
+        100,
+        scrollable: find.byType(Scrollable).first,
+      );
+      await tester.tap(find.text('3 km'));
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byType(FilledButton));
+      await tester.pumpAndSettle();
+
+      expect(result, isNotNull);
+      expect(result!.item1.openNow, isTrue);
+      expect(result!.item1.openAt, isNull);
+      expect(result!.item1.radius, 3000);
+    });
+
+    testWidgets('初始傳入 radius 與 openNow 時正確預選回填，關閉並重設為不限後回傳 null', (
+      tester,
+    ) async {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final initialConfigs = FilterConfigs(radius: 10000, openNow: true);
+      final arguments = Tuple2<FilterConfigs, dynamic>(initialConfigs, null);
+      Tuple2<FilterConfigs, dynamic>? result;
+
+      await tester.pumpWidget(
+        buildTestApp(arguments: arguments, onResult: (res) => result = res),
+      );
+      await tester.tap(find.text('Open Filter'));
+      await tester.pumpAndSettle();
+
+      expect(
+        tester.widget<SwitchListTile>(find.byType(SwitchListTile)).value,
+        isTrue,
+      );
+      expect(find.byType(CupertinoDatePicker), findsNothing);
+
+      await tester.scrollUntilVisible(
+        find.text('10 km'),
+        100,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(
+        tester
+            .widget<ChoiceChip>(find.widgetWithText(ChoiceChip, '10 km'))
+            .selected,
+        isTrue,
+      );
+
+      await tester.ensureVisible(find.text('Unlimited'));
+      await tester.pumpAndSettle();
+      await tester.tap(find.text('Unlimited'));
+      await tester.pumpAndSettle();
+
+      await tester.ensureVisible(find.byType(SwitchListTile));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byType(SwitchListTile));
+      await tester.pumpAndSettle();
+      final picker = tester.widget<CupertinoDatePicker>(
+        find.byType(CupertinoDatePicker),
+      );
+
+      await tester.tap(find.byType(FilledButton));
+      await tester.pumpAndSettle();
+
+      expect(result, isNotNull);
+      expect(result!.item1.openNow, isNull);
+      expect(result!.item1.openAt, greaterThan(0));
+      expect(
+        result!.item1.openAt,
+        picker.initialDateTime.millisecondsSinceEpoch,
+      );
+      expect(result!.item1.radius, isNull);
+    });
+
+    testWidgets('初始傳入非預設半徑 2500 未異動直接套用時仍完整保留並顯示選中 Chip', (tester) async {
+      tester.view.physicalSize = const Size(800, 1200);
+      tester.view.devicePixelRatio = 1.0;
+      addTearDown(tester.view.resetPhysicalSize);
+      addTearDown(tester.view.resetDevicePixelRatio);
+
+      final initialConfigs = FilterConfigs(radius: 2500);
+      final arguments = Tuple2<FilterConfigs, dynamic>(initialConfigs, null);
+      Tuple2<FilterConfigs, dynamic>? result;
+
+      await tester.pumpWidget(
+        buildTestApp(arguments: arguments, onResult: (res) => result = res),
+      );
+      await tester.tap(find.text('Open Filter'));
+      await tester.pumpAndSettle();
+
+      await tester.scrollUntilVisible(
+        find.text('2500 m'),
+        100,
+        scrollable: find.byType(Scrollable).first,
+      );
+      expect(
+        tester
+            .widget<ChoiceChip>(find.widgetWithText(ChoiceChip, '2500 m'))
+            .selected,
+        isTrue,
+      );
+
+      await tester.tap(find.byType(FilledButton));
+      await tester.pumpAndSettle();
+
+      expect(result, isNotNull);
+      expect(result!.item1.radius, 2500);
+    });
   });
 }

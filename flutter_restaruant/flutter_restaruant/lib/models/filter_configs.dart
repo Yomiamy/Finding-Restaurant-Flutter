@@ -26,6 +26,9 @@ enum SortBy {
 }
 
 class FilterConfigs {
+  // Yelp Fusion API `/v3/businesses/search` 支援的最大搜尋半徑（公尺）。
+  static const int _maxRadiusMeters = 40000;
+
   // Price
   String? price;
   int get priceIndex {
@@ -85,12 +88,22 @@ class FilterConfigs {
     required DateTime openAtDate,
     required int sortingRuleIndex,
     this.categories,
-    this.radius,
-    this.openNow,
+    int? radius,
+    bool? openNow,
   }) {
+    final isOpenNow = openNow ?? false;
     price = '${priceIndex + 1}';
-    openAt = openAtDate.millisecondsSinceEpoch;
+    this.openNow = isOpenNow ? true : null;
+    openAt = isOpenNow ? null : openAtDate.millisecondsSinceEpoch;
     sortBy = mapSortingRuleByIndex(sortingRuleIndex);
+    this.radius = _normalizeRadius(radius);
+  }
+
+  static int? _normalizeRadius(int? radius) {
+    if (radius == null || radius <= 0) {
+      return null;
+    }
+    return radius > _maxRadiusMeters ? _maxRadiusMeters : radius;
   }
 
   void clearConfig(FilterConfigType configType) {
@@ -152,17 +165,16 @@ class FilterConfigs {
   }
 
   String getSortingRuleDispStr(String sortBy) {
-    switch (sortBy) {
-      case 'best_match':
-        return S.current.filter_sorting_rule_best_match;
-      case 'distance':
-        return S.current.filter_sorting_rule_distance;
-      case 'review_count':
-        return S.current.filter_sorting_review_count;
-      case 'rating':
-        return S.current.filter_sorting_rating;
-      default:
-        return '';
+    for (final rule in SortBy.values) {
+      if (rule.value == sortBy) {
+        return switch (rule) {
+          SortBy.bestMatch => S.current.filter_sorting_rule_best_match,
+          SortBy.distance => S.current.filter_sorting_rule_distance,
+          SortBy.reviewCount => S.current.filter_sorting_review_count,
+          SortBy.rating => S.current.filter_sorting_rating,
+        };
+      }
     }
+    return '';
   }
 }
