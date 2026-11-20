@@ -149,7 +149,8 @@
 | [`lib/flow/settings/view/settings_account_section_widget.dart`](../../lib/flow/settings/view/settings_account_section_widget.dart) | `SettingsAccountSectionWidget` | 帳號區塊（登入狀態與登出）。 |
 | [`lib/flow/settings/view/settings_info_section_widget.dart`](../../lib/flow/settings/view/settings_info_section_widget.dart) | `SettingsInfoSectionWidget` | 資訊區塊（版本、條款等）。 |
 | [`lib/flow/filter/bloc/filter_cuisine_bloc.dart`](../../lib/flow/filter/bloc/filter_cuisine_bloc.dart) | `FilterCuisineBloc` | 篩選頁餐飲菜系分類載入（失敗降級為 `defaultCuisines`）。 |
-| [`lib/flow/filter/view/filter_page.dart`](../../lib/flow/filter/view/filter_page.dart) | `FilterPage` | 搜尋條件篩選頁；菜系清單由 `FilterCuisineBloc` 提供，表單暫存值以本地狀態管理。 |
+| [`lib/flow/filter/view/filter_page.dart`](../../lib/flow/filter/view/filter_page.dart) | `FilterPage` | 搜尋條件篩選頁；菜系清單由 `FilterCuisineBloc` 提供，價格、營業中（`open_now` 連動收合時間選擇器）、搜尋半徑（`RadiusChipsWidget`）與排序暫存值以本地狀態管理。 |
+| [`lib/flow/filter/view/radius_chips_widget.dart`](../../lib/flow/filter/view/radius_chips_widget.dart) | `RadiusChipsWidget` | 搜尋半徑選項 Chip 元件，支援不限（含 `<= 0` 收斂）、預設級距（500 m～40 km）與合法非預設半徑自訂 Chip 呈現及清除。 |
 | [`lib/flow/photo_viewer/view/photo_viewer.dart`](../../lib/flow/photo_viewer/view/photo_viewer.dart) | `PhotoViewer` | 全螢幕照片瀏覽（無 Bloc）。 |
 | [`lib/flow/splash/bloc/splash_bloc.dart`](../../lib/flow/splash/bloc/splash_bloc.dart) | `SplashBloc` | 啟動頁業務邏輯。 |
 | [`lib/flow/menu_vision/bloc/menu_vision_bloc.dart`](../../lib/flow/menu_vision/bloc/menu_vision_bloc.dart) | `MenuVisionBloc` | AI 多模態菜單視覺識別業務邏輯（事件驅動、狀態模式比對）。 |
@@ -224,6 +225,6 @@
 
 | 檔案路徑 | 關鍵類別 | 單一職責 (Single Responsibility) |
 | :--- | :--- | :--- |
-| [`lib/models/filter_configs.dart`](../../lib/models/filter_configs.dart) | `FilterConfigs` | 搜尋篩選條件的 UI 模型（價位、營業中、排序方式）。 |
+| [`lib/models/filter_configs.dart`](../../lib/models/filter_configs.dart) | `FilterConfigs`<br>`SortBy` | 搜尋篩選條件 UI 模型（價位、營業中開關、營業時間、搜尋半徑、菜系、排序方式），於 `fromUI` 強制正規化 `openNow`/`openAt` 互斥與 `_maxRadiusMeters`（40,000 公尺）邊界，並以 `SortBy` 窮盡式輸出排序文案。 |
 | [`lib/generated/l10n.dart`](../../lib/generated/l10n.dart) | `S` | `intl_utils` 產生的在地化存取類別（en / zh_TW）。 |
 | [`lib/gen/assets.gen.dart`](../../lib/gen/assets.gen.dart) | `Assets` | `flutter_gen` 產生的型別安全資源路徑。 |
