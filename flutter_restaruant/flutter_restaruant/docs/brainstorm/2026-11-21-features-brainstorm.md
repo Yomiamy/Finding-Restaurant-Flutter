@@ -9,7 +9,7 @@
 
 本報告整合了架構審計與競品探索報告之事實與推理鏈，產出符合產業界最高標準的產品與技術發展路線圖 (Strategic Product Roadmap) 及 RICE / ICE 雙優先級評估矩陣。
 
-> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。**2026-10-22 補記**：檔名前綴其後已再更新為 `2026-10-22`，上述 `2026-09-30` 為當時狀態。**2026-10-25 補記**：檔名前綴再更新為 `2026-10-25`。**2026-10-26 補記**：檔名前綴再更新為 `2026-10-26`。**2026-11-01 補記**：檔名前綴再更新為 `2026-11-01`。A-8.7 解除 GPS 強制綁定與價格字串過濾已完成 (Issue #169 / PR #170)。**2026-11-02 補記**：檔名前綴再更新為 `2026-11-02`。A-8.6 根治 Yelp 關鍵字假搜尋缺陷：廢除本地記憶體 50 筆過濾，直通遠端 `term` 查詢已完成 (Issue #171 / PR #172)。**2026-11-04 補記**：A-8.10 擴充 Yelp 搜尋進階篩選（`categories`、`radius`、`open_now` 與 1,000 筆分頁邊界防護）已完成底層 API／Repository／`FilterConfigs` 管線 (Issue #173 / PR #174)；`FilterPage` 僅完成菜系 UI (#178)，尚缺 `radius` 與 `open_now` 控制項（列為 🟡 部分完成）。**2026-11-04 補記 (二)**：E-8.6 BLoC 測試統一改用 `blocTest` 宣告式結構已完成 (Issue #175 / PR #176)。**2026-11-10 補記**：A-8.12 菜系分類篩選與四列橫向滾動已合入主幹 (Issue #177 / PR #178)。**2026-11-11 補記**：檔名前綴更新為 `2026-11-11`。A-8.9 串接 Yelp Autocomplete API 實現搜尋即時補全與聯想已完成 (Issue #180 / PR #181)，落地於 `AutocompleteBloc`、`RestaurantSearchDelegate` 與 `MainPage` AppBar 常駐搜尋按鈕整合。**2026-11-14 補記**：檔名前綴更新為 `2026-11-14`。F-2.3 雙排瀑布流 UGC 食記與 15 秒探店短影片已完成 (Issue #182 / PR #183)，落地於 `UgcNoteDataSource`、`NotesFeedBloc`、`NotesFeedPage`、`NoteDetailPage` 及 `DrawerWidget` 探店筆記入口。**2026-11-15 補記**：檔名前綴更新為 `2026-11-15`；全面校對文件與 `main` 實況：更正 `A-8.10` 為 🟡 部分完成、同步 `F-0.2`／`F-3.3`／`MapWidget`／`§3` `fluster` 狀態標記、修正 `F-3.2`／`F-3.3` 編號對照與 Phase 1 計數（`23/24`）、並更新 `UI-8.3`（48 處）／`UI-8.4`（30 處／15 檔）／`UI-9.3`（8 檔 `MediaQuery`）實查數據與過時路徑說明。**2026-11-19 補記**：檔名前綴更新為 `2026-11-19`。F-2.4 筆記地點打卡 Tag 點擊彈出輕量餐廳摘要 BottomSheet 已完成 (Issue #184 / PR #185)，落地於 `UgcNoteDto`／`UgcNoteEntity`（新增可選標準化 `restaurantId`）、`NoteRestaurantSheetBloc`、`NoteRestaurantSummarySheet`、`NoteDetailPage` 與 `NotesFeedPage` 雙入口串接，以及 `FavorRepository.isFavor`、Yelp 商家 ID 格式校驗與 `RestaurantDetailPage` 空 `hours` 防護；並同步訂定 `BLoC` vs `StatefulWidget`（`setState`）硬性邊界，將 `FilterPage` 菜系載入重構遷入 `FilterCuisineBloc`。
+> **2026-09-30 新增第 9 章**：桌面版 (macOS) 與網頁版 (Web) 平台擴展評估。核心結論：Web 版受 Yelp API 不支援 CORS 所限，**以 P0「Server-side Broker」為硬性前置**；同日決議採 **Web 精簡版 (W-B) + 原生 macOS (M-B)**，深層連結以內建 `onGenerateRoute` 實作（不導入 `go_router`）、首版無廣告、升級 Firebase Blaze（見 §9.8）。檔名日期前綴同步更新為 `2026-09-30`（以 `git mv` 改名保留歷史；其他文件內引用的舊檔名屬史實紀錄，不隨之更動）。**2026-10-22 補記**：檔名前綴其後已再更新為 `2026-10-22`，上述 `2026-09-30` 為當時狀態。**2026-10-25 補記**：檔名前綴再更新為 `2026-10-25`。**2026-10-26 補記**：檔名前綴再更新為 `2026-10-26`。**2026-11-01 補記**：檔名前綴再更新為 `2026-11-01`。A-8.7 解除 GPS 強制綁定與價格字串過濾已完成 (Issue #169 / PR #170)。**2026-11-02 補記**：檔名前綴再更新為 `2026-11-02`。A-8.6 根治 Yelp 關鍵字假搜尋缺陷：廢除本地記憶體 50 筆過濾，直通遠端 `term` 查詢已完成 (Issue #171 / PR #172)。**2026-11-04 補記**：A-8.10 擴充 Yelp 搜尋進階篩選（`categories`、`radius`、`open_now` 與 1,000 筆分頁邊界防護）已完成底層 API／Repository／`FilterConfigs` 管線 (Issue #173 / PR #174)；`FilterPage` 僅完成菜系 UI (#178)，尚缺 `radius` 與 `open_now` 控制項（列為 🟡 部分完成）。**2026-11-04 補記 (二)**：E-8.6 BLoC 測試統一改用 `blocTest` 宣告式結構已完成 (Issue #175 / PR #176)。**2026-11-10 補記**：A-8.12 菜系分類篩選與四列橫向滾動已合入主幹 (Issue #177 / PR #178)。**2026-11-11 補記**：檔名前綴更新為 `2026-11-11`。A-8.9 串接 Yelp Autocomplete API 實現搜尋即時補全與聯想已完成 (Issue #180 / PR #181)，落地於 `AutocompleteBloc`、`RestaurantSearchDelegate` 與 `MainPage` AppBar 常駐搜尋按鈕整合。**2026-11-14 補記**：檔名前綴更新為 `2026-11-14`。F-2.3 雙排瀑布流 UGC 食記與 15 秒探店短影片已完成 (Issue #182 / PR #183)，落地於 `UgcNoteDataSource`、`NotesFeedBloc`、`NotesFeedPage`、`NoteDetailPage` 及 `DrawerWidget` 探店筆記入口。**2026-11-15 補記**：檔名前綴更新為 `2026-11-15`；全面校對文件與 `main` 實況：更正 `A-8.10` 為 🟡 部分完成、同步 `F-0.2`／`F-3.3`／`MapWidget`／`§3` `fluster` 狀態標記、修正 `F-3.2`／`F-3.3` 編號對照與 Phase 1 計數（`23/24`）、並更新 `UI-8.3`（48 處）／`UI-8.4`（30 處／15 檔）／`UI-9.3`（8 檔 `MediaQuery`）實查數據與過時路徑說明。**2026-11-19 補記**：檔名前綴更新為 `2026-11-19`。F-2.4 筆記地點打卡 Tag 點擊彈出輕量餐廳摘要 BottomSheet 已完成 (Issue #184 / PR #185)，落地於 `UgcNoteDto`／`UgcNoteEntity`（新增可選標準化 `restaurantId`）、`NoteRestaurantSheetBloc`、`NoteRestaurantSummarySheet`、`NoteDetailPage` 與 `NotesFeedPage` 雙入口串接，以及 `FavorRepository.isFavor`、Yelp 商家 ID 格式校驗與 `RestaurantDetailPage` 空 `hours` 防護；並同步訂定 `BLoC` vs `StatefulWidget`（`setState`）硬性邊界，將 `FilterPage` 菜系載入重構遷入 `FilterCuisineBloc`。**2026-11-21 補記**：檔名前綴更新為 `2026-11-21`。A-8.10 `FilterPage` 搜尋半徑（`radius`）與僅看營業中（`open_now`）UI 控制項已補齊完成 (Issue #186 / PR #187)，落地於 `RadiusChipsWidget`、`FilterPage`（`SwitchListTile` 連動收合 `CupertinoDatePicker` 並保留原 `_openAtDateTime`）、`FilterConfigs.fromUI` 不變量正規化（`_maxRadiusMeters = 40000`）及 `SortBy` 枚舉窮盡式顯示對照。
 
 ---
 
@@ -85,6 +85,7 @@
 | **Yelp Autocomplete 與 Categories API 基礎建設 (A-8.9 / A-8.12 部分)** | ✅ **已於 2026-11-10 完成 (Issue #180 / PR #181)**：以 `AutocompleteBloc`（300ms 防抖 + switchMap）、`RestaurantSearchDelegate` 與 `MainPage` AppBar 常駐按鈕實現即時搜尋聯想與店家導航，Drawer 舊有重複入口已淘汰；Categories 菜系篩選 UI 亦已於 2026-11-07 完成 (Issue #177 / PR #178)；剩餘 Categories 本地長週期快取待辦。 |
 | **雙排瀑布流 UGC 食記與 15 秒探店短影片 (F-2.3)** | ✅ **已於 2026-11-14 完成 (Issue #182 / PR #183)**：以 `flutter_staggered_grid_view`、`video_player` 與 Firestore `ugc_notes` 集合實現雙排瀑布流瀏覽（`NotesFeedPage`）、下拉重整與並發 Token 防護（`NotesFeedBloc`）、多圖輪播與 15 秒短影片播放/逾時及播中錯誤降級（`NoteDetailPage`），並於 `DrawerWidget` 整合「探店筆記」入口。 |
 | **筆記地點打卡 Tag 點擊彈出餐廳摘要 (F-2.4) ＋ Filter BLoC 對齊** | ✅ **已於 2026-11-19 完成 (Issue #184 / PR #185)**：於 `UgcNoteDto`／`UgcNoteEntity` 擴充可選 `restaurantId`（含非字串容錯）、`FavorRepository.isFavor`、Yelp ID 允許字元集校驗與 `RestaurantDetailPage` 空 `hours` 防護；新增 `NoteRestaurantSheetBloc`（含 2 秒收藏查詢逾時降級）與 `NoteRestaurantSummarySheet`，串接 `NoteDetailPage` 與 `NotesFeedPage` 雙入口（支援查看詳情與 Google Maps 導航）；並同步於 `.claude/rules/flutter-styles.md` 及 `overview.md` 確立 `BLoC` vs `setState` 硬性邊界，將 `FilterPage` 菜系載入重構為 `FilterCuisineBloc`。 |
+| **FilterPage 搜尋半徑與營業中 UI (A-8.10)** | ✅ **已於 2026-11-21 完成 (Issue #186 / PR #187)**：於 `FilterConfigs.fromUI` 正規化 `openNow`（`true` / `null`）、互斥清空 `openAt` 與收斂 `radius` 邊界（`<= 0` → `null`、上限 `_maxRadiusMeters = 40000`），`getSortingRuleDispStr` 改由 `SortBy` 枚舉窮盡式切換；新增 `RadiusChipsWidget`（不限、500 m～40 km 預設與非預設合法半徑自訂 Chip）及中英雙語單位標籤；整合至 `FilterPage`（`SwitchListTile` 收合 `CupertinoDatePicker` 並保留原時間、`RadiusChipsWidget` 置於菜系與排序之間、`didChangeDependencies` 回填狀態）。 |
 
 **🔴 仍未解決與新納入阻擋項（全數為 P0 最高優先，AdMob 合規為絕對最高阻擋項）**
 
@@ -704,7 +705,7 @@ lib/
    * 2026-07-30 覆核執行 `flutter analyze` → **`No issues found!`**。此為後續 PR 的最低門檻，不得回退。
 
 2. **`flutter test` 測試覆蓋率 — 🟡 進行中**:
-   * 現況：原 `2026-07-30` 快照僅 13 個 test 檔；**2026-11-19 實查 `test/` 已擴增至 95 個 `*_test.dart` 檔**，且 `E-8.2` (`mocktail`)、`E-8.3` (`Makefile` `test_coverage`)、`E-8.6` (全專案統一 `blocTest`，PR #176) 均已完成。
+   * 現況：原 `2026-07-30` 快照僅 13 個 test 檔；**2026-11-21 實查 `test/` 已擴增至 96 個 `*_test.dart` 檔**，且 `E-8.2` (`mocktail`)、`E-8.3` (`Makefile` `test_coverage`)、`E-8.6` (全專案統一 `blocTest`，PR #176) 均已完成。
    * 待補：BLoC 測試已統一 `blocTest`（PR #176），現有缺口轉為 **CI 覆蓋率門檻強制執行** 與實測覆蓋率基準線紀錄；測試目標路徑為 `flow/*/bloc/`、`domain/` 與 `data_layer/repositories/`（舊路徑 `flow/*/repository/` 已不存在）。
    * 測試覆蓋率目標：核心業務邏輯單元測試覆蓋率 $\ge 80\%$（`Makefile` 已具 `test_coverage` 目標，尚缺 CI 門檻接入與基準紀錄，詳見 §8.3.2 E-8.4）。
 
@@ -1781,21 +1782,20 @@ class ComparisonMatrixComponent extends A2UIComponent {
   2. 搭配 300ms Debounce，當搜尋列聚焦且輸入 $\ge 2$ 個字元時顯示 Overlay 建議清單。
   3. 點擊建議項目可直接填入關鍵字或直接跳轉該店家詳情。
 
-#### [A-8.10] 擴充 Yelp 搜尋進階篩選（`categories` 分類別名、`radius` 半徑、`open_now` 營業中與 1,000 筆分頁邊界防護）
+#### [A-8.10] 擴充 Yelp 搜尋進階篩選（`categories` 分類別名、`radius` 半徑、`open_now` 營業中與 1,000 筆分頁邊界防護） — ✅ 已完成 (Issue #186 / PR #187, 2026-11-21)
 - **優先級**：`P1` (篩選維度擴充)
-- **預估 Effort**：`0.5d` *（剩 `radius` / `open_now` UI 補完）*
-- **狀態**：🟡 **部分完成**（2026-11-04 PR #174 已完成 `APIClz.businessesSearch`、`MainRepo` 1,000 筆邊界防禦與 `FilterConfigs` 管線串接；2026-11-10 PR #178 已補齊 `FilterPage` 菜系分類篩選；**2026-11-15 實查 `lib/flow/filter/` 仍無 `radius` 與 `open_now` UI 控制項**）
+- **預估 Effort**：`0.5d` *（已完成）*
+- **狀態**：✅ **已完成**（2026-11-04 PR #174 已完成 `APIClz.businessesSearch`、`MainRepo` 1,000 筆邊界防禦與 `FilterConfigs` 管線串接；2026-11-10 PR #178 已補齊 `FilterPage` 菜系分類篩選；2026-11-21 Issue #186 / PR #187 已補齊 `FilterPage` 之 `open_now` 開關與 `RadiusChipsWidget` 搜尋半徑選擇、`FilterConfigs.fromUI` 互斥與邊界正規化及相關單元／Widget 測試）
 - **價值與收益**：
-  1. 目前專案篩選頁已完成菜系選擇（#178），但尚無法在 UI 調整搜尋半徑 `radius`（公尺，上限 40,000）或切換 `open_now`。補齊表現層控制項才能真正對外釋出精準篩選。
-  2. 底層 API 參數與 `open_now: bool` 管線已就位，待補齊 `FilterPage` 控制元件與狀態回填。
+  1. 篩選頁已完成菜系選擇（#178）、搜尋半徑 `radius`（不限、`500 m`～`40 km` 預設晶片與合法非預設半徑自訂晶片）與 `open_now`（僅看營業中開關）整合，對外釋出完整精準篩選體驗。
+  2. `FilterConfigs.fromUI` 於模型邊界將 `openNow` 收斂為 `true` / `null`、啟用 `openNow` 時自動清空 `openAt` 避免與 Yelp API 互斥衝突，並透過 `_normalizeRadius` 將 `<= 0` 收斂為 `null`、超過 `_maxRadiusMeters`（`40000`）上限夾限。
   3. 邊界防禦已完成：官方規定 `offset + limit <= 1000`，`MainRepo` 已加入上限攔截避免滑動超過 20 頁時報錯 400。
 - **影響檔案路徑**：
-  - 已完成：`lib/api/api_clz.dart`、`lib/data_layer/repositories/main_repo.dart`、`lib/models/filter_configs.dart`、`lib/flow/filter/view/filter_page.dart`（菜系 UI）
-  - 待修改：`lib/flow/filter/view/filter_page.dart`（補齊 `radius` 與 `open_now` UI 控制項）
-- **具體實作建議**：
+  - 已完成：`lib/api/api_clz.dart`、`lib/data_layer/repositories/main_repo.dart`、`lib/models/filter_configs.dart`、`lib/flow/filter/view/radius_chips_widget.dart`、`lib/flow/filter/view/filter_page.dart`、`lib/l10n/intl_en.arb`、`lib/l10n/intl_zh_TW.arb`
+- **具體實作與落地差異**：
   1. ~~`businessesSearch` 增加 `@Query('categories') String? categories`、`@Query('radius') int? radius`、`@Query('open_now') bool? openNow`。~~ ✅ *PR #174 已完成*
   2. ~~在 `MainRepo` 加入檢查：若 `_offset + 50 > 1000` 則停止繼續發送請求，標記到達底端。~~ ✅ *PR #174 已完成*
-  3. **待補齊**：在 `FilterPage` 加入搜尋半徑滑桿／選項（`radius`）與僅看營業中開關（`openNow`），並回填至 `FilterConfigs`。
+  3. ~~在 `FilterPage` 補齊 `radius` 與 `openNow` 控制項並回填 `FilterConfigs`。~~ ✅ *Issue #186 / PR #187 已完成（採「不限 + 7 個預設級距 + 自訂非預設半徑」`ChoiceChip` 元件 `RadiusChipsWidget`，未採連續滑桿；並將 `FilterConfigs.getSortingRuleDispStr` 收斂為 `SortBy` 枚舉窮盡式對照）*
 
 > **[A-8.11]** 已於 2026-10-22 升為 P0，移至 §8.3.1。
 
@@ -1995,7 +1995,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
                                      & A-8.6 (Yelp 假搜尋根治 ✅) & A-8.7 (GPS 解綁 ✅) & A-8.8 (實體欄位補齊 ✅) & A-8.11 (鑑權容錯)
                                      │
  Phase 2 (社群/轉化)    ──► 納入 A-8.3 (Dio錯誤對應) & UI-8.4 (色差校正) & UI-8.3 (語法糖)
-                                     & A-8.9 (Autocomplete 補全 ✅) & A-8.10 (進階篩選 🟡 缺 radius/open_now UI)
+                                     & A-8.9 (Autocomplete 補全 ✅) & A-8.10 (進階篩選 ✅)
                                      │
  Phase 3 (AI M4/M5 支撐) ──► 納入 E-8.2 (mocktail測試 ✅) & E-8.7 (mock命名 ✅) & A-8.14 (Repo注入 ✅) & E-8.6 (blocTest ✅) & E-8.4 (80%覆蓋率) & UI-8.6 (A11y)
                                      & A-8.12 (Yelp 分類樹 🟡 PR #160/#178) & A-8.13 (GraphQL 聚合優化)
@@ -2015,7 +2015,7 @@ class ComparisonMatrixComponent extends A2UIComponent {
 
 3. **融入 Phase 2 社群生態與轉化閉環**：
    - 微訂位與候位排隊需要可分辨的網路錯誤，此時引入 **A-8.3 (Dio 錯誤對應攔截器)** 讓 BLoC 能區分逾時、伺服器錯誤與鑑權失敗。（原規劃的 401 自動換約已於 2026-10-22 移除：Yelp 為固定 API Key，無刷新端點；**A-8.11** 已升 P0 移至 Phase 1.5。）
-   - 引入 **A-8.9 (Autocomplete 即時聯想)** 已於 2026-11-10 完成 (Issue #180 / PR #181，落地於 `AutocompleteBloc` 300ms 防抖、`RestaurantSearchDelegate` 與 `MainPage` AppBar 搜尋整合)；**A-8.10 (菜系、半徑、營業中進階篩選與 1,000 筆分頁邊界防護)** 🟡 部分完成（PR #174 已完成 `APIClz.businessesSearch`、`MainRepo` 邊界防禦與 `FilterConfigs` 管線串接，PR #178 已補齊 `FilterPage` 菜系篩選；2026-11-15 實查 `FilterPage` 仍缺 `radius` 與 `open_now` UI 控制項）。
+   - 引入 **A-8.9 (Autocomplete 即時聯想)** 已於 2026-11-10 完成 (Issue #180 / PR #181，落地於 `AutocompleteBloc` 300ms 防抖、`RestaurantSearchDelegate` 與 `MainPage` AppBar 搜尋整合)；**A-8.10 (菜系、半徑、營業中進階篩選與 1,000 筆分頁邊界防護)** ✅ 已於 2026-11-21 完成（PR #174 已完成 `APIClz.businessesSearch`、`MainRepo` 邊界防禦與 `FilterConfigs` 管線串接，PR #178 已補齊菜系篩選，Issue #186 / PR #187 已補齊 `FilterPage` 之 `SwitchListTile` `open_now` 開關與 `RadiusChipsWidget` 搜尋半徑選擇及 `FilterConfigs.fromUI` 正規化）。
    - **UI-8.4 (色差校正)** 與 **UI-8.3 (BuildContext 擴充語法糖)** 將作為視覺打磨的主力。
 
 4. **全面支撐 Phase 3 (Google AI Studio M4/M5 推進)**：

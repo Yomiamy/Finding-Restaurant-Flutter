@@ -4,7 +4,7 @@
 - **狀態**：已實作（採 `NoteRestaurantSheetBloc` 單向資料流架構）
 - **實查基線**：`main`
 - **需求來源**：`gen-grill` 結構化 brief（Q1–Q5 五項齊備，2 輪問答收斂）
-- **相關 brainstorm 項目**：[`docs/brainstorm/2026-11-19-features-brainstorm.md`](../brainstorm/2026-11-19-features-brainstorm.md) §2.2 [F-2.4] (L372-378, L681)
+- **相關 brainstorm 項目**：[`docs/brainstorm/2026-11-21-features-brainstorm.md`](../brainstorm/2026-11-21-features-brainstorm.md) §2.2 [F-2.4] (L373-379, L682)
 
 ---
 
