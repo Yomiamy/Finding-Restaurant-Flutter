@@ -97,7 +97,7 @@ YelpRestaurantSummaryDto get toDto => ...
 - **Feature-First 目錄**：`lib/flow/<feature>/` 下再分 `bloc/` 與 `view/`，每個 feature 自成一個垂直切片（main、restaurant、favor、signinup、settings、splash、filter、photo_viewer、menu_vision、ai_foodie、autocomplete、notes）。
 - **BLoC 單向資料流與 `setState` 邊界**：
   - **必須使用 BLoC**：凡頁面、BottomSheet（`MenuVisionSheet`、`AiFoodieSheet`、`NoteRestaurantSummarySheet`）或獨立卡片（`ReviewSummaryCard`）需要存取 `Repository` / `GetIt`、執行非同步外部 I/O 或管理載入／失敗／重試狀態機時，一律建置對應 BLoC；View 層不直接依賴 Repository。
-  - **僅限 `StatefulWidget` (`setState`)**：只允許用於純本地、無外部資料存取的短生命週期 UI 狀態或控制器（如 `PhotoViewer` 縮放分頁、表單暫存選取、展開收合）。同一頁面可兩者並存：`FilterPage` 的菜系清單由 `FilterCuisineBloc` 載入，表單暫存值（價格、營業時間、排序、選取菜系）留在 `State`。
+  - **僅限 `StatefulWidget` (`setState`)**：只允許用於純本地、無外部資料存取的短生命週期 UI 狀態或控制器（如 `PhotoViewer` 縮放分頁、表單暫存選取、展開收合）。同一頁面可兩者並存：`FilterPage` 的菜系清單由 `FilterCuisineBloc` 載入，表單暫存值（價格、營業中開關、營業時間、搜尋半徑、排序、選取菜系）留在 `State`。
   - **彈窗 BLoC 生命週期**：獨立開啟的 Sheet 若在 `initState` 本地建立 BLoC，須保留可選 `bloc` 注入參數，並僅於自行建立時在 `dispose` 呼叫 `close()`。
 - **State 建模規範**：`Bloc<Event, State>` + `Equatable`。新模組優先採 `sealed class <Feature>State` 搭配 Pattern Matching（如 `MenuVisionState`、`NotesFeedState`、`NoteRestaurantSheetState`），其餘則以具名子類別表達，而非單一 class 塞 `isLoading` 布林旗標——狀態互斥性由型別系統保證。Menu Vision 與 AI 覓食由 BLoC 將 nullable entity 轉為欄位 non-null 的 UI model（`lib/flow/<feature>/model/`），呈現用預設值集中於轉換處，View 只讀 UI model。
 - **Design Tokens**：`lib/features/foundation/style/` 下的 `AppThemeData`、`ThemeColor`、`ThemeSize`、`ThemeFontSize`、`ThemeTextStyle`。
