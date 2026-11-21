@@ -711,10 +711,10 @@ packages:
     dependency: "direct main"
     description:
       name: flutter_inspector_kit
-      sha256: bb1e9992bd8e6c0a9fcf5b72dd0598e985b39edb41b5d5630434dc4475496510
+      sha256: "54ce7e04ce5a3f4ab8e0083dc061810e76c5d5c6fd791304fb8339b699817865"
       url: "https://pub.dev"
     source: hosted
-    version: "2.9.0"
+    version: "3.1.0"
   flutter_lints:
     dependency: "direct dev"
     description:
