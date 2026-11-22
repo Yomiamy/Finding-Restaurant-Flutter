@@ -175,11 +175,13 @@ test('AC-3 & AC-4: Scrolly WAI-ARIA contract, OS switcher, honest CTAs, and 0 br
     const html = readFileSync(path.join(DIST_DIR, rel), 'utf8');
 
     // WAI-ARIA tabs and tabpanels: verify element-level pairing and initial state for all 6 lenses
-    assert.match(html, /role="tablist"/);
+    assert.match(html, /role="tablist"[^>]*aria-orientation="vertical"/);
     const tabs = html.match(/role="tab"/g) ?? [];
     const panels = html.match(/role="tabpanel"/g) ?? [];
     assert.equal(tabs.length, 6, `${rel} must contain 6 role="tab" elements`);
     assert.equal(panels.length, 6, `${rel} must contain 6 role="tabpanel" elements`);
+    const colHeaders = html.match(/<th scope="col">/g) ?? [];
+    assert.equal(colHeaders.length, 4, `${rel} capability table must define 4 <th scope="col"> headers`);
 
     for (let i = 1; i <= 6; i += 1) {
       const id = `lens-0${i}`;

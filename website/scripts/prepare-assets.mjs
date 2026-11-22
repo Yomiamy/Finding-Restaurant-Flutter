@@ -2,6 +2,7 @@ import { copyFile, mkdir, stat } from 'node:fs/promises';
 import path from 'node:path';
 import { fileURLToPath } from 'node:url';
 import sharp from 'sharp';
+import { SITE_META } from '../src/data/site.ts';
 
 const SCRIPT_DIR = path.dirname(fileURLToPath(import.meta.url));
 const WEBSITE_ROOT = path.resolve(SCRIPT_DIR, '..');
@@ -83,14 +84,14 @@ async function generateOgCard() {
     <circle cx="910" cy="315" r="185" fill="none" stroke="#D84A20" stroke-opacity="0.20" stroke-width="1.5" stroke-dasharray="6 8"/>
     <circle cx="910" cy="315" r="120" fill="none" stroke="#1F1713" stroke-opacity="0.10" stroke-width="1"/>
     <rect x="68" y="62" width="212" height="32" rx="16" fill="url(#pill)"/>
-    <text x="174" y="83" text-anchor="middle" font-family="${sansFont}" font-size="14" font-weight="700" fill="#FFFBF7">OPEN SOURCE · v2.4.0+40</text>
+    <text x="174" y="83" text-anchor="middle" font-family="${sansFont}" font-size="14" font-weight="700" fill="#FFFBF7">OPEN SOURCE · v${SITE_META.appVersion}</text>
     <text x="184" y="210" font-family="${sansFont}" font-size="48" font-weight="800" fill="#1F1713">Find Restaurant</text>
     <text x="184" y="248" font-family="${sansFont}" font-size="22" font-weight="600" fill="#D84A20">尋找餐廳 · Multimodal AI Dining</text>
     <text x="68" y="330" font-family="${sansFont}" font-size="26" font-weight="600" fill="#1F1713">GenUI Decision Canvas &amp; Menu Vision</text>
     <text x="68" y="372" font-family="${sansFont}" font-size="21" fill="#63544B">Clean Architecture · BLoC · GetIt · Gemini</text>
     <line x1="68" y1="428" x2="580" y2="428" stroke="#1F1713" stroke-opacity="0.14" stroke-width="1.5"/>
     <text x="68" y="476" font-family="${monoFont}" font-size="18" font-weight="600" fill="#1F1713">Android · iOS 15+ · macOS 14+ (Apple Silicon)</text>
-    <text x="68" y="516" font-family="${monoFont}" font-size="16" fill="#63544B">https://findrestaurant-c80ea.web.app</text>
+    <text x="68" y="516" font-family="${monoFont}" font-size="16" fill="#63544B">${SITE_META.baseUrl}</text>
   </svg>`;
 
   const iconPath = path.join(APP_ICON_DIR, 'app_icon_1024.png');

@@ -69,4 +69,4 @@ jobs:
           trap 'rm -f "$CRED_FILE"' EXIT
           printf '%s' "$FIREBASE_SA_JSON" > "$CRED_FILE"
           export GOOGLE_APPLICATION_CREDENTIALS="$CRED_FILE"
-          npx --yes firebase-tools@15 deploy --only hosting --project findrestaurant-c80ea --non-interactive
+          npx --yes firebase-tools@15.28.2 deploy --only hosting --project findrestaurant-c80ea --non-interactive

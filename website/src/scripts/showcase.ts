@@ -66,26 +66,13 @@ function initOsSwitchers(): void {
     }
   };
 
-  let initialOs: OsKind | null = parseStoredOs(
-    document.documentElement.dataset.os ?? null,
-  );
-  if (!initialOs) {
-    try {
-      initialOs = parseStoredOs(localStorage.getItem(OS_STORAGE_KEY));
-    } catch {
-      initialOs = null;
-    }
-  }
-  if (!initialOs) {
-    const navAny = navigator as Navigator & {
-      userAgentData?: { platform?: string };
-    };
-    initialOs = detectOsFromAgent(
-      navAny.userAgentData?.platform || navigator.platform || '',
+  const initialOs: OsKind =
+    parseStoredOs(document.documentElement.dataset.os ?? null) ??
+    detectOsFromAgent(
+      navigator.platform || '',
       navigator.userAgent || '',
       navigator.maxTouchPoints || 0,
     );
-  }
   setOs(initialOs, false);
 
   for (const btn of buttons) {
@@ -120,18 +107,23 @@ function initCopyButtons(): void {
       }
 
       if (!copied) {
+        const area = document.createElement('textarea');
         try {
-          const area = document.createElement('textarea');
           area.value = text;
           area.setAttribute('readonly', '');
           area.style.position = 'fixed';
+          area.style.top = '0';
+          area.style.left = '0';
           area.style.opacity = '0';
           document.body.appendChild(area);
           area.select();
           copied = document.execCommand('copy');
-          document.body.removeChild(area);
         } catch {
           copied = false;
+        } finally {
+          if (area.parentNode) {
+            area.parentNode.removeChild(area);
+          }
         }
       }
 

@@ -117,6 +117,7 @@ const readmeUrl = enActive ? SITE_META.readmeEnUrl : SITE_META.readmeZhUrl;
             <div
               class="lenses"
               role="tablist"
+              aria-orientation="vertical"
               aria-label={d.stratum1.tablistLabel}
               data-lenses-tablist
             >
@@ -234,10 +235,10 @@ const readmeUrl = enActive ? SITE_META.readmeEnUrl : SITE_META.readmeZhUrl;
             <table class="cap-table">
               <thead>
                 <tr>
-                  <th>{d.stratum3.matrixColumns.capability}</th>
-                  <th>{d.stratum3.matrixColumns.mobile}</th>
-                  <th>{d.stratum3.matrixColumns.macos}</th>
-                  <th>{d.stratum3.matrixColumns.reason}</th>
+                  <th scope="col">{d.stratum3.matrixColumns.capability}</th>
+                  <th scope="col">{d.stratum3.matrixColumns.mobile}</th>
+                  <th scope="col">{d.stratum3.matrixColumns.macos}</th>
+                  <th scope="col">{d.stratum3.matrixColumns.reason}</th>
                 </tr>
               </thead>
               <tbody>
