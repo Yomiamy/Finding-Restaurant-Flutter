@@ -28,6 +28,24 @@ function walkFiles(dir) {
   return results;
 }
 
+function escapeRegExp(value) {
+  return value.replace(/[.*+?^${}()|[\]\\]/g, '\\$&');
+}
+
+function assertNoBinaryStrings(value, context) {
+  if (typeof value === 'string') {
+    assert.doesNotMatch(value, /\.(dmg|apk|ipa|exe)([?#]|$)/i, context);
+    return;
+  }
+  if (Array.isArray(value)) {
+    for (const item of value) assertNoBinaryStrings(item, context);
+    return;
+  }
+  if (value && typeof value === 'object') {
+    for (const child of Object.values(value)) assertNoBinaryStrings(child, context);
+  }
+}
+
 function assertDistExists() {
   assert.ok(
     existsSync(DIST_DIR),
@@ -102,9 +120,10 @@ test('AC-2: Bilingual HTML, canonical, hreflang, OG/Twitter, theme-color, and JS
   for (const c of cases) {
     assert.ok(existsSync(c.file), `Missing built HTML: ${c.file}`);
     const html = readFileSync(c.file, 'utf8');
+    const escapedCanonical = escapeRegExp(c.canonical);
 
-    assert.match(html, new RegExp(`<html[^>]+lang="${c.lang}"`));
-    assert.match(html, new RegExp(`<link[^>]+rel="canonical"[^>]+href="${c.canonical}"`));
+    assert.match(html, new RegExp(`<html[^>]+lang="${escapeRegExp(c.lang)}"`));
+    assert.match(html, new RegExp(`<link[^>]+rel="canonical"[^>]+href="${escapedCanonical}"`));
     assert.match(
       html,
       /<link[^>]+rel="alternate"[^>]+hreflang="en"[^>]+href="https:\/\/findrestaurant-c80ea\.web\.app\/"/,
@@ -120,7 +139,7 @@ test('AC-2: Bilingual HTML, canonical, hreflang, OG/Twitter, theme-color, and JS
     assert.match(html, /<meta[^>]+property="og:title"/);
     assert.match(html, /<meta[^>]+property="og:description"/);
     assert.match(html, /<meta[^>]+property="og:type"[^>]+content="website"/);
-    assert.match(html, new RegExp(`<meta[^>]+property="og:url"[^>]+content="${c.canonical}"`));
+    assert.match(html, new RegExp(`<meta[^>]+property="og:url"[^>]+content="${escapedCanonical}"`));
     assert.match(html, new RegExp(`<meta[^>]+property="og:locale"[^>]+content="${c.ogLocale}"`));
     assert.match(
       html,
@@ -142,14 +161,10 @@ test('AC-2: Bilingual HTML, canonical, hreflang, OG/Twitter, theme-color, and JS
     assert.ok(ldMatch, `Missing JSON-LD in ${c.file}`);
     const jsonLd = JSON.parse(ldMatch[1]);
     assert.equal(jsonLd['@type'], 'SoftwareApplication');
-    assert.equal(jsonLd.softwareVersion, SITE_META.appVersion);
-    assert.equal(jsonLd.codeRepository, SITE_META.repoUrl);
+    assert.equal(jsonLd.softwareVersion, '2.4.0+40');
+    assert.equal(jsonLd.codeRepository, 'https://github.com/Yomiamy/Finding-Restaurant-Flutter');
     assert.equal('downloadUrl' in jsonLd, false);
-    for (const val of Object.values(jsonLd)) {
-      if (typeof val === 'string') {
-        assert.doesNotMatch(val, /\.(dmg|apk|ipa|exe)([?#]|$)/i);
-      }
-    }
+    assertNoBinaryStrings(jsonLd, `Forbidden binary extension in JSON-LD of ${c.file}`);
   }
 });
 
@@ -159,7 +174,7 @@ test('AC-3 & AC-4: Scrolly WAI-ARIA contract, OS switcher, honest CTAs, and 0 br
   for (const rel of ['index.html', 'zh-tw/index.html']) {
     const html = readFileSync(path.join(DIST_DIR, rel), 'utf8');
 
-    // WAI-ARIA tabs and tabpanels
+    // WAI-ARIA tabs and tabpanels: verify element-level pairing and initial state for all 6 lenses
     assert.match(html, /role="tablist"/);
     const tabs = html.match(/role="tab"/g) ?? [];
     const panels = html.match(/role="tabpanel"/g) ?? [];
@@ -168,15 +183,18 @@ test('AC-3 & AC-4: Scrolly WAI-ARIA contract, OS switcher, honest CTAs, and 0 br
 
     for (let i = 1; i <= 6; i += 1) {
       const id = `lens-0${i}`;
-      assert.match(html, new RegExp(`id="tab-${id}"`));
-      assert.match(html, new RegExp(`aria-controls="panel-${id}"`));
-      assert.match(html, new RegExp(`id="panel-${id}"`));
-      assert.match(html, new RegExp(`aria-labelledby="tab-${id}"`));
+      const tabTag = html.match(new RegExp(`<button\\b[^>]*\\bid="tab-${id}"[^>]*>`))?.[0];
+      assert.ok(tabTag, `${rel} missing tab element id="tab-${id}"`);
+      assert.match(tabTag, /\brole="tab"/);
+      assert.match(tabTag, new RegExp(`\\baria-controls="panel-${id}"`));
+      assert.match(tabTag, new RegExp(`\\baria-selected="${i === 1 ? 'true' : 'false'}"`));
+
+      const panelTag = html.match(new RegExp(`<figure\\b[^>]*\\bid="panel-${id}"[^>]*>`))?.[0];
+      assert.ok(panelTag, `${rel} missing tabpanel element id="panel-${id}"`);
+      assert.match(panelTag, /\brole="tabpanel"/);
+      assert.match(panelTag, new RegExp(`\\baria-labelledby="tab-${id}"`));
+      assert.match(panelTag, new RegExp(`\\baria-hidden="${i === 1 ? 'false' : 'true'}"`));
     }
-    assert.match(html, /id="tab-lens-01"[^>]*aria-selected="true"/);
-    assert.match(html, /id="panel-lens-01"[^>]*aria-hidden="false"/);
-    assert.match(html, /id="tab-lens-02"[^>]*aria-selected="false"/);
-    assert.match(html, /id="panel-lens-02"[^>]*aria-hidden="true"/);
 
     // Every approved WebP referenced, no fake image placeholders
     for (const img of ALLOWED_SCREENSHOTS) {
@@ -214,12 +232,15 @@ test('AC-3 & AC-4: Scrolly WAI-ARIA contract, OS switcher, honest CTAs, and 0 br
     }
 
     // Footer uses group rather than duplicate <nav> landmark for language switch
-    assert.match(html, /<footer\b[\s\S]*<div class="lang-switch" role="group"/);
+    const footerHtml = html.match(/<footer\b[\s\S]*?<\/footer>/)?.[0];
+    assert.ok(footerHtml, `Missing <footer> element in ${rel}`);
+    assert.match(footerHtml, /<div class="lang-switch" role="group"/);
+    assert.doesNotMatch(footerHtml, /<nav\b/i, `Footer must not contain duplicate <nav> in ${rel}`);
 
     // Visible HTML text must not leak raw Markdown backticks (outside <script> / <pre>)
     const visibleHtml = html
-      .replace(/<script[\s\S]*?<\/script>/g, '')
-      .replace(/<pre>[\s\S]*?<\/pre>/g, '');
+      .replace(/<script\b[^>]*>[\s\S]*?<\/script>/gi, '')
+      .replace(/<pre\b[^>]*>[\s\S]*?<\/pre>/gi, '');
     assert.doesNotMatch(visibleHtml, /`/, `Raw markdown backtick leaked into visible HTML in ${rel}`);
 
     // Every local href/src resolves to a built file in dist/ (0 internal 404s)
