@@ -1,0 +1,95 @@
+---
+import '../styles/global.css';
+import {
+  SITE_META,
+  buildSoftwareApplicationJsonLd,
+  type Locale,
+  type SiteLocaleData,
+} from '../data/site';
+
+interface Props {
+  locale: Locale;
+  data: SiteLocaleData;
+}
+
+const { locale, data } = Astro.props;
+const canonicalUrl = `${SITE_META.baseUrl}${data.canonicalPath}`;
+const enUrl = `${SITE_META.baseUrl}/`;
+const zhTwUrl = `${SITE_META.baseUrl}/zh-tw/`;
+const ogImageUrl = `${SITE_META.baseUrl}${SITE_META.ogImagePath}`;
+
+const safeJsonLd = JSON.stringify(buildSoftwareApplicationJsonLd(locale))
+  .replace(/</g, '\\u003c')
+  .replace(/>/g, '\\u003e')
+  .replace(/&/g, '\\u0026');
+---
+
+<!doctype html>
+<html lang={data.htmlLang}>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{data.seo.title}</title>
+    <meta name="description" content={data.seo.description} />
+    <meta name="theme-color" content="#FFFBF7" media="(prefers-color-scheme: light)" />
+    <meta name="theme-color" content="#14100E" media="(prefers-color-scheme: dark)" />
+    <link rel="icon" type="image/png" href={SITE_META.faviconPath} />
+    <link rel="canonical" href={canonicalUrl} />
+    <link rel="alternate" hreflang="en" href={enUrl} />
+    <link rel="alternate" hreflang="zh-Hant-TW" href={zhTwUrl} />
+    <link rel="alternate" hreflang="x-default" href={enUrl} />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Find Restaurant" />
+    <meta property="og:title" content={data.seo.ogTitle} />
+    <meta property="og:description" content={data.seo.ogDescription} />
+    <meta property="og:url" content={canonicalUrl} />
+    <meta property="og:locale" content={data.ogLocale} />
+    <meta property="og:locale:alternate" content={data.ogLocaleAlternate} />
+    <meta property="og:image" content={ogImageUrl} />
+    <meta property="og:image:width" content="1200" />
+    <meta property="og:image:height" content="630" />
+    <meta property="og:image:alt" content={data.seo.ogImageAlt} />
+
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content={data.seo.ogTitle} />
+    <meta name="twitter:description" content={data.seo.ogDescription} />
+    <meta name="twitter:image" content={ogImageUrl} />
+
+    <script type="application/ld+json" set:html={safeJsonLd}></script>
+    <script is:inline>
+      (() => {
+        // Single OS detection rule (kept aligned with src/scripts/showcase.ts detectOsFromAgent;
+        // inline script only prevents first-paint FOUC).
+        const root = document.documentElement;
+        root.dataset.js = '1';
+        let os = '';
+        try {
+          const saved = localStorage.getItem('fr-os-pref');
+          if (saved === 'mobile' || saved === 'macos') os = saved;
+        } catch {}
+        if (!os) {
+          const plat =
+            (navigator.userAgentData && navigator.userAgentData.platform) ||
+            navigator.platform ||
+            '';
+          const ua = navigator.userAgent || '';
+          const isMobile =
+            /iPhone|iPad|iPod|Android/i.test(plat) ||
+            /iPhone|iPad|iPod|Android|Mobile/i.test(ua) ||
+            (/Mac/i.test(plat) && navigator.maxTouchPoints > 1);
+          os =
+            !isMobile &&
+            (/macOS|MacIntel|MacPPC|MacArm/i.test(plat) || /Macintosh|Mac OS X/i.test(ua))
+              ? 'macos'
+              : 'mobile';
+        }
+        root.dataset.os = os;
+      })();
+    </script>
+  </head>
+  <body>
+    <a class="skip-link" href="#main-content">{data.skipToContent}</a>
+    <slot />
+  </body>
+</html>

@@ -1,0 +1,346 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import OsSwitcherBox from './OsSwitcherBox.astro';
+import { SITE_DATA, SITE_META, type Locale } from '../data/site';
+
+interface Props {
+  locale: Locale;
+}
+
+const { locale } = Astro.props;
+const d = SITE_DATA[locale];
+const enActive = locale === 'en';
+const zhActive = locale === 'zh-tw';
+const readmeUrl = enActive ? SITE_META.readmeEnUrl : SITE_META.readmeZhUrl;
+---
+
+<BaseLayout locale={locale} data={d}>
+  <header class="bar">
+    <div class="wrap bar-inner">
+      <a class="brand" href={d.canonicalPath}>
+        <img src={SITE_META.faviconPath} alt="" width="30" height="30" />
+        <span>{d.nav.brandName}</span>
+        <span class="brand-sub">{d.nav.brandSub}</span>
+      </a>
+
+      <nav class="bar-nav" aria-label={d.nav.brandName}>
+        {d.nav.links.map((item) => <a href={item.href}>{item.label}</a>)}
+      </nav>
+
+      <div class="bar-actions">
+        <a
+          class="gh-pill"
+          href={SITE_META.repoUrl}
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          {d.nav.githubLabel}
+        </a>
+        <nav class="lang-switch" aria-label={d.nav.langSwitchLabel}>
+          <a href="/" aria-current={enActive ? 'page' : undefined}>
+            {d.nav.langLinks.en}
+          </a>
+          <a href="/zh-tw/" aria-current={zhActive ? 'page' : undefined}>
+            {d.nav.langLinks.zhTw}
+          </a>
+        </nav>
+      </div>
+    </div>
+  </header>
+
+  <main id="main-content">
+    <section class="hero">
+      <div class="wrap hero-grid">
+        <div class="hero-copy">
+          <span class="eyebrow">{d.hero.badge}</span>
+          <h1>
+            {d.hero.title}
+            <span>{d.hero.titleAccent}</span>
+          </h1>
+          <p class="lead">{d.hero.lead}</p>
+
+          <OsSwitcherBox data={d} headingTag="h2" showDetails={true} />
+
+          <div class="hero-cta">
+            <a
+              class="btn-primary"
+              href={SITE_META.repoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {d.hero.ctaSource}
+            </a>
+            <a
+              class="btn-secondary"
+              href={readmeUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {d.hero.ctaGuide}
+            </a>
+            <a
+              class="btn-secondary"
+              href={SITE_META.releasesUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {d.hero.ctaReleases}
+            </a>
+          </div>
+        </div>
+
+        <aside class="shoal" aria-label={d.hero.canvasTitle}>
+          <div class="shoal-head">
+            <span>{d.hero.canvasTitle}</span>
+            <span>{d.hero.canvasCaption}</span>
+          </div>
+          <canvas class="shoal-canvas" id="shoal-canvas" aria-hidden="true"></canvas>
+        </aside>
+      </div>
+    </section>
+
+    <hr class="strata" />
+
+    <section class="stratum" id="experience">
+      <div class="wrap stratum-shell">
+        <div class="ruler">
+          <span class="depth">{d.stratum1.depth}</span>
+        </div>
+        <div class="stratum-body">
+          <div class="stratum-head">
+            <span class="eyebrow">{d.stratum1.eyebrow}</span>
+            <h2>{d.stratum1.title}</h2>
+            <p>{d.stratum1.lead}</p>
+          </div>
+
+          <div class="scrolly">
+            <div
+              class="lenses"
+              role="tablist"
+              aria-orientation="vertical"
+              aria-label={d.stratum1.tablistLabel}
+              data-lenses-tablist
+            >
+              {d.stratum1.lenses.map((lens, index) => (
+                <button
+                  type="button"
+                  class="lens"
+                  role="tab"
+                  id={`tab-${lens.id}`}
+                  aria-controls={`panel-${lens.id}`}
+                  aria-selected={index === 0 ? 'true' : 'false'}
+                  tabindex={index === 0 ? 0 : -1}
+                  data-lens-tab={String(index)}
+                >
+                  <span class="lens-top">
+                    <span class="lens-code">{lens.code}</span>
+                    <span class="lens-title">{lens.title}</span>
+                  </span>
+                  <span class="lens-sub">{lens.subtitle}</span>
+                  <span class="lens-desc">{lens.description}</span>
+                </button>
+              ))}
+            </div>
+
+            <div class="lens-stack" id="lensstack">
+              <div class="lens-viewport">
+                {d.stratum1.lenses.map((lens, index) => (
+                  <figure
+                    class="lens-panel"
+                    role="tabpanel"
+                    id={`panel-${lens.id}`}
+                    aria-labelledby={`tab-${lens.id}`}
+                    aria-hidden={index === 0 ? 'false' : 'true'}
+                    tabindex={index === 0 ? 0 : -1}
+                    data-lens-panel={String(index)}
+                  >
+                    <img
+                      src={lens.image}
+                      alt={lens.alt}
+                      width="720"
+                      height="1600"
+                      decoding="async"
+                      loading="eager"
+                    />
+                    <figcaption hidden>{lens.caption}</figcaption>
+                  </figure>
+                ))}
+              </div>
+              <p class="lens-caption" data-lens-caption>
+                {d.stratum1.lenses[0].caption}
+              </p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="strata" />
+
+    <section class="stratum" id="ai">
+      <div class="wrap stratum-shell">
+        <div class="ruler">
+          <span class="depth">{d.stratum2.depth}</span>
+        </div>
+        <div class="stratum-body">
+          <div class="stratum-head">
+            <span class="eyebrow">{d.stratum2.eyebrow}</span>
+            <h2>{d.stratum2.title}</h2>
+            <p>{d.stratum2.lead}</p>
+          </div>
+
+          <div class="card-grid">
+            {d.stratum2.cards.map((card) => (
+              <article class="card">
+                <span class="card-tag">{card.tag}</span>
+                <h3>{card.title}</h3>
+                <code class="card-symbol">{card.symbol}</code>
+                <p>{card.description}</p>
+                <ul>
+                  {card.bullets.map((bullet) => <li>{bullet}</li>)}
+                </ul>
+              </article>
+            ))}
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <hr class="strata" />
+
+    <section class="stratum" id="architecture">
+      <div class="wrap stratum-shell">
+        <div class="ruler">
+          <span class="depth">{d.stratum3.depth}</span>
+        </div>
+        <div class="stratum-body">
+          <div class="stratum-head">
+            <span class="eyebrow">{d.stratum3.eyebrow}</span>
+            <h2>{d.stratum3.title}</h2>
+            <p>{d.stratum3.lead}</p>
+          </div>
+
+          <h3 class="sub-heading">{d.stratum3.archHeading}</h3>
+          <div class="arch-grid">
+            {d.stratum3.archLayers.map((layer) => (
+              <article class="card">
+                <span class="card-tag">{layer.layer}</span>
+                <h4>{layer.title}</h4>
+                <p>{layer.summary}</p>
+              </article>
+            ))}
+          </div>
+
+          <h3 class="sub-heading">{d.stratum3.matrixHeading}</h3>
+          <div class="table-wrap">
+            <table class="cap-table">
+              <thead>
+                <tr>
+                  <th scope="col">{d.stratum3.matrixColumns.capability}</th>
+                  <th scope="col">{d.stratum3.matrixColumns.mobile}</th>
+                  <th scope="col">{d.stratum3.matrixColumns.macos}</th>
+                  <th scope="col">{d.stratum3.matrixColumns.reason}</th>
+                </tr>
+              </thead>
+              <tbody>
+                {d.stratum3.capabilities.map((row) => (
+                  <tr>
+                    <td><strong>{row.capability}</strong></td>
+                    <td>{row.mobile}</td>
+                    <td>{row.macos}</td>
+                    <td>{row.reason}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <h3 class="sub-heading">{d.stratum3.securityHeading}</h3>
+          <div class="card-grid">
+            {d.stratum3.securityPrinciples.map((item) => (
+              <article class="card">
+                <h4>{item.title}</h4>
+                <p>{item.detail}</p>
+              </article>
+            ))}
+          </div>
+
+          <aside class="evolution-box">
+            <span class="eyebrow">{d.stratum3.evolutionBadge}</span>
+            <h3>{d.stratum3.evolutionHeading}</h3>
+            <p>{d.stratum3.evolutionBody}</p>
+          </aside>
+        </div>
+      </div>
+    </section>
+
+    <section class="closing" id="install">
+      <div class="wrap closing-grid">
+        <div>
+          <span class="eyebrow">{d.closing.eyebrow}</span>
+          <h2>{d.closing.title}</h2>
+          <p class="lead">{d.closing.lead}</p>
+          <div class="hero-cta">
+            <a
+              class="btn-primary"
+              href={SITE_META.repoUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {d.closing.ctaRepo}
+            </a>
+            <a
+              class="btn-secondary"
+              href={SITE_META.macosGuideUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {d.closing.ctaMacGuide}
+            </a>
+            <a
+              class="btn-secondary"
+              href={SITE_META.releasesUrl}
+              target="_blank"
+              rel="noopener noreferrer"
+            >
+              {d.closing.ctaReleases}
+            </a>
+          </div>
+        </div>
+
+        <OsSwitcherBox data={d} headingTag="h3" showDetails={false} />
+      </div>
+    </section>
+  </main>
+
+  <footer class="foot">
+    <div class="wrap foot-inner">
+      <div>
+        <strong>{d.footer.tagline}</strong>
+        <div>{d.footer.versionText}</div>
+        <div>{d.footer.licenseNote}</div>
+      </div>
+
+      <div class="foot-links">
+        {d.footer.links.map((link) => (
+          <a href={link.href} target="_blank" rel="noopener noreferrer">
+            {link.label}
+          </a>
+        ))}
+        <div class="lang-switch" role="group" aria-label={d.nav.langSwitchLabel}>
+          <a href="/" aria-current={enActive ? 'page' : undefined}>
+            {d.nav.langLinks.en}
+          </a>
+          <a href="/zh-tw/" aria-current={zhActive ? 'page' : undefined}>
+            {d.nav.langLinks.zhTw}
+          </a>
+        </div>
+      </div>
+    </div>
+  </footer>
+
+  <script>
+    import { initShowcase } from '../scripts/showcase';
+    initShowcase();
+  </script>
+</BaseLayout>

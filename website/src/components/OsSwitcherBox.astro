@@ -1,0 +1,68 @@
+---
+import type { SiteLocaleData } from '../data/site';
+
+interface Props {
+  data: SiteLocaleData;
+  headingTag?: 'h2' | 'h3';
+  showDetails?: boolean;
+}
+
+const { data: d, headingTag = 'h2', showDetails = true } = Astro.props;
+---
+
+<div class="os-box">
+  <div class="os-switch" role="group" aria-label={d.hero.osGroupLabel}>
+    <button
+      type="button"
+      class="os-btn"
+      data-os-switch
+      data-os="mobile"
+      aria-pressed="true"
+    >
+      {d.hero.osPanels.mobile.tabLabel}
+    </button>
+    <button
+      type="button"
+      class="os-btn"
+      data-os-switch
+      data-os="macos"
+      aria-pressed="false"
+    >
+      {d.hero.osPanels.macos.tabLabel}
+    </button>
+  </div>
+
+  {(['mobile', 'macos'] as const).map((osKey) => {
+    const panel = d.hero.osPanels[osKey];
+    return (
+      <div class="os-panel" data-os-panel={osKey}>
+        <p class="os-panel-meta">{panel.eyebrow}</p>
+        {headingTag === 'h2' ? <h2>{panel.heading}</h2> : <h3>{panel.heading}</h3>}
+        {showDetails && (
+          <>
+            <p>{panel.summary}</p>
+            <ul class="spec-chips">
+              {panel.specs.map((spec) => <li>{spec}</li>)}
+            </ul>
+            <span class="cli-label">{panel.cliLabel}</span>
+          </>
+        )}
+        <div class="cli-wrap">
+          <pre><code data-cli-code>{panel.cliCommand}</code></pre>
+          <div class="cli-actions">
+            <button
+              type="button"
+              class="copy-btn"
+              data-copy-btn
+              data-copied-label={panel.copiedLabel}
+              data-fallback-label={panel.fallbackLabel}
+            >
+              {panel.copyLabel}
+            </button>
+            <span class="copy-status" data-copy-status aria-live="polite"></span>
+          </div>
+        </div>
+      </div>
+    );
+  })}
+</div>
