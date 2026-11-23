@@ -2527,7 +2527,7 @@ jobs:
               echo "Secret \`FIREBASE_SERVICE_ACCOUNT_FINDRESTAURANT_C80EA\` is not configured."
               echo ""
               echo "To enable automated deployment on \`main\`:"
-              echo "1. Create a Service Account JSON with **Firebase Hosting Admin** permission for project \`findrestaurant-c80ea\` (or run \`firebase init hosting:github\`)."
+              echo "1. Create a Service Account JSON with **Firebase Hosting Admin** (\`roles/firebasehosting.admin\`) and **API Keys Viewer** (\`roles/serviceusage.apiKeysViewer\`) permissions for project \`findrestaurant-c80ea\` (or run \`firebase init hosting:github\`)."
               echo "2. Save it in GitHub **Settings → Secrets and variables → Actions** as \`FIREBASE_SERVICE_ACCOUNT_FINDRESTAURANT_C80EA\`."
             } >> "$GITHUB_STEP_SUMMARY"
             exit 0
@@ -3827,10 +3827,13 @@ cd website && npm run build && npm test
 git status --short
 git status --short -- flutter_restaruant/
 git diff -- flutter_restaruant/
+git diff --name-only 843aaecc..HEAD -- flutter_restaruant/ \
+  ':(exclude)flutter_restaruant/flutter_restaruant/docs/features/2026-11-21-astro-showcase-website.md' \
+  ':(exclude)flutter_restaruant/flutter_restaruant/docs/plans/2026-11-21-astro-showcase-website.md'
 ```
 
 **預期輸出：**
-- `git diff -- flutter_restaruant/` 與 `git status --short -- flutter_restaruant/` **皆完全無輸出**（exit code `0`，確保無 modified 亦無 untracked 污染；既有 Flutter App 程式碼、`pubspec.yaml`、測試檔與 FlutterFire `firebase.json` 零變動）。
+- `git diff -- flutter_restaruant/`、`git status --short -- flutter_restaruant/` 與對照基線 `843aaecc..HEAD` 的 `git diff --name-only`（排除 STAGE 1 核准的兩份規格／計畫文件）**皆完全無輸出**（exit code `0`，確保無已提交或未提交之 App 變更，亦無 untracked 污染；既有 Flutter App 程式碼、`pubspec.yaml`、測試檔與 FlutterFire `firebase.json` 零變動）。
 - `git status --short` 僅出現 `website/` 與 `.github/workflows/website.yml`，且不含 `website/node_modules/`、`website/dist/`、`.astro/`（已被 `.gitignore` 忽略）。
 
 **失敗／需放棄變更時的可執行回滾指令：**

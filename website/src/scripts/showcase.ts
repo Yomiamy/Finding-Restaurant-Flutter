@@ -153,11 +153,13 @@ function initScrollyLenses(): void {
     document.querySelectorAll<HTMLElement>('[data-lens-panel]'),
   );
   const captionEl = document.querySelector<HTMLElement>('[data-lens-caption]');
+  const lensStack = document.getElementById('lensstack');
   if (!tablist || tabs.length === 0 || tabs.length !== panels.length) return;
 
   let activeIndex = 0;
   let manualLockUntil = 0;
   const wideQuery = window.matchMedia('(min-width: 961px)');
+  const reduceMotionQuery = window.matchMedia('(prefers-reduced-motion: reduce)');
 
   const activate = (nextIndex: number, focusTab: boolean): void => {
     if (nextIndex < 0 || nextIndex >= tabs.length) return;
@@ -167,6 +169,7 @@ function initScrollyLenses(): void {
       tabs[i].setAttribute('aria-selected', selected ? 'true' : 'false');
       tabs[i].setAttribute('tabindex', selected ? '0' : '-1');
       panels[i].setAttribute('aria-hidden', selected ? 'false' : 'true');
+      panels[i].setAttribute('tabindex', selected ? '0' : '-1');
     }
     if (captionEl) {
       const activeCaption =
@@ -180,11 +183,25 @@ function initScrollyLenses(): void {
     tabs[i].addEventListener('click', () => {
       manualLockUntil = Date.now() + 650;
       activate(i, false);
+      if (!wideQuery.matches && lensStack) {
+        const rect = lensStack.getBoundingClientRect();
+        if (rect.top < 56 || rect.bottom > window.innerHeight) {
+          lensStack.scrollIntoView({
+            behavior: reduceMotionQuery.matches ? 'auto' : 'smooth',
+            block: 'nearest',
+          });
+        }
+      }
     });
   }
 
   tablist.addEventListener('keydown', (event: KeyboardEvent) => {
-    const next = computeNextLensIndex(activeIndex, tabs.length, event.key);
+    const focusedTab = (
+      event.target as HTMLElement | null
+    )?.closest<HTMLButtonElement>('[data-lens-tab]');
+    const focusedIndex = focusedTab ? tabs.indexOf(focusedTab) : -1;
+    const baseIndex = focusedIndex >= 0 ? focusedIndex : activeIndex;
+    const next = computeNextLensIndex(baseIndex, tabs.length, event.key);
     if (next === null) return;
     event.preventDefault();
     manualLockUntil = Date.now() + 650;
@@ -194,7 +211,13 @@ function initScrollyLenses(): void {
   let rafPending = false;
   const syncFromScroll = (): void => {
     rafPending = false;
-    if (!wideQuery.matches || Date.now() < manualLockUntil) return;
+    if (
+      !wideQuery.matches ||
+      Date.now() < manualLockUntil ||
+      tablist.contains(document.activeElement)
+    ) {
+      return;
+    }
     const scrollyRect = tablist.getBoundingClientRect();
     if (scrollyRect.bottom < 80 || scrollyRect.top > window.innerHeight - 80) {
       return;

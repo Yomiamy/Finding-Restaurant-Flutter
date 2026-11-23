@@ -196,6 +196,7 @@ test('AC-3 & AC-4: Scrolly WAI-ARIA contract, OS switcher, honest CTAs, and 0 br
       assert.match(panelTag, /\brole="tabpanel"/);
       assert.match(panelTag, new RegExp(`\\baria-labelledby="tab-${id}"`));
       assert.match(panelTag, new RegExp(`\\baria-hidden="${i === 1 ? 'false' : 'true'}"`));
+      assert.match(panelTag, new RegExp(`\\btabindex="${i === 1 ? '0' : '-1'}"`));
     }
 
     // Every approved WebP referenced, no fake image placeholders

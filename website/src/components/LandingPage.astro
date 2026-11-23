@@ -151,6 +151,7 @@ const readmeUrl = enActive ? SITE_META.readmeEnUrl : SITE_META.readmeZhUrl;
                     id={`panel-${lens.id}`}
                     aria-labelledby={`tab-${lens.id}`}
                     aria-hidden={index === 0 ? 'false' : 'true'}
+                    tabindex={index === 0 ? 0 : -1}
                     data-lens-panel={String(index)}
                   >
                     <img

@@ -644,6 +644,11 @@ html[data-js='1'] .os-panel + .os-panel {
   z-index: 2;
 }
 
+.lens-panel:focus-visible {
+  outline: 2px solid var(--accent-ink);
+  outline-offset: -3px;
+}
+
 .lens-panel img {
   display: block;
   width: 100%;
@@ -847,6 +852,7 @@ html[data-js='1'] .os-panel + .os-panel {
     max-width: 340px;
     width: 100%;
     margin-inline: auto;
+    scroll-margin-top: 4.75rem;
   }
 
   .lens-viewport {
