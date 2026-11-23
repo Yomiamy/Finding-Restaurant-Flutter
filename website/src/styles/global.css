@@ -833,9 +833,14 @@ html[data-js='1'] .os-panel + .os-panel {
 
   .hero-grid,
   .stratum-shell,
-  .scrolly,
   .closing-grid {
     grid-template-columns: minmax(0, 1fr);
+  }
+
+  .scrolly {
+    display: flex;
+    flex-direction: column;
+    align-items: stretch;
   }
 
   .ruler {
