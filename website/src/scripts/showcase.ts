@@ -153,7 +153,6 @@ function initScrollyLenses(): void {
     document.querySelectorAll<HTMLElement>('[data-lens-panel]'),
   );
   const captionEl = document.querySelector<HTMLElement>('[data-lens-caption]');
-  const lensStack = document.getElementById('lensstack');
   if (!tablist || tabs.length === 0 || tabs.length !== panels.length) return;
 
   let activeIndex = 0;
@@ -176,22 +175,21 @@ function initScrollyLenses(): void {
         panels[nextIndex].querySelector<HTMLElement>('figcaption')?.textContent ?? '';
       captionEl.textContent = activeCaption;
     }
-    if (focusTab) tabs[nextIndex].focus();
+    if (focusTab) {
+      tabs[nextIndex].focus();
+      if (!wideQuery.matches) {
+        tabs[nextIndex].scrollIntoView({
+          behavior: reduceMotionQuery.matches ? 'auto' : 'smooth',
+          block: 'nearest',
+        });
+      }
+    }
   };
 
   for (let i = 0; i < tabs.length; i += 1) {
     tabs[i].addEventListener('click', () => {
       manualLockUntil = Date.now() + 650;
       activate(i, false);
-      if (!wideQuery.matches && lensStack) {
-        const rect = lensStack.getBoundingClientRect();
-        if (rect.top < 56 || rect.bottom > window.innerHeight) {
-          lensStack.scrollIntoView({
-            behavior: reduceMotionQuery.matches ? 'auto' : 'smooth',
-            block: 'nearest',
-          });
-        }
-      }
     });
   }
 
@@ -211,10 +209,12 @@ function initScrollyLenses(): void {
   let rafPending = false;
   const syncFromScroll = (): void => {
     rafPending = false;
+    const activeEl = document.activeElement;
     if (
       !wideQuery.matches ||
       Date.now() < manualLockUntil ||
-      tablist.contains(document.activeElement)
+      tablist.contains(activeEl) ||
+      panels.some((panel) => panel.contains(activeEl))
     ) {
       return;
     }

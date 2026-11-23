@@ -58,7 +58,7 @@ jobs:
               echo "Secret \`FIREBASE_SERVICE_ACCOUNT_FINDRESTAURANT_C80EA\` is not configured."
               echo ""
               echo "To enable automated deployment on \`main\`:"
-              echo "1. Create a Service Account JSON with **Firebase Hosting Admin** (\`roles/firebasehosting.admin\`) and **API Keys Viewer** (\`roles/serviceusage.apiKeysViewer\`) permissions for project \`findrestaurant-c80ea\` (or run \`firebase init hosting:github\`)."
+              echo "1. Create a Service Account JSON with **Firebase Hosting Admin** (\`roles/firebasehosting.admin\`) and **API Keys Viewer** (\`roles/serviceusage.apiKeysViewer\`) permissions for project \`findrestaurant-c80ea\`."
               echo "2. Save it in GitHub **Settings → Secrets and variables → Actions** as \`FIREBASE_SERVICE_ACCOUNT_FINDRESTAURANT_C80EA\`."
             } >> "$GITHUB_STEP_SUMMARY"
             exit 0

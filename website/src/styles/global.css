@@ -846,17 +846,22 @@ html[data-js='1'] .os-panel + .os-panel {
     padding-bottom: 0.5rem;
   }
 
+  .lens {
+    scroll-margin-top: calc(34vh + 8.5rem);
+  }
+
   .lens-stack {
-    position: static;
+    position: sticky;
+    top: 4.25rem;
+    z-index: 10;
     order: -1;
     max-width: 340px;
     width: 100%;
     margin-inline: auto;
-    scroll-margin-top: 4.75rem;
   }
 
   .lens-viewport {
-    width: min(100%, calc(46vh * 9 / 20));
+    width: min(100%, calc(34vh * 9 / 20));
     aspect-ratio: 9 / 20;
     margin-inline: auto;
   }
