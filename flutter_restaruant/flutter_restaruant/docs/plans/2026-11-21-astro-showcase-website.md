@@ -2391,7 +2391,7 @@ cd website && node --test test/site-data.test.mjs
 - Consumes: Task 1 確立之產物目錄 `website/dist/`、`/_astro/*` 及 `/screenshots/*` 路徑約定
 - Produces:
   - Firebase Hosting 設定（專案 ID `findrestaurant-c80ea`、Spark 長效快取 header、不包含任何 `flutter` 平台鍵）
-  - CI/CD 工作流 `.github/workflows/website.yml`（僅於 `website/**` 或自身變動觸發；PR 與 push 執行 `npm ci` + `npm run build` + `npm test`；僅 `push` `main` 且具備 `FIREBASE_SERVICE_ACCOUNT_FINDRESTAURANT_C80EA` secret 時才執行 `npx --yes firebase-tools@15 deploy --only hosting --project findrestaurant-c80ea`，未設定時輸出指引至 `GITHUB_STEP_SUMMARY`）
+  - CI/CD 工作流 `.github/workflows/website.yml`（僅於 `website/**` 或自身變動觸發；PR 與 push 執行 `npm ci` + `npm run build` + `npm test`；僅 `push` `main` 且具備 `FIREBASE_SERVICE_ACCOUNT_JSON` secret 時才執行 `npx --yes firebase-tools@15 deploy --only hosting --project findrestaurant-c80ea`，未設定時輸出指引至 `GITHUB_STEP_SUMMARY`）
 
 - [ ] **Step 1：建立 `website/.firebaserc` 與 `website/firebase.json`**
 
@@ -2518,17 +2518,17 @@ jobs:
       - name: Deploy to Firebase Hosting (main only)
         if: github.event_name == 'push' && github.ref == 'refs/heads/main'
         env:
-          FIREBASE_SA_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_FINDRESTAURANT_C80EA }}
+          FIREBASE_SA_JSON: ${{ secrets.FIREBASE_SERVICE_ACCOUNT_JSON }}
         run: |
           if [ -z "$FIREBASE_SA_JSON" ]; then
             {
               echo "### Firebase Hosting Deploy Skipped"
               echo ""
-              echo "Secret \`FIREBASE_SERVICE_ACCOUNT_FINDRESTAURANT_C80EA\` is not configured."
+              echo "Secret \`FIREBASE_SERVICE_ACCOUNT_JSON\` is not configured."
               echo ""
               echo "To enable automated deployment on \`main\`:"
               echo "1. Create a Service Account JSON with **Firebase Hosting Admin** (\`roles/firebasehosting.admin\`) and **API Keys Viewer** (\`roles/serviceusage.apiKeysViewer\`) permissions for project \`findrestaurant-c80ea\`."
-              echo "2. Save it in GitHub **Settings → Secrets and variables → Actions** as \`FIREBASE_SERVICE_ACCOUNT_FINDRESTAURANT_C80EA\`."
+              echo "2. Save it in GitHub **Settings → Secrets and variables → Actions** as \`FIREBASE_SERVICE_ACCOUNT_JSON\`."
             } >> "$GITHUB_STEP_SUMMARY"
             exit 0
           fi
