@@ -31,9 +31,38 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m4(meters) => "${meters} m";
 
-  static String m5(error) => "Menu recognition failed: ${error}";
+  static String m5(title) => "Added to \"${title}\"";
 
-  static String m6(error) => "Retry analysis failed: ${error}";
+  static String m6(title) => "Already in \"${title}\"";
+
+  static String m7(title) => "You are already in \"${title}\"";
+
+  static String m8(code) => "Invite code copied: ${code}";
+
+  static String m9(title) => "Created map \"${title}\"";
+
+  static String m10(title) =>
+      "Delete \"${title}\"? All recommendations and votes will be permanently removed.";
+
+  static String m11(count) => "Import Selected (${count})";
+
+  static String m12(added) => "Imported ${added} restaurants";
+
+  static String m13(count) => "${count} restaurants";
+
+  static String m14(title) => "Joined map \"${title}\"";
+
+  static String m15(title) => "Leave \"${title}\"?";
+
+  static String m16(count) => "${count} members";
+
+  static String m17(name) => "Recommended by ${name}";
+
+  static String m18(name) => "Remove \"${name}\" from this map?";
+
+  static String m19(error) => "Menu recognition failed: ${error}";
+
+  static String m20(error) => "Retry analysis failed: ${error}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -247,6 +276,139 @@ class MessageLookup extends MessageLookupByLibrary {
     "filter_sorting_rule_distance": MessageLookupByLibrary.simpleMessage(
       "Distance",
     ),
+    "food_maps_add_sheet_create_new": MessageLookupByLibrary.simpleMessage(
+      "Create New Map & Add",
+    ),
+    "food_maps_add_sheet_submit": MessageLookupByLibrary.simpleMessage(
+      "Add to Selected Map",
+    ),
+    "food_maps_add_sheet_title": MessageLookupByLibrary.simpleMessage(
+      "Add to Collaborative Map",
+    ),
+    "food_maps_add_to_map_tooltip": MessageLookupByLibrary.simpleMessage(
+      "Add to Food Map",
+    ),
+    "food_maps_added_success": m5,
+    "food_maps_already_in_map": m6,
+    "food_maps_already_member": m7,
+    "food_maps_code_copied": m8,
+    "food_maps_copy_code_tooltip": MessageLookupByLibrary.simpleMessage(
+      "Copy Invite Code",
+    ),
+    "food_maps_create_action": MessageLookupByLibrary.simpleMessage(
+      "Create Map",
+    ),
+    "food_maps_create_dialog_title": MessageLookupByLibrary.simpleMessage(
+      "Create Collaborative Map",
+    ),
+    "food_maps_created_success": m9,
+    "food_maps_delete_confirm": m10,
+    "food_maps_delete_map": MessageLookupByLibrary.simpleMessage("Delete Map"),
+    "food_maps_deleted_success": MessageLookupByLibrary.simpleMessage(
+      "Food map deleted",
+    ),
+    "food_maps_description_hint": MessageLookupByLibrary.simpleMessage(
+      "Briefly describe this food map",
+    ),
+    "food_maps_description_label": MessageLookupByLibrary.simpleMessage(
+      "Description (optional)",
+    ),
+    "food_maps_detail_empty": MessageLookupByLibrary.simpleMessage(
+      "No restaurants yet. Add from restaurant details or import from favorites!",
+    ),
+    "food_maps_edit_note": MessageLookupByLibrary.simpleMessage(
+      "Edit Recommendation Note",
+    ),
+    "food_maps_empty_subtitle": MessageLookupByLibrary.simpleMessage(
+      "Create a themed food map or enter a friend\'s invite code to collaborate",
+    ),
+    "food_maps_empty_title": MessageLookupByLibrary.simpleMessage(
+      "No collaborative food maps yet",
+    ),
+    "food_maps_error_generic": MessageLookupByLibrary.simpleMessage(
+      "Something went wrong, please try again",
+    ),
+    "food_maps_error_invalid_input": MessageLookupByLibrary.simpleMessage(
+      "Please check your input and character limits",
+    ),
+    "food_maps_error_invalid_invite_code": MessageLookupByLibrary.simpleMessage(
+      "Please enter a valid 8-character invite code",
+    ),
+    "food_maps_error_item_not_found": MessageLookupByLibrary.simpleMessage(
+      "This restaurant is no longer in the map",
+    ),
+    "food_maps_error_map_not_found": MessageLookupByLibrary.simpleMessage(
+      "Food map or invite code not found",
+    ),
+    "food_maps_error_permission_denied": MessageLookupByLibrary.simpleMessage(
+      "You do not have permission for this action",
+    ),
+    "food_maps_import_already_added": MessageLookupByLibrary.simpleMessage(
+      "Already added",
+    ),
+    "food_maps_import_favorites_action": MessageLookupByLibrary.simpleMessage(
+      "Import Favorites",
+    ),
+    "food_maps_import_favorites_empty": MessageLookupByLibrary.simpleMessage(
+      "No favorite restaurants available to import",
+    ),
+    "food_maps_import_favorites_title": MessageLookupByLibrary.simpleMessage(
+      "Import from Favorites",
+    ),
+    "food_maps_import_submit": m11,
+    "food_maps_import_success": m12,
+    "food_maps_invite_code_hint": MessageLookupByLibrary.simpleMessage(
+      "Enter invite code from a friend",
+    ),
+    "food_maps_invite_code_label": MessageLookupByLibrary.simpleMessage(
+      "8-Character Invite Code",
+    ),
+    "food_maps_item_count": m13,
+    "food_maps_join_action": MessageLookupByLibrary.simpleMessage(
+      "Join with Code",
+    ),
+    "food_maps_join_dialog_title": MessageLookupByLibrary.simpleMessage(
+      "Join Food Map",
+    ),
+    "food_maps_joined_success": m14,
+    "food_maps_leave_confirm": m15,
+    "food_maps_leave_map": MessageLookupByLibrary.simpleMessage("Leave Map"),
+    "food_maps_left_success": MessageLookupByLibrary.simpleMessage(
+      "Left food map",
+    ),
+    "food_maps_member_count": m16,
+    "food_maps_name_hint": MessageLookupByLibrary.simpleMessage(
+      "e.g. Late Night Ramen Spots",
+    ),
+    "food_maps_name_label": MessageLookupByLibrary.simpleMessage("Map Name"),
+    "food_maps_no_coordinates": MessageLookupByLibrary.simpleMessage(
+      "No restaurants with coordinates yet. Switch back to list view.",
+    ),
+    "food_maps_note_hint": MessageLookupByLibrary.simpleMessage(
+      "Share must-order dishes or tips...",
+    ),
+    "food_maps_note_label": MessageLookupByLibrary.simpleMessage(
+      "Recommendation Note (optional)",
+    ),
+    "food_maps_note_updated": MessageLookupByLibrary.simpleMessage(
+      "Recommendation note updated",
+    ),
+    "food_maps_owner_badge": MessageLookupByLibrary.simpleMessage("Owner"),
+    "food_maps_recommended_by": m17,
+    "food_maps_remove_restaurant": MessageLookupByLibrary.simpleMessage(
+      "Remove Restaurant",
+    ),
+    "food_maps_remove_restaurant_confirm": m18,
+    "food_maps_restaurant_removed": MessageLookupByLibrary.simpleMessage(
+      "Restaurant removed",
+    ),
+    "food_maps_title": MessageLookupByLibrary.simpleMessage("Food Maps"),
+    "food_maps_toggle_list_view": MessageLookupByLibrary.simpleMessage(
+      "List View",
+    ),
+    "food_maps_toggle_map_view": MessageLookupByLibrary.simpleMessage(
+      "Map View",
+    ),
     "information_section_title": MessageLookupByLibrary.simpleMessage(
       "Information",
     ),
@@ -288,8 +450,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "menu_vision_empty_dishes": MessageLookupByLibrary.simpleMessage(
       "No dish items recognized. Please ensure photo is clear and try again",
     ),
-    "menu_vision_error_analyze_failed": m5,
-    "menu_vision_error_retry_failed": m6,
+    "menu_vision_error_analyze_failed": m19,
+    "menu_vision_error_retry_failed": m20,
     "menu_vision_error_unexpected_format": MessageLookupByLibrary.simpleMessage(
       "Unexpected component format",
     ),
