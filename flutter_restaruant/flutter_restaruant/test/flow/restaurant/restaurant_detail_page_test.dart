@@ -1,14 +1,19 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_localizations/flutter_localizations.dart';
+import 'package:flutter_restaruant/data_layer/models/model_barrel.dart';
 import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_restaruant/domain/repositories/repositories_barrel.dart';
 import 'package:flutter_restaruant/features/component/component_barrel.dart';
 import 'package:flutter_restaruant/features/foundation/style/style_barrel.dart';
+import 'package:flutter_restaruant/features/manager/manager_barrel.dart';
 import 'package:flutter_restaruant/features/utils/utils_barrel.dart';
+import 'package:flutter_restaruant/flow/food_maps/food_maps_barrel.dart';
 import 'package:flutter_restaruant/flow/restaurant/bloc/bloc_barrel.dart';
 import 'package:flutter_restaruant/flow/restaurant/view/view_barrel.dart';
+import 'package:flutter_restaruant/flow/signinup/view/view_barrel.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:get_it/get_it.dart';
@@ -19,6 +24,8 @@ class _MockRestaurantDetailRepository extends Mock
 
 class _MockReviewSummaryRepository extends Mock
     implements ReviewSummaryRepository {}
+
+class _MockFoodMapRepository extends Mock implements FoodMapRepository {}
 
 class _Data {
   static const RestaurantEntity summaryNotFavor = RestaurantEntity(
@@ -60,8 +67,25 @@ class _Data {
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  const localAuthChannel = MethodChannel('plugins.flutter.io/local_auth');
   late _MockRestaurantDetailRepository mockDetailRepository;
   late _MockReviewSummaryRepository mockReviewSummaryRepository;
+
+  setUpAll(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(localAuthChannel, (methodCall) async {
+          if (methodCall.method == 'getAvailableBiometrics') {
+            return <String>[];
+          }
+          return null;
+        });
+  });
+
+  tearDownAll(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(localAuthChannel, null);
+  });
 
   setUp(() async {
     await GetIt.I.reset();
@@ -73,6 +97,8 @@ void main() {
   });
 
   tearDown(() async {
+    SignInManager().accountDto = null;
+    await SignInManager().clearGuestFlag();
     await GetIt.I.reset();
   });
 
@@ -96,6 +122,8 @@ void main() {
               value: bloc,
               child: const RestaurantDetailPage(),
             ),
+        SignInPage.routeName: (_) =>
+            const Scaffold(body: Text('SignInPageStub')),
       },
       home: Builder(
         builder: (context) => Scaffold(
@@ -188,6 +216,92 @@ void main() {
           expect(find.byType(RestaurantBusinessHourCell), findsOneWidget);
           expect(find.text(S.current.business_hour), findsNothing);
           expect(find.byIcon(Icons.favorite), findsOneWidget);
+        } finally {
+          debugDefaultTargetPlatformOverride = null;
+        }
+      },
+    );
+
+    testWidgets(
+      'tapping add_to_food_map_action_button redirects guest to SignInPage',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+        try {
+          SignInManager().accountDto = null;
+          when(
+            () => mockDetailRepository.fetchYelpRestaurantDetailInfo(
+              'biz-empty-hours',
+            ),
+          ).thenAnswer((_) async => _Data.detailEmptyHours);
+          when(
+            () => mockDetailRepository.fetchYelpRestaurantReviewInfo(
+              'biz-empty-hours',
+            ),
+          ).thenAnswer((_) async => _Data.emptyReviews);
+
+          final bloc = RestaurantDetailBloc(repository: mockDetailRepository);
+          addTearDown(bloc.close);
+
+          await tester.pumpWidget(
+            buildHostApp(bloc: bloc, summaryInfo: _Data.summaryNotFavor),
+          );
+          await tester.tap(find.byKey(const Key('open_detail_btn')));
+          await tester.pumpAndSettle();
+
+          await tester.tap(
+            find.byKey(const Key('add_to_food_map_action_button')),
+          );
+          await tester.pumpAndSettle();
+
+          expect(find.text('SignInPageStub'), findsOneWidget);
+        } finally {
+          debugDefaultTargetPlatformOverride = null;
+        }
+      },
+    );
+
+    testWidgets(
+      'tapping add_to_food_map_action_button opens AddToFoodMapSheet when signed in',
+      (tester) async {
+        debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+        try {
+          SignInManager().accountDto = AccountModel(
+            type: AccountType.google,
+            uid: 'u1',
+            account: 'alice@example.com',
+          );
+          final mockFoodMapRepo = _MockFoodMapRepository();
+          when(
+            () => mockFoodMapRepo.fetchMyFoodMaps(),
+          ).thenAnswer((_) async => const <FoodMapEntity>[]);
+          GetIt.I.registerSingleton<FoodMapRepository>(mockFoodMapRepo);
+
+          when(
+            () => mockDetailRepository.fetchYelpRestaurantDetailInfo(
+              'biz-empty-hours',
+            ),
+          ).thenAnswer((_) async => _Data.detailEmptyHours);
+          when(
+            () => mockDetailRepository.fetchYelpRestaurantReviewInfo(
+              'biz-empty-hours',
+            ),
+          ).thenAnswer((_) async => _Data.emptyReviews);
+
+          final bloc = RestaurantDetailBloc(repository: mockDetailRepository);
+          addTearDown(bloc.close);
+
+          await tester.pumpWidget(
+            buildHostApp(bloc: bloc, summaryInfo: _Data.summaryNotFavor),
+          );
+          await tester.tap(find.byKey(const Key('open_detail_btn')));
+          await tester.pumpAndSettle();
+
+          await tester.tap(
+            find.byKey(const Key('add_to_food_map_action_button')),
+          );
+          await tester.pumpAndSettle();
+
+          expect(find.byType(AddToFoodMapSheet), findsOneWidget);
         } finally {
           debugDefaultTargetPlatformOverride = null;
         }

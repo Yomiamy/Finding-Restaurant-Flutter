@@ -4,7 +4,9 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../features/component/component_barrel.dart';
 import '../../../features/foundation/extension/extension_barrel.dart';
 import '../../../domain/entities/entities_barrel.dart';
+import '../../food_maps/food_maps_barrel.dart';
 import '../../menu_vision/menu_vision_barrel.dart';
+import '../../signinup/view/view_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../generated/l10n.dart';
@@ -54,6 +56,42 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
     }
   }
 
+  void _onAddToFoodMap() {
+    final signInManager = SignInManager();
+    final isUnauthenticated =
+        signInManager.isGuest ||
+        (signInManager.accountDto?.uid?.trim().isEmpty ?? true);
+    if (isUnauthenticated) {
+      Navigator.of(context).pushNamed(SignInPage.routeName);
+      return;
+    }
+
+    var restaurant = _summaryInfo;
+    final state = _bloc.state;
+    if (state is Success) {
+      final detail = state.detailInfo;
+      restaurant = restaurant.copyWith(
+        name: (restaurant.name?.trim().isNotEmpty ?? false)
+            ? restaurant.name
+            : detail.name,
+        imageUrl: (restaurant.imageUrl?.trim().isNotEmpty ?? false)
+            ? restaurant.imageUrl
+            : detail.imageUrl,
+        rating: restaurant.rating ?? detail.rating,
+        reviewCount: restaurant.reviewCount ?? detail.reviewCount,
+        price: restaurant.price ?? detail.price,
+        phone: restaurant.phone ?? detail.phone,
+        categories: (restaurant.categories?.isNotEmpty ?? false)
+            ? restaurant.categories
+            : detail.categories,
+        location: restaurant.location ?? detail.location,
+        coordinates: restaurant.coordinates ?? detail.coordinates,
+      );
+    }
+
+    AddToFoodMapSheet.show(context, restaurant: restaurant);
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -84,6 +122,15 @@ class RestaurantDetailPageState extends State<RestaurantDetailPage> {
         ),
         backgroundColor: ThemeColor.colord84a20,
         actions: [
+          IconButton(
+            key: const Key('add_to_food_map_action_button'),
+            tooltip: S.current.food_maps_add_to_map_tooltip,
+            icon: const Icon(
+              Icons.add_location_alt_outlined,
+              color: ThemeColor.colorffffff,
+            ),
+            onPressed: _onAddToFoodMap,
+          ),
           IconButton(
             key: const Key('menu_vision_action_button'),
             tooltip: S.current.restaurant_detail_menu_vision_tooltip,
