@@ -11,3 +11,4 @@ export 'yelp_event_repo.dart';
 export 'yelp_category_repo.dart';
 export 'yelp_autocomplete_repo.dart';
 export 'ugc_note_repo.dart';
+export 'food_map_repo.dart';

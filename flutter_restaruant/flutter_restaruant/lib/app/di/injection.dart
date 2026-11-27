@@ -22,6 +22,7 @@ void setupInjection() {
   // Data sources
   getIt.registerLazySingleton<FavorDataSource>(() => FavorDataSource());
   getIt.registerLazySingleton<UgcNoteDataSource>(() => UgcNoteDataSource());
+  getIt.registerLazySingleton<FoodMapDataSource>(() => FoodMapDataSource());
 
   // Repositories
   getIt.registerLazySingleton<MainRepository>(
@@ -62,5 +63,8 @@ void setupInjection() {
   );
   getIt.registerLazySingleton<UgcNoteRepository>(
     () => UgcNoteRepo(dataSource: getIt<UgcNoteDataSource>()),
+  );
+  getIt.registerLazySingleton<FoodMapRepository>(
+    () => FoodMapRepo(dataSource: getIt<FoodMapDataSource>()),
   );
 }

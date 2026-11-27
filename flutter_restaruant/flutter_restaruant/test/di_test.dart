@@ -148,6 +148,22 @@ void main() {
       expect(repo, isA<UgcNoteRepository>());
     });
 
+    test(
+      'FoodMapRepository resolves to FoodMapRepository as lazy singleton',
+      () {
+        expect(GetIt.I.isRegistered<FoodMapDataSource>(), isTrue);
+        final ds1 = GetIt.I<FoodMapDataSource>();
+        final ds2 = GetIt.I<FoodMapDataSource>();
+        expect(identical(ds1, ds2), isTrue);
+
+        expect(GetIt.I.isRegistered<FoodMapRepository>(), isTrue);
+        final repo1 = GetIt.I<FoodMapRepository>();
+        final repo2 = GetIt.I<FoodMapRepository>();
+        expect(repo1, isA<FoodMapRepository>());
+        expect(identical(repo1, repo2), isTrue);
+      },
+    );
+
     test('Lazy singletons return the same instance', () {
       final mainRepo1 = GetIt.I<MainRepository>();
       final mainRepo2 = GetIt.I<MainRepository>();
