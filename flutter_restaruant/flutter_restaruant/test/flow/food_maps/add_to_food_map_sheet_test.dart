@@ -157,4 +157,84 @@ void main() {
       expect(find.byType(AddToFoodMapSheet), findsNothing);
     },
   );
+
+  testWidgets(
+    'switches back to map list with new map preselected when create succeeds but add fails',
+    (tester) async {
+      final createdMap = _Data.map.copyWith(id: 'm2', title: '新建但加店失敗');
+      when(
+        () => mockRepository.fetchMyFoodMaps(),
+      ).thenAnswer((_) async => const [_Data.map]);
+      when(
+        () => mockRepository.createFoodMap(title: '新建但加店失敗', description: ''),
+      ).thenAnswer((_) async => createdMap);
+
+      var addAttempts = 0;
+      when(
+        () => mockRepository.addRestaurant(
+          mapId: 'm2',
+          restaurant: _Data.shop,
+          note: '',
+        ),
+      ).thenAnswer((_) async {
+        addAttempts++;
+        if (addAttempts == 1) {
+          throw const FoodMapException(FoodMapErrorCode.unknown);
+        }
+        return (added: true, item: _Data.item);
+      });
+
+      final bloc = AddToFoodMapBloc(
+        repository: mockRepository,
+        logger: Logger(level: Level.off),
+      );
+      addTearDown(bloc.close);
+
+      await tester.pumpWidget(buildHost(bloc));
+      await tester.tap(find.byKey(const Key('open_add_sheet_btn')));
+      await tester.pumpAndSettle();
+
+      await tester.tap(
+        find.byKey(const Key('add_to_food_map_switch_create_btn')),
+      );
+      await tester.pumpAndSettle();
+      await tester.enterText(
+        find.byKey(const Key('add_to_food_map_new_title_field')),
+        '新建但加店失敗',
+      );
+      await tester.tap(find.byKey(const Key('add_to_food_map_submit_btn')));
+      await tester.pumpAndSettle();
+
+      // Sheet stays open, shows error, exits create form, and selects newly created m2
+      expect(find.byType(AddToFoodMapSheet), findsOneWidget);
+      expect(
+        find.byKey(const Key('add_to_food_map_error_text')),
+        findsOneWidget,
+      );
+      expect(
+        find.byKey(const Key('add_to_food_map_new_title_field')),
+        findsNothing,
+      );
+      expect(
+        find.byKey(const Key('add_to_food_map_option_m2')),
+        findsOneWidget,
+      );
+
+      // Tapping submit again adds to m2 without creating a duplicate map
+      await tester.tap(find.byKey(const Key('add_to_food_map_submit_btn')));
+      await tester.pumpAndSettle();
+
+      verify(
+        () => mockRepository.createFoodMap(title: '新建但加店失敗', description: ''),
+      ).called(1);
+      verify(
+        () => mockRepository.addRestaurant(
+          mapId: 'm2',
+          restaurant: _Data.shop,
+          note: '',
+        ),
+      ).called(2);
+      expect(find.byType(AddToFoodMapSheet), findsNothing);
+    },
+  );
 }

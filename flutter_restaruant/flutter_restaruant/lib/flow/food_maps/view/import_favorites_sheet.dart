@@ -5,7 +5,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 
 import '../../../domain/entities/entities_barrel.dart';
 import '../../../features/component/component_barrel.dart';
-import '../../../features/foundation/extension/extension_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../bloc/bloc_barrel.dart';
@@ -100,7 +99,7 @@ class _ImportFavoritesSheetState extends State<ImportFavoritesSheet> {
 
   void _submit(List<RestaurantEntity> favorites) {
     final selected = favorites
-        .where((r) => r.id != null && _selectedIds.contains(r.id))
+        .where((r) => _selectedIds.contains((r.id ?? '').trim()))
         .toList();
     if (selected.isEmpty) return;
     _bloc.add(
@@ -125,11 +124,6 @@ class _ImportFavoritesSheetState extends State<ImportFavoritesSheet> {
                 ),
               ),
             );
-          } else if (state is ImportFavoritesReady) {
-            final code = state.errorCode;
-            if (code != null) {
-              context.showAppSnackBar(foodMapErrorMessage(code));
-            }
           }
         },
         builder: (context, state) {
@@ -170,16 +164,16 @@ class _ImportFavoritesSheetState extends State<ImportFavoritesSheet> {
                       ),
                       child: Center(child: LoadingWidget()),
                     ),
-                    ImportFavoritesFailure(:final errorCode) =>
-                      EmptyDataWidget.withDefaults(
-                        title: foodMapErrorMessage(errorCode),
-                        onRetry: () =>
-                            _bloc.add(const LoadFavoritesForImport()),
-                      ),
+                    ImportFavoritesFailure(:final errorCode) => EmptyDataWidget(
+                      title: foodMapErrorMessage(errorCode),
+                      icon: Icons.error_outline,
+                      onRetry: () => _bloc.add(const LoadFavoritesForImport()),
+                    ),
                     ImportFavoritesSuccess() => const SizedBox.shrink(),
                     ImportFavoritesReady(
                       :final favorites,
                       :final isSubmitting,
+                      :final errorCode,
                     ) =>
                       favorites.isEmpty
                           ? EmptyDataWidget(
@@ -191,6 +185,7 @@ class _ImportFavoritesSheetState extends State<ImportFavoritesSheet> {
                               existingIds: widget.existingRestaurantIds,
                               selectedIds: _selectedIds,
                               isSubmitting: isSubmitting,
+                              errorCode: errorCode,
                               onToggle: _toggleSelection,
                               onSubmit: () => _submit(favorites),
                             ),
@@ -210,6 +205,7 @@ class _ImportFavoritesListBody extends StatelessWidget {
   final Set<String> existingIds;
   final Set<String> selectedIds;
   final bool isSubmitting;
+  final FoodMapErrorCode? errorCode;
   final ValueChanged<String> onToggle;
   final VoidCallback onSubmit;
 
@@ -218,16 +214,30 @@ class _ImportFavoritesListBody extends StatelessWidget {
     required this.existingIds,
     required this.selectedIds,
     required this.isSubmitting,
+    required this.errorCode,
     required this.onToggle,
     required this.onSubmit,
   });
 
   @override
   Widget build(BuildContext context) {
+    final colorScheme = Theme.of(context).colorScheme;
     return Column(
       mainAxisSize: MainAxisSize.min,
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
+        if (errorCode case final code?) ...[
+          Padding(
+            padding: const EdgeInsets.only(bottom: ThemeSize.space8),
+            child: Text(
+              foodMapErrorMessage(code),
+              key: const Key('import_favorites_error_text'),
+              style: Theme.of(
+                context,
+              ).textTheme.bodySmall?.copyWith(color: colorScheme.error),
+            ),
+          ),
+        ],
         ConstrainedBox(
           constraints: const BoxConstraints(maxHeight: ThemeSize.size320),
           child: ListView.builder(
@@ -240,7 +250,11 @@ class _ImportFavoritesListBody extends StatelessWidget {
               final isChecked = isAlreadyAdded || selectedIds.contains(id);
 
               return CheckboxListTile(
-                key: Key('import_favorite_tile_$id'),
+                key: Key(
+                  id.isNotEmpty
+                      ? 'import_favorite_tile_$id'
+                      : 'import_favorite_tile_empty_$index',
+                ),
                 contentPadding: EdgeInsets.zero,
                 value: isChecked,
                 onChanged: (isAlreadyAdded || isSubmitting)

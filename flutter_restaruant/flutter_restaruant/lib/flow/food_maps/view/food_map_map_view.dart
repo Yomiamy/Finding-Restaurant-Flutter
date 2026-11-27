@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 import 'package:google_maps_flutter/google_maps_flutter.dart';
@@ -74,6 +76,7 @@ class _FoodMapMapViewState extends State<FoodMapMapView> {
   GoogleMapController? _mapController;
   List<FoodMapItemEntity> _mappableItems = const [];
   int _selectedIndex = 0;
+  bool _isProgrammaticPageChange = false;
 
   @override
   void initState() {
@@ -86,17 +89,29 @@ class _FoodMapMapViewState extends State<FoodMapMapView> {
   void didUpdateWidget(covariant FoodMapMapView oldWidget) {
     super.didUpdateWidget(oldWidget);
     if (!listEquals(widget.items, oldWidget.items)) {
-      setState(() {
-        _syncMappableItems();
-        if (_selectedIndex >= _mappableItems.length) {
-          _selectedIndex = 0;
-        }
-      });
+      _syncMappableItems();
+      if (_mappableItems.isEmpty) {
+        _selectedIndex = 0;
+        _mapController?.dispose();
+        _mapController = null;
+      } else {
+        _selectedIndex = _selectedIndex.clamp(0, _mappableItems.length - 1);
+        final targetIndex = _selectedIndex;
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (!mounted || !_pageController.hasClients) return;
+          if (targetIndex < 0 || targetIndex >= _mappableItems.length) return;
+          if ((_pageController.page?.round() ?? -1) != targetIndex) {
+            _pageController.jumpToPage(targetIndex);
+          }
+        });
+      }
     }
   }
 
   @override
   void dispose() {
+    _mapController?.dispose();
+    _mapController = null;
     _pageController.dispose();
     super.dispose();
   }
@@ -105,25 +120,44 @@ class _FoodMapMapViewState extends State<FoodMapMapView> {
     _mappableItems = FoodMapMapView.filterMappableItems(widget.items);
   }
 
-  void _selectIndexFromMarker(int index) {
-    setState(() => _selectedIndex = index);
-    if (_pageController.hasClients) {
-      _pageController.animateToPage(
-        index,
-        duration: const Duration(milliseconds: 300),
-        curve: Curves.easeInOut,
-      );
-    }
-  }
-
-  void _onCarouselChanged(int index) {
-    setState(() => _selectedIndex = index);
+  void _animateCameraTo(int index) {
+    if (index < 0 || index >= _mappableItems.length) return;
     final coords = _mappableItems[index].restaurant.coordinates;
     final lat = coords?.latitude;
     final lng = coords?.longitude;
     if (lat != null && lng != null) {
       _mapController?.animateCamera(CameraUpdate.newLatLng(LatLng(lat, lng)));
     }
+  }
+
+  void _selectIndexFromMarker(int index) {
+    if (index < 0 || index >= _mappableItems.length) return;
+    setState(() => _selectedIndex = index);
+    _animateCameraTo(index);
+    if (_pageController.hasClients &&
+        (_pageController.page?.round() ?? -1) != index) {
+      unawaited(_animateCarouselTo(index));
+    }
+  }
+
+  Future<void> _animateCarouselTo(int index) async {
+    _isProgrammaticPageChange = true;
+    try {
+      await _pageController.animateToPage(
+        index,
+        duration: const Duration(milliseconds: 300),
+        curve: Curves.easeInOut,
+      );
+    } finally {
+      _isProgrammaticPageChange = false;
+    }
+  }
+
+  void _onCarouselChanged(int index) {
+    if (index < 0 || index >= _mappableItems.length) return;
+    if (_isProgrammaticPageChange) return;
+    setState(() => _selectedIndex = index);
+    _animateCameraTo(index);
   }
 
   @override
@@ -135,6 +169,10 @@ class _FoodMapMapViewState extends State<FoodMapMapView> {
       );
     }
 
+    final safeSelectedIndex = _selectedIndex.clamp(
+      0,
+      _mappableItems.length - 1,
+    );
     final firstCoords = _mappableItems.first.restaurant.coordinates;
     final initialTarget = LatLng(
       firstCoords?.latitude ?? 0,
@@ -142,7 +180,7 @@ class _FoodMapMapViewState extends State<FoodMapMapView> {
     );
     final markers = FoodMapMapView.buildMarkers(
       items: _mappableItems,
-      selectedIndex: _selectedIndex,
+      selectedIndex: safeSelectedIndex,
       onSelect: _selectIndexFromMarker,
     );
 

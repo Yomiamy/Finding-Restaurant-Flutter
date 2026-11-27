@@ -351,5 +351,44 @@ void main() {
         await bloc2.close();
       },
     );
+
+    test(
+      'ignores create/join while initial FetchFoodMaps is in flight so loaded maps are never wiped',
+      () async {
+        final fetchCompleter = Completer<List<FoodMapEntity>>();
+        when(
+          () => mockRepository.fetchMyFoodMaps(),
+        ).thenAnswer((_) => fetchCompleter.future);
+
+        final bloc = buildBloc();
+        bloc.add(const FetchFoodMaps());
+        await Future<void>.delayed(Duration.zero);
+        expect(bloc.state, const FoodMapsLoading());
+
+        bloc.add(const CreateFoodMapRequested(title: '偷跑建立'));
+        bloc.add(const JoinFoodMapByCodeRequested(inviteCode: 'ABCD2345'));
+        await Future<void>.delayed(Duration.zero);
+
+        verifyNever(
+          () => mockRepository.createFoodMap(
+            title: any(named: 'title'),
+            description: any(named: 'description'),
+          ),
+        );
+        verifyNever(() => mockRepository.joinFoodMapByInviteCode(any()));
+
+        fetchCompleter.complete(const [_Data.map1, _Data.map2]);
+        await Future<void>.delayed(Duration.zero);
+
+        expect(
+          bloc.state,
+          const FoodMapsLoaded(
+            maps: [_Data.map1, _Data.map2],
+            currentUid: 'u1',
+          ),
+        );
+        await bloc.close();
+      },
+    );
   });
 }

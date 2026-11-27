@@ -264,4 +264,39 @@ void main() {
       expect(marker1.icon, isNot(equals(marker2.icon)));
     },
   );
+
+  testWidgets(
+    'renders mapNotFound fallback instead of hanging when route arguments are missing',
+    (tester) async {
+      final bloc = FoodMapDetailBloc(
+        repository: mockRepository,
+        logger: Logger(level: Level.off),
+      );
+      addTearDown(bloc.close);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('zh', 'TW'),
+          localizationsDelegates: const [
+            S.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: S.delegate.supportedLocales,
+          theme: AppThemeData.materialLight,
+          home: BlocProvider<FoodMapDetailBloc>.value(
+            value: bloc,
+            child: const FoodMapDetailPage(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      expect(
+        find.text(S.current.food_maps_error_map_not_found),
+        findsOneWidget,
+      );
+    },
+  );
 }

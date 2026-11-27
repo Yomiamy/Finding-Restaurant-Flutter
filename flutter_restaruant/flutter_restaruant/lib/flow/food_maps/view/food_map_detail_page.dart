@@ -255,20 +255,25 @@ class _FoodMapDetailPageState extends State<FoodMapDetailPage> {
             ],
           ),
           body: switch (state) {
+            FoodMapDetailInitial() when _isInit && _initialMap == null =>
+              EmptyDataWidget(
+                title: foodMapErrorMessage(FoodMapErrorCode.mapNotFound),
+                icon: Icons.error_outline,
+              ),
             FoodMapDetailInitial() ||
             FoodMapDetailLoading() => const Center(child: LoadingWidget()),
-            FoodMapDetailFailure(:final errorCode) =>
-              EmptyDataWidget.withDefaults(
-                title: foodMapErrorMessage(errorCode),
-                onRetry: activeMap == null
-                    ? null
-                    : () => _bloc.add(
-                        LoadFoodMapDetail(
-                          mapId: activeMap.id,
-                          initialMap: activeMap,
-                        ),
+            FoodMapDetailFailure(:final errorCode) => EmptyDataWidget(
+              title: foodMapErrorMessage(errorCode),
+              icon: Icons.error_outline,
+              onRetry: activeMap == null
+                  ? null
+                  : () => _bloc.add(
+                      LoadFoodMapDetail(
+                        mapId: activeMap.id,
+                        initialMap: activeMap,
                       ),
-              ),
+                    ),
+            ),
             FoodMapDetailLoaded(:final map, :final items, :final currentUid) =>
               Column(
                 children: [
@@ -674,6 +679,7 @@ class _EditItemNoteDialogState extends State<_EditItemNoteDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       title: Text(S.current.food_maps_edit_note),
       content: TextField(
         key: const Key('food_map_edit_note_field'),

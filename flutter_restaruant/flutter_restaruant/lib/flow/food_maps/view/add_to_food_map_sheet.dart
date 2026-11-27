@@ -50,6 +50,7 @@ class _AddToFoodMapSheetState extends State<AddToFoodMapSheet> {
 
   String? _selectedMapId;
   bool _isCreatingNew = false;
+  Set<String> _knownMapIds = <String>{};
 
   @override
   void initState() {
@@ -129,9 +130,20 @@ class _AddToFoodMapSheetState extends State<AddToFoodMapSheet> {
             final messenger = ScaffoldMessenger.of(context);
             Navigator.of(context).pop();
             messenger.showSnackBar(SnackBar(content: Text(message)));
-          } else if (state is AddToFoodMapReady && state.maps.isNotEmpty) {
-            final exists = state.maps.any((m) => m.id == _selectedMapId);
-            if (!exists) {
+          } else if (state is AddToFoodMapReady) {
+            final currentIds = state.maps.map((m) => m.id).toSet();
+            final hasNewCreatedMap =
+                _isCreatingNew &&
+                state.maps.isNotEmpty &&
+                !_knownMapIds.contains(state.maps.first.id);
+            _knownMapIds = currentIds;
+            if (hasNewCreatedMap) {
+              setState(() {
+                _isCreatingNew = false;
+                _selectedMapId = state.maps.first.id;
+              });
+            } else if (state.maps.isNotEmpty &&
+                !state.maps.any((m) => m.id == _selectedMapId)) {
               setState(() => _selectedMapId = state.maps.first.id);
             }
           }
@@ -161,11 +173,11 @@ class _AddToFoodMapSheetState extends State<AddToFoodMapSheet> {
                         ),
                         child: Center(child: LoadingWidget()),
                       ),
-                      AddToFoodMapFailure(:final errorCode) =>
-                        EmptyDataWidget.withDefaults(
-                          title: foodMapErrorMessage(errorCode),
-                          onRetry: () => _bloc.add(const LoadMapsForAdd()),
-                        ),
+                      AddToFoodMapFailure(:final errorCode) => EmptyDataWidget(
+                        title: foodMapErrorMessage(errorCode),
+                        icon: Icons.error_outline,
+                        onRetry: () => _bloc.add(const LoadMapsForAdd()),
+                      ),
                       AddToFoodMapSuccess() => const SizedBox.shrink(),
                       AddToFoodMapReady(
                         :final maps,

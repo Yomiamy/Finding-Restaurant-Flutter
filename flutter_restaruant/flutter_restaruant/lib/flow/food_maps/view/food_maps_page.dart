@@ -154,69 +154,71 @@ class _FoodMapsPageState extends State<FoodMapsPage> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        leading: IconButton(
-          padding: EdgeInsets.zero,
-          onPressed: () => Navigator.of(context).pop(),
-          icon: const Icon(Icons.arrow_back, color: ThemeColor.colorffffff),
-        ),
-        title: Text(
-          S.current.food_maps_title,
-          style: const TextStyle(
-            color: ThemeColor.colorffffff,
-            fontSize: ThemeFontSize.fontSize22,
-          ),
-        ),
-        backgroundColor: ThemeColor.colord84a20,
-        actions: [
-          IconButton(
-            key: const Key('food_maps_join_btn'),
-            tooltip: S.current.food_maps_join_action,
-            onPressed: _showJoinDialog,
-            icon: const Icon(
-              Icons.group_add_outlined,
-              color: ThemeColor.colorffffff,
-            ),
-          ),
-        ],
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        key: const Key('food_maps_create_btn'),
-        onPressed: _showCreateDialog,
-        backgroundColor: ThemeColor.colord84a20,
-        foregroundColor: ThemeColor.colorffffff,
-        icon: const Icon(Icons.add),
-        label: Text(S.current.food_maps_create_action),
-      ),
-      body: BlocConsumer<FoodMapsBloc, FoodMapsState>(
-        bloc: _bloc,
-        listenWhen: (previous, current) =>
-            current is FoodMapsLoaded &&
-            current.feedback != null &&
-            (previous is! FoodMapsLoaded ||
-                previous.feedback != current.feedback),
-        listener: (context, state) {
-          if (state is FoodMapsLoaded) {
-            final feedback = state.feedback;
-            if (feedback != null) {
-              _handleFeedback(context, feedback);
-            }
+    return BlocConsumer<FoodMapsBloc, FoodMapsState>(
+      bloc: _bloc,
+      listenWhen: (previous, current) =>
+          current is FoodMapsLoaded &&
+          current.feedback != null &&
+          (previous is! FoodMapsLoaded ||
+              previous.feedback != current.feedback),
+      listener: (context, state) {
+        if (state is FoodMapsLoaded) {
+          final feedback = state.feedback;
+          if (feedback != null) {
+            _handleFeedback(context, feedback);
           }
-        },
-        builder: (context, state) {
-          return switch (state) {
+        }
+      },
+      builder: (context, state) {
+        final canAct = state is FoodMapsLoaded && !state.isSubmitting;
+        return Scaffold(
+          appBar: AppBar(
+            leading: IconButton(
+              padding: EdgeInsets.zero,
+              onPressed: () => Navigator.of(context).pop(),
+              icon: const Icon(Icons.arrow_back, color: ThemeColor.colorffffff),
+            ),
+            title: Text(
+              S.current.food_maps_title,
+              style: const TextStyle(
+                color: ThemeColor.colorffffff,
+                fontSize: ThemeFontSize.fontSize22,
+              ),
+            ),
+            backgroundColor: ThemeColor.colord84a20,
+            actions: [
+              IconButton(
+                key: const Key('food_maps_join_btn'),
+                tooltip: S.current.food_maps_join_action,
+                onPressed: canAct ? _showJoinDialog : null,
+                icon: const Icon(
+                  Icons.group_add_outlined,
+                  color: ThemeColor.colorffffff,
+                ),
+              ),
+            ],
+          ),
+          floatingActionButton: FloatingActionButton.extended(
+            key: const Key('food_maps_create_btn'),
+            onPressed: canAct ? _showCreateDialog : null,
+            backgroundColor: ThemeColor.colord84a20,
+            foregroundColor: ThemeColor.colorffffff,
+            icon: const Icon(Icons.add),
+            label: Text(S.current.food_maps_create_action),
+          ),
+          body: switch (state) {
             FoodMapsInitial() ||
             FoodMapsLoading() => const Center(child: LoadingWidget()),
-            FoodMapsFailure(:final errorCode) => EmptyDataWidget.withDefaults(
+            FoodMapsFailure(:final errorCode) => EmptyDataWidget(
               title: foodMapErrorMessage(errorCode),
+              icon: Icons.error_outline,
               onRetry: () => _bloc.add(const FetchFoodMaps()),
             ),
             FoodMapsLoaded(:final maps, :final currentUid) =>
               maps.isEmpty
                   ? _FoodMapsEmptyView(
-                      onCreate: _showCreateDialog,
-                      onJoin: _showJoinDialog,
+                      onCreate: canAct ? _showCreateDialog : null,
+                      onJoin: canAct ? _showJoinDialog : null,
                     )
                   : RefreshIndicator(
                       onRefresh: _onRefresh,
@@ -239,16 +241,18 @@ class _FoodMapsPageState extends State<FoodMapsPage> {
                             isOwner: isOwner,
                             onTap: () => _openDetail(map),
                             onCopyCode: () => _copyInviteCode(map.inviteCode),
-                            onDeleteOrLeave: () => isOwner
-                                ? _confirmDelete(map)
-                                : _confirmLeave(map),
+                            onDeleteOrLeave: canAct
+                                ? () => isOwner
+                                      ? _confirmDelete(map)
+                                      : _confirmLeave(map)
+                                : null,
                           );
                         },
                       ),
                     ),
-          };
-        },
-      ),
+          },
+        );
+      },
     );
   }
 }
@@ -259,7 +263,7 @@ class FoodMapSummaryCard extends StatelessWidget {
   final bool isOwner;
   final VoidCallback onTap;
   final VoidCallback onCopyCode;
-  final VoidCallback onDeleteOrLeave;
+  final VoidCallback? onDeleteOrLeave;
 
   const FoodMapSummaryCard({
     super.key,
@@ -401,8 +405,8 @@ class _MetaChip extends StatelessWidget {
 }
 
 class _FoodMapsEmptyView extends StatelessWidget {
-  final VoidCallback onCreate;
-  final VoidCallback onJoin;
+  final VoidCallback? onCreate;
+  final VoidCallback? onJoin;
 
   const _FoodMapsEmptyView({required this.onCreate, required this.onJoin});
 
@@ -473,6 +477,7 @@ class _CreateFoodMapDialogState extends State<_CreateFoodMapDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       title: Text(S.current.food_maps_create_dialog_title),
       content: Column(
         mainAxisSize: MainAxisSize.min,
@@ -540,11 +545,13 @@ class _JoinFoodMapDialogState extends State<_JoinFoodMapDialog> {
   @override
   Widget build(BuildContext context) {
     return AlertDialog(
+      scrollable: true,
       title: Text(S.current.food_maps_join_dialog_title),
       content: TextField(
         key: const Key('food_maps_join_code_field'),
         controller: _codeController,
         maxLength: FoodMapEntity.inviteCodeLength,
+        inputFormatters: [FilteringTextInputFormatter.deny(RegExp(r'\s'))],
         textCapitalization: TextCapitalization.characters,
         decoration: InputDecoration(
           labelText: S.current.food_maps_invite_code_label,

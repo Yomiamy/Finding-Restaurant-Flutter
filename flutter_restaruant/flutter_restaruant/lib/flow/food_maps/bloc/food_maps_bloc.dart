@@ -108,10 +108,8 @@ class FoodMapsBloc extends Bloc<FoodMapsEvent, FoodMapsState> {
     Emitter<FoodMapsState> emit,
   ) async {
     final current = state;
-    if (current is FoodMapsLoaded && current.isSubmitting) return;
-    if (current is FoodMapsLoaded) {
-      emit(current.copyWith(isSubmitting: true, clearFeedback: true));
-    }
+    if (current is! FoodMapsLoaded || current.isSubmitting) return;
+    emit(current.copyWith(isSubmitting: true, clearFeedback: true));
     try {
       final created = await _repository.createFoodMap(
         title: event.title,
@@ -141,10 +139,8 @@ class FoodMapsBloc extends Bloc<FoodMapsEvent, FoodMapsState> {
     Emitter<FoodMapsState> emit,
   ) async {
     final current = state;
-    if (current is FoodMapsLoaded && current.isSubmitting) return;
-    if (current is FoodMapsLoaded) {
-      emit(current.copyWith(isSubmitting: true, clearFeedback: true));
-    }
+    if (current is! FoodMapsLoaded || current.isSubmitting) return;
+    emit(current.copyWith(isSubmitting: true, clearFeedback: true));
     try {
       final result = await _repository.joinFoodMapByInviteCode(
         event.inviteCode,
@@ -180,10 +176,8 @@ class FoodMapsBloc extends Bloc<FoodMapsEvent, FoodMapsState> {
     Emitter<FoodMapsState> emit,
   ) async {
     final current = state;
-    if (current is FoodMapsLoaded && current.isSubmitting) return;
-    if (current is FoodMapsLoaded) {
-      emit(current.copyWith(isSubmitting: true, clearFeedback: true));
-    }
+    if (current is! FoodMapsLoaded || current.isSubmitting) return;
+    emit(current.copyWith(isSubmitting: true, clearFeedback: true));
     try {
       await _repository.deleteFoodMap(event.mapId);
       ++_requestVersion;
@@ -210,10 +204,8 @@ class FoodMapsBloc extends Bloc<FoodMapsEvent, FoodMapsState> {
     Emitter<FoodMapsState> emit,
   ) async {
     final current = state;
-    if (current is FoodMapsLoaded && current.isSubmitting) return;
-    if (current is FoodMapsLoaded) {
-      emit(current.copyWith(isSubmitting: true, clearFeedback: true));
-    }
+    if (current is! FoodMapsLoaded || current.isSubmitting) return;
+    emit(current.copyWith(isSubmitting: true, clearFeedback: true));
     try {
       await _repository.leaveFoodMap(event.mapId);
       ++_requestVersion;

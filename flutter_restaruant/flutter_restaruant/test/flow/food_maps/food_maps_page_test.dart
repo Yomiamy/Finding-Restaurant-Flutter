@@ -153,12 +153,12 @@ void main() {
       await tester.pumpAndSettle();
       expect(find.text('新地圖'), findsOneWidget);
 
-      // Join map via AppBar button
+      // Join map via AppBar button (verify whitespace-padded paste is not truncated before trim)
       await tester.tap(find.byKey(const Key('food_maps_join_btn')));
       await tester.pumpAndSettle();
       await tester.enterText(
         find.byKey(const Key('food_maps_join_code_field')),
-        'ZZZZ2345',
+        '  ZZZZ2345  ',
       );
       await tester.tap(find.byKey(const Key('food_maps_join_submit_btn')));
       await tester.pumpAndSettle();

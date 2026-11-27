@@ -113,4 +113,82 @@ void main() {
       ).called(1);
     },
   );
+
+  testWidgets(
+    'shows inline error inside sheet on import failure and handles padded/empty restaurant ids',
+    (tester) async {
+      const paddedShop = RestaurantEntity(id: ' r3 ', name: '空白 ID 店');
+      const emptyShop1 = RestaurantEntity(id: '', name: '無 ID 店 1');
+      const emptyShop2 = RestaurantEntity(id: '   ', name: '無 ID 店 2');
+
+      when(
+        () => mockFavorRepository.fetchFavorInfos(),
+      ).thenAnswer((_) async => const [paddedShop, emptyShop1, emptyShop2]);
+      when(
+        () => mockFoodMapRepository.importRestaurants(
+          mapId: 'm1',
+          restaurants: const [paddedShop],
+        ),
+      ).thenThrow(const FoodMapException(FoodMapErrorCode.permissionDenied));
+
+      final bloc = ImportFavoritesBloc(
+        favorRepository: mockFavorRepository,
+        foodMapRepository: mockFoodMapRepository,
+        logger: Logger(level: Level.off),
+      );
+      addTearDown(bloc.close);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          locale: const Locale('zh', 'TW'),
+          localizationsDelegates: const [
+            S.delegate,
+            GlobalMaterialLocalizations.delegate,
+            GlobalWidgetsLocalizations.delegate,
+            GlobalCupertinoLocalizations.delegate,
+          ],
+          supportedLocales: S.delegate.supportedLocales,
+          theme: AppThemeData.materialLight,
+          home: Builder(
+            builder: (context) => Scaffold(
+              body: ElevatedButton(
+                key: const Key('open_import_sheet_btn'),
+                onPressed: () {
+                  ImportFavoritesSheet.show(
+                    context,
+                    mapId: 'm1',
+                    existingRestaurantIds: const {},
+                    bloc: bloc,
+                  );
+                },
+                child: const Text('Import'),
+              ),
+            ),
+          ),
+        ),
+      );
+
+      await tester.tap(find.byKey(const Key('open_import_sheet_btn')));
+      await tester.pumpAndSettle();
+
+      // Multiple empty-ID tiles render without duplicate key exception
+      expect(tester.takeException(), isNull);
+      expect(find.byKey(const Key('import_favorite_tile_r3')), findsOneWidget);
+
+      await tester.tap(find.byKey(const Key('import_favorite_tile_r3')));
+      await tester.pumpAndSettle();
+      await tester.tap(find.byKey(const Key('import_favorites_submit_btn')));
+      await tester.pumpAndSettle();
+
+      expect(find.byType(ImportFavoritesSheet), findsOneWidget);
+      expect(
+        find.byKey(const Key('import_favorites_error_text')),
+        findsOneWidget,
+      );
+      expect(
+        find.text(S.current.food_maps_error_permission_denied),
+        findsOneWidget,
+      );
+    },
+  );
 }
