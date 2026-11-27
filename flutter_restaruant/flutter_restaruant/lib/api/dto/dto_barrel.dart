@@ -1,4 +1,6 @@
 export 'ai_model_config.dart';
+export 'food_map_dto.dart';
+export 'food_map_item_dto.dart';
 export 'ugc_note_dto.dart';
 export 'yelp_autocomplete_dto.dart';
 export 'yelp_autocomplete_term_dto.dart';

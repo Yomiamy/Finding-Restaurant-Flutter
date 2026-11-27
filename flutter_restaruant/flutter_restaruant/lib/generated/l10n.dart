@@ -1634,6 +1634,576 @@ class S {
       args: [],
     );
   }
+
+  /// `Food Maps`
+  String get food_maps_title {
+    return Intl.message(
+      'Food Maps',
+      name: 'food_maps_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No collaborative food maps yet`
+  String get food_maps_empty_title {
+    return Intl.message(
+      'No collaborative food maps yet',
+      name: 'food_maps_empty_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create a themed food map or enter a friend's invite code to collaborate`
+  String get food_maps_empty_subtitle {
+    return Intl.message(
+      'Create a themed food map or enter a friend\'s invite code to collaborate',
+      name: 'food_maps_empty_subtitle',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create Map`
+  String get food_maps_create_action {
+    return Intl.message(
+      'Create Map',
+      name: 'food_maps_create_action',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Join with Code`
+  String get food_maps_join_action {
+    return Intl.message(
+      'Join with Code',
+      name: 'food_maps_join_action',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create Collaborative Map`
+  String get food_maps_create_dialog_title {
+    return Intl.message(
+      'Create Collaborative Map',
+      name: 'food_maps_create_dialog_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Map Name`
+  String get food_maps_name_label {
+    return Intl.message(
+      'Map Name',
+      name: 'food_maps_name_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `e.g. Late Night Ramen Spots`
+  String get food_maps_name_hint {
+    return Intl.message(
+      'e.g. Late Night Ramen Spots',
+      name: 'food_maps_name_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Description (optional)`
+  String get food_maps_description_label {
+    return Intl.message(
+      'Description (optional)',
+      name: 'food_maps_description_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Briefly describe this food map`
+  String get food_maps_description_hint {
+    return Intl.message(
+      'Briefly describe this food map',
+      name: 'food_maps_description_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Join Food Map`
+  String get food_maps_join_dialog_title {
+    return Intl.message(
+      'Join Food Map',
+      name: 'food_maps_join_dialog_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `8-Character Invite Code`
+  String get food_maps_invite_code_label {
+    return Intl.message(
+      '8-Character Invite Code',
+      name: 'food_maps_invite_code_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Enter invite code from a friend`
+  String get food_maps_invite_code_hint {
+    return Intl.message(
+      'Enter invite code from a friend',
+      name: 'food_maps_invite_code_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Copy Invite Code`
+  String get food_maps_copy_code_tooltip {
+    return Intl.message(
+      'Copy Invite Code',
+      name: 'food_maps_copy_code_tooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Invite code copied: {code}`
+  String food_maps_code_copied(Object code) {
+    return Intl.message(
+      'Invite code copied: $code',
+      name: 'food_maps_code_copied',
+      desc: '',
+      args: [code],
+    );
+  }
+
+  /// `Owner`
+  String get food_maps_owner_badge {
+    return Intl.message(
+      'Owner',
+      name: 'food_maps_owner_badge',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `{count} members`
+  String food_maps_member_count(Object count) {
+    return Intl.message(
+      '$count members',
+      name: 'food_maps_member_count',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `{count} restaurants`
+  String food_maps_item_count(Object count) {
+    return Intl.message(
+      '$count restaurants',
+      name: 'food_maps_item_count',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Delete Map`
+  String get food_maps_delete_map {
+    return Intl.message(
+      'Delete Map',
+      name: 'food_maps_delete_map',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Delete "{title}"? All recommendations and votes will be permanently removed.`
+  String food_maps_delete_confirm(Object title) {
+    return Intl.message(
+      'Delete "$title"? All recommendations and votes will be permanently removed.',
+      name: 'food_maps_delete_confirm',
+      desc: '',
+      args: [title],
+    );
+  }
+
+  /// `Leave Map`
+  String get food_maps_leave_map {
+    return Intl.message(
+      'Leave Map',
+      name: 'food_maps_leave_map',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Leave "{title}"?`
+  String food_maps_leave_confirm(Object title) {
+    return Intl.message(
+      'Leave "$title"?',
+      name: 'food_maps_leave_confirm',
+      desc: '',
+      args: [title],
+    );
+  }
+
+  /// `Created map "{title}"`
+  String food_maps_created_success(Object title) {
+    return Intl.message(
+      'Created map "$title"',
+      name: 'food_maps_created_success',
+      desc: '',
+      args: [title],
+    );
+  }
+
+  /// `Joined map "{title}"`
+  String food_maps_joined_success(Object title) {
+    return Intl.message(
+      'Joined map "$title"',
+      name: 'food_maps_joined_success',
+      desc: '',
+      args: [title],
+    );
+  }
+
+  /// `You are already in "{title}"`
+  String food_maps_already_member(Object title) {
+    return Intl.message(
+      'You are already in "$title"',
+      name: 'food_maps_already_member',
+      desc: '',
+      args: [title],
+    );
+  }
+
+  /// `Food map deleted`
+  String get food_maps_deleted_success {
+    return Intl.message(
+      'Food map deleted',
+      name: 'food_maps_deleted_success',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Left food map`
+  String get food_maps_left_success {
+    return Intl.message(
+      'Left food map',
+      name: 'food_maps_left_success',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No restaurants yet. Add from restaurant details or import from favorites!`
+  String get food_maps_detail_empty {
+    return Intl.message(
+      'No restaurants yet. Add from restaurant details or import from favorites!',
+      name: 'food_maps_detail_empty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recommended by {name}`
+  String food_maps_recommended_by(Object name) {
+    return Intl.message(
+      'Recommended by $name',
+      name: 'food_maps_recommended_by',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Edit Recommendation Note`
+  String get food_maps_edit_note {
+    return Intl.message(
+      'Edit Recommendation Note',
+      name: 'food_maps_edit_note',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recommendation Note (optional)`
+  String get food_maps_note_label {
+    return Intl.message(
+      'Recommendation Note (optional)',
+      name: 'food_maps_note_label',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Share must-order dishes or tips...`
+  String get food_maps_note_hint {
+    return Intl.message(
+      'Share must-order dishes or tips...',
+      name: 'food_maps_note_hint',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Recommendation note updated`
+  String get food_maps_note_updated {
+    return Intl.message(
+      'Recommendation note updated',
+      name: 'food_maps_note_updated',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove Restaurant`
+  String get food_maps_remove_restaurant {
+    return Intl.message(
+      'Remove Restaurant',
+      name: 'food_maps_remove_restaurant',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Remove "{name}" from this map?`
+  String food_maps_remove_restaurant_confirm(Object name) {
+    return Intl.message(
+      'Remove "$name" from this map?',
+      name: 'food_maps_remove_restaurant_confirm',
+      desc: '',
+      args: [name],
+    );
+  }
+
+  /// `Restaurant removed`
+  String get food_maps_restaurant_removed {
+    return Intl.message(
+      'Restaurant removed',
+      name: 'food_maps_restaurant_removed',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No restaurants with coordinates yet. Switch back to list view.`
+  String get food_maps_no_coordinates {
+    return Intl.message(
+      'No restaurants with coordinates yet. Switch back to list view.',
+      name: 'food_maps_no_coordinates',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Map View`
+  String get food_maps_toggle_map_view {
+    return Intl.message(
+      'Map View',
+      name: 'food_maps_toggle_map_view',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `List View`
+  String get food_maps_toggle_list_view {
+    return Intl.message(
+      'List View',
+      name: 'food_maps_toggle_list_view',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add to Food Map`
+  String get food_maps_add_to_map_tooltip {
+    return Intl.message(
+      'Add to Food Map',
+      name: 'food_maps_add_to_map_tooltip',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add to Collaborative Map`
+  String get food_maps_add_sheet_title {
+    return Intl.message(
+      'Add to Collaborative Map',
+      name: 'food_maps_add_sheet_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Create New Map & Add`
+  String get food_maps_add_sheet_create_new {
+    return Intl.message(
+      'Create New Map & Add',
+      name: 'food_maps_add_sheet_create_new',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Add to Selected Map`
+  String get food_maps_add_sheet_submit {
+    return Intl.message(
+      'Add to Selected Map',
+      name: 'food_maps_add_sheet_submit',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Added to "{title}"`
+  String food_maps_added_success(Object title) {
+    return Intl.message(
+      'Added to "$title"',
+      name: 'food_maps_added_success',
+      desc: '',
+      args: [title],
+    );
+  }
+
+  /// `Already in "{title}"`
+  String food_maps_already_in_map(Object title) {
+    return Intl.message(
+      'Already in "$title"',
+      name: 'food_maps_already_in_map',
+      desc: '',
+      args: [title],
+    );
+  }
+
+  /// `Import Favorites`
+  String get food_maps_import_favorites_action {
+    return Intl.message(
+      'Import Favorites',
+      name: 'food_maps_import_favorites_action',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Import from Favorites`
+  String get food_maps_import_favorites_title {
+    return Intl.message(
+      'Import from Favorites',
+      name: 'food_maps_import_favorites_title',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `No favorite restaurants available to import`
+  String get food_maps_import_favorites_empty {
+    return Intl.message(
+      'No favorite restaurants available to import',
+      name: 'food_maps_import_favorites_empty',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Already added`
+  String get food_maps_import_already_added {
+    return Intl.message(
+      'Already added',
+      name: 'food_maps_import_already_added',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Import Selected ({count})`
+  String food_maps_import_submit(Object count) {
+    return Intl.message(
+      'Import Selected ($count)',
+      name: 'food_maps_import_submit',
+      desc: '',
+      args: [count],
+    );
+  }
+
+  /// `Imported {added} restaurants`
+  String food_maps_import_success(Object added) {
+    return Intl.message(
+      'Imported $added restaurants',
+      name: 'food_maps_import_success',
+      desc: '',
+      args: [added],
+    );
+  }
+
+  /// `Please check your input and character limits`
+  String get food_maps_error_invalid_input {
+    return Intl.message(
+      'Please check your input and character limits',
+      name: 'food_maps_error_invalid_input',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Please enter a valid 8-character invite code`
+  String get food_maps_error_invalid_invite_code {
+    return Intl.message(
+      'Please enter a valid 8-character invite code',
+      name: 'food_maps_error_invalid_invite_code',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Food map or invite code not found`
+  String get food_maps_error_map_not_found {
+    return Intl.message(
+      'Food map or invite code not found',
+      name: 'food_maps_error_map_not_found',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `This restaurant is no longer in the map`
+  String get food_maps_error_item_not_found {
+    return Intl.message(
+      'This restaurant is no longer in the map',
+      name: 'food_maps_error_item_not_found',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `You do not have permission for this action`
+  String get food_maps_error_permission_denied {
+    return Intl.message(
+      'You do not have permission for this action',
+      name: 'food_maps_error_permission_denied',
+      desc: '',
+      args: [],
+    );
+  }
+
+  /// `Something went wrong, please try again`
+  String get food_maps_error_generic {
+    return Intl.message(
+      'Something went wrong, please try again',
+      name: 'food_maps_error_generic',
+      desc: '',
+      args: [],
+    );
+  }
 }
 
 class AppLocalizationDelegate extends LocalizationsDelegate<S> {

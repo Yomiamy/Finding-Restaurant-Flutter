@@ -2,11 +2,17 @@ import 'dart:async';
 
 import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_restaruant/domain/entities/entities_barrel.dart';
 import 'package:flutter_restaruant/features/component/component_barrel.dart';
 import 'package:flutter_restaruant/app/di/di_barrel.dart';
+import 'package:flutter_restaruant/data_layer/models/model_barrel.dart';
+import 'package:flutter_restaruant/features/manager/manager_barrel.dart';
+import 'package:flutter_restaruant/flow/food_maps/food_maps_barrel.dart';
 import 'package:flutter_restaruant/flow/main/bloc/bloc_barrel.dart';
 import 'package:flutter_restaruant/flow/main/view/view_barrel.dart';
+import 'package:flutter_restaruant/flow/signinup/view/view_barrel.dart';
 import 'package:flutter_restaruant/generated/l10n.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_mobile_ads/google_mobile_ads.dart';
@@ -18,7 +24,8 @@ import 'package:google_mobile_ads/google_mobile_ads.dart';
 /// 同步呼叫，記錄不需等待事件迴圈。
 class _RecordingMainBloc extends Bloc<MainEvent, MainState>
     implements MainBloc {
-  _RecordingMainBloc() : super(const MainInitial()) {
+  _RecordingMainBloc({MainState initialState = const MainInitial()})
+    : super(initialState) {
     on<MainEvent>((_, __) {});
   }
 
@@ -32,6 +39,23 @@ class _RecordingMainBloc extends Bloc<MainEvent, MainState>
 }
 
 void main() {
+  TestWidgetsFlutterBinding.ensureInitialized();
+  const localAuthChannel = MethodChannel('plugins.flutter.io/local_auth');
+
+  setUpAll(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(localAuthChannel, (methodCall) async {
+          if (methodCall.method == 'getAvailableBiometrics') {
+            return <String>[];
+          }
+          return null;
+        });
+  });
+
+  tearDownAll(() {
+    TestDefaultBinaryMessengerBinding.instance.defaultBinaryMessenger
+        .setMockMethodCallHandler(localAuthChannel, null);
+  });
   Future<_RecordingMainBloc> pumpMainPage(WidgetTester tester) async {
     final bloc = _RecordingMainBloc();
     // 不可在測試本體 await close()：已註冊 handler 的 bloc 在 fake async 下會卡住。
@@ -100,6 +124,109 @@ void main() {
       expect(find.byKey(const Key('main_page_search_button')), findsOneWidget);
       expect(find.byIcon(Icons.search), findsOneWidget);
 
+      await tester.pumpWidget(const SizedBox());
+    } finally {
+      debugDefaultTargetPlatformOverride = null;
+    }
+  });
+
+  testWidgets(
+    'Drawer Food Maps redirects unauthenticated/guest user to SignInPage',
+    (tester) async {
+      debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+      SignInManager().accountDto = null;
+      addTearDown(() async {
+        SignInManager().accountDto = null;
+        await SignInManager().clearGuestFlag();
+      });
+
+      try {
+        final bloc = _RecordingMainBloc(
+          initialState: const Success(summaryInfos: <RestaurantEntity>[]),
+        );
+        addTearDown(bloc.close);
+
+        await tester.pumpWidget(
+          MaterialApp(
+            localizationsDelegates: const [S.delegate],
+            supportedLocales: S.delegate.supportedLocales,
+            routes: {
+              SignInPage.routeName: (_) =>
+                  const Scaffold(body: Text('SignInStub')),
+              FoodMapsPage.routeName: (_) =>
+                  const Scaffold(body: Text('FoodMapsStub')),
+            },
+            home: BlocProvider<MainBloc>.value(
+              value: bloc,
+              child: const MainPage(),
+            ),
+          ),
+        );
+        await tester.pumpAndSettle();
+
+        await tester.tap(find.byIcon(Icons.menu));
+        await tester.pumpAndSettle();
+        await tester.tap(
+          find.widgetWithText(ListTile, S.current.food_maps_title),
+        );
+        await tester.pumpAndSettle();
+
+        expect(find.text('SignInStub'), findsOneWidget);
+        expect(find.text('FoodMapsStub'), findsNothing);
+        await tester.pumpWidget(const SizedBox());
+      } finally {
+        debugDefaultTargetPlatformOverride = null;
+      }
+    },
+  );
+
+  testWidgets('Drawer Food Maps navigates signed-in user to FoodMapsPage', (
+    tester,
+  ) async {
+    debugDefaultTargetPlatformOverride = TargetPlatform.macOS;
+    SignInManager().accountDto = AccountModel(
+      type: AccountType.google,
+      uid: 'signed-in-uid',
+      account: 'alice@example.com',
+    );
+    addTearDown(() async {
+      SignInManager().accountDto = null;
+      await SignInManager().clearGuestFlag();
+    });
+
+    try {
+      final bloc = _RecordingMainBloc(
+        initialState: const Success(summaryInfos: <RestaurantEntity>[]),
+      );
+      addTearDown(bloc.close);
+
+      await tester.pumpWidget(
+        MaterialApp(
+          localizationsDelegates: const [S.delegate],
+          supportedLocales: S.delegate.supportedLocales,
+          routes: {
+            SignInPage.routeName: (_) =>
+                const Scaffold(body: Text('SignInStub')),
+            FoodMapsPage.routeName: (_) =>
+                const Scaffold(body: Text('FoodMapsStub')),
+          },
+          home: BlocProvider<MainBloc>.value(
+            value: bloc,
+            child: const MainPage(),
+          ),
+        ),
+      );
+      await tester.pumpAndSettle();
+
+      await tester.tap(find.byIcon(Icons.menu));
+      await tester.pumpAndSettle();
+      await tester.tap(
+        find.widgetWithText(ListTile, S.current.food_maps_title),
+      );
+      await tester.pumpAndSettle();
+
+      expect(find.text('FoodMapsStub'), findsOneWidget);
+      expect(find.text('SignInStub'), findsNothing);
       await tester.pumpWidget(const SizedBox());
     } finally {
       debugDefaultTargetPlatformOverride = null;

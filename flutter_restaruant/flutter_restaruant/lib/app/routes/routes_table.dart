@@ -5,6 +5,7 @@ import '../../domain/repositories/repositories_barrel.dart';
 import '../../flow/favor/bloc/bloc_barrel.dart';
 import '../../flow/favor/view/view_barrel.dart';
 import '../../flow/filter/filter_barrel.dart';
+import '../../flow/food_maps/food_maps_barrel.dart';
 import '../../flow/main/bloc/bloc_barrel.dart';
 import '../../flow/main/view/view_barrel.dart';
 import '../../flow/notes/notes_barrel.dart';
@@ -53,4 +54,12 @@ final Map<String, WidgetBuilder> routesTable = <String, WidgetBuilder>{
     child: const NotesFeedPage(),
   ),
   NoteDetailPage.routeName: (context) => const NoteDetailPage(),
+  FoodMapsPage.routeName: (context) => BlocProvider<FoodMapsBloc>(
+    create: (_) => FoodMapsBloc(repository: GetIt.I<FoodMapRepository>()),
+    child: const FoodMapsPage(),
+  ),
+  FoodMapDetailPage.routeName: (context) => BlocProvider<FoodMapDetailBloc>(
+    create: (_) => FoodMapDetailBloc(repository: GetIt.I<FoodMapRepository>()),
+    child: const FoodMapDetailPage(),
+  ),
 };

@@ -7,15 +7,18 @@ import '../../../app/di/di_barrel.dart';
 import '../../../domain/domain_barrel.dart';
 import '../../../features/foundation/extension/extension_barrel.dart';
 import '../../../features/foundation/style/style_barrel.dart';
+import '../../../features/manager/manager_barrel.dart';
 import '../../../features/utils/utils_barrel.dart';
 import '../../../generated/l10n.dart';
 import '../../../models/model_barrel.dart';
 import '../../autocomplete/autocomplete_barrel.dart';
 import '../../favor/view/view_barrel.dart';
 import '../../filter/view/view_barrel.dart';
+import '../../food_maps/food_maps_barrel.dart';
 import '../../notes/view/view_barrel.dart';
 import '../../restaurant/view/view_barrel.dart';
 import '../../settings/view/view_barrel.dart';
+import '../../signinup/view/view_barrel.dart';
 import '../bloc/bloc_barrel.dart';
 import '../../ai_foodie/ai_foodie_barrel.dart';
 import 'drawer_widget.dart';
@@ -78,6 +81,7 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
         onToggleViewMode: _toggleViewMode,
         onMapMyLoc: () => _mainBloc.add(const Reset()),
         onFavorites: _navigateToFavorites,
+        onFoodMaps: _navigateToFoodMaps,
         onNotesFeed: _navigateToNotesFeed,
         onSettings: _navigateToSettings,
       ),
@@ -148,6 +152,19 @@ class MainPageState extends State<MainPage> implements AppOpenADEvent {
   void _navigateToFavorites() {
     if (!mounted) return;
     Navigator.of(context).pushNamed(FavorPage.routeName);
+  }
+
+  void _navigateToFoodMaps() {
+    if (!mounted) return;
+    final signInManager = SignInManager();
+    final isUnauthenticated =
+        signInManager.isGuest ||
+        (signInManager.accountDto?.uid?.trim().isEmpty ?? true);
+    if (isUnauthenticated) {
+      Navigator.of(context).pushNamed(SignInPage.routeName);
+      return;
+    }
+    Navigator.of(context).pushNamed(FoodMapsPage.routeName);
   }
 
   void _navigateToNotesFeed() {

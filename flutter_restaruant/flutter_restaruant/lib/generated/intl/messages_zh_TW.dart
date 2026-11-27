@@ -31,9 +31,37 @@ class MessageLookup extends MessageLookupByLibrary {
 
   static String m4(meters) => "${meters} 公尺";
 
-  static String m5(error) => "菜單辨識失敗：${error}";
+  static String m5(title) => "已加入「${title}」";
 
-  static String m6(error) => "重試分析失敗：${error}";
+  static String m6(title) => "此餐廳已在「${title}」中";
+
+  static String m7(title) => "你已在「${title}」中";
+
+  static String m8(code) => "已複製邀請碼：${code}";
+
+  static String m9(title) => "已建立地圖「${title}」";
+
+  static String m10(title) => "確定要刪除「${title}」嗎？地圖內的推薦與投票將一併移除且無法復原。";
+
+  static String m11(count) => "匯入所選（${count}）";
+
+  static String m12(added) => "已匯入 ${added} 間餐廳";
+
+  static String m13(count) => "${count} 間餐廳";
+
+  static String m14(title) => "已加入地圖「${title}」";
+
+  static String m15(title) => "確定要退出「${title}」嗎？";
+
+  static String m16(count) => "${count} 位成員";
+
+  static String m17(name) => "推薦人：${name}";
+
+  static String m18(name) => "確定要從地圖中移除「${name}」嗎？";
+
+  static String m19(error) => "菜單辨識失敗：${error}";
+
+  static String m20(error) => "重試分析失敗：${error}";
 
   final messages = _notInlinedMessages(_notInlinedMessages);
   static Map<String, Function> _notInlinedMessages(_) => <String, Function>{
@@ -201,6 +229,117 @@ class MessageLookup extends MessageLookupByLibrary {
       "最佳配對",
     ),
     "filter_sorting_rule_distance": MessageLookupByLibrary.simpleMessage("距離"),
+    "food_maps_add_sheet_create_new": MessageLookupByLibrary.simpleMessage(
+      "建立新地圖並加入",
+    ),
+    "food_maps_add_sheet_submit": MessageLookupByLibrary.simpleMessage(
+      "加入所選地圖",
+    ),
+    "food_maps_add_sheet_title": MessageLookupByLibrary.simpleMessage(
+      "加入共編美食地圖",
+    ),
+    "food_maps_add_to_map_tooltip": MessageLookupByLibrary.simpleMessage(
+      "加入美食地圖",
+    ),
+    "food_maps_added_success": m5,
+    "food_maps_already_in_map": m6,
+    "food_maps_already_member": m7,
+    "food_maps_code_copied": m8,
+    "food_maps_copy_code_tooltip": MessageLookupByLibrary.simpleMessage(
+      "複製邀請碼",
+    ),
+    "food_maps_create_action": MessageLookupByLibrary.simpleMessage("建立地圖"),
+    "food_maps_create_dialog_title": MessageLookupByLibrary.simpleMessage(
+      "建立共編美食地圖",
+    ),
+    "food_maps_created_success": m9,
+    "food_maps_delete_confirm": m10,
+    "food_maps_delete_map": MessageLookupByLibrary.simpleMessage("刪除地圖"),
+    "food_maps_deleted_success": MessageLookupByLibrary.simpleMessage(
+      "已刪除美食地圖",
+    ),
+    "food_maps_description_hint": MessageLookupByLibrary.simpleMessage(
+      "簡單描述這張美食地圖的主題",
+    ),
+    "food_maps_description_label": MessageLookupByLibrary.simpleMessage(
+      "簡介（選填）",
+    ),
+    "food_maps_detail_empty": MessageLookupByLibrary.simpleMessage(
+      "這張地圖還沒有餐廳，從餐廳詳情加入或從我的最愛匯入吧！",
+    ),
+    "food_maps_edit_note": MessageLookupByLibrary.simpleMessage("編輯推薦短評"),
+    "food_maps_empty_subtitle": MessageLookupByLibrary.simpleMessage(
+      "建立自己的主題美食地圖，或輸入好友邀請碼一起共編",
+    ),
+    "food_maps_empty_title": MessageLookupByLibrary.simpleMessage("還沒有共編美食地圖"),
+    "food_maps_error_generic": MessageLookupByLibrary.simpleMessage(
+      "操作失敗，請稍後再試",
+    ),
+    "food_maps_error_invalid_input": MessageLookupByLibrary.simpleMessage(
+      "請確認欄位內容與字數限制",
+    ),
+    "food_maps_error_invalid_invite_code": MessageLookupByLibrary.simpleMessage(
+      "請輸入正確的 8 碼邀請碼",
+    ),
+    "food_maps_error_item_not_found": MessageLookupByLibrary.simpleMessage(
+      "該餐廳已不存在於地圖中",
+    ),
+    "food_maps_error_map_not_found": MessageLookupByLibrary.simpleMessage(
+      "找不到對應的美食地圖或邀請碼",
+    ),
+    "food_maps_error_permission_denied": MessageLookupByLibrary.simpleMessage(
+      "你沒有執行此操作的權限",
+    ),
+    "food_maps_import_already_added": MessageLookupByLibrary.simpleMessage(
+      "已在清單中",
+    ),
+    "food_maps_import_favorites_action": MessageLookupByLibrary.simpleMessage(
+      "從最愛匯入",
+    ),
+    "food_maps_import_favorites_empty": MessageLookupByLibrary.simpleMessage(
+      "目前沒有可匯入的個人最愛餐廳",
+    ),
+    "food_maps_import_favorites_title": MessageLookupByLibrary.simpleMessage(
+      "從我的最愛匯入",
+    ),
+    "food_maps_import_submit": m11,
+    "food_maps_import_success": m12,
+    "food_maps_invite_code_hint": MessageLookupByLibrary.simpleMessage(
+      "請輸入好友分享的邀請碼",
+    ),
+    "food_maps_invite_code_label": MessageLookupByLibrary.simpleMessage(
+      "8 碼邀請碼",
+    ),
+    "food_maps_item_count": m13,
+    "food_maps_join_action": MessageLookupByLibrary.simpleMessage("輸入邀請碼"),
+    "food_maps_join_dialog_title": MessageLookupByLibrary.simpleMessage(
+      "加入共編地圖",
+    ),
+    "food_maps_joined_success": m14,
+    "food_maps_leave_confirm": m15,
+    "food_maps_leave_map": MessageLookupByLibrary.simpleMessage("退出地圖"),
+    "food_maps_left_success": MessageLookupByLibrary.simpleMessage("已退出美食地圖"),
+    "food_maps_member_count": m16,
+    "food_maps_name_hint": MessageLookupByLibrary.simpleMessage("例如：台北深夜拉麵地圖"),
+    "food_maps_name_label": MessageLookupByLibrary.simpleMessage("地圖名稱"),
+    "food_maps_no_coordinates": MessageLookupByLibrary.simpleMessage(
+      "地圖內尚無含座標的餐廳，請切換回列表檢視",
+    ),
+    "food_maps_note_hint": MessageLookupByLibrary.simpleMessage(
+      "分享必點菜色或避雷提醒...",
+    ),
+    "food_maps_note_label": MessageLookupByLibrary.simpleMessage("私房推薦短評（選填）"),
+    "food_maps_note_updated": MessageLookupByLibrary.simpleMessage("已更新推薦短評"),
+    "food_maps_owner_badge": MessageLookupByLibrary.simpleMessage("建立者"),
+    "food_maps_recommended_by": m17,
+    "food_maps_remove_restaurant": MessageLookupByLibrary.simpleMessage("移除餐廳"),
+    "food_maps_remove_restaurant_confirm": m18,
+    "food_maps_restaurant_removed": MessageLookupByLibrary.simpleMessage(
+      "已移除餐廳",
+    ),
+    "food_maps_title": MessageLookupByLibrary.simpleMessage("美食地圖"),
+    "food_maps_toggle_list_view": MessageLookupByLibrary.simpleMessage("列表檢視"),
+    "food_maps_toggle_map_view": MessageLookupByLibrary.simpleMessage("地圖檢視"),
     "information_section_title": MessageLookupByLibrary.simpleMessage("資訊"),
     "keyword_search": MessageLookupByLibrary.simpleMessage("關鍵字過濾"),
     "keyword_search_hint": MessageLookupByLibrary.simpleMessage("店名/分類/地區/路"),
@@ -232,8 +371,8 @@ class MessageLookup extends MessageLookupByLibrary {
     "menu_vision_empty_dishes": MessageLookupByLibrary.simpleMessage(
       "未能成功辨識出菜色項目，請確認照片清晰後重試",
     ),
-    "menu_vision_error_analyze_failed": m5,
-    "menu_vision_error_retry_failed": m6,
+    "menu_vision_error_analyze_failed": m19,
+    "menu_vision_error_retry_failed": m20,
     "menu_vision_error_unexpected_format": MessageLookupByLibrary.simpleMessage(
       "未預期的組件格式",
     ),

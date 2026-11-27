@@ -17,3 +17,7 @@ export 'ai_foodie_message.dart';
 export 'auth_failure_reason.dart';
 export 'review_summary_entity.dart';
 export 'ugc_note_entity.dart';
+export 'food_map_vote.dart';
+export 'food_map_exception.dart';
+export 'food_map_entity.dart';
+export 'food_map_item_entity.dart';
